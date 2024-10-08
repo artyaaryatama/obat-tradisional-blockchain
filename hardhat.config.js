@@ -4,7 +4,7 @@ require("@nomicfoundation/hardhat-toolbox");
 module.exports = {
   solidity: "0.8.27",
   paths: {
-    artifacts: './frontend/src/artifacts',
+    artifacts: './src/artifacts',
   },
   networks: {
     hardhat: {
