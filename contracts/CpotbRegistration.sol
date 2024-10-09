@@ -7,13 +7,15 @@ contract CpotbRegistration {
     isPending,
     isApproved
   }
-
+ 
   // Setiap kali pabrik meminta CPOTB, data tersebut akan ditambahkan ke dalam array ini. Array ini bersifat publik, jadi siapa pun bisa melihat seluruh daftar request yang sudah masuk. 
   struct st_Cpotb {
     address pabrikAddress;
     string pabrikName;
-    uint timestamp;
-    address bpom;
+    uint timestampReq;
+    uint timestampApprove;
+    string cpotbNumber;
+    address bpomAddress;
     en_StatusCpotb statusCpotb;
   }
 
@@ -29,7 +31,7 @@ contract CpotbRegistration {
 
   // event ini bisa digunakan untuk memperbarui UI atau mencatat riwayat aktivitas.
   event evt_CpotbRequested(string indexed reqId, address indexed pabrik, string pabrikName);
-  event evt_CpotbApproved(string indexed reqId, address indexed pabrik, string pabrikName); 
+  event evt_CpotbApproved(string indexed reqId, address indexed pabrik, string pabrikName, string cpotbNumber); 
 
   function cpotb_request(string memory _reqId, string memory _pabrikName) public {
     // cek di mapping isPabrik 
@@ -38,8 +40,10 @@ contract CpotbRegistration {
     CpotbRequests[_reqId] = st_Cpotb({
       pabrikAddress: msg.sender,
       pabrikName: _pabrikName,
-      timestamp: block.timestamp,
-      bpom: address(0),
+      timestampReq: block.timestamp,
+      timestampApprove: 0,
+      cpotbNumber: " ",
+      bpomAddress: address(0),
       statusCpotb: en_StatusCpotb.isPending
     }); 
 
@@ -47,8 +51,8 @@ contract CpotbRegistration {
     emit evt_CpotbRequested(_reqId, msg.sender, _pabrikName); 
   }
 
-  function cpotb_approve(string memory _reqId) public {
- 
+  function cpotb_approve(string memory _reqId, string memory _cpotbNumber) public {
+  
     require(bytes(_reqId).length > 0, 'Invalid Request ID'); 
 
     // mengambil request cpotb based on id
@@ -56,24 +60,30 @@ contract CpotbRegistration {
     require(certificate.statusCpotb == en_StatusCpotb.isPending, "Request has already been processed");
 
     certificate.statusCpotb = en_StatusCpotb.isApproved;
-    certificate.bpom = msg.sender;
+    certificate.timestampApprove = block.timestamp;
+    certificate.cpotbNumber = _cpotbNumber; 
+    certificate.bpomAddress = msg.sender;
 
-    emit evt_CpotbApproved(_reqId, certificate.pabrikAddress, certificate.pabrikName); 
+    emit evt_CpotbApproved(_reqId, certificate.pabrikAddress, certificate.pabrikName, _cpotbNumber); 
   }
 
   function get_cpotb_request(string memory _reqId) public view returns (
       address pabrikAddress,
       string memory pabrikName,
-      uint256 timestamp,
-      address bpom,
+      uint timestampReq,
+      uint timestampApprove,
+      string memory cpotbNumber,
+      address bpomAddress,
       en_StatusCpotb statusCpotb
-  ) {
+  ) { 
       st_Cpotb memory request = CpotbRequests[_reqId]; // Ambil data dari mapping
       return (
           request.pabrikAddress, 
           request.pabrikName,
-          request.timestamp,
-          request.bpom,
+          request.timestampReq,
+          request.timestampApprove,
+          request.cpotbNumber, 
+          request.bpomAddress,
           request.statusCpotb
       );
   }

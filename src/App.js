@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BrowserProvider, Contract, ethers } from "ethers";
 import CpotbRegistrationABI from "./artifacts/contracts/CpotbRegistration.sol/CpotbRegistration.json"; // Import ABI smart contract
 
-const CpotbRegistrationContract = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"; // Ganti dengan address smart contract
+const CpotbRegistrationContract = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"; // Ganti dengan address smart contract
 
 function App() {
   const [pabrikName, setPabrikName] = useState("");
@@ -85,9 +85,11 @@ function App() {
             requestId: requestIds[i],
             pabrikAddress: request[0],
             pabrikName: request[1],
-            timestamp: request[2],
-            bpomAddress: request[3],
-            statusCpotb: request[4]
+            timestampReq: new Date(Number(request[2])*1000).toLocaleString(),
+            timestampApprove: request[3]? new Date(Number(request[3])*1000).toLocaleString() : 0,
+            cpotbNumber: request[4],
+            bpomAddress: request[5],
+            statusCpotb: request[6]
           })
       }
       
@@ -108,7 +110,12 @@ function App() {
   // Fungsi untuk mengapprove request CPOTB
   const approveCpotb = async () => {
     try {
-      const tx = await contract.cpotb_approve(requestId); // Panggil fungsi approve di smart contract
+      const prefix = "PW-S.01.3.331";
+      const day = `${String(new Date().getMonth() + 1).padStart(2, '0')}.${String(new Date().getDate()).padStart(2, '0')}`;
+      const randomString = String(Math.floor(1000 + Math.random() * 9000));
+      const cpotbNumber = `${prefix}.${day}.${randomString}`
+
+      const tx = await contract.cpotb_approve(requestId, cpotbNumber); // Panggil fungsi approve di smart contract
       await tx.wait(); // Tunggu transaksi selesai
       console.log("Approve CPOTB receipt:", tx);
     } catch (error) {
@@ -128,10 +135,12 @@ function App() {
       // Isi div dengan data yang diinginkan
       itemDiv.innerHTML = `
           <p><strong>Request ID:</strong> ${item.requestId}</p>
+          <p><strong>Nomor CPOTB:</strong> ${item.cpotbNumber}</p>
           <p><strong>Pabrik Address:</strong> ${item.pabrikAddress}</p>
           <p><strong>Pabrik Name:</strong> ${item.pabrikName}</p>
           <p><strong>Status Cpotb:</strong> ${item.statusCpotb}</p>
-          <p><strong>Timestamp:</strong> ${item.timestamp}</p>
+          <p><strong>Timestamp Dibuat:</strong> ${item.timestampReq}</p>
+          <p><strong>Timestamp Approve:</strong> ${item.timestampApprove}</p>
           <hr>
       `;
 
