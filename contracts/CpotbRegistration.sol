@@ -10,12 +10,14 @@ contract CpotbRegistration {
 
   // Setiap kali pabrik meminta CPOTB, data tersebut akan ditambahkan ke dalam array ini. Array ini bersifat publik, jadi siapa pun bisa melihat seluruh daftar request yang sudah masuk. 
   struct st_Cpotb {
-    address pabrik;
+    address pabrikAddress;
     string pabrikName;
     uint timestamp;
     address bpom;
     en_StatusCpotb statusCpotb;
   }
+
+  string[] public reqIdCpotb; 
 
   // menyimpan request cpotb based on id
   mapping(string => st_Cpotb) public CpotbRequests; 
@@ -32,15 +34,16 @@ contract CpotbRegistration {
   function cpotb_request(string memory _reqId, string memory _pabrikName) public {
     // cek di mapping isPabrik 
     require(bytes(_reqId).length > 0, 'Invalid Request ID'); 
-
+   
     CpotbRequests[_reqId] = st_Cpotb({
-      pabrik: msg.sender,
+      pabrikAddress: msg.sender,
       pabrikName: _pabrikName,
       timestamp: block.timestamp,
       bpom: address(0),
       statusCpotb: en_StatusCpotb.isPending
     }); 
-  
+
+    reqIdCpotb.push(_reqId); 
     emit evt_CpotbRequested(_reqId, msg.sender, _pabrikName); 
   }
 
@@ -55,11 +58,11 @@ contract CpotbRegistration {
     certificate.statusCpotb = en_StatusCpotb.isApproved;
     certificate.bpom = msg.sender;
 
-    emit evt_CpotbApproved(_reqId, certificate.pabrik, certificate.pabrikName); 
+    emit evt_CpotbApproved(_reqId, certificate.pabrikAddress, certificate.pabrikName); 
   }
 
-  function get_cpotb_rrequest(string memory _reqId) public view returns (
-      address pabrik,
+  function get_cpotb_request(string memory _reqId) public view returns (
+      address pabrikAddress,
       string memory pabrikName,
       uint256 timestamp,
       address bpom,
@@ -67,12 +70,16 @@ contract CpotbRegistration {
   ) {
       st_Cpotb memory request = CpotbRequests[_reqId]; // Ambil data dari mapping
       return (
-          request.pabrik,
+          request.pabrikAddress, 
           request.pabrikName,
           request.timestamp,
           request.bpom,
           request.statusCpotb
       );
+  }
+
+  function getAllCpotbRequests() public view returns (string[] memory) {
+    return reqIdCpotb;
   }
 
 } 

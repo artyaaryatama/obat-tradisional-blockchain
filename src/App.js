@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BrowserProvider, Contract, ethers } from "ethers";
 import CpotbRegistrationABI from "./artifacts/contracts/CpotbRegistration.sol/CpotbRegistration.json"; // Import ABI smart contract
 
-const CpotbRegistrationContract = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"; // Ganti dengan address smart contract
+const CpotbRegistrationContract = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"; // Ganti dengan address smart contract
 
 function App() {
   const [pabrikName, setPabrikName] = useState("");
@@ -71,21 +71,30 @@ function App() {
   };
 
   // fungsi getterr cpotb
-  const getRequestCpotb = async (requestId) => {
+  const getAllRequestCpotb = async () => {
     try {
-      const request = await contract.get_cpotb_rrequest(requestId)
+      const requestIds = await contract.getAllCpotbRequests();
+      const reqCpotbData = []
 
-      console.log(request);
+      // console.log(requestIds);
 
-      // Simpan hasilnya ke state
-      // setCpotbData({
-      //   pabrik: request.pabrik,
-      //   pabrikName: request.pabrikName,
-      //   // timestamp: new Date(request.timestamp * 1000).toLocaleString(), 
-      //   timestamp: request.timestamp, 
-      //   bpom: request.bpom,
-      //   statusCpotb: request.statusCpotb,
-      // });
+      for(let i= 0;i < requestIds.length; i++ ){
+        const request = await contract.get_cpotb_request(requestIds[i])
+
+        reqCpotbData.push({
+            requestId: requestIds[i],
+            pabrikAddress: request[0],
+            pabrikName: request[1],
+            timestamp: request[2],
+            bpomAddress: request[3],
+            statusCpotb: request[4]
+          })
+      }
+      
+      console.log(reqCpotbData);
+      renderGetAllCpotb(reqCpotbData)
+
+
     } catch (e){
       console.error(e)
     }
@@ -93,24 +102,42 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    getRequestCpotb(requestId);
+    getAllRequestCpotb(requestId);
   };
-
 
   // Fungsi untuk mengapprove request CPOTB
   const approveCpotb = async () => {
     try {
       const tx = await contract.cpotb_approve(requestId); // Panggil fungsi approve di smart contract
       await tx.wait(); // Tunggu transaksi selesai
-      console.log("Approve CPOTB berhasil:", tx);
+      console.log("Approve CPOTB receipt:", tx);
     } catch (error) {
       console.error("Error approving request:", error);
     }
   };
 
-  function cekTxreceipt() {
-    // ini nggak bisa auto update receipt nya sihhh 
-    console.log("receipt contract from btn:", receiptTx);
+  function renderGetAllCpotb(data) {
+    const container = document.getElementById('getAllCpotbData');
+    container.innerHTML = '';
+
+    data.forEach((item) => {
+      const itemDiv = document.createElement('div');
+
+      itemDiv.classList.add('item');
+
+      // Isi div dengan data yang diinginkan
+      itemDiv.innerHTML = `
+          <p><strong>Request ID:</strong> ${item.requestId}</p>
+          <p><strong>Pabrik Address:</strong> ${item.pabrikAddress}</p>
+          <p><strong>Pabrik Name:</strong> ${item.pabrikName}</p>
+          <p><strong>Status Cpotb:</strong> ${item.statusCpotb}</p>
+          <p><strong>Timestamp:</strong> ${item.timestamp}</p>
+          <hr>
+      `;
+
+      // Tambahkan itemDiv ke dalam container
+      container.appendChild(itemDiv);
+    })
   }
 
   return (
@@ -144,8 +171,11 @@ function App() {
         <button onClick={approveCpotb}>Approve Request</button>
       </div>
 
-        <button onClick={cekTxreceipt}>cekTxreceipt</button>
-        <button onClick={handleSubmit}>getRequestCpotb</button>
+      <div>
+        <button onClick={handleSubmit}>getAllRequestCpotb</button>
+      </div>
+
+      <div id='getAllCpotbData'></div>
     </div>
   );
 }
