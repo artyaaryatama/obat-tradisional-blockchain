@@ -67,7 +67,7 @@ contract CpotbRegistration {
     emit evt_CpotbApproved(_reqId, certificate.pabrikAddress, certificate.pabrikName, _cpotbNumber); 
   }
 
-  function get_cpotb_request(string memory _reqId) public view returns (
+  function get_cpotb_request_byId(string calldata _reqId) public view returns (
       address pabrikAddress,
       string memory pabrikName,
       uint timestampReq,
@@ -88,8 +88,8 @@ contract CpotbRegistration {
       );
   }
 
-  function getAllCpotbRequests() public view returns (string[] memory) {
-    return reqIdCpotb;
+  function get_all_cpotb_request() public view returns (string[] memory) { 
+    return reqIdCpotb; 
   }
 
 } 
