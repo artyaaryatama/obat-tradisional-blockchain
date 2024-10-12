@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BrowserProvider, Contract } from "ethers";
 import obatProductionABI from "../artifacts/contracts/ObatTradisional.sol/ObatTradisional.json"; 
 
-const obatTradisionalContract = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"; 
+const obatTradisionalContract = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0"; 
 
 const addressAcc = {
   "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": "BPOM",
@@ -14,7 +14,6 @@ function CpotbPage() {
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [contract, setContract] = useState(null);
-  // const [pabrikName, setPabrikName] = useState("");
   const [obatId, setObatId] = useState("");
   const [obatName, setObatName] = useState("")
   const [obatKlaim,setObatKlaim] = useState("")
@@ -112,10 +111,9 @@ function CpotbPage() {
 
   const nieApprove = async () => {
     try {
-      const prefix = "TR";
       const year = new Date().getFullYear().toString().slice(-2);
       const randomNumber = Math.floor(10000000 + Math.random() * 90000000);
-      const nieNumber = `${prefix}${year}${randomNumber}`;
+      const nieNumber = `TR${year}${randomNumber}`;
 
       const tx = await contract.nie_approve(nieNumber, obatId)
       console.log(tx);
@@ -127,6 +125,7 @@ function CpotbPage() {
 
   const getAllObat = async () => {
     try {
+
       const obatIds = await contract.get_all_obat()
       console.log(obatIds);
       const obatData = []
@@ -191,7 +190,7 @@ function CpotbPage() {
 
   return (
     <div id="obatPage" className="App">
-      <h1>CPOTB Registration</h1>
+      <h1>Obat Registration</h1>
         {!account ? (
           <button onClick={connect_wallet}>Connect Wallet</button>
             ) : (

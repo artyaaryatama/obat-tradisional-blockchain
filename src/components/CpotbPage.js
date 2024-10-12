@@ -2,7 +2,12 @@ import { useState } from "react";
 import { BrowserProvider, Contract } from "ethers";
 import CpotbRegistrationABI from "../artifacts/contracts/CpotbRegistration.sol/CpotbRegistration.json"; // Import ABI smart contract
 
-const CpotbRegistrationContract = "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6"; // Ganti dengan address smart contract
+const CpotbRegistrationContract = "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c"; // Ganti dengan address smart contract
+
+const addressAcc = {
+  "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": "BPOM",
+  "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266": "Pabrik Axxz" 
+}
 
 function CpotbPage() {
   const [account, setAccount] = useState("");
@@ -11,6 +16,26 @@ function CpotbPage() {
   const [contract, setContract] = useState(null);
   const [pabrikName, setPabrikName] = useState("");
   const [requestId, setRequestId] = useState("");
+  const [accountName, setAccountName] = useState("")
+
+  function getNameFromAddress(address) {
+    const lowercasedAddressAcc = Object.keys(addressAcc).reduce((newObj, key) => {
+      const lowercasedKey = key.toLowerCase();
+      newObj[lowercasedKey] = addressAcc[key];
+      return newObj;
+    }, {});
+
+    const accAddress = address.toLowerCase()
+    const accName = lowercasedAddressAcc[accAddress]
+    console.log(accName);
+    
+    if(accName){
+      setAccountName(accName)
+    } else {
+      console.log("User hasn't registered yet!")
+    }
+
+  }
 
 
   // Fungsi untuk koneksi ke MetaMask dan setup provider, signer, dan contract
@@ -32,7 +57,8 @@ function CpotbPage() {
           sign
         );
 
-        setAccount(accounts[0]); // Simpan akun yang terhubung
+        getNameFromAddress(accounts[0])
+        setAccount(accounts[0]); 
         setProvider(prov);
         setSigner(sign);
         setContract(contr);
@@ -102,10 +128,9 @@ function CpotbPage() {
   // Fungsi untuk mengapprove request CPOTB
   const approveCpotb = async () => {
     try {
-      const prefix = "PW-S.01.3.331";
       const day = `${String(new Date().getMonth() + 1).padStart(2, '0')}.${String(new Date().getDate()).padStart(2, '0')}`;
       const randomString = String(Math.floor(1000 + Math.random() * 9000));
-      const cpotbNumber = `${prefix}.${day}.${randomString}`
+      const cpotbNumber = `PW-S.01.3.331.${day}.${randomString}`
 
       const tx = await contract.cpotb_approve(requestId, cpotbNumber); // Panggil fungsi approve di smart contract
       await tx.wait(); // Tunggu transaksi selesai
@@ -147,7 +172,7 @@ function CpotbPage() {
         {!account ? (
           <button onClick={connect_wallet}>Connect Wallet</button>
             ) : (
-            <h2>Connected Account: {account}</h2>
+            <h2>Connected Account: {accountName}</h2>
             )
         }
       <div>
