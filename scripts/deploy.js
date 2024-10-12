@@ -6,10 +6,15 @@ async function main() {
   // await cpotbRegistration.waitForDeployment();
   // console.log('CpotbRegistration deployed to: ', cpotbRegistration.target);
 
-  const ObatTradisional = await hre.ethers.getContractFactory('ObatTradisional');
-  const obatTradisional = await ObatTradisional.deploy();
-  await obatTradisional.waitForDeployment();
-  console.log('ObatTradisional deployed to:', obatTradisional.target);
+  // const ObatTradisional = await hre.ethers.getContractFactory('ObatTradisional');
+  // const obatTradisional = await ObatTradisional.deploy();
+  // await obatTradisional.waitForDeployment();
+  // console.log('ObatTradisional deployed to:', obatTradisional.target);
+
+  const CdobRegistration = await hre.ethers.getContractFactory('CdobRegistration');
+  const cdobRegistration = await CdobRegistration.deploy();
+  await cdobRegistration.waitForDeployment();
+  console.log('CDOB Registration deployed to:', cdobRegistration.target);
 }
 
 main()
