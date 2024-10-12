@@ -11,7 +11,6 @@ function CpotbPage() {
   const [contract, setContract] = useState(null);
   const [pabrikName, setPabrikName] = useState("");
   const [requestId, setRequestId] = useState("");
-  const [receiptTx, setReceiptTx] = useState("");
 
 
   // Fungsi untuk koneksi ke MetaMask dan setup provider, signer, dan contract
@@ -58,7 +57,6 @@ function CpotbPage() {
       await tx.wait(); // Tunggu transaksi selesai
       console.log("receipt contract:", tx);
       console.log("pabrik name: ", pabrikName);
-      setReceiptTx(tx)
     } catch (error) {
       console.error("Error making request:", error);
     }

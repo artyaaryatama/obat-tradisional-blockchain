@@ -30,7 +30,6 @@ contract ObatTradisional {
   mapping(string => st_Obat) public obatData;
 
   event evt_obatProduction(string indexed obatId, address indexed pabrikAddress, string obatName);
-  event evt_ObatRequested(string indexed obatId, address indexed pabrikAddress);
 
   function obat_production(
     string calldata _obatId, 
@@ -55,13 +54,33 @@ contract ObatTradisional {
       obatMerk: _obatMerk,
       obatKomposisi: _obatKomposisi, 
       obatKemasan: _obatKemasan,
-      numberNie: " ",
+      numberNie: "0",
       statusObat: en_StatusObat.inProduction
     });  
 
     idObat.push(_obatId); 
     emit evt_obatProduction(_obatId, msg.sender, _obatName); 
   }  
+
+  function nie_request(string calldata _obatId) public {
+    require(bytes(_obatId).length > 0, 'Invalid ID Obat'); 
+
+    st_Obat storage obat = obatData[_obatId];
+    obat.timestampReq = block.timestamp;
+    obat.statusObat = en_StatusObat.NiePending;
+  }
+
+  function nie_approve(
+    string memory _nieNumber,
+    string calldata _obatId) public{
+    require(bytes(_nieNumber).length > 0, 'Invalid Request NIE'); 
+    require(bytes(_obatId).length > 0, 'Invalid ID Obat'); 
+
+    st_Obat storage obat = obatData[_obatId];
+    obat.numberNie = _nieNumber; 
+    obat.timestampApprove = block.timestamp; 
+    obat.statusObat = en_StatusObat.NieApproved;
+  }
 
   function get_obat_byId(string calldata _obatId) public view returns (
     address pabrikAddress,
@@ -97,6 +116,7 @@ contract ObatTradisional {
   }
 
   function get_all_obat() public view returns (string[] memory) {
+    require(idObat.length > 0, "No obat data available");
     return idObat; 
   }
 }

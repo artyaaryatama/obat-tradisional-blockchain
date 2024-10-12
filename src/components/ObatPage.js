@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BrowserProvider, Contract } from "ethers";
 import obatProductionABI from "../artifacts/contracts/ObatTradisional.sol/ObatTradisional.json"; 
 
-const obatProductionContract = "0x610178dA211FEF7D417bC0e6FeD39F05609AD788"; 
+const obatTradisionalContract = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"; 
 
 const addressAcc = {
   "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": "BPOM",
@@ -42,7 +42,6 @@ function CpotbPage() {
     }
 
   }
-  
 
   const connect_wallet = async () => {
     if (window.ethereum) {
@@ -54,7 +53,7 @@ function CpotbPage() {
 
         const sign = await prov.getSigner();
         const contr = new Contract(
-          obatProductionContract, 
+          obatTradisionalContract, 
           obatProductionABI.abi, 
           sign
         );
@@ -64,8 +63,6 @@ function CpotbPage() {
         setProvider(prov);
         setSigner(sign);
         setContract(contr);
-
-        console.log(accountName);
       } catch (err) {
         console.error("User denied account access", err);
       }
@@ -73,13 +70,12 @@ function CpotbPage() {
       console.log("MetaMask is not installed");
     }
   };
-
   
   const obatProduction = async () => {
     try {
       const id = Math.random().toString(36).slice(2, 9); 
-      setObatId(id); 
-      console.log({obatId,
+      console.log({
+        id,
         accountName,
         obatName, 
         obatMerk,
@@ -88,7 +84,7 @@ function CpotbPage() {
       obatKemasan});
 
       const tx = await contract.obat_production(
-                obatId,
+                id,
                 accountName,
                 obatName, 
                 obatMerk,
@@ -103,35 +99,65 @@ function CpotbPage() {
     }
   };
 
-  const getObatById = async (obatId) => {
-    const obatIds = await contract.get_all_obat()
-
-    const obatData = []
-    console.log(obatIds);
-
-    for(let i=0; i<obatIds.length; i++){
-      const tx = await contract.get_obat_byId(obatIds[i])
+  const nieRequest = async() => { 
+    try {
+      console.log(obatId);
+      const tx = await contract.nie_request(obatId);
       console.log(tx)
-      obatData.push({
-        pabrikAddress: tx[0], 
-        bpomAddress: tx[1],
-        pabrikName: tx[2],
-        timestampReq: tx[3]? new Date(Number(tx[3])*1000).toLocaleString() : '-',
-        timestampApprove: tx[4]? new Date(Number(tx[4])*1000).toLocaleString() : '-',
-        obatName: tx[5],
-        obatId: tx[6],
-        obatMerk: tx[7],
-        obatKlaim: tx[8],
-        obatKomposisi: tx[9],
-        obatKemasan: tx[10],
-        numberNie: tx[11]? tx[11] : '-',
-        statusObat: tx[12]
 
-      })
+    } catch (e) {
+      console.error(e)
     }
+  }
 
-    renderGetAllObat(obatData)
-    
+  const nieApprove = async () => {
+    try {
+      const prefix = "TR";
+      const year = new Date().getFullYear().toString().slice(-2);
+      const randomNumber = Math.floor(10000000 + Math.random() * 90000000);
+      const nieNumber = `${prefix}${year}${randomNumber}`;
+
+      const tx = await contract.nie_approve(nieNumber, obatId)
+      console.log(tx);
+      
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const getAllObat = async () => {
+    try {
+      const obatIds = await contract.get_all_obat()
+      console.log(obatIds);
+      const obatData = []
+      console.log(obatIds);
+  
+      for(let i=0; i<obatIds.length; i++){
+        const tx = await contract.get_obat_byId(obatIds[i])
+        console.log(tx)
+        obatData.push({
+          pabrikAddress: tx[0], 
+          bpomAddress: tx[1],
+          pabrikName: tx[2],
+          timestampReq: tx[3]? new Date(Number(tx[3])*1000).toLocaleString() : '-',
+          timestampApprove: tx[4]? new Date(Number(tx[4])*1000).toLocaleString() : '-',
+          obatName: tx[5],
+          obatId: tx[6],
+          obatMerk: tx[7],
+          obatKlaim: tx[8],
+          obatKomposisi: tx[9],
+          obatKemasan: tx[10],
+          numberNie: tx[11]? tx[11] : '-',
+          statusObat: tx[12]
+  
+        })
+      }
+  
+      renderGetAllObat(obatData)
+      
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   function renderGetAllObat(data) {
@@ -144,13 +170,13 @@ function CpotbPage() {
       itemDiv.classList.add('item');
 
       itemDiv.innerHTML = `
+        <p><strong>Obat Name:</strong> ${item.obatName}</p>
+        <p><strong>Obat ID:</strong> ${item.obatId}</p>
         <p><strong>Pabrik Address:</strong> ${item.pabrikAddress}</p>
         <p><strong>BPOM Address:</strong> ${item.bpomAddress}</p>
         <p><strong>Pabrik Name:</strong> ${item.pabrikName}</p>
         <p><strong>Timestamp Dibuat:</strong> ${item.timestampReq}</p>
         <p><strong>Timestamp Approve:</strong> ${item.timestampApprove}</p>
-        <p><strong>Obat Name:</strong> ${item.obatName}</p>
-        <p><strong>Obat ID:</strong> ${item.obatId}</p>
         <p><strong>Obat Merk:</strong> ${item.obatMerk}</p>
         <p><strong>Obat Klaim:</strong> ${item.obatKlaim}</p>
         <p><strong>Obat Komposisi:</strong> ${item.obatKomposisi}</p>
@@ -207,9 +233,37 @@ function CpotbPage() {
         <button onClick={obatProduction}>Submit Obat</button>
       </div>
 
-        <button onClick={getObatById}>Get obat</button>
+      <div>
+        <h2>Request NIE</h2>
+        <input
+          type="text"
+          placeholder="Request ID"
+          value={obatId}
+          onChange={(e) => setObatId(e.target.value)}
+        />
+
+        <button onClick={nieRequest}>NIE Request</button>
+      </div>
+      <div>
+        <h2>Approve NIE</h2>
+        <input
+          type="text"
+          placeholder="Request ID"
+          value={obatId}
+          onChange={(e) => setObatId(e.target.value)}
+        />
+
+        <button onClick={nieApprove}>NIE Approve</button>
+      </div>
+
+      <div>
+        <h2>ALl Obat Tradisonal</h2>
+        <button onClick={getAllObat}>Get obat</button>
 
         <div id="getAllObatData"></div>
+      </div>
+
+
     </div>
   );
 }
