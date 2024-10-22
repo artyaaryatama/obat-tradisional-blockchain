@@ -128,7 +128,7 @@ function CpotbPage() {
       const today = new Date();
       const month = String(today.getMonth() + 1).padStart(2, '0');  
       const year = today.getFullYear(); 
-      const nomorSurat = `CDOB${randomDigits1}/S1-${randomDigits2}/${month}/${year}`;
+      const nomorSurat = `CDOB${randomDigits1}/S/1-${randomDigits2}/${month}/${year}`;
 
       const tx = await contract.cdob_approve(requestId, nomorSurat); 
       await tx.wait(); // Tunggu transaksi selesai

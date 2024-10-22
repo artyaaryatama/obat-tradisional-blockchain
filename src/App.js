@@ -2,7 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CdobPage from './components/CdobPage';
 import CpotbPage from './components/CpotbPage';
-import ObatPage from './components/ObatPage';
+// import ObatPage from './components/ObatPage';
+import RegisterPage from './components/RegisterUser';
 
 function App() {
   return (
@@ -13,7 +14,8 @@ function App() {
           {/* <Route path="/" element={<Home />} /> */}
           <Route path="/cpotb" element={<CpotbPage />} />
           <Route path="/cdob" element={<CdobPage />} />
-          <Route path="/obat" element={<ObatPage />} />
+          {/* <Route path="/obat" element={<ObatPage />} /> */}
+          <Route path="/register-user" element={<RegisterPage />} />
         </Routes>
       </div>
     </Router>
