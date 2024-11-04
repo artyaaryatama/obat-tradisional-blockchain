@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
+
 contract MainSupplyChain {
 
   address public owner;
@@ -15,11 +17,11 @@ contract MainSupplyChain {
   }
 
   enum en_roles {
-    guest, 
     factory,
     pbf, 
     bpom,
-    retailer
+    retailer,
+    guest
   }
   
   struct st_userData {
@@ -45,29 +47,40 @@ contract MainSupplyChain {
     bytes cdobNumber;
   }
 
-  mapping (address => st_userData) public userData;
+  mapping (address => st_userData) private userData;
+  mapping (address => bool) private isRegistered;
 
-  event registeredUser(address indexed userAddr, string name, en_roles userRole);
+  event evt_UserRegistered(address userAddr, string name);
 
   function registerUser(
     string memory _name, 
     string memory _email, 
-    address _userAddr, 
+    address _userAddr,
     uint8 _userRole
-  ) public onlyOwner {
+  ) public {
+    require(!isRegistered[_userAddr], "User is already registered");
+
+    console.log("RegisterUser function called by:", _userAddr);
+    console.log("User Role:", _userRole);
+
     userData[_userAddr] = st_userData({
       name : _name, 
       email : _email,
       userAddr : _userAddr,
       userRole : en_roles(_userRole)
     }); 
+
+    isRegistered[_userAddr] = true; 
     
-    emit registeredUser(_userAddr, _name, en_roles(_userRole)); 
+    emit evt_UserRegistered(_userAddr, _name);  
   }
 
-  function getRegisteredUser(address userAddr) public view returns (address, string memory) {
-    st_userData memory user = userData[userAddr]; 
-    return (user.userAddr, user.name);   
-  } 
- 
+  function getRegisteredUser(address _userAddr) public view returns (address, string memory) {
+      require(isRegistered[_userAddr], "User is not registered");
+
+      st_userData memory user = userData[_userAddr];
+      
+      return (user.userAddr, user.name); 
+  }
+
 }
