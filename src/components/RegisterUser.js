@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BrowserProvider, Contract } from "ethers";
 import contractABI from "../artifacts/contracts/MainSupplyChain.sol/MainSupplyChain.json";
 
+
 function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -19,7 +20,7 @@ function RegisterPage() {
     async function connectWallet() {
       if (window.ethereum) {
         try {
-          const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+          const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const contr = new Contract(contractAddress, contractABI.abi, signer);
@@ -28,6 +29,7 @@ function RegisterPage() {
           setContract(contr);
         } catch (err) {
           console.error("User denied addrAccount access: ", err);
+          errAlert(err)
         }
       } else {
         console.error("MetaMask is not installed");
@@ -68,8 +70,10 @@ function RegisterPage() {
       await tx.wait();
       console.log("Transaction receipt:", tx);
       console.log("User Registered Successfully!");
+      
     } catch (err) {
-      console.error("Registration failed:", err);
+      console.log("Registration failed:", err);
+      errAlert(err)
     }
   };
 
@@ -78,8 +82,10 @@ function RegisterPage() {
       const [address, name] = await contract.getRegisteredUser(userAddr);
       setUserDetails({ address, name });
       setIsUserRegistered(true);
+
     } catch (err) {
       console.error("Failed to fetch user registration:", err);
+      errAlert(err)
       setIsUserRegistered(false);
     }
   };
@@ -140,6 +146,17 @@ function RegisterPage() {
       </div>
     </>
   );
+}
+
+function errAlert(err){
+
+  const errorObject = {
+    message: err.reason || err.message || "Unknown error",
+    data: err.data || {},
+    transactionHash: err.transactionHash || null
+  };
+
+  console.error(errorObject);
 }
 
 export default RegisterPage;
