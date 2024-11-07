@@ -1,4 +1,34 @@
+import React, { useEffect } from 'react';
+import { useUser } from '../UserContext'; 
 
+function CpotbPage() {
+  const { userDetails } = useUser(); 
+
+  useEffect(() => {
+    console.log("User details from context:", userDetails);
+  }, [userDetails]);
+
+  console.log(typeof(userDetails.role));
+
+  const roles = {
+    '0': "Factory",
+    1n: "PBF", 
+    '2': "BPOM",
+    3n: "Retailer",
+    4n: "Guest"
+  }
+
+  return (
+    <div>
+      <h2>CPOTB Page</h2>
+      <p>User Address: {userDetails.address}</p>
+      <p>User Name: {userDetails.name}</p>
+      <p>User Role: {roles[userDetails.role]}</p>
+    </div>
+  );
+}
+
+export default CpotbPage;
 
 // import { useEffect, useState } from "react";
 // import { BrowserProvider, Contract } from "ethers";

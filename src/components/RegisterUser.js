@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserProvider, Contract } from "ethers";
+import { useNavigate } from 'react-router-dom';
 import contractMainSupplyChain from './../auto-artifacts/MainSupplyChain.json';
 
 function RegisterPage() {
@@ -9,6 +10,7 @@ function RegisterPage() {
   const [role, setRole] = useState("");
   const [userDetails, setUserDetails] = useState({});
   const [isUserRegistered, setIsUserRegistered] = useState("");
+  const navigate = useNavigate(); 
 
   const [contract, setContract] = useState("");
 
@@ -30,8 +32,7 @@ function RegisterPage() {
           setAddrAccount(await signer.getAddress());
           setContract(contr);
         } catch (err) {
-          console.error("User denied access: ", err);
-          errAlert(err)
+          errAlert(err, "User access denied!")
         }
       } else {
         console.error("MetaMask is not installed");
@@ -54,15 +55,11 @@ function RegisterPage() {
           4n: "Guest"
         }
 
-        console.log(typeof(_role))
-
         setUserDetails({
           address: _userAddr,
           name: _name,
           role: roles[_role]
         });
-
-        console.log(userDetails);
 
         setIsUserRegistered(true);
       });
@@ -81,14 +78,14 @@ function RegisterPage() {
     }
     
     try {
-      const tx = await contract.registerUser(name, email, userAddr, role);
+      const nameUpperCase = name.toUpperCase()
+      const tx = await contract.registerUser(nameUpperCase, email, userAddr, role);
       await tx.wait();
       console.log("Transaction receipt:", tx);
       console.log("User Registered Successfully!");
       
     } catch (err) {
-      console.log("Registration failed:", err);
-      errAlert(err)
+      errAlert(err, "Registration failed")
     }
   };
 
@@ -101,8 +98,7 @@ function RegisterPage() {
       setIsUserRegistered(true);
 
     } catch (err) {
-      console.error("Failed to fetch user registration:", err);
-      errAlert(err)
+      errAlert(err, "Failed to fetch user registration")
       setIsUserRegistered(false);
     }
   };
@@ -110,6 +106,10 @@ function RegisterPage() {
   const handleOptionRole = (e) => {
     setRole(parseInt(e.target.value));
   };
+
+  function loginRedirect() {
+    navigate("/login")
+  }
 
   return (
     <>
@@ -150,6 +150,7 @@ function RegisterPage() {
 
         <div>
           <button onClick={getRegisterUser}>Check Registration</button>
+          <button onClick={loginRedirect}>Login</button>
           {isUserRegistered ? (
             <div>
               <h2>User Details</h2>
@@ -166,7 +167,7 @@ function RegisterPage() {
   );
 }
 
-function errAlert(err){
+function errAlert(err, customMsg){
 
   const errorObject = {
     message: err.reason || err.message || "Unknown error",
@@ -174,6 +175,7 @@ function errAlert(err){
     transactionHash: err.transactionHash || null
   };
 
+  console.error(customMsg)
   console.error(errorObject);
 }
 

@@ -8,7 +8,7 @@ import { useUser } from "../UserContext";
 function LoginPage() {
   const [userName, setUserName] = useState("");
   const [userAddr, setUserAddr] = useState("");
-  const {setUserDetails} = useUser();
+  const {userDetails, setUserDetails} = useUser();
   const navigate = useNavigate(); 
   
   const [contract, setContract] = useState();
@@ -38,31 +38,46 @@ function LoginPage() {
     }, []);
 
     const loginFetch = async () => {
+
       if(userAddr && userName){
-        try {;
+        try {
+          const userNameUpperCase = userName.toUpperCase()
           const [address, name, role] = await contract.getRegisteredUser(userAddr);
-          if (userAddr === address || userName === name) {
+          
+          if (userAddr === address || userNameUpperCase === name) {
             // address: address
             // address act as userDetails: dan address satunya yg merupakan response dri contract itu act as setuserdetails
             setUserDetails({
               address: address,
               name: name,
-              role: role
+              role: role.toString()
             });
+
+            console.log(userDetails);
             
-            navigate("/cdob");
+            if (userDetails.role === "1") {
+              console.log(3);
+              navigate('/cdob');
+            } else if (userDetails.role  === "0") {
+              navigate('/cpotb');
+            } else {
+              navigate('/401-unauthorized');
+            }
           } else {
             console.error("Wrong input! Username and User Address not match.")
           }
     
         } catch (err) {
-          console.error("User not registered! ", err);
-          errAlert(err)
+          errAlert(err, "User not registered!")
         }
       } else {
         console.log("Please filled all input!")
       }
     }; 
+
+    function registerDirect() {
+      navigate("/register")
+    }
 
     return (
       <div>
@@ -80,11 +95,12 @@ function LoginPage() {
           onChange={(e) => setUserName(e.target.value)}
         />
         <button onClick={loginFetch}>Login</button>
+        <button onClick={registerDirect}>Register</button>
       </div>
     );
 }
 
-function errAlert(err){
+function errAlert(err, customMsg){
 
   const errorObject = {
     message: err.reason || err.message || "Unknown error",
@@ -92,6 +108,7 @@ function errAlert(err){
     transactionHash: err.transactionHash || null
   };
 
+  console.error(customMsg);
   console.error(errorObject);
 }
 

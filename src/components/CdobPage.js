@@ -1,21 +1,19 @@
 import React, { useEffect } from 'react';
-import { useUser } from '../UserContext'; // Import the context hook
-import { type } from '@testing-library/user-event/dist/type';
+import { useUser } from '../UserContext'; 
 
 function CdobPage() {
-  const { userDetails, setUserDetails } = useUser(); // Access context values
+  const { userDetails } = useUser(); 
 
   useEffect(() => {
     console.log("User details from context:", userDetails);
   }, [userDetails]);
 
-  console.log(typeof(userDetails.role));
   const roles = {
-    0n: "Factory",
-    1n: "PBF", 
-    2n: "BPOM",
-    3n: "Retailer",
-    4n: "Guest"
+    '0': "Factory",
+    '1': "PBF", 
+    '2': "BPOM",
+    '3': "Retailer",
+    '4': "Guest"
   }
 
   return (
