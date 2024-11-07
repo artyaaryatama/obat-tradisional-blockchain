@@ -1,4 +1,5 @@
-const hre = require("hardhat")
+const fs =  require("fs");
+const hre = require("hardhat");
 
 async function main() {
   // const CpotbRegistration = await hre.ethers.getContractFactory('CpotbRegistration')
@@ -21,6 +22,18 @@ async function main() {
   // const cdobRegistration = await CdobRegistration.deploy();
   // await cdobRegistration.waitForDeployment();
   // console.log('CDOB Registration deployed to:', cdobRegistration.target);
+
+  const artifact = await hre.artifacts.readArtifact("MainSupplyChain");
+
+  const ContractData = {
+    address: supplyChain.target,
+    abi: artifact.abi
+  }
+
+  console.log("Formatted ABI:", supplyChain.interface.format('json'));
+
+  fs.writeFileSync('./src/auto-artifacts/MainSupplyChain.json', JSON.stringify(ContractData, null, 2))
+  console.log("Contract address and ABI saved to artifact.json");
 }
 
 main()

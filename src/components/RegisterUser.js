@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { BrowserProvider, Contract } from "ethers";
-import contractABI from "../artifacts/contracts/MainSupplyChain.sol/MainSupplyChain.json";
-
+import contractMainSupplyChain from './../auto-artifacts/MainSupplyChain.json';
 
 function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [userAddr, setUserAddr] = useState("");
   const [role, setRole] = useState("");
-  const [contract, setContract] = useState("");
   const [userDetails, setUserDetails] = useState({});
   const [isUserRegistered, setIsUserRegistered] = useState("");
+
+  const [contract, setContract] = useState("");
 
   // Testing address current MetaMask
   const [addrAccount, setAddrAccount] = useState("");
@@ -20,15 +20,17 @@ function RegisterPage() {
     async function connectWallet() {
       if (window.ethereum) {
         try {
-          const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const contr = new Contract(contractAddress, contractABI.abi, signer);
+          const contr = new Contract(
+            contractMainSupplyChain.address, 
+            contractMainSupplyChain.abi, 
+            signer);
 
           setAddrAccount(await signer.getAddress());
           setContract(contr);
         } catch (err) {
-          console.error("User denied addrAccount access: ", err);
+          console.error("User denied access: ", err);
           errAlert(err)
         }
       } else {
@@ -41,13 +43,26 @@ function RegisterPage() {
   // event user registration
   useEffect(() => {
     if (contract) {
-      contract.on("evt_UserRegistered", (_userAddr, _name) => {
-        console.log("User Registered Event: ", { _userAddr, _name});
+      contract.on("evt_UserRegistered", (_userAddr, _name, _role) => {
+        console.log("User Registered Event: ", { _userAddr, _name, _role});
+
+        const roles = {
+          0n: "Factory",
+          1n: "PBF", 
+          2n: "BPOM",
+          3n: "Retailer",
+          4n: "Guest"
+        }
+
+        console.log(typeof(_role))
 
         setUserDetails({
           address: _userAddr,
-          name: _name
+          name: _name,
+          role: roles[_role]
         });
+
+        console.log(userDetails);
 
         setIsUserRegistered(true);
       });
@@ -79,8 +94,10 @@ function RegisterPage() {
 
   const getRegisterUser = async () => {
     try {
-      const [address, name] = await contract.getRegisteredUser(userAddr);
-      setUserDetails({ address, name });
+      const t = await contract.getRegisteredUser(userAddr)
+      console.log(t);
+      const [address, name, role] = await contract.getRegisteredUser(userAddr);
+      setUserDetails({ address, name, role });
       setIsUserRegistered(true);
 
     } catch (err) {
@@ -138,6 +155,7 @@ function RegisterPage() {
               <h2>User Details</h2>
               <p>Name: {userDetails?.name}</p>
               <p>Address: {userDetails?.address}</p>
+              <p>Role: {userDetails?.role}</p>
             </div>
           ) : (
             <p></p>

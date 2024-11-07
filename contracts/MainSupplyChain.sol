@@ -17,11 +17,23 @@ contract MainSupplyChain {
   }
 
   enum en_roles {
-    factory,
-    pbf, 
-    bpom,
-    retailer,
-    guest
+    Factory,
+    PBF, 
+    BPOM,
+    Retailer,
+    Guest
+  }
+  
+  enum en_statusCert {
+    Pending,
+    Approved
+  }
+
+  enum en_jenisSediaan {
+      TabletNonbetalaktam,
+      KapsulKerasNonbetalaktam,
+      SerbukOralNonbetalaktam,
+      CairanOralNonbetalaktam
   }
   
   struct st_userData {
@@ -32,11 +44,15 @@ contract MainSupplyChain {
   }
 
   struct st_cpotbData {
-    bytes cpotbId;
-    address pabrikAddr;
+    string cpotbId;
+    address factoryAddr;
+    string factoryName;
+    en_jenisSediaan jenisSediaan;
+    en_statusCert status;
+    uint timestampRequest;
+    uint timestampApprove;
+    string cpotbNumber;
     address bpomAddr;
-    uint timestamp;
-    bytes cpotbNumber;
   }
 
   struct st_cdobData {
@@ -48,9 +64,13 @@ contract MainSupplyChain {
   }
 
   mapping (address => st_userData) private userData;
+  mapping (address => en_roles) public userRoles; 
   mapping (address => bool) private isRegistered;
+  mapping (string => st_cpotbData) cpotbData;
 
-  event evt_UserRegistered(address userAddr, string name);
+  event evt_UserRegistered(address userAddr, string name, en_roles role);
+  event evt_cpotbRequested(address factoryAddr, string factoryName, en_jenisSediaan jenisSediaan, uint timestampRequest);
+  event evt_cpotbApproved(address bpomAddr, string factoryName, string cpotbNumber, uint timestampApprove);
 
   function registerUser(
     string memory _name, 
@@ -58,7 +78,7 @@ contract MainSupplyChain {
     address _userAddr,
     uint8 _userRole
   ) public {
-    require(!isRegistered[_userAddr], "User is already registered");
+    // require(!isRegistered[_userAddr], "User is already registered");
 
     console.log("RegisterUser function called by:", _userAddr);
     console.log("User Role:", _userRole);
@@ -72,15 +92,39 @@ contract MainSupplyChain {
 
     isRegistered[_userAddr] = true; 
     
-    emit evt_UserRegistered(_userAddr, _name);  
+    emit evt_UserRegistered(_userAddr, _name, en_roles(_userRole));  
   }
 
-  function getRegisteredUser(address _userAddr) public view returns (address, string memory) {
+  function getRegisteredUser(address _userAddr) public view returns (address, string memory, uint8) {
       require(isRegistered[_userAddr], "User is not registered");
 
       st_userData memory user = userData[_userAddr];
       
-      return (user.userAddr, user.name); 
+      return (user.userAddr, user.name, uint8(user.userRole)); 
   }
+
+  function requestCpotb(
+    string memory _factoryName,
+    string memory _cpotbId,
+    en_jenisSediaan _jenisSediaan
+  ) public {
+    require(userRoles[msg.sender] == en_roles.Factory, "Sorry, you don't have authorized to access this!");
+
+    cpotbData[_cpotbId] = st_cpotbData({
+      cpotbId: _cpotbId,
+      factoryAddr: msg.sender, 
+      factoryName: _factoryName,
+      jenisSediaan: _jenisSediaan,
+      status: en_statusCert.Pending,
+      timestampRequest: block.timestamp,
+      timestampApprove: 0,
+      cpotbNumber: "",
+      bpomAddr: address(0)
+    });
+
+    emit evt_cpotbRequested(msg.sender, _factoryName, _jenisSediaan, block.timestamp);
+  }
+
+  
 
 }

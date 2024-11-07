@@ -6,20 +6,21 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "ethers": "^6.13.3",
+    "ethers": "^6.13.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2",
     "react-scripts": "5.0.1",
     "sass": "^1.79.4",
-    "scss": "^0.2.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "npx hardhat run scripts/deploy.js --network localhost",
+    "dev": "npx nodemon --exec npm run deploy"
   },
   "eslintConfig": {
     "extends": [
@@ -41,6 +42,7 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "hardhat": "^2.22.12"
+    "hardhat": "^2.22.15",
+    "nodemon": "^3.1.7"
   }
 }
