@@ -1,5 +1,5 @@
 {
-  "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+  "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
   "abi": [
     {
       "inputs": [],
@@ -85,6 +85,12 @@
         },
         {
           "indexed": false,
+          "internalType": "string",
+          "name": "cpotbId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
           "internalType": "uint256",
           "name": "timestampRequest",
           "type": "uint256"
@@ -92,6 +98,24 @@
       ],
       "name": "evt_cpotbRequested",
       "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_cpotbId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_cpotbNumber",
+          "type": "string"
+        }
+      ],
+      "name": "approveCpotb",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
       "inputs": [

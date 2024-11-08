@@ -19,7 +19,7 @@ function App() {
 
           <Route path="/register" element={<RegisterPage />} />
 
-          <Route path="/401-unauthorized" element={<UnauthorizedPage />} />
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
           <Route 
             path="/cdob" 

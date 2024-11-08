@@ -47,6 +47,7 @@ function RegisterPage() {
       contract.on("evt_UserRegistered", (_userAddr, _name, _role) => {
         console.log("User Registered Event: ", { _userAddr, _name, _role});
 
+        // buat convert role dri eventnya
         const roles = {
           0n: "Factory",
           1n: "PBF", 

@@ -1,31 +1,111 @@
-import React, { useEffect } from 'react';
-import { useUser } from '../UserContext'; 
+import { useEffect, useState } from 'react';
+import { BrowserProvider, Contract } from "ethers";
+import { useUser } from '../UserContext';
+import contractMainSupplyChain from './../auto-artifacts/MainSupplyChain.json';
 
 function CpotbPage() {
   const { userDetails } = useUser(); 
+  const [contract, setContract] = useState();
+  const [jenisSediaan, setJenisSediaan] = useState();
+
+  useEffect(() => {
+    async function connectWallet() {
+      if (window.ethereum) {
+        try {
+          const provider = new BrowserProvider(window.ethereum);
+          const signer = await provider.getSigner();
+          const contr = new Contract(
+            contractMainSupplyChain.address, 
+            contractMainSupplyChain.abi, 
+            signer);
+
+          setContract(contr);
+        } catch (err) {
+          errAlert(err, "User access denied!")
+        }
+      } else {
+        console.error("MetaMask is not installed");
+      }
+    }
+    connectWallet();
+  }, []);
 
   useEffect(() => {
     console.log("User details from context:", userDetails);
   }, [userDetails]);
 
-  console.log(typeof(userDetails.role));
+  useEffect(() => {
+    if(contract) {
+      contract.on('evt_cpotbRequested', (_userAddr, _fatoryName, _jenisSediaan, _cpotbID, _timestampRequest) => {
+        console.log("Cpotb Requested Event: ", _userAddr, _fatoryName, _jenisSediaan, _cpotbID, _timestampRequest)
+      })
 
-  const roles = {
-    '0': "Factory",
-    1n: "PBF", 
-    '2': "BPOM",
-    3n: "Retailer",
-    4n: "Guest"
+      contract.on('evt_cpotbApproved', (_userAddr, _fatoryName, _cpotbNUmber, _timestampApprove) => {
+        console.log("Cpotb Approved Event: ", _userAddr, _fatoryName, _cpotbNUmber, _timestampApprove)
+      })
+    }
+
+    return () => {
+      // contract.removeAllListeners("evt_cpotbRequested");
+      // contract.removeAllListeners("evt_cpotbApproved");
+    };
+  }, [contract])
+
+  const requestCpotb = async () => {
+    if(!jenisSediaan){      
+      alert("All fields are required");
+      console.log(jenisSediaan);
+      return
+    }
+
+    try{
+      const id = Math.random().toString(36).slice(2, 9); 
+      console.log('ini req id: ', id);
+
+      const tx = await contract.requestCpotb(userDetails.name, id, jenisSediaan)
+      await tx.wait();
+      console.log('Receipt: ', tx)
+
+    } catch(err) {
+      errAlert(err, "Error making request cpotb!")
+    }
+  }
+
+  const handleOptionJenisSediaan = (e) => {
+    const js = {
+      "TabletNonbetalaktam": 0n
+    }
+
+    setJenisSediaan(js[e])
   }
 
   return (
-    <div>
-      <h2>CPOTB Page</h2>
-      <p>User Address: {userDetails.address}</p>
-      <p>User Name: {userDetails.name}</p>
-      <p>User Role: {roles[userDetails.role]}</p>
-    </div>
+    <>
+      <div id="CpotbPage" className='App'>
+        <h1>Send CPOTB Request</h1>
+        <label htmlFor="jenisSediaan"> Jenis Sediaan</label>
+        <select name="jenisSediaan" id="jenisSediaan" value={jenisSediaan} onChange={handleOptionJenisSediaan}>
+          <option value="" disabled>Select your role</option>
+          <option value="TabletNonbetalaktam">Tablet Non Betalaktam</option>
+          <option value="KapsulKerasNonbetalaktam">Kapsul Keras Non Betalaktam</option>
+          <option value="SerbukOralNonbetalaktam">Serbuk Oral Non Betalaktam</option>
+          <option value="CairanOralNonbetalaktam">Cairan Oral Non Betalaktam</option>
+        </select>
+      </div>
+    </>
   );
+}
+
+function errAlert(err, customMsg){
+
+  const errorObject = {
+    message: err.reason || err.message || "Unknown error",
+    data: err.data || {},
+    transactionHash: err.transactionHash || null
+  };
+
+  console.error(customMsg)
+  console.error(errorObject);
 }
 
 export default CpotbPage;

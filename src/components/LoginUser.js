@@ -56,12 +56,12 @@ function LoginPage() {
             console.log(userDetails);
             
             if (userDetails.role === "1") {
-              console.log(3);
               navigate('/cdob');
             } else if (userDetails.role  === "0") {
+              console.log(3);
               navigate('/cpotb');
             } else {
-              navigate('/401-unauthorized');
+              // navigate('/unauthorized');
             }
           } else {
             console.error("Wrong input! Username and User Address not match.")

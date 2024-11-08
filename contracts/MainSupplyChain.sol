@@ -16,6 +16,21 @@ contract MainSupplyChain {
     _;
   } 
 
+  modifier onlyFactory() { 
+      require(userRoles[msg.sender] == en_roles.Factory, "Sorry, you don't have authorized to access this!");
+      _;
+  }
+
+  modifier onlyBPOM() {
+      require(userRoles[msg.sender] == en_roles.BPOM, "Sorry, you don't have authorized to access this!");
+      _;
+  }
+
+  modifier onlyPBF() {
+      require(userRoles[msg.sender] == en_roles.PBF, "Sorry, you don't have authorized to access this!");
+      _;
+  }
+
   enum en_roles {
     Factory,
     PBF, 
@@ -30,10 +45,10 @@ contract MainSupplyChain {
   }
 
   enum en_jenisSediaan {
-      TabletNonbetalaktam,
-      KapsulKerasNonbetalaktam,
-      SerbukOralNonbetalaktam,
-      CairanOralNonbetalaktam
+    TabletNonbetalaktam,
+    KapsulKerasNonbetalaktam,
+    SerbukOralNonbetalaktam,
+    CairanOralNonbetalaktam
   }
   
   struct st_userData {
@@ -69,7 +84,7 @@ contract MainSupplyChain {
   mapping (string => st_cpotbData) cpotbData;
 
   event evt_UserRegistered(address userAddr, string name, en_roles role);
-  event evt_cpotbRequested(address factoryAddr, string factoryName, en_jenisSediaan jenisSediaan, uint timestampRequest);
+  event evt_cpotbRequested(address factoryAddr, string factoryName, en_jenisSediaan jenisSediaan, string cpotbId, uint timestampRequest);
   event evt_cpotbApproved(address bpomAddr, string factoryName, string cpotbNumber, uint timestampApprove);
 
   function registerUser(
@@ -107,14 +122,13 @@ contract MainSupplyChain {
     string memory _factoryName,
     string memory _cpotbId,
     en_jenisSediaan _jenisSediaan
-  ) public {
-    require(userRoles[msg.sender] == en_roles.Factory, "Sorry, you don't have authorized to access this!");
+  ) public onlyFactory{
 
     cpotbData[_cpotbId] = st_cpotbData({
       cpotbId: _cpotbId,
       factoryAddr: msg.sender, 
       factoryName: _factoryName,
-      jenisSediaan: _jenisSediaan,
+      jenisSediaan: en_jenisSediaan(_jenisSediaan), 
       status: en_statusCert.Pending,
       timestampRequest: block.timestamp,
       timestampApprove: 0,
@@ -122,9 +136,23 @@ contract MainSupplyChain {
       bpomAddr: address(0)
     });
 
-    emit evt_cpotbRequested(msg.sender, _factoryName, _jenisSediaan, block.timestamp);
+    emit evt_cpotbRequested(msg.sender, _factoryName, _jenisSediaan, _cpotbId, block.timestamp);
   }
 
+  function approveCpotb(
+    string memory _cpotbId,  
+    string memory _cpotbNumber
+  ) public onlyBPOM {
+     
+    st_cpotbData storage cpotbDatas =  cpotbData[_cpotbId];
+    require(cpotbDatas.status == en_statusCert.Pending, "CPOTB status must be pending!");
+
+    cpotbDatas.status = en_statusCert.Approved;
+    cpotbDatas.cpotbNumber = _cpotbNumber;
+    cpotbDatas.timestampApprove = block.timestamp;
+
+    emit evt_cpotbApproved(msg.sender, cpotbDatas.factoryName, _cpotbNumber, block.timestamp);
+  }
   
 
 }

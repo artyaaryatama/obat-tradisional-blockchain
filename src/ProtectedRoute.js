@@ -9,7 +9,7 @@ function ProtectedRoute({ allowedRoles, children }) {
   const role = typeof userDetails.role === "bigint" ? userDetails.role.toString() : userDetails.role;
   if (!userDetails || !allowedRoles.includes(role)) {
     // Redirect to unauthorized page if role is not allowed
-    return <Navigate to="/401-unauthorized" replace />;
+    // return <Navigate to="/401-unauthorized" replace />;
   }
 
   // Render children if user has an allowed role
