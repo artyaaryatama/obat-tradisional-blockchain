@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
-import { useUser } from '../UserContext';
-import contractMainSupplyChain from './../auto-artifacts/MainSupplyChain.json';
+import { useUser } from '../../UserContext';
+import contractMainSupplyChain from '../../auto-artifacts/MainSupplyChain.json';
 
 function CpotbPage() {
   // const { userDetails } = useUser(); 

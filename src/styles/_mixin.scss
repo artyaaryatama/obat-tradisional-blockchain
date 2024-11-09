@@ -1,0 +1,27 @@
+@mixin btnUniversal($fontColor, $bgColor, $rad){
+  background-color: $bgColor;
+  color: $fontColor;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: $rad;
+
+  &:hover {
+    background-color: darken($bgColor, 14%);
+    cursor: pointer;
+  }
+}
+
+@mixin btnAlert($fontColor, $bgColor, $rad){
+  background-color: $bgColor;
+  color: $fontColor;
+  font-size: 16px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: $rad;
+
+  &:hover {
+    background-color: darken($bgColor, 14%);
+    cursor: pointer;
+  }
+}

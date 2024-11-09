@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { BrowserProvider, Contract } from "ethers";
 import { useNavigate } from 'react-router-dom';
-import contractMainSupplyChain from './../auto-artifacts/MainSupplyChain.json';
-import { useUser } from "../UserContext";
+import contractMainSupplyChain from '../../auto-artifacts/MainSupplyChain.json';
+import { useUser } from "../../UserContext";
 
 
 function LoginPage() {

@@ -1,0 +1,83 @@
+@import './main.scss';
+@import 'mixin';
+
+div:where(.swal2-container) div:where(.swal2-popup) {
+  border-radius: 10px;
+  font-family: "Instrument Sans", sans-serif;
+}
+
+div:where(.swal2-icon) {
+  position: relative;
+  box-sizing: content-box;
+  justify-content: center;
+  width: 5em;
+  height: 5em;
+  margin: 1.8em auto .6em;
+  border: 0.25em solid rgba(0, 0, 0, 0);
+  border-radius: 50%;
+  border-color: #000;
+  font-family: inherit;
+  line-height: 5em;
+  cursor: default;
+  user-select: none;
+}
+
+div:where(.swal2-icon).swal2-success {
+  border-color: #a5dc86;
+  color: #a5dc86;
+}
+
+div:where(.swal2-icon).swal2-info {
+  border-color: rgb(156.7033492823, 224.2822966507, 246.2966507177);
+  color: #3fc3ee;
+}
+
+div:where(.swal2-container) h2:where(.swal2-title) {
+  padding: 20px 16px 4px;
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 24px;
+  color: $black;
+}
+
+div:where(.swal2-container) .swal2-html-container {
+  margin: 0;
+  padding: 10px 20px;
+  color: $grey;
+}
+
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm) {
+  font-family: "Instrument Sans", sans-serif;
+  @include btnAlert($white, $purple, 4px);
+}
+
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel) {
+  font-family: "Instrument Sans", sans-serif;
+  @include btnAlert($white, $grey, 4px);
+}
+
+div:where(.swal2-container) div:where(.swal2-actions) {
+  margin: 8px 0 0;
+}
+
+h5{
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 24px;
+  margin: 0;
+}
+
+p{
+  font-family: "Instrument Sans", sans-serif;
+  margin: 0;
+  font-size: 16px;
+  color: $grey;
+}
+
+ul.noList{
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  
+  li{
+    margin-bottom: 4px;
+  }
+}

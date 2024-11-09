@@ -17,7 +17,7 @@ contract MainSupplyChain {
   } 
 
   modifier onlyFactory() { 
-      require(userRoles[msg.sender] == en_roles.Factory, "Sorry, you don't have authorized to access this!");
+      require(userRoles[msg.sender] == en_roles.Pabrik, "Sorry, you don't have authorized to access this!");
       _;
   }
 
@@ -32,11 +32,10 @@ contract MainSupplyChain {
   }
 
   enum en_roles {
-    Factory,
+    Pabrik,
     PBF, 
     BPOM,
-    Retailer,
-    Guest
+    Retailer
   }
   
   enum en_statusCert {

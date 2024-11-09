@@ -1,0 +1,95 @@
+@import './main.scss';
+@import 'mixin';
+
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  height: 100vh;
+
+  .container{
+    background-color: $grey-light;
+    width: 400px;
+    padding: 48px 0;
+    border-radius: 10px;
+
+    .form-container{
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+
+      h1{
+        font-size: 38px;
+        margin: 0 0 18px 0;
+      }
+
+      form{
+        // background-color: rgb(119, 195, 195);
+        display: flex;
+        flex-direction: column;
+        width: 272px;
+        padding: 14px;
+
+        &>*{
+          margin-top: 10px;
+        }
+
+        input{
+          background-color: $white;
+          border: none;
+          padding: 8px 10px;
+          font-size: 14px;
+          border-radius: 4px;
+          
+          &::placeholder{
+            font-family: "Instrument Sans", sans-serif;
+            color: $grey;
+            font-style: italic;
+          }
+        }
+        
+        input:focus,
+        select:focus,
+        textarea:focus {
+          outline: none !important;
+          box-shadow: none !important;
+        }
+        
+        select{
+          font-family: "Instrument Sans", sans-serif;
+          background-color: $white;
+          border: none;
+          margin: 10px 0;
+          padding: 8px 6px;
+          font-size: 14px;
+
+        }
+
+        button{
+          @include btnUniversal($white, $black, 4px)
+        }
+      }
+
+      p{
+        font-style: italic;
+        font-size: 12px;
+        margin: 4px 0;
+
+        :hover{
+          font-weight: 600;
+          text-decoration: underline;
+        }
+      }
+      
+      a{
+        text-decoration: none;
+        color: $purple;
+        
+      }
+    }
+
+  }
+
+}

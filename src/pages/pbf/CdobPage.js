@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useUser } from '../UserContext'; 
+import { useUser } from '../../UserContext'; 
 
 function CdobPage() {
   const { userDetails } = useUser(); 

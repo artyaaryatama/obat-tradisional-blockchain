@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { BrowserProvider, Contract } from "ethers";
+import contractMainSupplyChain from '../../auto-artifacts/MainSupplyChain.json';
 import { useNavigate } from 'react-router-dom';
-import contractMainSupplyChain from './../auto-artifacts/MainSupplyChain.json';
+import imgLogin from '../../assets/images/login.png';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import './../../styles/Auth.scss';
+import './../../styles/SweetAlert.scss';
+
+const MySwal = withReactContent(Swal);
 
 function RegisterPage() {
   const [name, setName] = useState("");
@@ -9,9 +16,8 @@ function RegisterPage() {
   const [userAddr, setUserAddr] = useState("");
   const [role, setRole] = useState("");
   const [userDetails, setUserDetails] = useState({});
-  const [isUserRegistered, setIsUserRegistered] = useState("");
+  const [isUserRegistered, setIsUserRegistered] = useState(""); 
   const navigate = useNavigate(); 
-
   const [contract, setContract] = useState("");
 
   // Testing address current MetaMask
@@ -32,6 +38,7 @@ function RegisterPage() {
           setAddrAccount(await signer.getAddress());
           setContract(contr);
         } catch (err) {
+          console.error("User access denied!");
           errAlert(err, "User access denied!")
         }
       } else {
@@ -49,11 +56,10 @@ function RegisterPage() {
 
         // buat convert role dri eventnya
         const roles = {
-          0n: "Factory",
+          0n: "Pabrik",
           1n: "PBF", 
           2n: "BPOM",
-          3n: "Retailer",
-          4n: "Guest"
+          3n: "Retailer"
         }
 
         setUserDetails({
@@ -62,7 +68,26 @@ function RegisterPage() {
           role: roles[_role]
         });
 
-        setIsUserRegistered(true);
+        // setIsUserRegistered(true);
+
+        MySwal.fire({
+          title: <h5>User berhasil terdaftar!</h5>, // Custom title using JSX
+          html: (
+            <div>
+                <ul className="noList">
+                  <li>{_name}</li>
+                  <li>{roles[_role]}</li>
+                </ul>
+            </div>
+          ),
+          icon: 'success',
+          showCancelButton: false,
+          confirmButtonText: 'Oke',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate('/login');
+          }
+        });
       });
 
       return () => {
@@ -71,12 +96,10 @@ function RegisterPage() {
     }
   }, [contract]);
 
-  const registerUser = async () => {
-    // if (!name || !email || !role === undefined || !userAddr) {
-    //   alert("All fields are required");
-    //   console.log(email, role, name, userAddr);
-    //   return
-    // }
+  const registerUser = async (e) => {
+
+    e.preventDefault();
+
     try {
       const nameUpperCase = name.toUpperCase()
       const tx = await contract.registerUser(nameUpperCase, email, userAddr, role);
@@ -91,38 +114,74 @@ function RegisterPage() {
 
   function autoFilled() {
     setUserAddr('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266')
-    setEmail('sad')
+    setEmail('sad@mail')
     setName('Asd')
     setRole(parseInt(0))
   }
 
-  const getRegisterUser = async () => {
-    try {
-      const t = await contract.getRegisteredUser(userAddr)
-      console.log(t);
-      const [address, name, role] = await contract.getRegisteredUser(userAddr);
-      setUserDetails({ address, name, role });
-      setIsUserRegistered(true);
-
-    } catch (err) {
-      errAlert(err, "Failed to fetch user registration")
-      setIsUserRegistered(false);
-    }
-  };
-
-  const handleOptionRole = (e) => {
-    setRole(parseInt(e.target.value));
-  };
-
-  function loginRedirect() {
-    navigate("/login")
+  function parseIntSelect(opt){
+    const a = parseInt(opt);
+    setRole(a);
   }
 
   return (
     <>
       <div id="RegisterPage" className="App">
-        <h1>Is connected to MetaMask? {addrAccount}</h1>
+        <div className="container">
+          <div className="form-container">
+            <h1>ot-blockchain.</h1>
+
+            <form className="register-form" onSubmit={registerUser}>
+              <input 
+                type="text" 
+                placeholder="Masukan nama" 
+                value={name} 
+                onChange={(e) => setName(e.target.value)} 
+                required 
+              />
+
+              <input 
+                type="email" 
+                placeholder="Masukkan email" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                required 
+              />
+              
+              <input 
+                type="text" 
+                placeholder="Masukkan alamat e-wallet" 
+                value={userAddr} 
+                onChange={(e) => setUserAddr(e.target.value)} 
+                required 
+              />
+              
+              <select 
+                value={role} 
+                onChange={(e) => parseIntSelect(e.target.value)} 
+                required >
+                <option value="" disabled>Pilih role user</option>
+                <option value="0">Pabrik</option>
+                <option value="1">PBF</option>
+                <option value="2">BPOM</option>
+                <option value="3">Retailer</option>
+              </select>
+              
+              <button type="submit">Daftar</button>
+            </form>
+
+            <p className="register-footer">
+              Sudah punya akun? <a href="/login">Masuk disini</a>
+            </p>
+
+              <button className="test" onClick={autoFilled}>Auto Filled</button>
+          </div>
+        </div>
+
+
+        {/* <h1>Is connected to MetaMask? {addrAccount}</h1>
         <h1>Sign Up User</h1>
+
         <div>
           <input
             type="text"
@@ -169,7 +228,7 @@ function RegisterPage() {
           ) : (
             <p></p>
           )}
-        </div>
+        </div> */}
       </div>
     </>
   );

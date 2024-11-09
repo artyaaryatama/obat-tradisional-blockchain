@@ -1,14 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './UserContext';
-import ProtectedRoute from './ProtectedRoute';
-
-import CdobPage from './components/CdobPage';
-import CpotbPage from './components/CpotbPage';
+import ProtectedRoute from './routes/ProtectedRoute';
+import CpotbPage from './pages/pabrik/CpotbPage';
+import CdobPage from './pages/pbf/CdobPage';
 // import ObatPage from './components/ObatPage';
-import LoginPage from './components/LoginUser';
-import RegisterPage from './components/RegisterUser';
-import UnauthorizedPage from './components/Unauthorized';
+import LoginPage from './pages/auth/LoginUser';
+import RegisterPage from './pages/auth/RegisterUser';
+import UnauthorizedPage from './pages/error/Unauthorized';
 
 function App() {
   return (
