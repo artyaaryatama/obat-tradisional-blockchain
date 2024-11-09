@@ -13,7 +13,6 @@ import UnauthorizedPage from './components/Unauthorized';
 function App() {
   return (
     <Router>
-      <UserProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
 
@@ -40,7 +39,6 @@ function App() {
           />
           
         </Routes>
-      </UserProvider>
     </Router>
   );
 }

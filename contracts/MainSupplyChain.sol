@@ -93,7 +93,7 @@ contract MainSupplyChain {
     address _userAddr,
     uint8 _userRole
   ) public {
-    require(!isRegistered[_userAddr], "User is already registered");
+    // require(!isRegistered[_userAddr], "User is already registered");
 
     console.log("RegisterUser function called by:", _userAddr);
     console.log("User Role:", _userRole);

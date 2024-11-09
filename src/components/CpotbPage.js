@@ -4,9 +4,10 @@ import { useUser } from '../UserContext';
 import contractMainSupplyChain from './../auto-artifacts/MainSupplyChain.json';
 
 function CpotbPage() {
-  const { userDetails } = useUser(); 
+  // const { userDetails } = useUser(); 
   const [contract, setContract] = useState();
   const [jenisSediaan, setJenisSediaan] = useState();
+  const [userdata, setUserdata] = useState();
 
   useEffect(() => {
     async function connectWallet() {
@@ -17,10 +18,16 @@ function CpotbPage() {
           const contr = new Contract(
             contractMainSupplyChain.address, 
             contractMainSupplyChain.abi, 
-            signer);
-
+            signer
+          );
+            
           setContract(contr);
+          const user = JSON.parse(sessionStorage.getItem(('userdata')));
+          setUserdata(user)
+          // console.log(user)
+          
         } catch (err) {
+          console.error("User access denied!")
           errAlert(err, "User access denied!")
         }
       } else {
@@ -29,10 +36,11 @@ function CpotbPage() {
     }
     connectWallet();
   }, []);
-
-  useEffect(() => {
-    console.log("User details from context:", userDetails);
-  }, [userDetails]);
+  
+  
+  // useEffect(() => {
+  //   console.log("User details from context:", userDetails);
+  // }, [userDetails]);
 
   useEffect(() => {
     if(contract) {
@@ -46,12 +54,16 @@ function CpotbPage() {
     }
 
     return () => {
-      // contract.removeAllListeners("evt_cpotbRequested");
-      // contract.removeAllListeners("evt_cpotbApproved");
+      if(contract) {
+        contract.removeAllListeners("evt_cpotbRequested");
+        contract.removeAllListeners("evt_cpotbApproved");
+      }
     };
   }, [contract])
 
   const requestCpotb = async () => {
+    console.log(userdata)
+
     if(!jenisSediaan){      
       alert("All fields are required");
       console.log(jenisSediaan);
@@ -62,7 +74,7 @@ function CpotbPage() {
       const id = Math.random().toString(36).slice(2, 9); 
       console.log('ini req id: ', id);
 
-      const tx = await contract.requestCpotb(userDetails.name, id, jenisSediaan)
+      const tx = await contract.requestCpotb(userdata.name, id, jenisSediaan)
       await tx.wait();
       console.log('Receipt: ', tx)
 
@@ -73,10 +85,16 @@ function CpotbPage() {
 
   const handleOptionJenisSediaan = (e) => {
     const js = {
-      "TabletNonbetalaktam": 0n
+      "TabletNonbetalaktam": 0n,
+      "KapsulKerasNonbetalaktam": 1n,
+      "SerbukOralNonbetalaktam": 2n,
+      "CairanOralNonbetalaktam": 3n
     }
 
-    setJenisSediaan(js[e])
+    setJenisSediaan(js[e.target.value])
+    console.log(js[e.target.value]);
+    console.log(e.target.value);
+  
   }
 
   return (
@@ -85,12 +103,14 @@ function CpotbPage() {
         <h1>Send CPOTB Request</h1>
         <label htmlFor="jenisSediaan"> Jenis Sediaan</label>
         <select name="jenisSediaan" id="jenisSediaan" value={jenisSediaan} onChange={handleOptionJenisSediaan}>
-          <option value="" disabled>Select your role</option>
+          <option value="" disabled>Select Jenis Sediaan</option>
           <option value="TabletNonbetalaktam">Tablet Non Betalaktam</option>
           <option value="KapsulKerasNonbetalaktam">Kapsul Keras Non Betalaktam</option>
           <option value="SerbukOralNonbetalaktam">Serbuk Oral Non Betalaktam</option>
           <option value="CairanOralNonbetalaktam">Cairan Oral Non Betalaktam</option>
         </select>
+
+        <button onClick={requestCpotb}>Send Request</button>
       </div>
     </>
   );

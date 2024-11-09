@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 import { useUser } from '../UserContext'; 
 
 function UnauthorizedPage() {
-  const { userDetails } = useUser(); 
+  // const { userDetails } = useUser(); 
 
-  useEffect(() => {
-    console.log("User details from context:", userDetails);
-  }, [userDetails]);
+  // useEffect(() => {
+  //   console.log("User details from context:", userDetails);
+  // }, [userDetails]);
 
   // const roles = {
   //   0n: "Factory",
@@ -15,6 +15,9 @@ function UnauthorizedPage() {
   //   3n: "Retailer",
   //   4n: "Guest"
   // }
+
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'));
+  console.log(userdata)
 
   return (
     <div>

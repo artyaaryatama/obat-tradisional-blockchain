@@ -72,12 +72,11 @@ function RegisterPage() {
   }, [contract]);
 
   const registerUser = async () => {
-    if (!name || !email || !role === undefined || !userAddr) {
-      alert("All fields are required");
-      console.log(email, role, name, userAddr);
-      return
-    }
-    
+    // if (!name || !email || !role === undefined || !userAddr) {
+    //   alert("All fields are required");
+    //   console.log(email, role, name, userAddr);
+    //   return
+    // }
     try {
       const nameUpperCase = name.toUpperCase()
       const tx = await contract.registerUser(nameUpperCase, email, userAddr, role);
@@ -89,6 +88,13 @@ function RegisterPage() {
       errAlert(err, "Registration failed")
     }
   };
+
+  function autoFilled() {
+    setUserAddr('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266')
+    setEmail('sad')
+    setName('Asd')
+    setRole(parseInt(0))
+  }
 
   const getRegisterUser = async () => {
     try {
@@ -147,6 +153,7 @@ function RegisterPage() {
             
           </select>
           <button onClick={registerUser}>Sign Up</button>
+          <button onClick={autoFilled}>Auto Filled</button>
         </div>
 
         <div>
