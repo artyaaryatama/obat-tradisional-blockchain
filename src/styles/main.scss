@@ -16,9 +16,14 @@ html, body {
   background-color: white;
   margin: 0;
   padding: 0;
+  color: $black;
 }
 
 button.test{
   margin-top: 20px;
   @include btnUniversal($white, $grey, 4px)
+}
+
+.layout-page{
+  padding: 10px 40px;
 }

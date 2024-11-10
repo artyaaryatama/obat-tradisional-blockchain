@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
-import { useUser } from '../../UserContext';
 import contractMainSupplyChain from '../../auto-artifacts/MainSupplyChain.json';
+import Navbar from '../../components/Navbar';
 
 function CpotbPage() {
   // const { userDetails } = useUser(); 
@@ -99,6 +99,7 @@ function CpotbPage() {
 
   return (
     <>
+    {Navbar}
       <div id="CpotbPage" className='App'>
         <h1>Send CPOTB Request</h1>
         <label htmlFor="jenisSediaan"> Jenis Sediaan</label>

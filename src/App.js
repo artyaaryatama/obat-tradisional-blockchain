@@ -4,7 +4,8 @@ import { UserProvider } from './UserContext';
 import ProtectedRoute from './routes/ProtectedRoute';
 import CpotbPage from './pages/pabrik/CpotbPage';
 import CdobPage from './pages/pbf/CdobPage';
-// import ObatPage from './components/ObatPage';
+// import ObatPage from './components/ObatPage';\
+import Navbar from './components/Navbar';
 import LoginPage from './pages/auth/LoginUser';
 import RegisterPage from './pages/auth/RegisterUser';
 import UnauthorizedPage from './pages/error/Unauthorized';
@@ -32,6 +33,7 @@ function App() {
             path="/cpotb" 
             element={
               <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
                 <CpotbPage />
               </ProtectedRoute>
             } 

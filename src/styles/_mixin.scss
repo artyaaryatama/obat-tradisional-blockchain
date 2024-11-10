@@ -12,6 +12,20 @@
   }
 }
 
+@mixin btnIcon($fontColor, $bgColor){
+  background-color: $bgColor;
+  color: $fontColor;
+  font-size: 12px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 7px;
+
+  &:hover {
+    background-color: darken($bgColor, 14%);
+    cursor: pointer;
+  }
+}
+
 @mixin btnAlert($fontColor, $bgColor, $rad){
   background-color: $bgColor;
   color: $fontColor;
