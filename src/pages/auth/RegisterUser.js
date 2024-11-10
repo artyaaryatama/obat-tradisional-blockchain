@@ -90,6 +90,14 @@ function RegisterPage() {
 
     e.preventDefault();
     setLoader(true)
+    
+    MySwal.fire({
+      title:"Please wait",
+      icon: 'info',
+      showCancelButton: false,
+      showConfirmButton: false,
+      allowOutsideClick: false,
+    })
 
     try {
       const nameUpperCase = name.toUpperCase()
@@ -97,6 +105,7 @@ function RegisterPage() {
       await tx.wait();
       console.log("Transaction receipt:", tx);
       console.log("User Registered Successfully!");
+
       
     } catch (err) {
       setLoader(false)
@@ -185,7 +194,7 @@ function RegisterPage() {
 function errAlert(err, customMsg){
   
   const errorObject = {
-    message: err.reason || err.message || "Unknown error",
+    message: err.reason || err.message || customMsg || "Unknown error",
     data: err.data || {},
     transactionHash: err.transactionHash || null
   };

@@ -59,6 +59,7 @@ contract MainSupplyChain {
 
   struct st_cpotbData {
     string cpotbId;
+    string senderName;
     address factoryAddr;
     string factoryName;
     en_jenisSediaan jenisSediaan;
@@ -81,9 +82,11 @@ contract MainSupplyChain {
   mapping (address => en_roles) public userRoles; 
   mapping (address => bool) private isRegistered;
   mapping (string => st_cpotbData) cpotbData;
+  mapping (string => st_cpotbData[]) public allCpotbDataByFactory;
+
 
   event evt_UserRegistered(address userAddr, string name, string instanceName, en_roles role);
-  event evt_cpotbRequested(address factoryAddr, string factoryName, en_jenisSediaan jenisSediaan, string cpotbId, uint timestampRequest);
+  event evt_cpotbRequested(string senderName, address factoryAddr, string factoryName, en_jenisSediaan jenisSediaan, string cpotbId, uint timestampRequest);
   event evt_cpotbApproved(address bpomAddr, string factoryName, string cpotbNumber, uint timestampApprove);
 
   function registerUser(
@@ -118,25 +121,30 @@ contract MainSupplyChain {
   }
 
   function requestCpotb(
-    string memory _instanceName,
-    string memory _cpotbId,
-    en_jenisSediaan _jenisSediaan
-  ) public onlyFactory{
+      string memory _instanceName,
+      string memory _cpotbId,
+      string memory _senderName,
+      en_jenisSediaan _jenisSediaan
+  ) public onlyFactory {
 
-    cpotbData[_cpotbId] = st_cpotbData({
-      cpotbId: _cpotbId,
-      factoryAddr: msg.sender, 
-      factoryName: _instanceName,
-      jenisSediaan: en_jenisSediaan(_jenisSediaan), 
-      status: en_statusCert.Pending,
-      timestampRequest: block.timestamp,
-      timestampApprove: 0,
-      cpotbNumber: "",
-      bpomAddr: address(0)
-    });
+      st_cpotbData memory newCpotbData = st_cpotbData({
+          cpotbId: _cpotbId,
+          senderName: _senderName,
+          factoryAddr: msg.sender, 
+          factoryName: _instanceName,
+          jenisSediaan: en_jenisSediaan(_jenisSediaan), 
+          status: en_statusCert.Pending,
+          timestampRequest: block.timestamp,
+          timestampApprove: 0,
+          cpotbNumber: "",
+          bpomAddr: address(0)
+      });
 
-    emit evt_cpotbRequested(msg.sender, _instanceName, _jenisSediaan, _cpotbId, block.timestamp);
+      allCpotbDataByFactory[_instanceName].push(newCpotbData);
+
+      emit evt_cpotbRequested(_senderName, msg.sender, _instanceName, _jenisSediaan, _cpotbId, block.timestamp);
   }
+
 
   function approveCpotb(
     string memory _cpotbId,  
@@ -153,5 +161,35 @@ contract MainSupplyChain {
     emit evt_cpotbApproved(msg.sender, cpotbDatas.factoryName, _cpotbNumber, block.timestamp);
   }
   
+  function getListCpotbByFactory(string memory _instanceName) 
+      public view returns (uint8[] memory, string[] memory, uint8[] memory, uint256[] memory) 
+  {
+      st_cpotbData[] storage cpotbDataArray = allCpotbDataByFactory[_instanceName];
+      uint length = cpotbDataArray.length;
+
+      uint8[] memory jenisSediaanArray = new uint8[](length);
+      string[] memory factoryNameArray = new string[](length);
+      uint8[] memory statusArray = new uint8[](length);
+      uint256[] memory latestTimestampArray = new uint256[](length);
+
+      for (uint i = 0; i < length; i++) {
+          st_cpotbData storage cpotbData = cpotbDataArray[i];
+
+          jenisSediaanArray[i] = uint8(cpotbData.jenisSediaan);
+          factoryNameArray[i] = cpotbData.factoryName;
+          statusArray[i] = uint8(cpotbData.status);
+
+          uint latest = cpotbData.timestampApprove > cpotbData.timestampRequest 
+              ? cpotbData.timestampApprove 
+              : cpotbData.timestampRequest;
+          
+          latestTimestampArray[i] = latest;
+      }
+
+      return (jenisSediaanArray, factoryNameArray, statusArray, latestTimestampArray);
+  }
+
+
+
 
 }

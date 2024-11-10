@@ -1,5 +1,5 @@
 {
-  "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+  "address": "0x9E545E3C0baAB3E08CdfD552C960A1050f373042",
   "abi": [
     {
       "inputs": [],
@@ -73,6 +73,12 @@
       "inputs": [
         {
           "indexed": false,
+          "internalType": "string",
+          "name": "senderName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
           "internalType": "address",
           "name": "factoryAddr",
           "type": "address"
@@ -109,6 +115,75 @@
       "inputs": [
         {
           "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "allCpotbDataByFactory",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "cpotbId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "senderName",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "factoryAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "factoryName",
+          "type": "string"
+        },
+        {
+          "internalType": "enum MainSupplyChain.en_jenisSediaan",
+          "name": "jenisSediaan",
+          "type": "uint8"
+        },
+        {
+          "internalType": "enum MainSupplyChain.en_statusCert",
+          "name": "status",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestampRequest",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestampApprove",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "cpotbNumber",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "bpomAddr",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
           "name": "_cpotbId",
           "type": "string"
         },
@@ -121,6 +196,40 @@
       "name": "approveCpotb",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_instanceName",
+          "type": "string"
+        }
+      ],
+      "name": "getListCpotbByFactory",
+      "outputs": [
+        {
+          "internalType": "uint8[]",
+          "name": "",
+          "type": "uint8[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        },
+        {
+          "internalType": "uint8[]",
+          "name": "",
+          "type": "uint8[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -208,6 +317,11 @@
         {
           "internalType": "string",
           "name": "_cpotbId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_senderName",
           "type": "string"
         },
         {

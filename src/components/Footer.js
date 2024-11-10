@@ -8,7 +8,7 @@ function Footer(){
     <>
       <div className="layout-page">
         <footer>
-          <h1>Developed by, Artia Audrian Aryatama.</h1>
+          {/* <h1>Developed by, Artia Audrian Aryatama.</h1> */}
 
           <div className="project-intro">
             <p>Thesis Project: </p>

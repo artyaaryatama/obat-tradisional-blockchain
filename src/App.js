@@ -2,8 +2,10 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './UserContext';
 import ProtectedRoute from './routes/ProtectedRoute';
+
 import CpotbPage from './pages/pabrik/CpotbPage';
 import CdobPage from './pages/pbf/CdobPage';
+import CpotbReqPage from './pages/pabrik/CpotbRequestPage';
 // import ObatPage from './components/ObatPage';\
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -57,6 +59,17 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <CpotbPage />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/request-cpotb" 
+            element={
+              <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
+                <CpotbReqPage />
                 <Footer />
               </ProtectedRoute>
             } 

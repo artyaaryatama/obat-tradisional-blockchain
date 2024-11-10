@@ -5,9 +5,9 @@ import contractMainSupplyChain from '../../auto-artifacts/MainSupplyChain.json';
 import imgLogin from '../../assets/images/login.png';
 import imgLoader from '../../assets/images/loader.svg';
 
+import './../../styles/Auth.scss';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import './../../styles/Auth.scss';
 import './../../styles/SweetAlert.scss';
 
 const MySwal = withReactContent(Swal);
@@ -75,6 +75,7 @@ function LoginPage() {
               ),
               timer: 2000,
               icon: 'success',
+              timerProgressBar: true,
               showCancelButton: false,
               showConfirmButton: false,
               allowOutsideClick: false,

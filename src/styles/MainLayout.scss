@@ -83,22 +83,35 @@
     .data-list{
       padding: 20px 0 0;
 
+      img{
+        // background-color: aquamarine;
+        filter: grayscale(100%);
+      }
+
+      h2{
+        text-align: center;
+
+        &.small{
+          font-size: 16px;
+          font-weight: 600;
+          color: $grey;
+          font-style: italic;
+        }
+      }
+
       ul{
         @include list();
-        justify-content: flex-start;
         margin: 0 auto;
-        gap: 18px;
         flex-wrap: wrap;
 
         li{
           background-color: $white;
           padding: 20px;
           border-radius: 6px;
-          width: 32.5%;
-          width: calc(100% / 3.09);
+          width: calc(50% - 16px);
           box-sizing: border-box;
-          // margin: 12px 4px 0;
-          
+          margin: 8px;
+       
           button{ 
             background-color: transparent;
             color: $black;
@@ -121,13 +134,17 @@
             &.statusPengajuan{
               margin-top: 14px;
               font-size: 12px;
-            }
-
-            &.pending{
-              background-color: $yellow;
               font-weight: 600;
               padding: 8px 12px;
               border-radius: 30px;
+            }
+
+            &.Pending{
+              background-color: $yellow;
+            }
+            &.Approved{
+              background-color: $green;
+              color: $white;
             }
           }
 
@@ -135,6 +152,62 @@
             color: $black;
             font-size: 12px;
           }
+        }
+      }
+    }
+  }
+
+  .container-form{
+    border-radius: 8px;
+    margin: 40px 0;
+    padding: 0 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    form{
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-content: flex-start;
+
+      ul{
+        @include list();
+        justify-items: center;
+        align-items: center;
+        margin-bottom: 20px;
+    
+        li.label{
+          width: 32%;
+          text-align: left;
+          label{
+            font-size: 14px;
+            color: $black;
+          }
+        }
+        
+        li.input{
+          text-align: left;
+          width: 68%;
+        select{
+            @include selectForm($white);
+            border: solid 1px $grey;
+            width: 100%;
+            margin: 0;
+          }
+    
+          input{
+            @include inputForm($black);
+          }
+        }
+      }
+
+      button{
+        @include btnUniversal($white, $purple);
+        margin-top: 20px;
+
+        img{
+          width: 14px;
         }
       }
     }
