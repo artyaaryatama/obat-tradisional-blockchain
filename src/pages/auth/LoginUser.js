@@ -51,13 +51,15 @@ function LoginPage() {
       if(userAddr && name){
         try {
           const nameUpperCase = name.toUpperCase()
-          const [address, userName, role] = await contract.getRegisteredUser(userAddr);
+          console.log(nameUpperCase, userAddr);
+          const [address, userName, instanceName, role] = await contract.getRegisteredUser(userAddr);
           
           if (userAddr === address || nameUpperCase === name) {
 
             const userdata = {
               address: address,
               name: userName,
+              instanceName: instanceName,
               role: role.toString()
             }
             
@@ -93,6 +95,7 @@ function LoginPage() {
           
     
         } catch (err) {
+          setLoader(false)
           errAlert(err, "User not registered!")
         }
       } else {
@@ -132,7 +135,7 @@ function LoginPage() {
                 required 
               />
               
-              <button type="submit" disabled={loader}>
+              <button type="submit">
                 {
                   loader? (
                     <img src={imgLoader} alt="" />

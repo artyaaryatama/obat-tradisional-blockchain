@@ -52,7 +52,7 @@ contract MainSupplyChain {
   
   struct st_userData {
     string name;
-    string email;
+    string instanceName;
     address userAddr;
     en_roles userRole; 
   }
@@ -82,13 +82,13 @@ contract MainSupplyChain {
   mapping (address => bool) private isRegistered;
   mapping (string => st_cpotbData) cpotbData;
 
-  event evt_UserRegistered(address userAddr, string name, en_roles role);
+  event evt_UserRegistered(address userAddr, string name, string instanceName, en_roles role);
   event evt_cpotbRequested(address factoryAddr, string factoryName, en_jenisSediaan jenisSediaan, string cpotbId, uint timestampRequest);
   event evt_cpotbApproved(address bpomAddr, string factoryName, string cpotbNumber, uint timestampApprove);
 
   function registerUser(
     string memory _name, 
-    string memory _email, 
+    string memory _instanceName ,
     address _userAddr,
     uint8 _userRole
   ) public {
@@ -98,27 +98,27 @@ contract MainSupplyChain {
     console.log("User Role:", _userRole);
 
     userData[_userAddr] = st_userData({
-      name : _name, 
-      email : _email,
+      name : _name,  
+      instanceName: _instanceName, 
       userAddr : _userAddr,
       userRole : en_roles(_userRole)
     }); 
 
     isRegistered[_userAddr] = true; 
     
-    emit evt_UserRegistered(_userAddr, _name, en_roles(_userRole));  
+    emit evt_UserRegistered(_userAddr, _name, _instanceName, en_roles(_userRole));  
   }
 
-  function getRegisteredUser(address _userAddr) public view returns (address, string memory, uint8) {
+  function getRegisteredUser(address _userAddr) public view returns (address, string memory, string memory, uint8) {
       require(isRegistered[_userAddr], "User is not registered");
 
       st_userData memory user = userData[_userAddr];
       
-      return (user.userAddr, user.name, uint8(user.userRole)); 
+      return (user.userAddr, user.name, user.instanceName, uint8(user.userRole)); 
   }
 
   function requestCpotb(
-    string memory _factoryName,
+    string memory _instanceName,
     string memory _cpotbId,
     en_jenisSediaan _jenisSediaan
   ) public onlyFactory{
@@ -126,7 +126,7 @@ contract MainSupplyChain {
     cpotbData[_cpotbId] = st_cpotbData({
       cpotbId: _cpotbId,
       factoryAddr: msg.sender, 
-      factoryName: _factoryName,
+      factoryName: _instanceName,
       jenisSediaan: en_jenisSediaan(_jenisSediaan), 
       status: en_statusCert.Pending,
       timestampRequest: block.timestamp,
@@ -135,7 +135,7 @@ contract MainSupplyChain {
       bpomAddr: address(0)
     });
 
-    emit evt_cpotbRequested(msg.sender, _factoryName, _jenisSediaan, _cpotbId, block.timestamp);
+    emit evt_cpotbRequested(msg.sender, _instanceName, _jenisSediaan, _cpotbId, block.timestamp);
   }
 
   function approveCpotb(

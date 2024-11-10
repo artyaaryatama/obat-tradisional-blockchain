@@ -1,0 +1,142 @@
+@import './main.scss';
+@import 'mixin';
+
+.Layout-Menu{
+  // background-color: aqua;
+
+  .title-menu{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 48px 0;
+
+    h1{
+      margin: 0;
+      font-size: 24px;
+    }
+
+    p{
+      margin: 6px 0;
+      font-size: 18px;
+      color: $grey;
+    }
+  }
+
+  .tab-menu{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ul{
+      @include list();
+      background-color: $grey-light;
+      padding: 10px 20px;
+      border-radius: 30px;
+
+      li{
+        &:first-child{
+          margin-right: 12px;
+        }
+
+        button{
+          @include btnUniversal($grey, transparent, 30px);
+          padding: 10px 20px;
+          font-style: italic;
+          font-weight: 600;
+          
+          &.active{
+            background-color: $purple;
+            color: $white;
+          }
+          
+          &:hover{
+            background-color: $grey;
+            color: $white;
+
+          }
+        }
+      }
+    }
+  }
+
+  .container-data{
+    background-color: $grey-light;
+    border-radius: 8px;
+    margin: 40px 0;
+    padding: 20px 14px;
+
+    .menu-data{
+      display: flex;
+      justify-content: end;
+
+      .btn{
+        button.btn-menu{
+          @include btnUniversal($white, $purple, 6px);
+
+          i {
+            margin-right: 8px;
+          }
+        }
+      }
+    }
+
+    .data-list{
+      padding: 20px 0 0;
+
+      ul{
+        @include list();
+        justify-content: flex-start;
+        margin: 0 auto;
+        gap: 18px;
+        flex-wrap: wrap;
+
+        li{
+          background-color: $white;
+          padding: 20px;
+          border-radius: 6px;
+          width: 32.5%;
+          width: calc(100% / 3.09);
+          box-sizing: border-box;
+          // margin: 12px 4px 0;
+          
+          button{ 
+            background-color: transparent;
+            color: $black;
+            font-size: 14px;
+            padding: 8px 0;
+            border: none;
+            margin: 0;
+
+            &.title{
+              font-weight: 600;
+              text-decoration: underline;
+              font-style: italic;
+
+              &:hover{
+                cursor: pointer;
+                color: $purple;
+              }
+            }
+            
+            &.statusPengajuan{
+              margin-top: 14px;
+              font-size: 12px;
+            }
+
+            &.pending{
+              background-color: $yellow;
+              font-weight: 600;
+              padding: 8px 12px;
+              border-radius: 30px;
+            }
+          }
+
+          p{
+            color: $black;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+}

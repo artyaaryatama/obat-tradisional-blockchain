@@ -6,6 +6,7 @@ import CpotbPage from './pages/pabrik/CpotbPage';
 import CdobPage from './pages/pbf/CdobPage';
 // import ObatPage from './components/ObatPage';\
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import LoginPage from './pages/auth/LoginUser';
 import RegisterPage from './pages/auth/RegisterUser';
 import UnauthorizedPage from './pages/error/Unauthorized';
@@ -35,6 +36,7 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <CpotbPage />
+                <Footer />
               </ProtectedRoute>
             } 
           />

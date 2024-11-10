@@ -17,7 +17,7 @@ function RegisterPage() {
   const [loader, setLoader] = useState(false)
 
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [instanceName, setInstanceName] = useState("");
   const [userAddr, setUserAddr] = useState("");
   const [role, setRole] = useState("");
 
@@ -48,8 +48,8 @@ function RegisterPage() {
   // event user registration
   useEffect(() => {
     if (contract) {
-      contract.on("evt_UserRegistered", (_userAddr, _name, _role) => {
-        console.log("User Registered Event: ", { _userAddr, _name, _role});
+      contract.on("evt_UserRegistered", (_userAddr, _name, _instanceName, _role) => {
+        console.log("User Registered Event: ", { _userAddr, _name, _instanceName, _role});
 
         const roles = {
           0n: "Pabrik",
@@ -64,6 +64,7 @@ function RegisterPage() {
             <div>
                 <ul className="noList">
                   <li>{_name}</li>
+                  <li>{_instanceName}</li>
                   <li>{roles[_role]}</li>
                 </ul>
             </div>
@@ -92,19 +93,20 @@ function RegisterPage() {
 
     try {
       const nameUpperCase = name.toUpperCase()
-      const tx = await contract.registerUser(nameUpperCase, email, userAddr, role);
+      const tx = await contract.registerUser(nameUpperCase, instanceName, userAddr, role);
       await tx.wait();
       console.log("Transaction receipt:", tx);
       console.log("User Registered Successfully!");
       
     } catch (err) {
+      setLoader(false)
       errAlert(err, "Registration failed")
     }
   };
 
   function autoFilled() {
     setUserAddr('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266')
-    setEmail('sad@mail')
+    setInstanceName('PT. Budi Pekerti')
     setName('Takaki Yuya')
     setRole(parseInt(0))
   }
@@ -131,10 +133,10 @@ function RegisterPage() {
               />
 
               <input 
-                type="email" 
-                placeholder="Email" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
+                type="text" 
+                placeholder="Instance Name" 
+                value={instanceName} 
+                onChange={(e) => setInstanceName(e.target.value)} 
                 required 
               />
               
@@ -157,7 +159,7 @@ function RegisterPage() {
                 <option value="3">Retailer</option>
               </select>
               
-              <button type="submit" disabled={loader}>
+              <button type="submit">
               {
                   loader? (
                     <img src={imgLoader} alt="" />
@@ -188,12 +190,12 @@ function errAlert(err, customMsg){
     transactionHash: err.transactionHash || null
   };
   
-    MySwal.fire({
-      title: errorObject.message,
-      text: customMsg,
-      icon: 'error',
-      confirmButtonText: 'Try Again'
-    });
+  MySwal.fire({
+    title: errorObject.message,
+    text: customMsg,
+    icon: 'error',
+    confirmButtonText: 'Try Again'
+  });
 
   console.error(customMsg)
   console.error(errorObject);

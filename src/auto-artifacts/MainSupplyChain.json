@@ -1,5 +1,5 @@
 {
-  "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
   "abi": [
     {
       "inputs": [],
@@ -19,6 +19,12 @@
           "indexed": false,
           "internalType": "string",
           "name": "name",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "instanceName",
           "type": "string"
         },
         {
@@ -138,6 +144,11 @@
           "type": "string"
         },
         {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
           "internalType": "uint8",
           "name": "",
           "type": "uint8"
@@ -168,7 +179,7 @@
         },
         {
           "internalType": "string",
-          "name": "_email",
+          "name": "_instanceName",
           "type": "string"
         },
         {
@@ -191,7 +202,7 @@
       "inputs": [
         {
           "internalType": "string",
-          "name": "_factoryName",
+          "name": "_instanceName",
           "type": "string"
         },
         {

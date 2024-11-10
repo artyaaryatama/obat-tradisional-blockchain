@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractMainSupplyChain from '../../auto-artifacts/MainSupplyChain.json';
 import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
+import "../../styles/MainLayout.scss"
 
 function CpotbPage() {
   // const { userDetails } = useUser(); 
   const [contract, setContract] = useState();
   const [jenisSediaan, setJenisSediaan] = useState();
   const [userdata, setUserdata] = useState();
+
+  const userData = JSON.parse(sessionStorage.getItem('userdata')) || {};
 
   useEffect(() => {
     async function connectWallet() {
@@ -36,7 +40,6 @@ function CpotbPage() {
     }
     connectWallet();
   }, []);
-  
   
   // useEffect(() => {
   //   console.log("User details from context:", userDetails);
@@ -94,14 +97,61 @@ function CpotbPage() {
     setJenisSediaan(js[e.target.value])
     console.log(js[e.target.value]);
     console.log(e.target.value);
-  
   }
 
   return (
     <>
-    {Navbar}
-      <div id="CpotbPage" className='App'>
-        <h1>Send CPOTB Request</h1>
+      <div id="CpotbPage" className='Layout-Menu layout-page'>
+        <div className="title-menu">
+          <h1>Data Sertifikat CPOTB</h1>
+          <p>Di ajukan oleh {userData.instanceName}</p>
+        </div>
+        <div className="tab-menu">
+          <ul>
+            <li><button className='active'>Pengajuan CPOTB</button></li>
+            <li><button>Sertifikasi CPOTB</button></li>
+          </ul>
+        </div>
+        <div className="container-data">
+          <div className="menu-data">
+            <div className="btn">
+              <button className='btn-menu'>
+                <i className="fa-solid fa-plus"></i>
+                Add new data
+              </button>
+            </div>
+          </div>
+          <div className="data-list">
+            <ul>
+              <li>
+                <button className='title'>Tablet Non Betalakam</button>
+                <p>Tanggal Pengajuan: 12 September 2024</p>
+                <button className='statusPengajuan pending'>Pending</button>
+              </li>
+              <li>
+                <button className='title'>Tablet Non Betalakam</button>
+                <p>Tanggal Pengajuan: 12 September 2024</p>
+                <button className='statusPengajuan pending'>Pending</button>
+              </li>
+              <li>
+                <button className='title'>Tablet Non Betalakam</button>
+                <p>Tanggal Pengajuan: 12 September 2024</p>
+                <button className='statusPengajuan pending'>Pending</button>
+              </li>
+              <li>
+                <button className='title'>Tablet Non Betalakam</button>
+                <p>Tanggal Pengajuan: 12 September 2024</p>
+                <button className='statusPengajuan pending'>Pending</button>
+              </li>
+              <li>
+                <button className='title'>Tablet Non Betalakam</button>
+                <p>Tanggal Pengajuan: 12 September 2024</p>
+                <button className='statusPengajuan pending'>Pending</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
         <label htmlFor="jenisSediaan"> Jenis Sediaan</label>
         <select name="jenisSediaan" id="jenisSediaan" value={jenisSediaan} onChange={handleOptionJenisSediaan}>
           <option value="" disabled>Select Jenis Sediaan</option>
@@ -110,7 +160,7 @@ function CpotbPage() {
           <option value="SerbukOralNonbetalaktam">Serbuk Oral Non Betalaktam</option>
           <option value="CairanOralNonbetalaktam">Cairan Oral Non Betalaktam</option>
         </select>
-
+ 
         <button onClick={requestCpotb}>Send Request</button>
       </div>
     </>
