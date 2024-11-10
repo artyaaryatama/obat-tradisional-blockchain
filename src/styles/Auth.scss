@@ -1,7 +1,7 @@
 @import './main.scss';
 @import 'mixin';
 
-.App {
+#RegisterPage.App{
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,6 +9,17 @@
   margin: 0;
   height: 100vh;
 
+  form{
+    button{
+      background-color: darken($color: $black, $amount: 14%);
+      img{
+        width: 14px;
+      }
+    }
+  }
+}
+
+.App {
   .container{
     background-color: $grey-light;
     width: 400px;
@@ -37,34 +48,11 @@
         }
 
         input{
-          background-color: $white;
-          border: none;
-          padding: 8px 10px;
-          font-size: 14px;
-          border-radius: 4px;
-          
-          &::placeholder{
-            font-family: "Instrument Sans", sans-serif;
-            color: $grey;
-            font-style: italic;
-          }
-        }
-        
-        input:focus,
-        select:focus,
-        textarea:focus {
-          outline: none !important;
-          box-shadow: none !important;
+          @include inputForm($grey, $white)
         }
         
         select{
-          font-family: "Instrument Sans", sans-serif;
-          background-color: $white;
-          border: none;
-          margin: 10px 0;
-          padding: 8px 6px;
-          font-size: 14px;
-
+          @include selectForm($white)
         }
 
         button{
@@ -93,3 +81,52 @@
   }
 
 }
+
+#LoginPage.App{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  height: 100vh;
+  
+  .container{
+    display: flex;
+    flex-direction: row;
+    background-color: $white;
+    width: 800px;
+  
+    .img-container{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 20px;
+      width: 56%;
+      
+      img {
+        width: 360px;
+      }
+    }
+  
+    .form-container{
+      background-color: $grey-light;
+      padding: 48px 0;
+      border-radius: 10px;
+      width: 44%;
+
+      form{
+        button{
+          @include btnUniversal($white, $purple)
+        }
+
+        button{
+          background-color: darken($color: $purple, $amount: 14%);
+          img{
+            width: 14px;
+          }
+        }
+      }
+    }
+  }
+}
+

@@ -1,10 +1,10 @@
-@mixin btnUniversal($fontColor, $bgColor, $rad){
+@mixin btnUniversal($fontColor, $bgColor, $rad:null){
   background-color: $bgColor;
   color: $fontColor;
   font-size: 14px;
   padding: 8px 12px;
   border: none;
-  border-radius: $rad;
+  border-radius: if($rad, $rad, 4px);
 
   &:hover {
     background-color: darken($bgColor, 14%);
@@ -24,4 +24,45 @@
     background-color: darken($bgColor, 14%);
     cursor: pointer;
   }
+}
+
+@mixin inputForm($col, $bgColor) {
+  background-color: $bgColor;
+  border: none;
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  
+  &::placeholder{
+    font-family: "Instrument Sans", sans-serif;
+    color: $col ;
+    font-style: italic;
+  }
+
+  &:focus{
+    outline: none !important;
+    box-shadow: none !important;
+  }
+}
+
+@mixin selectForm($bgCol) {
+  font-family: "Instrument Sans", sans-serif;
+  background-color: $bgCol;
+  border: none;
+  margin: 10px 0;
+  padding: 8px 6px;
+  font-size: 14px;
+
+  &:focus{
+    outline: none !important;
+    box-shadow: none !important;
+  }
+}
+
+@mixin textArea() {
+  &:focus{
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  
 }

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { BrowserProvider, Contract } from "ethers";
 import contractMainSupplyChain from '../../auto-artifacts/MainSupplyChain.json';
-import { useNavigate } from 'react-router-dom';
-import imgLogin from '../../assets/images/login.png';
+import imgLoader from '../../assets/images/loader.svg';
+
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/Auth.scss';
@@ -11,17 +12,14 @@ import './../../styles/SweetAlert.scss';
 const MySwal = withReactContent(Swal);
 
 function RegisterPage() {
+  const navigate = useNavigate(); 
+  const [contract, setContract] = useState("");
+  const [loader, setLoader] = useState(false)
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [userAddr, setUserAddr] = useState("");
   const [role, setRole] = useState("");
-  const [userDetails, setUserDetails] = useState({});
-  const [isUserRegistered, setIsUserRegistered] = useState(""); 
-  const navigate = useNavigate(); 
-  const [contract, setContract] = useState("");
-
-  // Testing address current MetaMask
-  const [addrAccount, setAddrAccount] = useState("");
 
   // connect wallet
   useEffect(() => {
@@ -35,7 +33,6 @@ function RegisterPage() {
             contractMainSupplyChain.abi, 
             signer);
 
-          setAddrAccount(await signer.getAddress());
           setContract(contr);
         } catch (err) {
           console.error("User access denied!");
@@ -54,7 +51,6 @@ function RegisterPage() {
       contract.on("evt_UserRegistered", (_userAddr, _name, _role) => {
         console.log("User Registered Event: ", { _userAddr, _name, _role});
 
-        // buat convert role dri eventnya
         const roles = {
           0n: "Pabrik",
           1n: "PBF", 
@@ -62,16 +58,8 @@ function RegisterPage() {
           3n: "Retailer"
         }
 
-        setUserDetails({
-          address: _userAddr,
-          name: _name,
-          role: roles[_role]
-        });
-
-        // setIsUserRegistered(true);
-
         MySwal.fire({
-          title: <h5>User berhasil terdaftar!</h5>, // Custom title using JSX
+          title:"Sign Up Success",
           html: (
             <div>
                 <ul className="noList">
@@ -83,6 +71,7 @@ function RegisterPage() {
           icon: 'success',
           showCancelButton: false,
           confirmButtonText: 'Oke',
+          allowOutsideClick: false,
         }).then((result) => {
           if (result.isConfirmed) {
             navigate('/login');
@@ -99,6 +88,7 @@ function RegisterPage() {
   const registerUser = async (e) => {
 
     e.preventDefault();
+    setLoader(true)
 
     try {
       const nameUpperCase = name.toUpperCase()
@@ -134,7 +124,7 @@ function RegisterPage() {
             <form className="register-form" onSubmit={registerUser}>
               <input 
                 type="text" 
-                placeholder="Masukan nama" 
+                placeholder="Name" 
                 value={name} 
                 onChange={(e) => setName(e.target.value)} 
                 required 
@@ -142,7 +132,7 @@ function RegisterPage() {
 
               <input 
                 type="email" 
-                placeholder="Masukkan email" 
+                placeholder="Email" 
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)} 
                 required 
@@ -150,7 +140,7 @@ function RegisterPage() {
               
               <input 
                 type="text" 
-                placeholder="Masukkan alamat e-wallet" 
+                placeholder="Account E-Wallet Address" 
                 value={userAddr} 
                 onChange={(e) => setUserAddr(e.target.value)} 
                 required 
@@ -167,80 +157,43 @@ function RegisterPage() {
                 <option value="3">Retailer</option>
               </select>
               
-              <button type="submit">Daftar</button>
+              <button type="submit" disabled={loader}>
+              {
+                  loader? (
+                    <img src={imgLoader} alt="" />
+                  ) : (
+                    "Sign Up"
+                  )
+                }
+              </button>
             </form>
 
             <p className="register-footer">
-              Sudah punya akun? <a href="/login">Masuk disini</a>
+              ALready have an account? <a href="/login">login here</a>
             </p>
 
               <button className="test" onClick={autoFilled}>Auto Filled</button>
           </div>
         </div>
-
-
-        {/* <h1>Is connected to MetaMask? {addrAccount}</h1>
-        <h1>Sign Up User</h1>
-
-        <div>
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <textarea
-            type="text"
-            placeholder="Account Address"
-            value={userAddr}
-            onChange={(e) => setUserAddr(e.target.value)}
-          />
-          <label htmlFor="role">User Role</label>
-          <select id="role" name="role" value={role} onChange={handleOptionRole}>
-            <option value="" disabled>Select your role</option>
-              <option value="0">Factory</option>
-              <option value="1">PBF</option>
-              <option value="2">BPOM</option>
-              <option value="3">Retailer</option>
-              <option value="4">Guest</option>
-            
-          </select>
-          <button onClick={registerUser}>Sign Up</button>
-          <button onClick={autoFilled}>Auto Filled</button>
-        </div>
-
-        <div>
-          <button onClick={getRegisterUser}>Check Registration</button>
-          <button onClick={loginRedirect}>Login</button>
-          {isUserRegistered ? (
-            <div>
-              <h2>User Details</h2>
-              <p>Name: {userDetails?.name}</p>
-              <p>Address: {userDetails?.address}</p>
-              <p>Role: {userDetails?.role}</p>
-            </div>
-          ) : (
-            <p></p>
-          )}
-        </div> */}
       </div>
     </>
   );
 }
 
 function errAlert(err, customMsg){
-
+  
   const errorObject = {
     message: err.reason || err.message || "Unknown error",
     data: err.data || {},
     transactionHash: err.transactionHash || null
   };
+  
+    MySwal.fire({
+      title: errorObject.message,
+      text: customMsg,
+      icon: 'error',
+      confirmButtonText: 'Try Again'
+    });
 
   console.error(customMsg)
   console.error(errorObject);
