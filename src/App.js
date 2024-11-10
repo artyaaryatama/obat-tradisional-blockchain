@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import LoginPage from './pages/auth/LoginUser';
 import RegisterPage from './pages/auth/RegisterUser';
 import UnauthorizedPage from './pages/error/Unauthorized';
+import ErrorPage from './pages/error/Error';
 
 function App() {
   return (
@@ -18,8 +19,28 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
 
           <Route path="/register" element={<RegisterPage />} />
+          
+          <Route 
+            path="/error" 
+            element={
+              <>
+                <Navbar />
+                <ErrorPage />
+                <Footer />
+              </>
+            } 
+          />
 
-          <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          <Route 
+            path="/unauthorized" 
+            element={
+              <>
+                <Navbar />
+                <UnauthorizedPage />
+                <Footer />
+              </>
+            } 
+          />
 
           <Route 
             path="/cdob" 
