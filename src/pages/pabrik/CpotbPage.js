@@ -7,7 +7,6 @@ import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
-import imgLoader from '../../assets/images/loader.svg';
 
 const MySwal = withReactContent(Swal);
 
@@ -16,8 +15,11 @@ function CpotbPage() {
   const navigate = useNavigate();
 
   const userData = JSON.parse(sessionStorage.getItem('userdata')) || {};
-  const [loader, setLoader] = useState(false)
   const [dataCpotb, setDataCpotb] = useState([]);
+
+  useEffect(() => {
+    document.title = "CPOTB Certification"; 
+  }, []);
 
   const jenisSediaanMap = {
     0: "Tablet Non Betalaktam",

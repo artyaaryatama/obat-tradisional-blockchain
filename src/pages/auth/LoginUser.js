@@ -20,144 +20,148 @@ function LoginPage() {
   const [contract, setContract] = useState();
   const [loader, setLoader] = useState(false)
 
-    // connect wallet
-    useEffect(() => {
-      async function connectWallet() {
-        if (window.ethereum) {
-          try {
-            const provider = new BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
-            const contr = new Contract(
-              contractMainSupplyChain.address, 
-              contractMainSupplyChain.abi, 
-              signer);
+  useEffect(() => {
+    document.title = "Welcome!"; 
+  }, []);
 
-            setContract(contr);
-          } catch (err) {
-            console.error("User denied access: ", err);
-            errAlert(err)
-          }
-        } else {
-          console.error("MetaMask is not installed");
-        }
-      }
-      connectWallet();
-    }, []);
-
-    const loginUser = async (e) => {
-      e.preventDefault();
-      setLoader(true)
-
-      if(userAddr && name){
+  // connect wallet
+  useEffect(() => {
+    async function connectWallet() {
+      if (window.ethereum) {
         try {
-          const nameUpperCase = name.toUpperCase()
-          console.log(nameUpperCase, userAddr);
-          const [address, userName, instanceName, role] = await contract.getRegisteredUser(userAddr);
-          
-          if (userAddr === address || nameUpperCase === name) {
+          const provider = new BrowserProvider(window.ethereum);
+          const signer = await provider.getSigner();
+          const contr = new Contract(
+            contractMainSupplyChain.address, 
+            contractMainSupplyChain.abi, 
+            signer);
 
-            const userdata = {
-              address: address,
-              name: userName,
-              instanceName: instanceName,
-              role: role.toString()
-            }
-            
-            sessionStorage.setItem("userdata", JSON.stringify(userdata))
-            console.log(userdata);
-
-            MySwal.fire({
-              title: "Login Success",
-              html: (
-                <div>
-                    <p>Please wait a moment, we are redirecting you to the page <span>&#127939;</span></p>
-                </div>
-              ),
-              timer: 2000,
-              icon: 'success',
-              timerProgressBar: true,
-              showCancelButton: false,
-              showConfirmButton: false,
-              allowOutsideClick: false,
-            })
-            .then(() => {
-              if (userdata.role === "1") {
-                navigate('/cdob');
-              } else if (userdata.role  === "0") {
-                navigate('/cpotb');
-              } else {
-                // navigate('/unauthorized');
-              }
-            });
-            
-          } else {
-            console.error("Wrong input! Username and User Address not match.")
-          }
-          
-    
+          setContract(contr);
         } catch (err) {
-          setLoader(false)
-          errAlert(err, "User not registered!")
+          console.error("User denied access: ", err);
+          errAlert(err)
         }
       } else {
-        console.log("Please filled all input!")
+        console.error("MetaMask is not installed");
       }
-    }; 
-
-    function autoFilled() {
-      setUserAddr('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266')
-      setName('TAKAKI yuya')
     }
+    connectWallet();
+  }, []);
 
-    return (
-      <>
-      <div id="LoginPage" className="App">
-        <div className="container">
-          <div className="img-container">
-            <img src={imgLogin} alt="Img Login" />
-          </div>
-          <div className="form-container">
-            <h1>ot-blockchain.</h1>
+  const loginUser = async (e) => {
+    e.preventDefault();
+    setLoader(true)
 
-            <form className="register-form" onSubmit={loginUser}>
-              <input 
-                type="text" 
-                placeholder="Name" 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
-                required 
-              />
-              
-              <input 
-                type="text" 
-                placeholder="Account E-Wallet Address" 
-                value={userAddr} 
-                onChange={(e) => setUserAddr(e.target.value)} 
-                required 
-              />
-              
-              <button type="submit">
-                {
-                  loader? (
-                    <img src={imgLoader} alt="" />
-                  ) : (
-                    "Login"
-                  )
-                }
+    if(userAddr && name){
+      try {
+        const nameUpperCase = name.toUpperCase()
+        console.log(nameUpperCase, userAddr);
+        const [address, userName, instanceName, role] = await contract.getRegisteredUser(userAddr);
+        
+        if (userAddr === address || nameUpperCase === name) {
 
-              </button>
-            </form>
+          const userdata = {
+            address: address,
+            name: userName,
+            instanceName: instanceName,
+            role: role.toString()
+          }
+          
+          sessionStorage.setItem("userdata", JSON.stringify(userdata))
+          console.log(userdata);
 
-            <p className="register-footer">
-              Don't have an account? <a href="/register">Sign Up here</a>
-            </p>
+          MySwal.fire({
+            title: "Login Success",
+            html: (
+              <div>
+                  <p>Please wait a moment, we are redirecting you to the page <span>&#127939;</span></p>
+              </div>
+            ),
+            timer: 2000,
+            icon: 'success',
+            timerProgressBar: true,
+            showCancelButton: false,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          })
+          .then(() => {
+            if (userdata.role === "1") {
+              navigate('/cdob');
+            } else if (userdata.role  === "0") {
+              navigate('/cpotb');
+            } else {
+              // navigate('/unauthorized');
+            }
+          });
+          
+        } else {
+          console.error("Wrong input! Username and User Address not match.")
+        }
+        
+  
+      } catch (err) {
+        setLoader(false)
+        errAlert(err, "User not registered!")
+      }
+    } else {
+      console.log("Please filled all input!")
+    }
+  }; 
 
-              <button className="test" onClick={autoFilled}>Auto Filled</button>
-          </div>
+  function autoFilled() {
+    setUserAddr('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266')
+    setName('TAKAKI yuya')
+  }
+
+  return (
+    <>
+    <div id="LoginPage" className="App">
+      <div className="container">
+        <div className="img-container">
+          <img src={imgLogin} alt="Img Login" />
+        </div>
+        <div className="form-container">
+          <h1>ot-blockchain.</h1>
+
+          <form className="register-form" onSubmit={loginUser}>
+            <input 
+              type="text" 
+              placeholder="Name" 
+              value={name} 
+              onChange={(e) => setName(e.target.value)} 
+              required 
+            />
+            
+            <input 
+              type="text" 
+              placeholder="Account E-Wallet Address" 
+              value={userAddr} 
+              onChange={(e) => setUserAddr(e.target.value)} 
+              required 
+            />
+            
+            <button type="submit">
+              {
+                loader? (
+                  <img src={imgLoader} alt="" />
+                ) : (
+                  "Login"
+                )
+              }
+
+            </button>
+          </form>
+
+          <p className="register-footer">
+            Don't have an account? <a href="/register">Sign Up here</a>
+          </p>
+
+            <button className="test" onClick={autoFilled}>Auto Filled</button>
         </div>
       </div>
-    </>
-    );
+    </div>
+  </>
+  );
 }
 
 function errAlert(err, customMsg){

@@ -21,6 +21,10 @@ function RegisterPage() {
   const [userAddr, setUserAddr] = useState("");
   const [role, setRole] = useState("");
 
+  useEffect(() => {
+    document.title = "Sign Up"; 
+  }, []);
+
   // connect wallet
   useEffect(() => {
     async function connectWallet() {

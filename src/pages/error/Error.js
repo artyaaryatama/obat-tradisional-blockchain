@@ -6,7 +6,11 @@ import "../../styles/Error.scss"
 function ErrorPage() {
   
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
-  console.log(userdata)
+  console.log(userdata);
+
+  useEffect(() => {
+    document.title = "Oops! Error."; 
+  }, []);
 
   return (
     <>

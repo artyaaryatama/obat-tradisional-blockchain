@@ -6,7 +6,11 @@ import "../../styles/Error.scss"
 function UnauthorizedPage() {
   
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
-  console.log(userdata)
+  console.log(userdata);
+
+  useEffect(() => {
+    document.title = "Unauthorized!"; 
+  }, []);
 
   return (
     <>

@@ -20,10 +20,13 @@ function CpotbReqPage() {
   const [userdata, setUserdata] = useState();
   const [loader, setLoader] = useState(false)
 
-
   const today = new Date();
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
   const formattedDate = today.toLocaleDateString('en-US', options);
+
+  useEffect(() => {
+    document.title = "Add New CPOTB Request"; 
+  }, []);
 
   useEffect(() => {
     async function connectWallet() {
