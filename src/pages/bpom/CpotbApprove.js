@@ -3,19 +3,23 @@ import { BrowserProvider, Contract } from "ethers";
 import contractMainSupplyChain from '../../auto-artifacts/MainSupplyChain.json';
 import { useNavigate } from 'react-router-dom';
 
-import "../../styles/MainLayout.scss"
+import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import { Result } from 'ethers';
 
 const MySwal = withReactContent(Swal);
 
-function CpotbPage() {
-  const [contract, setContract] = useState();
-  const navigate = useNavigate();
+function CpotbApprove() {
 
-  const userData = JSON.parse(sessionStorage.getItem('userdata')) || {};
-  const [dataCpotb, setDataCpotb] = useState([]);
+  const navigate = useNavigate();
+  const [contract, setContract] = useState();
+  const [loader, setLoader] = useState(false)
+
+  const [dataCpotb, setDataCpotb] = useState([])
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'));
+  console.log(userdata);
 
   const jenisSediaanMap = {
     0: "Tablet Non Betalaktam",
@@ -39,7 +43,7 @@ function CpotbPage() {
   }
 
   useEffect(() => {
-    document.title = "CPOTB Certification"; 
+    document.title = "CPOTB List"; 
   }, []);
 
   useEffect(() => {
@@ -56,8 +60,8 @@ function CpotbPage() {
             
           setContract(contr);
         } catch (err) {
-          console.error("User access denied!")
-          errAlert(err, "User access denied!")
+          console.error("User access denied!");
+          errAlert(err, "User access denied!");
         }
       } else {
         console.error("MetaMask is not installed");
@@ -67,42 +71,40 @@ function CpotbPage() {
   }, []);
 
   useEffect(() => {
-    const loadData = async () => {
-      if (contract && userData.instanceName) {
+
+    const getAllCpotb = async () => {
+      if(contract){
         try {
-          const tx = await contract.getListCpotbByFactory(userData.instanceName);
-          console.log(tx);
-          const [jenisSediaanArray, statusArray, latestTimestampArray, idArray] = tx;
-          console.log(tx[1]);
+          const [jenisSediaanArray, factoryNameArray, statusArray, latestTimestampArray, cpotbIdArray] = await contract.getListAllCpotb()
 
           const reconstructedData = jenisSediaanArray.map((jenisSediaan, index) => {
             const readableJenisSediaan = jenisSediaanMap[jenisSediaan];
             const readableStatus = statusMap[statusArray[index]];
 
             const timestampDate = new Date(Number(latestTimestampArray[index]) * 1000);;
-            const formattedTimestamp = timestampDate.toLocaleDateString('id-ID', options);
+            const formattedTimestamp = timestampDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric',});
   
             return {
               jenisSediaan: readableJenisSediaan,
+              factoryName: factoryNameArray[index],
               status: readableStatus,
               latestTimestamp: formattedTimestamp,
-              idCpotb: idArray[index]
+              idCpotb: cpotbIdArray[index]
             };
           });
-  
-          // Log the transformed data
+
           console.log("Reconstructed Data:", reconstructedData);
   
           setDataCpotb(reconstructedData);
-  
-        } catch (error) {
-          console.error("Error loading data: ", error);
+        } catch (e) {
+          errAlert(e, "Can't Get The Data")
         }
       }
-    };
-  
-    loadData();
-  }, [contract, userData.instanceName]);
+    }
+
+    getAllCpotb()
+  }, [contract])
+
 
   const getDetailCpotb = async (id) => {
     
@@ -126,7 +128,7 @@ function CpotbPage() {
       };
       
       MySwal.fire({
-        title: "Sertifikat CPOTB",
+        title: "Approve Sertifikat CPOTB",
         html: (
           <div className='form-swal'>
             <div className="row">
@@ -230,8 +232,159 @@ function CpotbPage() {
           </div>
         ),
         width: '720',
-        showCancelButton: false,
-        confirmButtonText: 'Oke',
+        showCancelButton: true,
+        confirmButtonText: 'Approve',
+        confirmButtonColor: '#4CBE53', 
+        allowOutsideClick: false
+      }).then((result) => {
+
+        if(result.isConfirmed){
+          const prefix = "PW-S.01.3.331";
+          const day = `${String(new Date().getMonth() + 1).padStart(2, '0')}.${String(new Date().getDate()).padStart(2, '0')}`;
+          const randomString = String(Math.floor(1000 + Math.random() * 9000));
+          const cpotbNumber = `${prefix}.${day}.${randomString}`
+          
+          MySwal.fire({
+            title: 'Approve Sertifikat CPOTB',
+            html: (
+              <div className="form-swal form">
+                <div className="row">
+                  <div className="col">
+                    <ul>
+                      <li className="label">
+                        <label htmlFor="factoryName">Diajukan oleh</label>
+                      </li>
+                      <li className="input">
+                        <input
+                          type="text"
+                          id="factoryName"
+                          value={detailCpotb.factoryName}
+                          readOnly
+                        />
+                      </li>
+                    </ul>
+            
+                    <ul>
+                      <li className="label">
+                        <label htmlFor="factoryAddr">Address Pengirim</label>
+                      </li>
+                      <li className="input">
+                        <input
+                          type="text"
+                          id="factoryAddr"
+                          value={detailCpotb.factoryAddr}
+                          readOnly
+                        />
+                      </li>
+                    </ul>
+            
+                    <ul>
+                      <li className="label">
+                        <label htmlFor="senderName">Nama Pengirim</label>
+                      </li>
+                      <li className="input">
+                        <input
+                          type="text"
+                          id="senderName"
+                          value={detailCpotb.senderName}
+                          readOnly
+                        />
+                      </li>
+                    </ul>
+            
+                    <ul>
+                      <li className="label">
+                        <label htmlFor="bpomAddr">Address BPOM</label>
+                      </li>
+                      <li className="input">
+                        <input
+                          type="text"
+                          id="bpomAddr"
+                          value={userdata.address}
+                          readOnly
+                        />
+                      </li>
+                    </ul>
+            
+                    <ul>
+                      <li className="label">
+                        <label htmlFor="receiverName">Nama Penyutuju</label>
+                      </li>
+                      <li className="input">
+                        <input
+                          type="text"
+                          id="receiverName"
+                          value={userdata.name}
+                          readOnly
+                        />
+                      </li>
+                    </ul>
+                  </div>
+            
+                  <div className="col">
+                    <ul>
+                      <li className="label">
+                        <label htmlFor="cpotbNumber">Nomor CPOTB</label>
+                      </li>
+                      <li className="input">
+                        <input
+                          type="text"
+                          id="cpotbNumber"
+                          value={cpotbNumber}
+                          readOnly
+                        />
+                      </li>
+                    </ul>
+            
+                    <ul>
+                      <li className="label">
+                        <label htmlFor="jenisSediaan">Jenis Sediaan</label>
+                      </li>
+                      <li className="input">
+                        <input
+                          type="text"
+                          id="jenisSediaan"
+                          value={detailCpotb.jenisSediaan}
+                          readOnly
+                        />
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            ),     
+            width: '720',       
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Approve!',
+            confirmButtonColor: '#4CBE53',
+            cancelButtonText: 'Cancel',
+            allowOutsideClick: false,
+            preConfirm: async () => {
+              try {
+                console.log(userdata.address);
+                const tx =  await contract.approveCpotb(id, cpotbNumber, userdata.name)
+                console.log(id, cpotbNumber, userdata.name);
+                console.log(tx);
+                return tx;
+              } catch (error) {
+                errAlert(error);
+                return null;
+              }
+            }
+          }).then((result) => {
+            if (result.isConfirmed && result.value) {
+              Swal.fire({
+                title: `CPOTB Approved!`,
+                text: `Success approve CPOTB with number ${cpotbNumber}`,
+                icon: 'success',
+                showCancelButton: false,
+                confirmButtonText: 'Ok',
+                allowOutsideClick: true
+              });
+            }
+          })
+        } 
       })
 
       console.log(detailCpotb);
@@ -246,29 +399,20 @@ function CpotbPage() {
       <div id="CpotbPage" className='Layout-Menu layout-page'>
         <div className="title-menu">
           <h1>Data Sertifikat CPOTB</h1>
-          <p>Di ajukan oleh {userData.instanceName}</p>
         </div>
-        {/* <div className="tab-menu">
+        <div className="tab-menu">
           <ul>
-            <li><button className='active'>Pengajuan CPOTB</button></li>
-            <li><button>Add new request</button></li>
+            <li><button className='active'>List CPOTB</button></li>
+            <li><button>List CDOB</button></li>
           </ul>
-        </div> */}
+        </div>
         <div className="container-data">
-          <div className="menu-data">
-            <div className="btn">
-              <button className='btn-menu' onClick={() => navigate('/request-cpotb')}>
-                <i className="fa-solid fa-plus"></i>
-                Add new data
-              </button>
-            </div>
-          </div>
           <div className="data-list">
             {dataCpotb.length > 0 ? (
               <ul>
                 {dataCpotb.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailCpotb(item.idCpotb)}>{item.jenisSediaan}</button>
+                    <button className='title' onClick={() => getDetailCpotb(item.idCpotb)}>{item.factoryName}: {item.jenisSediaan}</button>
                     <p>Tanggal Pengajuan: {item.latestTimestamp}</p>
                     <button className={`statusPengajuan ${item.status}`}>
                       {item.status}
@@ -305,4 +449,5 @@ function errAlert(err, customMsg){
   console.error(errorObject);
 }
 
-export default CpotbPage;
+
+export default CpotbApprove;

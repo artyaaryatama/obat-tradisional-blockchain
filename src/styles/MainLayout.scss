@@ -119,8 +119,9 @@
             padding: 8px 0;
             border: none;
             margin: 0;
-
+            
             &.title{
+              text-align: left;
               font-weight: 600;
               text-decoration: underline;
               font-style: italic;

@@ -9,8 +9,9 @@ function Navbar() {
   const location = useLocation();
   // Fetch user data from session storage
   const currentPath = location.pathname;  
-  const userData = JSON.parse(sessionStorage.getItem('userdata')) || {};
-  const userRole = userData.role;
+  const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
+  const userRole = userdata.role;
+  console.log(userdata);
 
   function handleLogout() {
     sessionStorage.removeItem('userdata'); 
@@ -38,15 +39,35 @@ function Navbar() {
                     </li>
                   </>
                 )}
+                {/* {userRole === '1' && (
+                  <>
+                    <li className={currentPath === '/cpotb' ? 'active' : ''}>
+                      <a to="/cpotb">CPOTB</a>
+                    </li>
+                    <li className={currentPath === '/another-link' ? 'active' : ''}>
+                      <a to="/another-link">OBAT TRADISIONAL</a>
+                    </li>
+                  </>
+                )} */}
+                {userRole === '2' && (
+                  <>
+                    <li className={currentPath === '/cpotb-bpom' || '/cdob-bpom' ? 'active' : ''}>
+                      <a to="/cpotb-bpom">SERTIFIKASI</a>
+                    </li>
+                    <li className={currentPath === '/another-link' ? 'active' : ''}>
+                      <a to="/another-link">IZIN EDAR</a>
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
           </div>
 
           <div className="navbar-actions">
-            {userData.name && (
+            {userdata.name && (
               <>
-                <span className='instanceName'>{userData.instanceName}</span>
-                <span className='name'>{userData.name}</span>
+                <span className='instanceName'>{userdata.instanceName}</span>
+                <span className='name'>{userdata.name}</span>
                 <button onClick={handleLogout} className="logout-btn">
                   <i className="fa-solid fa-right-from-bracket"></i>
                 </button>

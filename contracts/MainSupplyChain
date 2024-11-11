@@ -1,3 +1,5 @@
+
+
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
@@ -12,24 +14,44 @@ contract MainSupplyChain {
   }
 
   modifier onlyOwner() {
-    require(owner == msg.sender, "You don't have authorization");
+    require (owner == msg.sender, "Sorry, you don't have authorization to access the data");
     _;
   } 
 
   modifier onlyFactory() { 
-    require(userRoles[msg.sender] == en_roles.Pabrik, "Access restricted to Factory role");
+    require(userRoles[msg.sender] == en_roles.Pabrik, "Sorry, you don't have authorized to access this!");
     _;
   }
 
   modifier onlyBPOM() {
-    require(userRoles[msg.sender] == en_roles.BPOM, "Access restricted to BPOM role");
+    require(userRoles[msg.sender] == en_roles.BPOM, "Sorry, you don't have authorized to access this!");
     _;
   }
 
-  enum en_roles { Pabrik, PBF, BPOM, Retailer }
-  enum en_statusCert { Pending, Approved }
-  enum en_jenisSediaan { TabletNonbetalaktam, KapsulKerasNonbetalaktam, SerbukOralNonbetalaktam, CairanOralNonbetalaktam }
+  modifier onlyPBF() {
+    require(userRoles[msg.sender] == en_roles.PBF, "Sorry, you don't have authorized to access this!");
+    _;
+  }
 
+  enum en_roles {
+    Pabrik,
+    PBF, 
+    BPOM,
+    Retailer
+  }
+  
+  enum en_statusCert {
+    Pending,
+    Approved
+  }
+
+  enum en_jenisSediaan {
+    TabletNonbetalaktam,
+    KapsulKerasNonbetalaktam,
+    SerbukOralNonbetalaktam,
+    CairanOralNonbetalaktam
+  }
+  
   struct st_userData {
     string name;
     string instanceName;
@@ -51,9 +73,19 @@ contract MainSupplyChain {
     string receiverName;
   }
 
+  struct st_cdobData {
+    bytes cdobId;
+    address pbfAddr;
+    address bpomAddr;
+    uint timestamp;
+    bytes cdobNumber;
+  }
+
   mapping (address => st_userData) private userData;
   mapping (address => en_roles) public userRoles; 
   mapping (address => bool) private isRegistered;
+  mapping (string => st_cpotbData) cpotbData;
+  mapping (string => st_cpotbData[]) public allCpotbDataByFactory;
   mapping (string => st_cpotbData) public cpotbDataById;
   st_cpotbData[] public allCpotbData;
 
@@ -61,28 +93,33 @@ contract MainSupplyChain {
   event evt_cpotbRequested(string senderName, address factoryAddr, string factoryName, en_jenisSediaan jenisSediaan, string cpotbId, uint timestampRequest);
   event evt_cpotbApproved(address bpomAddr, string receiverName, string factoryName, string cpotbNumber, uint timestampApprove);
 
+  // Ensure that userRoles is correctly updated in registerUser
   function registerUser(
-    string memory _name, 
-    string memory _instanceName,
-    address _userAddr,
-    uint8 _userRole
+      string memory _name, 
+      string memory _instanceName,
+      address _userAddr,
+      uint8 _userRole
   ) public {
-    userData[_userAddr] = st_userData({
-      name: _name,
-      instanceName: _instanceName,
-      userAddr: _userAddr,
-      userRole: en_roles(_userRole)
-    });
+      userData[_userAddr] = st_userData({
+        name: _name,
+        instanceName: _instanceName,
+        userAddr: _userAddr,
+        userRole: en_roles(_userRole)
+      });
 
-    userRoles[_userAddr] = en_roles(_userRole); 
-    isRegistered[_userAddr] = true;
+      userRoles[_userAddr] = en_roles(_userRole); // Ensures the role is set here
 
-    emit evt_UserRegistered(_userAddr, _name, _instanceName, en_roles(_userRole));  
+      isRegistered[_userAddr] = true;
+
+      emit evt_UserRegistered(_userAddr, _name, _instanceName, en_roles(_userRole));  
   }
+
 
   function getRegisteredUser(address _userAddr) public view returns (address, string memory, string memory, uint8) {
       require(isRegistered[_userAddr], "User is not registered");
+
       st_userData memory user = userData[_userAddr];
+      
       return (user.userAddr, user.name, user.instanceName, uint8(user.userRole)); 
   }
 
@@ -90,14 +127,16 @@ contract MainSupplyChain {
       string memory _instanceName,
       string memory _cpotbId,
       string memory _senderName,
-      en_jenisSediaan _jenisSediaan
+      en_jenisSediaan _jenisSediaan,
+      address _senderAddress 
   ) public onlyFactory {
+
       st_cpotbData memory newCpotbData = st_cpotbData({
           cpotbId: _cpotbId,
           senderName: _senderName,
           factoryAddr: msg.sender, 
           factoryName: _instanceName,
-          jenisSediaan: _jenisSediaan, 
+          jenisSediaan: en_jenisSediaan(_jenisSediaan), 
           status: en_statusCert.Pending,
           timestampRequest: block.timestamp,
           timestampApprove: 0,
@@ -107,6 +146,7 @@ contract MainSupplyChain {
       });
 
       cpotbDataById[_cpotbId] = newCpotbData;
+      allCpotbDataByFactory[_instanceName].push(newCpotbData);
       allCpotbData.push(newCpotbData); 
 
       emit evt_cpotbRequested(_senderName, msg.sender, _instanceName, _jenisSediaan, _cpotbId, block.timestamp);
@@ -117,18 +157,19 @@ contract MainSupplyChain {
     string memory _cpotbNumber, 
     string memory _receiverName
   ) public onlyBPOM {
-    st_cpotbData storage cpotbDatas = cpotbDataById[_cpotbId];
+     
+    st_cpotbData storage cpotbDatas =  cpotbData[_cpotbId];
+    console.log("Current CPOTB status:", uint(cpotbDatas.status));
     require(cpotbDatas.status == en_statusCert.Pending, "CPOTB status must be pending!");
-    
+ 
     cpotbDatas.status = en_statusCert.Approved;
     cpotbDatas.cpotbNumber = _cpotbNumber;
     cpotbDatas.timestampApprove = block.timestamp;
-    cpotbDatas.bpomAddr = msg.sender;
-    cpotbDatas.receiverName = _receiverName;
+    cpotbDataById[_cpotbId] = cpotbDatas;
 
     emit evt_cpotbApproved(msg.sender, _receiverName, cpotbDatas.factoryName, _cpotbNumber, block.timestamp);
   }
-
+  
   function getListCpotbByFactory(string memory _instanceName) 
     public view returns (
       uint8[] memory, 
@@ -136,15 +177,8 @@ contract MainSupplyChain {
       uint256[] memory, 
       string[] memory) 
   {
-      st_cpotbData[] memory cpotbDataArray = new st_cpotbData[](allCpotbData.length);
-      uint length = 0;
-
-      for (uint i = 0; i < allCpotbData.length; i++) {
-          if (keccak256(abi.encodePacked(allCpotbData[i].factoryName)) == keccak256(abi.encodePacked(_instanceName))) {
-              cpotbDataArray[length] = allCpotbData[i];
-              length++;
-          }
-      }
+      st_cpotbData[] storage cpotbDataArray = allCpotbDataByFactory[_instanceName];
+      uint length = cpotbDataArray.length;
 
       uint8[] memory jenisSediaanArray = new uint8[](length);
       string[] memory cpotbIdArray = new string[](length);
@@ -152,12 +186,16 @@ contract MainSupplyChain {
       uint256[] memory latestTimestampArray = new uint256[](length);
 
       for (uint i = 0; i < length; i++) {
-          jenisSediaanArray[i] = uint8(cpotbDataArray[i].jenisSediaan);
-          statusArray[i] = uint8(cpotbDataArray[i].status);
-          cpotbIdArray[i] = cpotbDataArray[i].cpotbId;
-          uint latest = cpotbDataArray[i].timestampApprove > cpotbDataArray[i].timestampRequest 
-              ? cpotbDataArray[i].timestampApprove 
-              : cpotbDataArray[i].timestampRequest;
+          st_cpotbData storage cpotbDatas = cpotbDataArray[i];
+
+          jenisSediaanArray[i] = uint8(cpotbDatas.jenisSediaan);
+          statusArray[i] = uint8(cpotbDatas.status);
+          cpotbIdArray[i] = cpotbDatas.cpotbId;
+
+          uint latest = cpotbDatas.timestampApprove > cpotbDatas.timestampRequest 
+              ? cpotbDatas.timestampApprove 
+              : cpotbDatas.timestampRequest;
+          
           latestTimestampArray[i] = latest;
       }
 
@@ -165,8 +203,7 @@ contract MainSupplyChain {
         jenisSediaanArray, 
         statusArray, 
         latestTimestampArray, 
-        cpotbIdArray
-      );
+        cpotbIdArray);
   }
   
   function getListAllCpotb() 
@@ -186,13 +223,17 @@ contract MainSupplyChain {
     uint256[] memory latestTimestampArray = new uint256[](length);
 
     for (uint i = 0; i < length; i++) {  
-        jenisSediaanArray[i] = uint8(allCpotbData[i].jenisSediaan);
-        statusArray[i] = uint8(allCpotbData[i].status);
-        factoryNameArray[i] = allCpotbData[i].factoryName; 
-        cpotbIdArray[i] = allCpotbData[i].cpotbId;
-        uint latest = allCpotbData[i].timestampApprove > allCpotbData[i].timestampRequest 
-            ? allCpotbData[i].timestampApprove 
-            : allCpotbData[i].timestampRequest;
+        st_cpotbData storage cpotbDatas = allCpotbData[i];
+
+        jenisSediaanArray[i] = uint8(cpotbDatas.jenisSediaan);
+        statusArray[i] = uint8(cpotbDatas.status);
+        factoryNameArray[i] = cpotbDatas.factoryName; 
+        cpotbIdArray[i] = cpotbDatas.cpotbId;
+
+        uint latest = cpotbDatas.timestampApprove > cpotbDatas.timestampRequest 
+            ? cpotbDatas.timestampApprove 
+            : cpotbDatas.timestampRequest;
+        
         latestTimestampArray[i] = latest; 
     }
 
@@ -201,16 +242,18 @@ contract MainSupplyChain {
       factoryNameArray, 
       statusArray, 
       latestTimestampArray, 
-      cpotbIdArray
-    );  
-  }
+      cpotbIdArray);  
+  }  
 
   function getListCpotbById(string memory _cpotbId) public view returns(st_cpotbData memory) {
     require(bytes(cpotbDataById[_cpotbId].cpotbId).length > 0, "No data found for this ID.");
+
     return cpotbDataById[_cpotbId];
   }
 
   function getRole(address user) public view returns (en_roles, address) {
       return (userRoles[user], msg.sender);
   }
+
+
 }

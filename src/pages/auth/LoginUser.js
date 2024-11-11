@@ -37,8 +37,6 @@ function LoginPage() {
             signer);
 
           setContract(contr);
-          const userAddress = await signer.getAddress();
-          setUserAddr(userAddress);
         } catch (err) {
           console.error("User denied access: ", err);
           errAlert(err)
@@ -75,6 +73,7 @@ function LoginPage() {
         const [address, userName, instanceName, role] = await contract.getRegisteredUser(userAddr);
         
         if (userAddr === address || nameUpperCase === name) {
+          console.log('role pas login',{role, address});
 
           const userdata = {
             address: address,
@@ -114,8 +113,9 @@ function LoginPage() {
         } else {
           console.error("Wrong input! Username and User Address not match.")
         }
+
+        await testRole()
         
-  
       } catch (err) {
         setLoader(false)
         errAlert(err, "User not registered!")
@@ -125,8 +125,25 @@ function LoginPage() {
     }
   }; 
 
-  function autoFilled() {
-    setName('TAKAKI yuya')
+  const testRole = async () => {
+    const userdata = JSON.parse(sessionStorage.getItem('userdata')); 
+    const tx = await contract.getRole(userdata.address)
+    console.log('ini tx',tx);
+  }
+
+  function autoFilled(event, role) {
+    event.preventDefault();
+    console.log(role);
+    if(role===1){
+      setName('Takaki Yuya')
+      setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+    } else if(role===2){ 
+      setName('NILOJURI') 
+      setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
+    } else if(role===3){ 
+      setName('STIPEN JENSEN') 
+      setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
+    }
   }
 
   const formattedAddress = (addr) => {
@@ -159,7 +176,6 @@ function LoginPage() {
               value={formattedAddress(userAddr)} 
               onChange={(e) => setUserAddr(e.target.value)} 
               required 
-              disabled
             />
             
             <button type="submit">
@@ -178,7 +194,9 @@ function LoginPage() {
             Don't have an account? <a href="/register">Sign Up here</a>
           </p>
 
-            <button className="test" onClick={autoFilled}>Auto Filled</button>
+          <button className="test" onClick={(event) => autoFilled(event, 1)}>Auto Filled Pabrik</button>
+              <button className="test" onClick={(event) => autoFilled(event, 2)}>Auto Filled BPOM</button>
+              <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled PBF</button>
         </div>
       </div>
     </div>

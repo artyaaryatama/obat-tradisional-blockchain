@@ -14,15 +14,14 @@ const MySwal = withReactContent(Swal);
 function CpotbReqPage() {
   const [contract, setContract] = useState();
   const navigate = useNavigate();
-  const userData = JSON.parse(sessionStorage.getItem('userdata')) || {};
+  const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
 
-  const [jenisSediaan, setJenisSediaan] = useState(""); // Initialize as empty string
-  const [userdata, setUserdata] = useState();
+  const [jenisSediaan, setJenisSediaan] = useState(""); 
   const [loader, setLoader] = useState(false)
 
   const today = new Date();
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  const formattedDate = today.toLocaleDateString('en-US', options);
+  const formattedDate = today.toLocaleDateString('id-ID', options);
 
   useEffect(() => {
     document.title = "Add New CPOTB Request"; 
@@ -41,8 +40,6 @@ function CpotbReqPage() {
           );
             
           setContract(contr);
-          const user = JSON.parse(sessionStorage.getItem('userdata'));
-          setUserdata(user);
         } catch (err) {
           console.error("User access denied!");
           errAlert(err, "User access denied!");
@@ -61,7 +58,7 @@ function CpotbReqPage() {
       contract.on("evt_cpotbRequested", (_name, _userAddr, _instanceName, _jenisSediaan, _cpotbId, _timestampRequest) => {
 
         const timestampDate = new Date(Number(_timestampRequest) * 1000);
-        const formattedTimestamp = timestampDate.toLocaleDateString('en-US', {
+        const formattedTimestamp = timestampDate.toLocaleDateString('id-ID', {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
@@ -176,12 +173,12 @@ function CpotbReqPage() {
 
     const id = Math.random().toString(36).slice(2, 9);
     console.log('ini req id:', id);
-    console.log(userData);
+    console.log(userdata);
 
-    console.log(userdata.instanceName, id, userData.name, js[jenisSediaan]);
+    console.log(userdata.instanceName, id, userdata.name, js[jenisSediaan]);
 
     try {
-      const tx = await contract.requestCpotb(userdata.instanceName, id, userData.name, js[jenisSediaan]);
+      const tx = await contract.requestCpotb(userdata.instanceName, id, userdata.name, js[jenisSediaan]);
       await tx.wait();
       console.log('Receipt:', tx);
 
@@ -216,7 +213,7 @@ function CpotbReqPage() {
               <label htmlFor="instanceName">Diajukan oleh</label>
             </li>
             <li className="input">
-              <input type="text" name="instanceName" value={userData.instanceName} disabled />
+              <input type="text" name="instanceName" value={userdata.instanceName} disabled />
             </li>
           </ul>
           <ul>

@@ -38,10 +38,7 @@ function RegisterPage() {
             signer
           );
 
-          const userAddress = await signer.getAddress();
-          setUserAddr(userAddress)
           setContract(contr)
-          console.log(userAddress);
 
         } catch (err) {
           console.error("User access denied!");
@@ -137,10 +134,25 @@ function RegisterPage() {
     }
   };
 
-  function autoFilled() {
-    setInstanceName('PT. Budi Pekerti')
-    setName('Takaki Yuya')
-    setRole(parseInt(0))
+  function autoFilled(event, role) {
+    event.preventDefault();
+    console.log(role);
+    if(role===1){
+      setInstanceName('PT. Budi Pekerti')
+      setName('Takaki Yuya')
+      setRole(parseInt(0))
+      setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+    } else if(role===2){
+      setInstanceName('BPOM Makassar')
+      setName('NILOJURI')
+      setRole(parseInt(2))
+      setUserAddr("0x70997970C51812dc3A010C7d01b50e0d17dc79C8")
+    } else if(role===3){
+      setInstanceName('PT. Mangga Arum')
+      setName('STIPEN JENSEN')
+      setRole(parseInt(1))
+      setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
+    }
   }
 
   function parseIntSelect(opt){
@@ -182,8 +194,7 @@ function RegisterPage() {
                 placeholder="Account E-Wallet Address" 
                 value={formattedAddress(userAddr)} 
                 onChange={(e) => setUserAddr(e.target.value)} 
-                required 
-                disabled
+                required
               />
               
               <select 
@@ -212,7 +223,9 @@ function RegisterPage() {
               ALready have an account? <a href="/login">login here</a>
             </p>
 
-              <button className="test" onClick={autoFilled}>Auto Filled</button>
+              <button className="test" onClick={(event) => autoFilled(event, 1)}>Auto Filled Pabrik</button>
+              <button className="test" onClick={(event) => autoFilled(event, 2)}>Auto Filled BPOM</button>
+              <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled PBF</button>
           </div>
         </div>
       </div>
