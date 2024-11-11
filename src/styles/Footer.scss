@@ -3,44 +3,72 @@
 footer{
   // background-color: aquamarine;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
   padding: 40px 0;
   border-top: solid 2px $grey-light;
+  gap: 10px;
 
-  h1{
-    font-size: 24px;
-    margin: 0;
+  hr{
+    height: 4px;
+    background-color: $grey-light;
+    border: none;
   }
 
+  .project-user{
+    h1{
+      font-size: 24px;
+      margin: 0;
+
+      span{
+        display: block;
+        background-color: $grey-light;
+      }
+    }
+
+    img{
+      margin-top: 16px;
+      width: 150px;
+      border: solid 10px $grey-light;
+      border-radius: 4px;
+      background-color: $white;
+    }
+    
+  }
+  
   .project-intro{
     // background-color: bisque;
     width: 552px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    margin: 20px 0;
-
+    align-items: flex-start;
+    // margin: 20px 0;
+    
     p{
+      background-color: $grey-light;
       color: $black;
       font-size: 14px;
     }
 
     span{
       margin-top: 4px;
-      text-align: center;
+      text-align: left;
       font-style: italic;
       font-size: 14px;
       font-weight: 500;
     }
   }
 
-  span.attribute {
-    margin-bottom: 10px;
-    a{
-      text-decoration: none;
-      color: $purple;
+  .attribute{
+    span {
+      margin-bottom: 10px;
+      a{
+        text-decoration: none;
+        color: $purple;
+      }
     }
+
   }
 
   p.motto{

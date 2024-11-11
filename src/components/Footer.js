@@ -1,6 +1,6 @@
 import React from "react";
 
-import "../styles/Footer.scss"
+import "../styles/Footer.scss";
 
 function Footer(){
 
@@ -8,7 +8,9 @@ function Footer(){
     <>
       <div className="layout-page">
         <footer>
-          {/* <h1>Developed by, Artia Audrian Aryatama.</h1> */}
+          <div className="project-user">
+            <h1>Developed by, <span>Artia Audrian Aryatama.</span></h1>
+          </div>
 
           <div className="project-intro">
             <p>Thesis Project: </p>
@@ -16,13 +18,13 @@ function Footer(){
             SISTEM ANTI-PEMALSUAN DALAM RANTAI  PASOK OBAT TRADISIONAL</span>
           </div>
 
-          <span className="attribute">
-            Illustration(s) from <a href="https://absurd.design/">absurd.design</a>
-          </span>
+          <div className="attribute">
+            <span>
+              All Illustration(s) from <a href="https://absurd.design/">absurd.design</a>
+            </span>
+            <hr />
 
-          <p className="motto">
-          それでも一歩 踏み出した君へ
-          </p>
+          </div>
         </footer>
       </div>
     </>
