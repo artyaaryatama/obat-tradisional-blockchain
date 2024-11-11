@@ -57,8 +57,6 @@ function CpotbReqPage() {
       
       contract.on("evt_cpotbRequested", (_name, _userAddr, _instanceName, _jenisSediaan, _cpotbId, _timestampRequest) => {
 
-        console.log("Request CPOTB Event Triggered: ", { _name, _userAddr, _instanceName, _jenisSediaan, _cpotbId, _timestampRequest });
-
         const timestampDate = new Date(Number(_timestampRequest) * 1000);
         const formattedTimestamp = timestampDate.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -76,60 +74,69 @@ function CpotbReqPage() {
           3n : "Cairan Oral Nonbetalaktam"
         };
     
-        const _js = js[_jenisSediaan];
-    
         MySwal.fire({
           title: "Pengajuan Sertifikat CPOTB Berhasil",
           html: (
             <div className='form-swal'>
               <ul>
                 <li className="label">
-                  <label htmlFor="instanceName">Diajukan oleh</label>
+                  <p>Diajukan oleh</p> 
                 </li>
                 <li className="input">
-                  <input type="text" name="instanceName" value={_instanceName} disabled/>
-                  <small>{_name}</small>
+                  <p>{_instanceName}</p> 
                 </li>
               </ul>
               <ul>
                 <li className="label">
-                  <label htmlFor="formattedTimestamp">Tanggal Pengajuan</label>
+                  <p>Nama Pengirim</p> 
                 </li>
                 <li className="input">
-                  <input type="text" name="formattedTimestamp" value={formattedTimestamp} disabled/>
+                  <p>{_name}</p> 
                 </li>
               </ul>
               <ul>
                 <li className="label">
-                  <label htmlFor="instanceName">Alamat Instance</label>
+                  <p>Tanggal Pengajuan</p> 
                 </li>
                 <li className="input">
-                  <input type="text" name="instanceName" value={_userAddr} disabled/>
+                  <p>{formattedTimestamp}</p> 
                 </li>
               </ul>
               <ul>
                 <li className="label">
-                  <label htmlFor="jenisSediaan">Jenis Sediaan</label>
+                  <p>Alamat Instance</p> 
                 </li>
                 <li className="input">
-                  <input type="text" name="jenisSediaan" value={_jenisSediaan[js]} disabled/>
+                  <p>{_userAddr}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Jenis Sediaan</p> 
+                </li>
+                <li className="input">
+                  <p>{js[_jenisSediaan]}</p> 
                 </li>
               </ul>
             </div>
           ),
           icon: 'success',
+          width: '560',
           showCancelButton: false,
           confirmButtonText: 'Oke',
-          allowOutsideClick: false,
+          allowOutsideClick: true,
         }).then((result) => {
           if (result.isConfirmed) {
             navigate('/cpotb');
           }
         });
+
+        setLoader(false)
+        
+        console.log("Request CPOTB Event Triggered: ", { _name, _userAddr, _instanceName, jenisSediaan: js[_jenisSediaan], _cpotbId, _timestampRequest });
         
       });
   
-      // Clean up listener
       return () => {
         console.log("Removing evt_cpotbRequested listener");
         contract.removeAllListeners("evt_cpotbRequested");
@@ -144,11 +151,13 @@ function CpotbReqPage() {
 
     if (!jenisSediaan) {
       alert("Please select a valid 'Jenis Sediaan'");
+      setLoader(false)
       return;
     }
 
     MySwal.fire({
-      title:"Please wait",
+      title:"Processing your request...",
+      text:"Your request is on its way. This won't take long. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,

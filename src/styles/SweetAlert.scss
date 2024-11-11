@@ -7,36 +7,64 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  .row{
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: space-between;
+    width: 100%;
+
+    .col{
+      // commented style for col
+      // width: 49%;
+      width: 100%;
+
+      ul{
+        align-items: flex-start;
+        padding-bottom: 4px;
+        // border-bottom: solid 1px $grey;
+      }
+    }
+  }
   
   ul{
     @include list();
     justify-items: center;
     align-items: center;
     width: 100%;
+    margin-bottom: 12px;
 
-    li.label{
-      background-color: saddlebrown;
-      width: 32%;
-      text-align: left;
-      label{
-        font-size: 14px;
+    li{
+      p{
         color: $black;
+        font-size: 13px;
       }
+
+      &.label{
+        font-weight: 600;
+        width: 28%;
+        text-align: left;
+      }
+
+      &.input{
+        text-align: left;
+        width: 72%;
+        font-size: 12px;
+
+        select{
+          @include selectForm($grey-light);
+          width: 100%;
+        }
+
+        input{
+          @include inputForm($black);
+          width: 100%;
+        }
+      }
+
     }
     
-    li.input{
-      background-color: rgb(221, 179, 149);
-      text-align: left;
-      width: 68%;
-      select{
-        @include selectForm($grey-light);
-        width: 100%;
-      }
-
-      input{
-        @include inputForm($black);
-      }
-    }
+    
   }
 }
 
@@ -47,6 +75,9 @@ div:where(.swal2-container) div:where(.swal2-popup) {
   padding: 14px 0;
 }
 
+div:where(.swal2-icon){
+  margin: 20px auto;
+}
 div:where(.swal2-container) input:where(.swal2-input), div:where(.swal2-container) input:where(.swal2-file), div:where(.swal2-container) textarea:where(.swal2-textarea), div:where(.swal2-container) select:where(.swal2-select), div:where(.swal2-container) div:where(.swal2-radio), div:where(.swal2-container) label:where(.swal2-checkbox) {
   margin: 12px 2em;
 }

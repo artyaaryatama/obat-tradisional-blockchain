@@ -68,6 +68,7 @@ contract MainSupplyChain {
     uint timestampApprove;
     string cpotbNumber;
     address bpomAddr;
+    string receiverName;
   }
 
   struct st_cdobData {
@@ -83,11 +84,11 @@ contract MainSupplyChain {
   mapping (address => bool) private isRegistered;
   mapping (string => st_cpotbData) cpotbData;
   mapping (string => st_cpotbData[]) public allCpotbDataByFactory;
-
+  mapping (string => st_cpotbData) public cpotbDataById;
 
   event evt_UserRegistered(address userAddr, string name, string instanceName, en_roles role);
   event evt_cpotbRequested(string senderName, address factoryAddr, string factoryName, en_jenisSediaan jenisSediaan, string cpotbId, uint timestampRequest);
-  event evt_cpotbApproved(address bpomAddr, string factoryName, string cpotbNumber, uint timestampApprove);
+  event evt_cpotbApproved(address bpomAddr, string receiverName, string factoryName, string cpotbNumber, uint timestampApprove);
 
   function registerUser(
     string memory _name, 
@@ -137,18 +138,21 @@ contract MainSupplyChain {
           timestampRequest: block.timestamp,
           timestampApprove: 0,
           cpotbNumber: "",
-          bpomAddr: address(0)
+          bpomAddr: address(0),
+          receiverName: ""
       });
 
+      // for get by id (saved the id)
+      cpotbDataById[_cpotbId] = newCpotbData;
       allCpotbDataByFactory[_instanceName].push(newCpotbData);
 
       emit evt_cpotbRequested(_senderName, msg.sender, _instanceName, _jenisSediaan, _cpotbId, block.timestamp);
   }
 
-
   function approveCpotb(
     string memory _cpotbId,  
-    string memory _cpotbNumber
+    string memory _cpotbNumber, 
+    string memory _receiverName
   ) public onlyBPOM {
      
     st_cpotbData storage cpotbDatas =  cpotbData[_cpotbId];
@@ -158,38 +162,44 @@ contract MainSupplyChain {
     cpotbDatas.cpotbNumber = _cpotbNumber;
     cpotbDatas.timestampApprove = block.timestamp;
 
-    emit evt_cpotbApproved(msg.sender, cpotbDatas.factoryName, _cpotbNumber, block.timestamp);
+    emit evt_cpotbApproved(msg.sender, _receiverName, cpotbDatas.factoryName, _cpotbNumber, block.timestamp);
   }
   
   function getListCpotbByFactory(string memory _instanceName) 
-      public view returns (uint8[] memory, string[] memory, uint8[] memory, uint256[] memory) 
+      public view returns (uint8[] memory, string[] memory, uint8[] memory, uint256[] memory, string[] memory) 
   {
       st_cpotbData[] storage cpotbDataArray = allCpotbDataByFactory[_instanceName];
       uint length = cpotbDataArray.length;
 
       uint8[] memory jenisSediaanArray = new uint8[](length);
       string[] memory factoryNameArray = new string[](length);
+      string[] memory cpotbIdArray = new string[](length);
       uint8[] memory statusArray = new uint8[](length);
       uint256[] memory latestTimestampArray = new uint256[](length);
 
       for (uint i = 0; i < length; i++) {
-          st_cpotbData storage cpotbData = cpotbDataArray[i];
+          st_cpotbData storage cpotbDatas = cpotbDataArray[i];
 
-          jenisSediaanArray[i] = uint8(cpotbData.jenisSediaan);
-          factoryNameArray[i] = cpotbData.factoryName;
-          statusArray[i] = uint8(cpotbData.status);
+          jenisSediaanArray[i] = uint8(cpotbDatas.jenisSediaan);
+          factoryNameArray[i] = cpotbDatas.factoryName;
+          statusArray[i] = uint8(cpotbDatas.status);
+          cpotbIdArray[i] = cpotbDatas.cpotbId;
 
-          uint latest = cpotbData.timestampApprove > cpotbData.timestampRequest 
-              ? cpotbData.timestampApprove 
-              : cpotbData.timestampRequest;
+          uint latest = cpotbDatas.timestampApprove > cpotbDatas.timestampRequest 
+              ? cpotbDatas.timestampApprove 
+              : cpotbDatas.timestampRequest;
           
           latestTimestampArray[i] = latest;
       }
 
-      return (jenisSediaanArray, factoryNameArray, statusArray, latestTimestampArray);
+      return (jenisSediaanArray, factoryNameArray, statusArray, latestTimestampArray, cpotbIdArray);
   }
 
+  function getListCpotbById(string memory _cpotbId) public view returns(st_cpotbData memory) {
+    require(bytes(cpotbDataById[_cpotbId].cpotbId).length > 0, "No data found for this ID.");
 
+    return cpotbDataById[_cpotbId];
+  }
 
 
 }

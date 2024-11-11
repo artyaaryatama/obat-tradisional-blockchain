@@ -1,5 +1,5 @@
 {
-  "address": "0x9E545E3C0baAB3E08CdfD552C960A1050f373042",
+  "address": "0x162A433068F51e18b7d13932F27e66a3f99E6890",
   "abi": [
     {
       "inputs": [],
@@ -45,6 +45,12 @@
           "internalType": "address",
           "name": "bpomAddr",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "receiverName",
+          "type": "string"
         },
         {
           "indexed": false,
@@ -175,6 +181,11 @@
           "internalType": "address",
           "name": "bpomAddr",
           "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "receiverName",
+          "type": "string"
         }
       ],
       "stateMutability": "view",
@@ -191,11 +202,85 @@
           "internalType": "string",
           "name": "_cpotbNumber",
           "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_receiverName",
+          "type": "string"
         }
       ],
       "name": "approveCpotb",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "cpotbDataById",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "cpotbId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "senderName",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "factoryAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "factoryName",
+          "type": "string"
+        },
+        {
+          "internalType": "enum MainSupplyChain.en_jenisSediaan",
+          "name": "jenisSediaan",
+          "type": "uint8"
+        },
+        {
+          "internalType": "enum MainSupplyChain.en_statusCert",
+          "name": "status",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestampRequest",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestampApprove",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "cpotbNumber",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "bpomAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "receiverName",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -227,6 +312,87 @@
           "internalType": "uint256[]",
           "name": "",
           "type": "uint256[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_cpotbId",
+          "type": "string"
+        }
+      ],
+      "name": "getListCpotbById",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "cpotbId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "senderName",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "factoryAddr",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "factoryName",
+              "type": "string"
+            },
+            {
+              "internalType": "enum MainSupplyChain.en_jenisSediaan",
+              "name": "jenisSediaan",
+              "type": "uint8"
+            },
+            {
+              "internalType": "enum MainSupplyChain.en_statusCert",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestampRequest",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestampApprove",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "cpotbNumber",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "bpomAddr",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "receiverName",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct MainSupplyChain.st_cpotbData",
+          "name": "",
+          "type": "tuple"
         }
       ],
       "stateMutability": "view",
