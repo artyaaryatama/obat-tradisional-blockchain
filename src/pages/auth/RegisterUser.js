@@ -35,9 +35,14 @@ function RegisterPage() {
           const contr = new Contract(
             contractMainSupplyChain.address, 
             contractMainSupplyChain.abi, 
-            signer);
+            signer
+          );
 
-          setContract(contr);
+          const userAddress = await signer.getAddress();
+          setUserAddr(userAddress)
+          setContract(contr)
+          console.log(userAddress);
+
         } catch (err) {
           console.error("User access denied!");
           errAlert(err, "User access denied!")
@@ -47,6 +52,19 @@ function RegisterPage() {
       }
     }
     connectWallet();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
+  
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
   // event user registration
@@ -97,6 +115,7 @@ function RegisterPage() {
     
     MySwal.fire({
       title:"Please wait",
+      text: "Your registration is in progress. This will only take a moment! 🧙‍♂️🧙‍♀️",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
@@ -118,7 +137,6 @@ function RegisterPage() {
   };
 
   function autoFilled() {
-    setUserAddr('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266')
     setInstanceName('PT. Budi Pekerti')
     setName('Takaki Yuya')
     setRole(parseInt(0))
@@ -128,6 +146,11 @@ function RegisterPage() {
     const a = parseInt(opt);
     setRole(a);
   }
+
+  const formattedAddress = (addr) => {
+    if (!addr) return "";
+    return `${addr.slice(0, 16)}...${addr.slice(-14)}`;
+  };
 
   return (
     <>
@@ -156,9 +179,10 @@ function RegisterPage() {
               <input 
                 type="text" 
                 placeholder="Account E-Wallet Address" 
-                value={userAddr} 
+                value={formattedAddress(userAddr)} 
                 onChange={(e) => setUserAddr(e.target.value)} 
                 required 
+                disabled
               />
               
               <select 

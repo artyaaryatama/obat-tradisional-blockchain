@@ -37,6 +37,8 @@ function LoginPage() {
             signer);
 
           setContract(contr);
+          const userAddress = await signer.getAddress();
+          setUserAddr(userAddress);
         } catch (err) {
           console.error("User denied access: ", err);
           errAlert(err)
@@ -46,6 +48,19 @@ function LoginPage() {
       }
     }
     connectWallet();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", (accounts) => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
+  
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
   const loginUser = async (e) => {
@@ -109,9 +124,13 @@ function LoginPage() {
   }; 
 
   function autoFilled() {
-    setUserAddr('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266')
     setName('TAKAKI yuya')
   }
+
+  const formattedAddress = (addr) => {
+    if (!addr) return "";
+    return `${addr.slice(0, 16)}...${addr.slice(-14)}`;
+  };
 
   return (
     <>
@@ -135,9 +154,10 @@ function LoginPage() {
             <input 
               type="text" 
               placeholder="Account E-Wallet Address" 
-              value={userAddr} 
+              value={formattedAddress(userAddr)} 
               onChange={(e) => setUserAddr(e.target.value)} 
               required 
+              disabled
             />
             
             <button type="submit">
