@@ -53,18 +53,19 @@ function RegisterPage() {
     }
     connectWallet();
 
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
-        connectWallet();
-        window.location.reload(); 
-      });
-    }
+    // listener to change the user address automatically if the metamask active account change
+    // if (window.ethereum) {
+    //   window.ethereum.on("accountsChanged", () => {
+    //     connectWallet();
+    //     window.location.reload(); 
+    //   });
+    // }
   
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener("accountsChanged", connectWallet);
-      }
-    };
+    // return () => {
+    //   if (window.ethereum) {
+    //     window.ethereum.removeListener("accountsChanged", connectWallet);
+    //   }
+    // };
   }, []);
 
   // event user registration

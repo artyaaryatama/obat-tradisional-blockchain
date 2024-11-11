@@ -49,18 +49,19 @@ function LoginPage() {
     }
     connectWallet();
 
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", (accounts) => {
-        connectWallet();
-        window.location.reload(); 
-      });
-    }
+    // listener to change the user address automatically if the metamask active account change
+    // if (window.ethereum) {
+    //   window.ethereum.on("accountsChanged", () => {
+    //     connectWallet();
+    //     window.location.reload(); 
+    //   });
+    // }
   
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener("accountsChanged", connectWallet);
-      }
-    };
+    // return () => {
+    //   if (window.ethereum) {
+    //     window.ethereum.removeListener("accountsChanged", connectWallet);
+    //   }
+    // };
   }, []);
 
   const loginUser = async (e) => {
@@ -104,7 +105,8 @@ function LoginPage() {
               navigate('/cdob');
             } else if (userdata.role  === "0") {
               navigate('/cpotb');
-            } else {
+            } else if (userdata.role === '2') {
+              navigate('/cpotb-bpom')
               // navigate('/unauthorized');
             }
           });
