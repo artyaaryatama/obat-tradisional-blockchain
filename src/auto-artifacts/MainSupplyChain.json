@@ -1,5 +1,5 @@
 {
-  "address": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
+  "address": "0x0E801D84Fa97b50751Dbf25036d067dCf18858bF",
   "abi": [
     {
       "inputs": [],
@@ -35,6 +35,86 @@
         }
       ],
       "name": "evt_UserRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "bpomAddr",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "receiverName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "pbfName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "cdobNumber",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestampApprove",
+          "type": "uint256"
+        }
+      ],
+      "name": "evt_cdobApptoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "senderName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "pbfAddr",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "pbfName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum MainSupplyChain.en_tipePermohonan",
+          "name": "tipePermohonan",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "cdobId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestampRequest",
+          "type": "uint256"
+        }
+      ],
+      "name": "evt_cdobRequested",
       "type": "event"
     },
     {
@@ -125,6 +205,75 @@
           "type": "uint256"
         }
       ],
+      "name": "allCdobData",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "cdobId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "senderName",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "pbfAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "pbfName",
+          "type": "string"
+        },
+        {
+          "internalType": "enum MainSupplyChain.en_tipePermohonan",
+          "name": "tipePermohonan",
+          "type": "uint8"
+        },
+        {
+          "internalType": "enum MainSupplyChain.en_statusCert",
+          "name": "status",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestampRequest",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestampApprove",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "cdobNumber",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "bpomAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "receiverName",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
       "name": "allCpotbData",
       "outputs": [
         {
@@ -184,6 +333,29 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_cdobId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_cdobNumber",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_receiverName",
+          "type": "string"
+        }
+      ],
+      "name": "approveCdob",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -280,6 +452,39 @@
     },
     {
       "inputs": [],
+      "name": "getListAllCdob",
+      "outputs": [
+        {
+          "internalType": "uint8[]",
+          "name": "",
+          "type": "uint8[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        },
+        {
+          "internalType": "uint8[]",
+          "name": "",
+          "type": "uint8[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "getListAllCpotb",
       "outputs": [
         {
@@ -291,6 +496,116 @@
           "internalType": "string[]",
           "name": "",
           "type": "string[]"
+        },
+        {
+          "internalType": "uint8[]",
+          "name": "",
+          "type": "uint8[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_cdobId",
+          "type": "string"
+        }
+      ],
+      "name": "getListCdobById",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "cdobId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "senderName",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "pbfAddr",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "pbfName",
+              "type": "string"
+            },
+            {
+              "internalType": "enum MainSupplyChain.en_tipePermohonan",
+              "name": "tipePermohonan",
+              "type": "uint8"
+            },
+            {
+              "internalType": "enum MainSupplyChain.en_statusCert",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestampRequest",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestampApprove",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "cdobNumber",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "bpomAddr",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "receiverName",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct MainSupplyChain.st_cdobData",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_instanceName",
+          "type": "string"
+        }
+      ],
+      "name": "getListCdobByPbf",
+      "outputs": [
+        {
+          "internalType": "uint8[]",
+          "name": "",
+          "type": "uint8[]"
         },
         {
           "internalType": "uint8[]",
@@ -516,6 +831,34 @@
         }
       ],
       "name": "registerUser",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_instanceName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_cdobId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_senderName",
+          "type": "string"
+        },
+        {
+          "internalType": "enum MainSupplyChain.en_tipePermohonan",
+          "name": "_tipePermohonan",
+          "type": "uint8"
+        }
+      ],
+      "name": "requestCdob",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

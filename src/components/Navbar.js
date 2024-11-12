@@ -39,16 +39,16 @@ function Navbar() {
                     </li>
                   </>
                 )}
-                {/* {userRole === '1' && (
+                {userRole === '1' && (
                   <>
-                    <li className={currentPath === '/cpotb' ? 'active' : ''}>
-                      <a to="/cpotb">CPOTB</a>
+                    <li className={currentPath === '/cdob' ? 'active' : ''}>
+                      <a to="/cdob">CDOB</a>
                     </li>
                     <li className={currentPath === '/another-link' ? 'active' : ''}>
                       <a to="/another-link">OBAT TRADISIONAL</a>
                     </li>
                   </>
-                )} */}
+                )}
                 {userRole === '2' && (
                   <>
                     <li className={currentPath === '/cpotb-bpom' || '/cdob-bpom' ? 'active' : ''}>

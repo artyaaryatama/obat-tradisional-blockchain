@@ -6,7 +6,9 @@ import ProtectedRoute from './routes/ProtectedRoute';
 import CpotbPage from './pages/pabrik/CpotbPage';
 import CdobPage from './pages/pbf/CdobPage';
 import CpotbReqPage from './pages/pabrik/CpotbRequestPage';
+import CdobReqPage from './pages/pbf/CdobRequestPage';
 import CpotbApprove from './pages/bpom/CpotbApprove';
+import CdobApprove from './pages/bpom/CdobApprove';
 // import ObatPage from './components/ObatPage';\
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -82,11 +84,32 @@ function App() {
           />
 
           <Route 
+            path="/request-cdob" 
+            element={
+              <ProtectedRoute allowedRoles={['1']}>
+                <Navbar />
+                <CdobReqPage />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
             path="/cpotb-bpom" 
             element={
               <ProtectedRoute allowedRoles={['2']}>
                 <Navbar />
                 <CpotbApprove />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/cdob-pbf" 
+            element={
+              <ProtectedRoute allowedRoles={['2']}>
+                <Navbar />
+                <CdobApprove />
                 <Footer />
               </ProtectedRoute>
             } 

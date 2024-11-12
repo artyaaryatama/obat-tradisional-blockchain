@@ -151,10 +151,10 @@ function RegisterPage() {
       setInstanceName('PT. Mangga Arum')
       setName('STIPEN JENSEN')
       setRole(parseInt(1))
-      setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
+      setUserAddr("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC")
     }
   }
-
+  
   function parseIntSelect(opt){
     const a = parseInt(opt);
     setRole(a);

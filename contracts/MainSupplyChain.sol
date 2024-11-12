@@ -26,9 +26,15 @@ contract MainSupplyChain {
     _;
   }
 
+  modifier onlyPBF() {
+    require(userRoles[msg.sender] == en_roles.PBF, "Access restricted to BPOM role");
+    _; 
+  }
+
   enum en_roles { Pabrik, PBF, BPOM, Retailer }
   enum en_statusCert { Pending, Approved }
   enum en_jenisSediaan { TabletNonbetalaktam, KapsulKerasNonbetalaktam, SerbukOralNonbetalaktam, CairanOralNonbetalaktam }
+  enum en_tipePermohonan { ObatLain, CCP }
 
   struct st_userData {
     string name;
@@ -51,15 +57,34 @@ contract MainSupplyChain {
     string receiverName;
   }
 
+  struct st_cdobData {
+    string cdobId;
+    string senderName;
+    address pbfAddr;
+    string pbfName;
+    en_tipePermohonan tipePermohonan;
+    en_statusCert status;
+    uint timestampRequest;
+    uint timestampApprove;
+    string cdobNumber;
+    address bpomAddr;
+    string receiverName;
+  }
+
   mapping (address => st_userData) private userData;
   mapping (address => en_roles) public userRoles; 
   mapping (address => bool) private isRegistered;
   mapping (string => st_cpotbData) public cpotbDataById;
   st_cpotbData[] public allCpotbData;
 
+  mapping (string => st_cdobData) cdobDataById;
+  st_cdobData[] public allCdobData;
+
   event evt_UserRegistered(address userAddr, string name, string instanceName, en_roles role);
   event evt_cpotbRequested(string senderName, address factoryAddr, string factoryName, en_jenisSediaan jenisSediaan, string cpotbId, uint timestampRequest);
   event evt_cpotbApproved(address bpomAddr, string receiverName, string factoryName, string cpotbNumber, uint timestampApprove);
+  event evt_cdobRequested(string senderName, address pbfAddr, string pbfName, en_tipePermohonan tipePermohonan, string cdobId, uint timestampRequest);
+  event evt_cdobApptoved(address bpomAddr, string receiverName, string pbfName, string cdobNumber, uint timestampApprove);
 
   function registerUser(
     string memory _name, 
@@ -223,6 +248,144 @@ contract MainSupplyChain {
     require(bytes(cpotbDataById[_cpotbId].cpotbId).length > 0, "No data found for this ID.");
     return cpotbDataById[_cpotbId];
   }
+
+  function requestCdob(
+      string memory _instanceName,
+      string memory _cdobId,
+      string memory _senderName,
+      en_tipePermohonan _tipePermohonan
+  ) public onlyPBF {
+      st_cdobData memory newCdobData = st_cdobData({
+          cdobId: _cdobId, 
+          senderName: _senderName,
+          pbfAddr: msg.sender, 
+          pbfName: _instanceName, 
+          tipePermohonan: _tipePermohonan, 
+          status: en_statusCert.Pending,
+          timestampRequest: block.timestamp,
+          timestampApprove: 0,
+          cdobNumber: "",
+          bpomAddr: address(0),
+          receiverName: ""
+      }); 
+
+      cdobDataById[_cdobId] = newCdobData;
+      allCdobData.push(newCdobData); 
+
+      emit evt_cdobRequested(_senderName, msg.sender, _instanceName, _tipePermohonan, _cdobId, block.timestamp);
+  }  
+
+  function approveCdob(
+    string memory _cdobId,  
+    string memory _cdobNumber, 
+    string memory _receiverName
+  ) public onlyBPOM {
+    st_cdobData storage cdobDatas = cdobDataById[_cdobId];
+    require(cdobDatas.status == en_statusCert.Pending, "CPOTB status must be pending!");
+    
+    cdobDatas.status = en_statusCert.Approved;
+    cdobDatas.cdobNumber = _cdobNumber;
+    cdobDatas.timestampApprove = block.timestamp;
+    cdobDatas.bpomAddr = msg.sender;
+    cdobDatas.receiverName = _receiverName;
+
+    uint length = 0;
+
+    for(uint i = 0; i < allCdobData.length; i++){ 
+      if (keccak256(abi.encodePacked(allCdobData[i].cdobId)) == keccak256(abi.encodePacked(_cdobId))) {
+        allCdobData[i].status = en_statusCert.Approved;
+        allCdobData[i].cdobNumber = _cdobNumber;
+        allCdobData[i].timestampApprove = block.timestamp;
+        allCdobData[i].bpomAddr = msg.sender;
+        allCdobData[i].receiverName = _receiverName;
+ 
+        break;  
+      } 
+    } 
+
+    emit evt_cpotbApproved(msg.sender, _receiverName, cdobDatas.pbfName, _cdobNumber, block.timestamp);
+  }
+
+  function getListCdobByPbf(string memory _instanceName) 
+    public view returns (
+      uint8[] memory, 
+      uint8[] memory, 
+      uint256[] memory, 
+      string[] memory) 
+  {
+      st_cdobData[] memory cdobDataArray = new st_cdobData[](allCdobData.length);
+      uint length = 0; 
+
+      for (uint i = 0; i < allCdobData.length; i++) {
+          if (keccak256(abi.encodePacked(allCdobData[i].pbfName)) == keccak256(abi.encodePacked(_instanceName))) {
+              cdobDataArray[length] = allCdobData[i];
+              length++;
+          } 
+      }
+
+      uint8[] memory tipePermohonan = new uint8[](length);
+      string[] memory cdobIdArray = new string[](length);
+      uint8[] memory statusArray = new uint8[](length);
+      uint256[] memory latestTimestampArray = new uint256[](length);
+
+      for (uint i = 0; i < length; i++) {
+          tipePermohonan[i] = uint8(cdobDataArray[i].tipePermohonan);
+          statusArray[i] = uint8(cdobDataArray[i].status);
+          cdobIdArray[i] = cdobDataArray[i].cdobId;
+          uint latest = cdobDataArray[i].timestampApprove > cdobDataArray[i].timestampRequest 
+              ? cdobDataArray[i].timestampApprove 
+              : cdobDataArray[i].timestampRequest;
+          latestTimestampArray[i] = latest;
+
+      }
+      return (
+        tipePermohonan, 
+        statusArray, 
+        latestTimestampArray, 
+        cdobIdArray
+      );
+  }
+
+  function getListAllCdob() 
+    public view returns (
+      uint8[] memory, 
+      string[] memory, 
+      uint8[] memory, 
+      uint256[] memory, 
+      string[] memory) 
+  { 
+    uint length = allCdobData.length;
+
+    uint8[] memory tipePermohonanArray = new uint8[](length);
+    string[] memory cdobIdArray = new string[](length);
+    string[] memory pbfNameArray = new string[](length);
+    uint8[] memory statusArray = new uint8[](length);
+    uint256[] memory latestTimestampArray = new uint256[](length);
+
+    for (uint i = 0; i < length; i++) {  
+        tipePermohonanArray[i] = uint8(allCdobData[i].tipePermohonan);
+        statusArray[i] = uint8(allCdobData[i].status);
+        pbfNameArray[i] = allCdobData[i].pbfName; 
+        cdobIdArray[i] = allCdobData[i].cdobId;
+        uint latest = allCdobData[i].timestampApprove > allCdobData[i].timestampRequest 
+            ? allCdobData[i].timestampApprove 
+            : allCdobData[i].timestampRequest;
+        latestTimestampArray[i] = latest;  
+    }
+
+    return (
+      tipePermohonanArray, 
+      pbfNameArray, 
+      statusArray, 
+      latestTimestampArray, 
+      cdobIdArray
+    );  
+  }
+
+  function getListCdobById(string memory _cdobId) public view returns(st_cdobData memory) {
+  require(bytes(cdobDataById[_cdobId].cdobId).length > 0, "No data found for this ID.");
+  return cdobDataById[_cdobId];
+  } 
 
   function getRole(address user) public view returns (en_roles, address) {
       return (userRoles[user], msg.sender);

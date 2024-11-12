@@ -11,12 +11,12 @@ import './../../styles/SweetAlert.scss';
 
 const MySwal = withReactContent(Swal);
 
-function CpotbReqPage() {
+function CdobReqPage() {
   const [contract, setContract] = useState();
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
 
-  const [jenisSediaan, setJenisSediaan] = useState(""); 
+  const [tipePermohonan, setTipePermohonan] = useState(""); 
   const [loader, setLoader] = useState(false)
 
   const today = new Date();
@@ -24,7 +24,7 @@ function CpotbReqPage() {
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
   useEffect(() => {
-    document.title = "Add New CPOTB Request"; 
+    document.title = "Add New CDOB Request"; 
   }, []);
 
   useEffect(() => {
@@ -53,9 +53,9 @@ function CpotbReqPage() {
 
   useEffect(() => {
     if (contract) {
-      console.log("Setting up listener for evt_cpotbRequested on contract", contract);
+      console.log("Setting up listener for evt_cdobRequested on contract", contract);
       
-      contract.on("evt_cpotbRequested", (_name, _userAddr, _instanceName, _jenisSediaan, _cpotbId, _timestampRequest) => {
+      contract.on("evt_cdobRequested", (_name, _userAddr, _instanceName, _tipePermohonan, _cdobId, _timestampRequest) => {
 
         const timestampDate = new Date(Number(_timestampRequest) * 1000);
         const formattedTimestamp = timestampDate.toLocaleDateString('id-ID', {
@@ -67,15 +67,13 @@ function CpotbReqPage() {
           second: '2-digit',
         });
 
-        const js = {
-          0n : "Tablet Non Betalaktam",
-          1n : "Kapsul Keras Non Betalaktam",
-          2n : "Serbuk Oral Non Betalaktam",
-          3n : "Cairan Oral Non Betalaktam"
+        const tp = {
+          0: "Obat Lain",
+          1: "CCP (Cold Chain Product)",
         };
     
         MySwal.fire({
-          title: "Pengajuan Sertifikat CPOTB Berhasil",
+          title: "Pengajuan Sertifikat CDOB Berhasil",
           html: (
             <div className='form-swal'>
               <ul>
@@ -112,10 +110,10 @@ function CpotbReqPage() {
               </ul>
               <ul>
                 <li className="label">
-                  <p>Jenis Sediaan</p> 
+                  <p>TIpe tipePermohonan</p> 
                 </li>
                 <li className="input">
-                  <p>{js[_jenisSediaan]}</p> 
+                  <p>{tp[_tipePermohonan]}</p> 
                 </li>
               </ul>
             </div>
@@ -127,30 +125,30 @@ function CpotbReqPage() {
           allowOutsideClick: true,
         }).then((result) => {
           if (result.isConfirmed) {
-            navigate('/cpotb');
+            navigate('/cdob');
           }
         });
 
         setLoader(false)
         
-        console.log("Request CPOTB Event Triggered: ", { _name, _userAddr, _instanceName, jenisSediaan: js[_jenisSediaan], _cpotbId, _timestampRequest });
+        console.log("Request CPOTB Event Triggered: ", { _name, _userAddr, _instanceName, tipePermohonan: tp[_tipePermohonan], _cdobId, _timestampRequest });
         
       });
   
       return () => {
-        console.log("Removing evt_cpotbRequested listener");
-        contract.removeAllListeners("evt_cpotbRequested");
+        console.log("Removing evt_cdobRequested listener");
+        contract.removeAllListeners("evt_cdobRequested");
       };
     }
   }, [contract]);
 
-  const requestCpotb = async (e) => {
+  const requestCdob = async (e) => {
     e.preventDefault();
 
     setLoader(true)
 
-    if (!jenisSediaan) {
-      errAlert(0, "Please select a valid Jenis Sediaan");
+    if (!tipePermohonan) {
+      errAlert(0, "Please select a valid Tipe Permohonan")
       setLoader(false)
       return;
     }
@@ -164,21 +162,19 @@ function CpotbReqPage() {
       allowOutsideClick: false,
     })
 
-    const js = {
-      "TabletNonbetalaktam": 0n,
-      "KapsulKerasNonbetalaktam": 1n,
-      "SerbukOralNonbetalaktam": 2n,
-      "CairanOralNonbetalaktam": 3n
+    const tp = {
+      "ObatLain": 0n,
+      "CCP": 1n
     };
 
     const id = Math.random().toString(36).slice(2, 9);
     console.log('ini req id:', id);
     console.log(userdata);
 
-    console.log(userdata.instanceName, id, userdata.name, js[jenisSediaan]);
+    console.log(userdata.instanceName, id, userdata.name, tp[tipePermohonan]);
 
     try {
-      const tx = await contract.requestCpotb(userdata.instanceName, id, userdata.name, js[jenisSediaan]);
+      const tx = await contract.requestCdob(userdata.instanceName, id, userdata.name, tp[tipePermohonan]);
       await tx.wait();
       console.log('Receipt:', tx);
 
@@ -188,18 +184,18 @@ function CpotbReqPage() {
     }
   };
 
-  const handleOptionJenisSediaan = (e) => {
-    setJenisSediaan(e.target.value);
+  const handleOptionTipePermohonan = (e) => {
+    setTipePermohonan(e.target.value);
     console.log("Selected value:", e.target.value);
   };
 
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>
       <div className="title-menu">
-        <h1>Pengajuan Data Sertifikat CPOTB Baru</h1>
+        <h1>Pengajuan Data Sertifikat CDOB Baru</h1>
       </div>
       <div className='container-form'>
-        <form onSubmit={requestCpotb}>
+        <form onSubmit={requestCdob}>
           <ul>
             <li className="label">
               <label htmlFor="formatedDate">Tanggal Pengajuan</label>
@@ -218,20 +214,18 @@ function CpotbReqPage() {
           </ul>
           <ul>
             <li className="label">
-              <label htmlFor="jenisSediaan">Jenis Sediaan</label>
+              <label htmlFor="tipePermohonan">Jenis Sediaan</label>
             </li>
             <li className="input">
               <select
-                name="jenisSediaan"
-                id="jenisSediaan"
-                value={jenisSediaan}
-                onChange={handleOptionJenisSediaan}
+                name="tipePermohonan"
+                id="tipePermohonan"
+                value={tipePermohonan}
+                onChange={handleOptionTipePermohonan}
               >
                 <option value="" disabled>Select Jenis Sediaan</option>
-                <option value="TabletNonbetalaktam">Tablet Non Betalaktam</option>
-                <option value="KapsulKerasNonbetalaktam">Kapsul Keras Non Betalaktam</option>
-                <option value="SerbukOralNonbetalaktam">Serbuk Oral Non Betalaktam</option>
-                <option value="CairanOralNonbetalaktam">Cairan Oral Non Betalaktam</option>
+                <option value="CCP">CCP (Cold Chain Product)</option>
+                <option value="ObatLain">Obat Lain</option>
               </select>
             </li>
           </ul>
@@ -269,5 +263,5 @@ function errAlert(err, customMsg){
   console.error(errorObject);
 }
 
-export default CpotbReqPage;
+export default CdobReqPage;
 
