@@ -126,6 +126,20 @@ contract MainSupplyChain {
     cpotbDatas.bpomAddr = msg.sender;
     cpotbDatas.receiverName = _receiverName;
 
+    uint length = 0;
+
+    for(uint i = 0; i < allCpotbData.length; i++){ 
+      if (keccak256(abi.encodePacked(allCpotbData[i].cpotbId)) == keccak256(abi.encodePacked(_cpotbId))) {
+        allCpotbData[i].status = en_statusCert.Approved;
+        allCpotbData[i].cpotbNumber = _cpotbNumber;
+        allCpotbData[i].timestampApprove = block.timestamp;
+        allCpotbData[i].bpomAddr = msg.sender;
+        allCpotbData[i].receiverName = _receiverName;
+ 
+        break;
+      } 
+    } 
+
     emit evt_cpotbApproved(msg.sender, _receiverName, cpotbDatas.factoryName, _cpotbNumber, block.timestamp);
   }
 
@@ -159,8 +173,8 @@ contract MainSupplyChain {
               ? cpotbDataArray[i].timestampApprove 
               : cpotbDataArray[i].timestampRequest;
           latestTimestampArray[i] = latest;
-      }
 
+      }
       return (
         jenisSediaanArray, 
         statusArray, 

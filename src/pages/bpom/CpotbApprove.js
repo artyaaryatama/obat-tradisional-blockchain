@@ -19,7 +19,6 @@ function CpotbApprove() {
 
   const [dataCpotb, setDataCpotb] = useState([])
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
-  console.log(userdata);
 
   const jenisSediaanMap = {
     0: "Tablet Non Betalaktam",
@@ -120,272 +119,389 @@ function CpotbApprove() {
         factoryName: tx.factoryName,
         jenisSediaan: jenisSediaanMap[tx.jenisSediaan], 
         status: statusMap[tx.status], 
-        timestampRequest: new Date(Number(tx.timestampRequest) * 1000).toLocaleDateString('id-ID', options), 
+        timestampRequest: new Date(Number(tx.timestampRequest) * 1000).toLocaleDateString('id-ID', options),
         timestampApprove: Number(tx.timestampApprove) > 0 ? new Date(Number(tx.timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
         cpotbNumber: tx.cpotbNumber ? tx.cpotbNumber : "-",
         bpomAddr: tx.bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : tx.bpomAddr,
         receiverName: tx.receiverName ? tx.receiverName : "-"
       };
-      
-      MySwal.fire({
-        title: "Approve Sertifikat CPOTB",
-        html: (
-          <div className='form-swal'>
-            <div className="row">
-              <div className="col">
-                <ul>
-                  <li className="label">
-                    <p>Diajukan oleh</p>
-                  </li>
-                  <li className="input">
-                    <p>{detailCpotb.factoryName}</p>
-                  </li>
-                </ul>
 
-                <ul>
-                  <li className="label">
-                    <p>Address Pengirim</p> 
-                  </li>
-                  <li className="input">
-                    <p>{detailCpotb.factoryAddr}</p> 
-                  </li>
-                </ul>
+      console.log(detailCpotb.timestampApprove);
 
-                <ul>
-                  <li className="label">
-                    <p>Nama Pengirim</p> 
-                  </li>
-                  <li className="input">
-                    <p>{detailCpotb.senderName}</p> 
-                  </li>
-                </ul>
-
-                <ul>
-                  <li className="label">
-                    <p>Address BPOM</p> 
-                  </li>
-                  <li className="input">
-                    <p>{detailCpotb.bpomAddr}</p> 
-                  </li>
-                </ul>
-
-                <ul>
-                  <li className="label">
-                    <p>Nama Penyutuju</p> 
-                  </li>
-                  <li className="input">
-                    <p>{detailCpotb.receiverName}</p> 
-                  </li>
-                </ul>
-              </div>
-
-              <div className="col">
-                <ul>
-                  <li className="label">
-                    <p>Status Sertifikasi</p>
-                    <label htmlFor="statusCpotb"></label>
-                  </li>
-                  <li className="input">
-                    <p className={detailCpotb.status}>{detailCpotb.status}</p>
-                  </li>
-                </ul>
-
-                <ul>
-                  <li className="label">
-                    <p>Nomor CPOTB</p>
-                    <label htmlFor="nomorCpotb"></label>
-                  </li>
-                  <li className="input">
-                    <p>{detailCpotb.cpotbNumber}</p> 
-                  </li>
-                </ul>
-
-                <ul>
-                  <li className="label">
-                    <p>Jenis Sediaan</p>
-                  </li>
-                  <li className="input">
-                    <p>{detailCpotb.jenisSediaan}</p> 
-                  </li>
-                </ul>
-
-                <ul>
-                  <li className="label">
-                    <p>Tanggal Pengajuan</p> 
-                  </li>
-                  <li className="input">
-                    <p>{detailCpotb.timestampRequest}</p> 
-                  </li>
-                </ul>
-
-                <ul>
-                  <li className="label">
-                    <p>Tanggal Disertifikasi</p> 
-                  </li>
-                  <li className="input">
-                    <p>{detailCpotb.timestampRequest}</p> 
-                  </li>
-                </ul>
-              </div>
-            </div>
-          
-          </div>
-        ),
-        width: '720',
-        showCancelButton: true,
-        confirmButtonText: 'Approve',
-        confirmButtonColor: '#4CBE53', 
-        allowOutsideClick: false
-      }).then((result) => {
-
-        if(result.isConfirmed){
-          const prefix = "PW-S.01.3.331";
-          const day = `${String(new Date().getMonth() + 1).padStart(2, '0')}.${String(new Date().getDate()).padStart(2, '0')}`;
-          const randomString = String(Math.floor(1000 + Math.random() * 9000));
-          const cpotbNumber = `${prefix}.${day}.${randomString}`
-          
-          MySwal.fire({
-            title: 'Approve Sertifikat CPOTB',
-            html: (
-              <div className="form-swal form">
-                <div className="row">
-                  <div className="col">
-                    <ul>
-                      <li className="label">
-                        <label htmlFor="factoryName">Diajukan oleh</label>
-                      </li>
-                      <li className="input">
-                        <input
-                          type="text"
-                          id="factoryName"
-                          value={detailCpotb.factoryName}
-                          readOnly
-                        />
-                      </li>
-                    </ul>
-            
-                    <ul>
-                      <li className="label">
-                        <label htmlFor="factoryAddr">Address Pengirim</label>
-                      </li>
-                      <li className="input">
-                        <input
-                          type="text"
-                          id="factoryAddr"
-                          value={detailCpotb.factoryAddr}
-                          readOnly
-                        />
-                      </li>
-                    </ul>
-            
-                    <ul>
-                      <li className="label">
-                        <label htmlFor="senderName">Nama Pengirim</label>
-                      </li>
-                      <li className="input">
-                        <input
-                          type="text"
-                          id="senderName"
-                          value={detailCpotb.senderName}
-                          readOnly
-                        />
-                      </li>
-                    </ul>
-            
-                    <ul>
-                      <li className="label">
-                        <label htmlFor="bpomAddr">Address BPOM</label>
-                      </li>
-                      <li className="input">
-                        <input
-                          type="text"
-                          id="bpomAddr"
-                          value={userdata.address}
-                          readOnly
-                        />
-                      </li>
-                    </ul>
-            
-                    <ul>
-                      <li className="label">
-                        <label htmlFor="receiverName">Nama Penyutuju</label>
-                      </li>
-                      <li className="input">
-                        <input
-                          type="text"
-                          id="receiverName"
-                          value={userdata.name}
-                          readOnly
-                        />
-                      </li>
-                    </ul>
-                  </div>
-            
-                  <div className="col">
-                    <ul>
-                      <li className="label">
-                        <label htmlFor="cpotbNumber">Nomor CPOTB</label>
-                      </li>
-                      <li className="input">
-                        <input
-                          type="text"
-                          id="cpotbNumber"
-                          value={cpotbNumber}
-                          readOnly
-                        />
-                      </li>
-                    </ul>
-            
-                    <ul>
-                      <li className="label">
-                        <label htmlFor="jenisSediaan">Jenis Sediaan</label>
-                      </li>
-                      <li className="input">
-                        <input
-                          type="text"
-                          id="jenisSediaan"
-                          value={detailCpotb.jenisSediaan}
-                          readOnly
-                        />
-                      </li>
-                    </ul>
-                  </div>
+      if(detailCpotb.status === 'Approved'){
+        MySwal.fire({
+          title: "Approve Sertifikat CPOTB",
+          html: (
+            <div className='form-swal'>
+              <div className="row">
+                <div className="col">
+                  <ul>
+                    <li className="label">
+                      <p>Diajukan oleh</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryName}</p>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Address Pengirim</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryAddr}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Nama Pengirim</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.senderName}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Address BPOM</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.bpomAddr}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Nama Penyutuju</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.receiverName}</p> 
+                    </li>
+                  </ul>
+                </div>
+  
+                <div className="col">
+                  <ul>
+                    <li className="label">
+                      <p>Status Sertifikasi</p>
+                      <label htmlFor="statusCpotb"></label>
+                    </li>
+                    <li className="input">
+                      <p className={detailCpotb.status}>{detailCpotb.status}</p>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Nomor CPOTB</p>
+                      <label htmlFor="nomorCpotb"></label>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.cpotbNumber}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Jenis Sediaan</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.jenisSediaan}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Pengajuan</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.timestampRequest}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Disertifikasi</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.timestampApprove}</p> 
+                    </li>
+                  </ul>
                 </div>
               </div>
-            ),     
-            width: '720',       
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Approve!',
-            confirmButtonColor: '#4CBE53',
-            cancelButtonText: 'Cancel',
-            allowOutsideClick: false,
-            preConfirm: async () => {
-              try {
-                console.log(userdata.address);
-                const tx =  await contract.approveCpotb(id, cpotbNumber, userdata.name)
-                console.log(id, cpotbNumber, userdata.name);
-                console.log(tx);
-                return tx;
-              } catch (error) {
-                errAlert(error);
-                return null;
+            
+            </div>
+          ),
+          width: '720',
+          showCancelButton: false,
+          confirmButtonText: 'Ok',
+          allowOutsideClick: true
+        })
+
+      } else{
+        MySwal.fire({
+          title: "Approve Sertifikat CPOTB",
+          html: (
+            <div className='form-swal'>
+              <div className="row">
+                <div className="col">
+                  <ul>
+                    <li className="label">
+                      <p>Diajukan oleh</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryName}</p>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Address Pengirim</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryAddr}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Nama Pengirim</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.senderName}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Address BPOM</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.bpomAddr}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Nama Penyutuju</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.receiverName}</p> 
+                    </li>
+                  </ul>
+                </div>
+  
+                <div className="col">
+                  <ul>
+                    <li className="label">
+                      <p>Status Sertifikasi</p>
+                      <label htmlFor="statusCpotb"></label>
+                    </li>
+                    <li className="input">
+                      <p className={detailCpotb.status}>{detailCpotb.status}</p>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Nomor CPOTB</p>
+                      <label htmlFor="nomorCpotb"></label>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.cpotbNumber}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Jenis Sediaan</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.jenisSediaan}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Pengajuan</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.timestampRequest}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Disertifikasi</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.timestampApprove}</p> 
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            
+            </div>
+          ),
+          width: '720',
+          showCancelButton: true,
+          confirmButtonText: 'Approve',
+          confirmButtonColor: '#4CBE53', 
+          allowOutsideClick: false
+        }).then((result) => {
+  
+          if(result.isConfirmed){
+            const prefix = "PW-S.01.3.331";
+            const day = `${String(new Date().getMonth() + 1).padStart(2, '0')}.${String(new Date().getDate()).padStart(2, '0')}`;
+            const randomString = String(Math.floor(1000 + Math.random() * 9000));
+            const cpotbNumber = `${prefix}.${day}.${randomString}`
+            
+            MySwal.fire({
+              title: 'Approve Sertifikat CPOTB',
+              html: (
+                <div className="form-swal form">
+                  <div className="row">
+                    <div className="col">
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="factoryName">Diajukan oleh</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="factoryName"
+                            value={detailCpotb.factoryName}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="factoryAddr">Address Pengirim</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="factoryAddr"
+                            value={detailCpotb.factoryAddr}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="senderName">Nama Pengirim</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="senderName"
+                            value={detailCpotb.senderName}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="bpomAddr">Address BPOM</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="bpomAddr"
+                            value={userdata.address}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="receiverName">Nama Penyutuju</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="receiverName"
+                            value={userdata.name}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+                    </div>
+              
+                    <div className="col">
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="cpotbNumber">Nomor CPOTB</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="cpotbNumber"
+                            value={cpotbNumber}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="jenisSediaan">Jenis Sediaan</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="jenisSediaan"
+                            value={detailCpotb.jenisSediaan}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              ),     
+              width: '720',       
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Yes, Approve!',
+              confirmButtonColor: '#4CBE53',
+              cancelButtonText: 'Cancel',
+              allowOutsideClick: false,
+              preConfirm: async () => {
+                try {
+                  console.log(userdata.address);
+                  const tx =  await contract.approveCpotb(id, cpotbNumber, userdata.name)
+                  console.log(id, cpotbNumber, userdata.name);
+                  console.log(tx);
+                  return tx;
+                } catch (error) {
+                  errAlert(error);
+                  return null;
+                }
               }
-            }
-          }).then((result) => {
-            if (result.isConfirmed && result.value) {
-              Swal.fire({
-                title: `CPOTB Approved!`,
-                text: `Success approve CPOTB with number ${cpotbNumber}`,
-                icon: 'success',
-                showCancelButton: false,
-                confirmButtonText: 'Ok',
-                allowOutsideClick: true
-              });
-            }
-          })
-        } 
-      })
+            }).then((result) => {
+              if (result.isConfirmed && result.value) {
+                Swal.fire({
+                  title: `CPOTB Approved!`,
+                  text: `Success approve CPOTB with number ${cpotbNumber}`,
+                  icon: 'success',
+                  showCancelButton: false,
+                  confirmButtonText: 'Ok',
+                  allowOutsideClick: true
+                });
+              }
+            })
+          } 
+        })
+
+      }
+      
 
       console.log(detailCpotb);
 

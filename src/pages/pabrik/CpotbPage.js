@@ -221,7 +221,7 @@ function CpotbPage() {
                     <p>Tanggal Disertifikasi</p> 
                   </li>
                   <li className="input">
-                    <p>{detailCpotb.timestampRequest}</p> 
+                    <p>{detailCpotb.timestampApprove}</p> 
                   </li>
                 </ul>
               </div>

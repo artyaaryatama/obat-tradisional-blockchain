@@ -8,7 +8,7 @@ function Footer(){
     <>
       <div className="layout-page">
         <footer>
-          <div className="project-user">
+          {/* <div className="project-user">
             <h1>Developed by, <span>Artia Audrian Aryatama.</span></h1>
           </div>
 
@@ -24,7 +24,7 @@ function Footer(){
             </span>
             <hr />
 
-          </div>
+          </div> */}
         </footer>
       </div>
     </>
