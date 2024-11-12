@@ -68,10 +68,10 @@ function CpotbReqPage() {
         });
 
         const js = {
-          0n : "Tablet Nonbetalaktam",
-          1n : "Kapsul Keras Nonbetalaktam",
-          2n : "Serbuk Oral Nonbetalaktam",
-          3n : "Cairan Oral Nonbetalaktam"
+          0n : "Tablet Non Betalaktam",
+          1n : "Kapsul Keras Non Betalaktam",
+          2n : "Serbuk Oral Non Betalaktam",
+          3n : "Cairan Oral Non Betalaktam"
         };
     
         MySwal.fire({

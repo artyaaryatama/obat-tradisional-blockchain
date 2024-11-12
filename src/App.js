@@ -17,7 +17,9 @@ import ErrorPage from './pages/error/Error';
 
 function App() {
   return (
-    <Router>
+    
+    <React.StrictMode>
+      <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<LoginPage />} />
@@ -102,7 +104,8 @@ function App() {
           /> */}
           
         </Routes>
-    </Router>
+      </Router>
+    </React.StrictMode>
   );
 }
 

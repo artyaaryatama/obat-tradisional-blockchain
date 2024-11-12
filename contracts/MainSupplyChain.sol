@@ -110,8 +110,8 @@ contract MainSupplyChain {
       allCpotbData.push(newCpotbData); 
 
       emit evt_cpotbRequested(_senderName, msg.sender, _instanceName, _jenisSediaan, _cpotbId, block.timestamp);
-  }
-
+  } 
+ 
   function approveCpotb(
     string memory _cpotbId,  
     string memory _cpotbNumber, 

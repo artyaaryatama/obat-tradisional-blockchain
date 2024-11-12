@@ -16,7 +16,9 @@ function CpotbApprove() {
   const navigate = useNavigate();
   const [contract, setContract] = useState();
   const [loader, setLoader] = useState(false)
-
+  
+  const [isApproved, setIsApproved] = useState(false);
+  const [cpotbNumber, setCpotbNumber] = useState("");
   const [dataCpotb, setDataCpotb] = useState([])
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
 
@@ -104,11 +106,54 @@ function CpotbApprove() {
     getAllCpotb()
   }, [contract])
 
+  useEffect(() => {
+    if (!contract) {
+      console.error("Contract is undefined");
+      return;
+    }
+  
+    try {
+      console.log('TRIGERRED evt_cpotbApproved listener');
+      contract.on('evt_cpotbApproved',  (bpomAddr, receiverName, factoryName, cpotbNumber, timestampApprove) => {
+        setCpotbNumber(cpotbNumber); // Store cpotbNumber in state
+        setIsApproved(true);         // Trigger isApproved to show the alert
+      });
+  
+      return () => {
+        console.log("Removing evt_cpotbApproved listener");
+        contract.removeAllListeners("evt_cpotbApproved");
+      };
+    } catch (error) {
+      console.error(error);
+      errAlert(error);
+    }
+  }, [contract]);
 
+  useEffect(() => {
+    if (isApproved && cpotbNumber) {
+      Swal.fire({
+        title: `CPOTB Approved!`,
+        text: `Success approve CPOTB (${cpotbNumber})`,
+        icon: 'success',
+        showCancelButton: false,
+        confirmButtonText: 'Ok',
+        allowOutsideClick: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setCpotbNumber('')
+          setIsApproved(false)
+          window.location.reload();
+        }
+      });
+
+    }
+  }, [isApproved, cpotbNumber]);
+  
+  
   const getDetailCpotb = async (id) => {
     
-    console.log(id);
-
+    console.log(id); 
+    
     try {
       const tx = await contract.getListCpotbById(id);
 
@@ -486,15 +531,17 @@ function CpotbApprove() {
                 }
               }
             }).then((result) => {
+
               if (result.isConfirmed && result.value) {
-                Swal.fire({
-                  title: `CPOTB Approved!`,
-                  text: `Success approve CPOTB with number ${cpotbNumber}`,
-                  icon: 'success',
+                MySwal.fire({
+                  title:"Processing your request...",
+                  text:"Your request is on its way. This won't take long. 🚀",
+                  icon: 'info',
                   showCancelButton: false,
-                  confirmButtonText: 'Ok',
-                  allowOutsideClick: true
-                });
+                  showConfirmButton: false,
+                  allowOutsideClick: false
+                })
+                // setIsApproved(true)
               }
             })
           } 
