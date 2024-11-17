@@ -1,5 +1,0 @@
-{
-  "watch": ["contracts", "scripts"],
-  "ext": "sol,js",
-  "exec": "npx hardhat run scripts/deploy.js --network localhost"
-}

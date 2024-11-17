@@ -1,0 +1,6 @@
+{
+  "watch": ["contracts/ObatTradisional.sol"],
+  "exec": "npx hardhat run scripts/DeployObatTradisional.js --network localhost",
+  "ext": "sol",
+  "delay": "1000"
+}

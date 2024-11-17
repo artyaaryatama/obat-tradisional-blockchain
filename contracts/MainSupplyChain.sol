@@ -27,7 +27,7 @@ contract MainSupplyChain {
   }
 
   modifier onlyPBF() {
-    require(userRoles[msg.sender] == en_roles.PBF, "Access restricted to BPOM role");
+    require(userRoles[msg.sender] == en_roles.PBF, "Access restricted to PBF role");
     _; 
   }
 
@@ -61,23 +61,23 @@ contract MainSupplyChain {
     string cdobId;
     string senderName;
     address pbfAddr;
-    string pbfName;
+    string pbfName; 
     en_tipePermohonan tipePermohonan;
     en_statusCert status;
     uint timestampRequest;
-    uint timestampApprove;
+    uint timestampApprove; 
     string cdobNumber;
     address bpomAddr;
     string receiverName;
   }
 
-  mapping (address => st_userData) private userData;
+  mapping (address => st_userData) private userData; 
   mapping (address => en_roles) public userRoles; 
   mapping (address => bool) private isRegistered;
   mapping (string => st_cpotbData) public cpotbDataById;
-  st_cpotbData[] public allCpotbData;
-
   mapping (string => st_cdobData) cdobDataById;
+  
+  st_cpotbData[] public allCpotbData;
   st_cdobData[] public allCdobData;
 
   event evt_UserRegistered(address userAddr, string name, string instanceName, en_roles role);
@@ -150,8 +150,6 @@ contract MainSupplyChain {
     cpotbDatas.timestampApprove = block.timestamp;
     cpotbDatas.bpomAddr = msg.sender;
     cpotbDatas.receiverName = _receiverName;
-
-    uint length = 0;
 
     for(uint i = 0; i < allCpotbData.length; i++){ 
       if (keccak256(abi.encodePacked(allCpotbData[i].cpotbId)) == keccak256(abi.encodePacked(_cpotbId))) {
@@ -288,8 +286,6 @@ contract MainSupplyChain {
     cdobDatas.timestampApprove = block.timestamp;
     cdobDatas.bpomAddr = msg.sender;
     cdobDatas.receiverName = _receiverName;
-
-    uint length = 0;
 
     for(uint i = 0; i < allCdobData.length; i++){ 
       if (keccak256(abi.encodePacked(allCdobData[i].cdobId)) == keccak256(abi.encodePacked(_cdobId))) {

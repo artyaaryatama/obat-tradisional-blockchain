@@ -15,11 +15,11 @@ function CdobApprove() {
 
   const navigate = useNavigate();
   const [contract, setContract] = useState();
-  const [loader, setLoader] = useState(false)
+  const [loader, setLoader] = useState(false);
   
   const [isApproved, setIsApproved] = useState(false);
   const [numberCdob, setNumberCdob] = useState("");
-  const [dataCdob, setDataCdob] = useState([])
+  const [dataCdob, setDataCdob] = useState([]);
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
 
   const tipePermohonanMap = {
@@ -76,15 +76,15 @@ function CdobApprove() {
         try {
           const [tipePermohonanArray, pbfNameArray, statusArray, latestTimestampArray, cdobIdArray] = await contract.getListAllCdob()
 
-          const reconstructedData = tipePermohonanArray.map((timePermohonan, index) => {
-            const readableTipePermohonan = tipePermohonanMap[timePermohonan];
+          const reconstructedData = tipePermohonanArray.map((tipePermohonan, index) => {
+            const readableTipePermohonan = tipePermohonanMap[tipePermohonan];
             const readableStatus = statusMap[statusArray[index]];
 
             const timestampDate = new Date(Number(latestTimestampArray[index]) * 1000);;
             const formattedTimestamp = timestampDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric',});
   
             return {
-              timePermohonan: readableTipePermohonan,
+              tipePermohonan: readableTipePermohonan,
               pbfName: pbfNameArray[index],
               status: readableStatus,
               latestTimestamp: formattedTimestamp,
@@ -155,9 +155,10 @@ function CdobApprove() {
     
     try {
       const tx = await contract.getListCdobById(id);
+      console.log(tx);
 
       const detailCdob = {
-        cpotbId: tx.cpotbId,
+        cdobId: tx.cdobId,
         senderName: tx.senderName,
         pbfAddr: tx.pbfAddr,
         pbfName: tx.pbfName,
@@ -295,7 +296,7 @@ function CdobApprove() {
                       <p>Diajukan oleh</p>
                     </li>
                     <li className="input">
-                      <p>{detailCdob.factoryName}</p>
+                      <p>{detailCdob.pbfName}</p>
                     </li>
                   </ul>
   
@@ -304,7 +305,7 @@ function CdobApprove() {
                       <p>Address Pengirim</p> 
                     </li>
                     <li className="input">
-                      <p>{detailCdob.factoryAddr}</p> 
+                      <p>{detailCdob.pbfAddr}</p> 
                     </li>
                   </ul>
   
@@ -359,10 +360,10 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>Jenis Sediaan</p>
+                      <p>Tipe Permohonan</p>
                     </li>
                     <li className="input">
-                      <p>{detailCdob.jenisSediaan}</p> 
+                      <p>{detailCdob.tipePermohonan}</p> 
                     </li>
                   </ul>
   

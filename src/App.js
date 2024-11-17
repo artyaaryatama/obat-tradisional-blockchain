@@ -9,7 +9,8 @@ import CpotbReqPage from './pages/pabrik/CpotbRequestPage';
 import CdobReqPage from './pages/pbf/CdobRequestPage';
 import CpotbApprove from './pages/bpom/CpotbApprove';
 import CdobApprove from './pages/bpom/CdobApprove';
-// import ObatPage from './components/ObatPage';\
+import ObatPage from './pages/pabrik/ObatPage';
+import ObatReqPage from './pages/pabrik/ObatRequestPage';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LoginPage from './pages/auth/LoginUser';
@@ -20,7 +21,7 @@ import ErrorPage from './pages/error/Error';
 function App() {
   return (
     
-    <React.StrictMode>
+    // <React.StrictMode>
       <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -104,12 +105,35 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          
           <Route 
             path="/cdob-pbf" 
             element={
               <ProtectedRoute allowedRoles={['2']}>
                 <Navbar />
                 <CdobApprove />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/obat" 
+            element={
+              <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
+                <ObatPage />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/create-obat" 
+            element={
+              <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
+                <ObatReqPage />
                 <Footer />
               </ProtectedRoute>
             } 
@@ -128,7 +152,7 @@ function App() {
           
         </Routes>
       </Router>
-    </React.StrictMode>
+    // </React.StrictMode>
   );
 }
 

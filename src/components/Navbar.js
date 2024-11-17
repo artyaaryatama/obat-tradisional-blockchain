@@ -1,17 +1,14 @@
 import React from 'react';
-import { Link, useNavigate, useLocation  } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
-// import imgLodgout from '../../assets/images/loader.svg';
-import "../styles/Navbar.scss"
+import "../styles/Navbar.scss";
 
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  // Fetch user data from session storage
   const currentPath = location.pathname;  
   const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
   const userRole = userdata.role;
-  console.log(userdata);
 
   function handleLogout() {
     sessionStorage.removeItem('userdata'); 
@@ -28,34 +25,34 @@ function Navbar() {
             </div>
 
             <div className="navbar-links">
-              <ul className="">
+              <ul>
                 {userRole === '0' && (
                   <>
-                    <li className={currentPath === '/cpotb' ? 'active' : ''}>
-                      <a to="/cpotb">CPOTB</a>
+                    <li className={currentPath === '/cpotb' || currentPath === '/request-cpotb' ? 'active' : ''}>
+                      <Link to="/cpotb">CPOTB</Link>
                     </li>
-                    <li className={currentPath === '/another-link' ? 'active' : ''}>
-                      <a to="/another-link">OBAT TRADISIONAL</a>
+                    <li className={currentPath === '/obat' || currentPath === '/create-obat' ? 'active' : ''}>
+                      <Link to="/obat">OBAT TRADISIONAL</Link>
                     </li>
                   </>
                 )}
                 {userRole === '1' && (
                   <>
-                    <li className={currentPath === '/cdob' ? 'active' : ''}>
-                      <a to="/cdob">CDOB</a>
+                    <li className={currentPath === '/cdob' || currentPath === '/request-cdob' ? 'active' : ''}>
+                      <Link to="/cdob">CDOB</Link>
                     </li>
-                    <li className={currentPath === '/another-link' ? 'active' : ''}>
-                      <a to="/another-link">OBAT TRADISIONAL</a>
+                    <li className={currentPath === '/another-Link' ? 'active' : ''}>
+                      <Link to="/another-Link">OBAT TRADISIONAL</Link>
                     </li>
                   </>
                 )}
                 {userRole === '2' && (
                   <>
-                    <li className={currentPath === '/cpotb-bpom' || '/cdob-bpom' ? 'active' : ''}>
-                      <a to="/cpotb-bpom">SERTIFIKASI</a>
+                    <li className={currentPath === '/cpotb-bpom' || currentPath === '/cdob-bpom' ? 'active' : ''}>
+                      <Link to="/cpotb-bpom">SERTIFIKASI</Link>
                     </li>
-                    <li className={currentPath === '/another-link' ? 'active' : ''}>
-                      <a to="/another-link">IZIN EDAR</a>
+                    <li className={currentPath === '/another-Link' ? 'active' : ''}>
+                      <Link to="/another-Link">IZIN EDAR</Link>
                     </li>
                   </>
                 )}
@@ -73,7 +70,7 @@ function Navbar() {
                 </button>
               </>
             )}
-            </div>  
+          </div>  
         </nav>
       </div>
     </>

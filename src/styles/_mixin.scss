@@ -42,20 +42,28 @@
 
 @mixin inputForm($col: null, $bgCol: null) {
   background-color: if($bgCol, $bgCol, $white);
-  border: none;
+  border: solid 1px $grey;
   padding: 8px 10px;
   font-size: 14px;
   border-radius: 4px;
+  color: if($col, $col, $black);
+  width: -webkit-fill-available;
   
   &::placeholder{
     font-family: "Instrument Sans", sans-serif;
-    color: if($col, $col, $black) ;
+    color: if($col, $col, $black);
     font-style: italic;
   }
 
   &:focus{
     outline: none !important;
     box-shadow: none !important;
+  }
+
+  &:read-only{
+    background-color: $grey-light;
+    color: darken($grey, 20%);
+    border: none;
   }
 }
 
@@ -67,6 +75,7 @@
   padding: 8px 6px;
   font-size: 14px;
   border-radius: 4px;
+  color: $black;
 
   &:focus{
     outline: none !important;

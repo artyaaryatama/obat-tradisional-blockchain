@@ -106,7 +106,8 @@ function LoginPage() {
               navigate('/cpotb');
             } else if (userdata.role === '2') {
               navigate('/cpotb-bpom')
-              // navigate('/unauthorized');
+            } else{
+              navigate('/unauthorized');
             }
           });
           

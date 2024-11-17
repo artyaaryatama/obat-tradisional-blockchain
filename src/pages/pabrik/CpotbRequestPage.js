@@ -24,7 +24,7 @@ function CpotbReqPage() {
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
   useEffect(() => {
-    document.title = "Add New CPOTB Request"; 
+    document.title = "Add New Obat Request"; 
   }, []);
 
   useEffect(() => {

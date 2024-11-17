@@ -49,6 +49,8 @@
 
         input{
           @include inputForm($grey, $white);
+          border: none;
+          color: $black;
 
           &:disabled{
             background-color: $grey-secondary;

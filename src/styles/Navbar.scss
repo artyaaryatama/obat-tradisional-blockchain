@@ -36,19 +36,30 @@ nav{
           
           &:hover{
             background-color: $purple;
-            color: $white;
+            a{
+              color: $white;
+            }
+          }
+
+          a{
+            text-decoration: none;
+            margin: 0;
+            color: $grey;
           }
         }
   
         li.active{
           border: solid 1px $purple;
-          color: $black;
           
           a{
-            text-decoration: none;
+            color: $black;
             font-weight: 700;
-            margin: 0;
-  
+          }
+
+          &:hover{
+            a{
+              color: $white;
+            }
           }
         }
       }

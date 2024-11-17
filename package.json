@@ -21,8 +21,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "npx hardhat run scripts/deploy.js --network localhost",
-    "dev": "npx nodemon --exec npm run deploy"
+    "deploy-main": "nodemon -L --config nodemon-MainSupplyChain.json",
+    "deploy-obat": "nodemon -L --config nodemon-ObatTradisional.json"
   },
   "eslintConfig": {
     "extends": [

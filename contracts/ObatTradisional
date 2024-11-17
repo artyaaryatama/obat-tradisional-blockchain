@@ -1,122 +1,219 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
+
 contract ObatTradisional {
 
-  enum en_StatusObat{
-    inProduction,
-    NiePending,                                                                                                        
-    NieApproved
+  address public owner; 
+
+  constructor() {
+    owner = msg.sender;
   }
 
-  struct st_Obat{
-    address pabrikAddress;
-    address bpomAddress;
-    string pabrikName;
-    uint timestampReq;
-    uint timestampApprove;
-    string obatName;
+  modifier onlyFactory() { 
+    require(userRoles[msg.sender] == en_roles.Pabrik, "Access restricted to Factory role");
+    _;
+  }
+
+  modifier onlyBPOM() {
+    require(userRoles[msg.sender] == en_roles.BPOM, "Access restricted to BPOM role");
+    _;
+  }
+
+  enum en_obatStatus { inLocalProduction, Requested, Approved }
+  enum en_orderStatus { inProduction, inShipment, inDelivery }
+  enum en_roles { Pabrik, PBF, BPOM, Retailer }
+  enum en_tipeProduk {obatTradisional, suplemenKesehatan}
+
+  struct st_obatDetails {
     string obatId;
-    string obatMerk; 
-    string obatKlaim;
-    string obatKomposisi;
-    string obatKemasan;
-    string numberNie;
-    en_StatusObat statusObat;
+    string merk;
+    string namaProduk;
+    string klaim;
+    string kemasan;
+    string komposisi;
+    en_tipeProduk tipeProduk;
+    en_obatStatus obatStatus;      
+    uint256 nieRequestDate;       
+    uint256 nieApprovalDate;        
+    string nieNumber;            
+    address factoryAddr;  
+    string factoryInstanceName;  
+    string factoryUserName;        
+    address bpomAddr;          
+    string bpomInstanceName;       
+    string bpomUserName;           
   }
 
-  string[] public idObat;
+  st_obatDetails[] public allObatData;
 
-  mapping(string => st_Obat) public obatData;
+  mapping (address => en_roles) public userRoles;
+  mapping (string => st_obatDetails) public obatDetailsById;
 
-  event evt_obatProduction(string indexed obatId, address indexed pabrikAddress, string obatName);
+  event evt_obatCreated(string obatId, string namaProduk, string kemasan);
+  event evt_nieRequested(string obatId, uint timestampRequested, string namaProduk);
+  event evt_nieApproved(string nieNumber, uint timestampApprove, string namaProduk);
+ 
+  function createObat(
+    string memory _obatId,
+    string memory _merk,
+    string memory _namaProduk,
+    string memory _klaim,
+    string memory _kemasan,
+    string memory _komposisi,
+    address _factoryAddr,
+    string memory _factoryInstanceName,
+    string memory _factoryUserName,
+    en_tipeProduk _tipeProduk
+  ) public onlyFactory{
 
-  function obat_production(
-    string calldata _obatId, 
-    string calldata _pabrikName, 
-    string calldata _obatName, 
-    string calldata _obatMerk,
-    string calldata _obatKlaim,
-    string calldata _obatKomposisi,
-    string calldata _obatKemasan) public {
-
-    require(bytes(_obatId).length > 0, 'Invalid Request ID'); 
-
-    obatData[_obatId] = st_Obat({
-      pabrikAddress: msg.sender,
-      bpomAddress: address(0),
-      pabrikName: _pabrikName,
-      timestampReq: 0,
-      timestampApprove: 0,
-      obatName: _obatName,
+    st_obatDetails memory newObatDetails = st_obatDetails({
       obatId: _obatId,
-      obatKlaim: _obatKlaim,
-      obatMerk: _obatMerk,
-      obatKomposisi: _obatKomposisi, 
-      obatKemasan: _obatKemasan,
-      numberNie: "0",
-      statusObat: en_StatusObat.inProduction
-    });  
+      merk: _merk,
+      namaProduk: _namaProduk,
+      klaim: _klaim,
+      kemasan: _kemasan,
+      komposisi: _komposisi,
+      tipeProduk: _tipeProduk,
+      obatStatus: en_obatStatus.inLocalProduction,
+      nieRequestDate: 0,
+      nieApprovalDate: 0,      
+      nieNumber: "",     
+      factoryAddr: _factoryAddr,         
+      factoryInstanceName: _factoryInstanceName,
+      factoryUserName: _factoryUserName,   
+      bpomAddr: address(0), 
+      bpomInstanceName: "",      
+      bpomUserName:"" 
+    }); 
 
-    idObat.push(_obatId); 
-    emit evt_obatProduction(_obatId, msg.sender, _obatName); 
-  }  
+    obatDetailsById[_obatId] = newObatDetails;
+    allObatData.push(newObatDetails);
 
-  function nie_request(string calldata _obatId) public {
-    require(bytes(_obatId).length > 0, 'Invalid ID Obat'); 
+    emit evt_obatCreated(_obatId, _namaProduk, _kemasan);
+  } 
 
-    st_Obat storage obat = obatData[_obatId];
-    obat.timestampReq = block.timestamp;
-    obat.statusObat = en_StatusObat.NiePending;
+  function requestNie( string memory _obatId ) public onlyFactory {
+
+    st_obatDetails storage obatDetails = obatDetailsById[_obatId];
+    require(obatDetails.obatStatus == en_obatStatus.inLocalProduction, "Obat Tradisional status must be in local production!");
+
+    obatDetails.nieRequestDate = block.timestamp;
+    obatDetails.obatStatus = en_obatStatus.Requested;
+
+    for (uint i = 0; i<allObatData.length; i++){
+      if (keccak256(abi.encodePacked(allObatData[i].obatId)) == keccak256(abi.encodePacked(_obatId))) {
+        allObatData[i].nieRequestDate = block.timestamp;
+        allObatData[i].obatStatus = en_obatStatus.Requested;
+
+        break;
+      }
+    }
+
+    emit evt_nieRequested(_obatId, block.timestamp, obatDetails.namaProduk);
+  } 
+
+  function approveNie(
+    string memory _obatId,
+    address _bpomAddr,
+    string memory _bpomInstanceName,
+    string memory _bpomUserName,
+    string memory _nieNumber
+  ) public onlyBPOM {
+
+    st_obatDetails storage obatDetails = obatDetailsById[_obatId];
+    require(obatDetails.obatStatus == en_obatStatus.Requested, "Obat Tradisional status must be requested!");
+
+    obatDetails.nieApprovalDate = block.timestamp;
+    obatDetails.obatStatus = en_obatStatus.Approved;
+    obatDetails.nieNumber = _nieNumber;
+    obatDetails.bpomAddr = _bpomAddr;
+    obatDetails.bpomInstanceName = _bpomInstanceName;
+    obatDetails.bpomUserName = _bpomUserName;
+
+    for (uint i = 0; i<allObatData.length; i++){
+      if (keccak256(abi.encodePacked(allObatData[i].obatId)) == keccak256(abi.encodePacked(_obatId))) {
+        allObatData[i].nieApprovalDate = block.timestamp;
+        allObatData[i].obatStatus = en_obatStatus.Approved;
+        allObatData[i].nieNumber = _nieNumber;
+        allObatData[i].bpomAddr = _bpomAddr;
+        allObatData[i].bpomInstanceName = _bpomInstanceName;
+        allObatData[i].bpomUserName = _bpomUserName;
+
+        break;
+      }
+    }
+
+    emit evt_nieApproved(_nieNumber, block.timestamp, obatDetails.namaProduk);
+  } 
+
+  function getListObatByFactory (string memory _factoryInstanceName) 
+    public view returns (
+      string[] memory, //idobat
+      string[] memory, //namaproduk
+      uint8[] memory ) //status
+  {
+      st_obatDetails[] memory obatArray = new st_obatDetails[](allObatData.length);
+
+      uint length = 0;
+
+      for (uint i = 0; i<allObatData.length; i++){
+        if(keccak256(abi.encodePacked(allObatData[i].factoryInstanceName)) == keccak256(abi.encodePacked(_factoryInstanceName))) {
+          obatArray[length] = allObatData[i];
+          length++;
+        }
+      }
+ 
+      uint8[] memory obatStatusArray = new uint8[](length);
+      string[] memory obatIdArray = new string[](length);
+      string[] memory namaProdukArray = new string[](length);
+
+      for(uint i=0; i<length; i++){
+        obatStatusArray[i] = uint8(obatArray[i].obatStatus);
+        obatIdArray[i] = obatArray[i].obatId;
+        namaProdukArray[i] = obatArray[i].namaProduk;
+      }
+
+      return(
+        obatIdArray,
+        namaProdukArray,
+        obatStatusArray 
+      ); 
   }
 
-  function nie_approve(
-    string memory _nieNumber,
-    string calldata _obatId) public{
-    require(bytes(_nieNumber).length > 0, 'Invalid Request NIE'); 
-    require(bytes(_obatId).length > 0, 'Invalid ID Obat'); 
+  function getListAllObat ()  
+    public view returns (
+      string[] memory, //idobat
+      string[] memory, //namaproduk
+      string[] memory,
+      uint8[] memory ) //status
+  {
+      uint length = allObatData.length;
+ 
+      uint8[] memory obatStatusArray = new uint8[](length);
+      string[] memory obatIdArray = new string[](length);
+      string[] memory namaProdukArray = new string[](length);
+      string[] memory factoryInstanceNameArray = new string[](length);
 
-    st_Obat storage obat = obatData[_obatId];
-    obat.numberNie = _nieNumber; 
-    obat.timestampApprove = block.timestamp; 
-    obat.statusObat = en_StatusObat.NieApproved;
+      for(uint i=0; i<length; i++){
+        obatStatusArray[i] = uint8(allObatData[i].obatStatus);
+        obatIdArray[i] = allObatData[i].obatId;
+        namaProdukArray[i] = allObatData[i].namaProduk;
+        factoryInstanceNameArray[i] = allObatData[i].factoryInstanceName;
+      }
+
+      return(
+        obatIdArray,
+        namaProdukArray,
+        factoryInstanceNameArray,
+        obatStatusArray 
+      ); 
   }
 
-  function get_obat_byId(string calldata _obatId) public view returns (
-    address pabrikAddress,
-    address bpomAddress,
-    string memory pabrikName,
-    uint timestampReq,
-    uint timestampApprove,
-    string memory obatName,
-    string memory obatId,
-    string memory obatMerk,
-    string memory obatKlaim,
-    string memory obatKomposisi,
-    string memory obatKemasan,
-    string memory numberNie,
-    en_StatusObat statusObat
-  ) {
-    st_Obat memory obatDatas = obatData[_obatId];
-    return (
-      obatDatas.pabrikAddress,
-      obatDatas.bpomAddress,
-      obatDatas.pabrikName, 
-      obatDatas.timestampReq,
-      obatDatas.timestampApprove,
-      obatDatas.obatName,
-      obatDatas.obatId,
-      obatDatas.obatMerk,
-      obatDatas.obatKlaim,
-      obatDatas.obatKomposisi, 
-      obatDatas.obatKemasan,
-      obatDatas.numberNie,
-      obatDatas.statusObat
-    );  
+  function getListObatById(string memory _obatId) public view returns(st_obatDetails memory) {
+    require(bytes(obatDetailsById[_obatId].obatId).length > 0, "No data found with this ID.");
+    return obatDetailsById[_obatId];
   }
 
-  function get_all_obat() public view returns (string[] memory) {
-    require(idObat.length > 0, "No obat data available");
-    return idObat; 
-  }
 }
