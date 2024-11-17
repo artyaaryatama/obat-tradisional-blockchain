@@ -37,6 +37,20 @@
         padding-bottom: 4px;
         // border-bottom: solid 1px $grey;
       }
+
+      &.col1{
+        li.label{
+          width: 36%;
+        }
+  
+        li.input{
+          width: 64%;
+        }
+      }
+    }
+
+    &.obat{
+      flex-direction: row;
     }
   }
   

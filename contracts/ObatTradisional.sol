@@ -197,8 +197,39 @@ contract ObatTradisional {
       ); 
   }
 
-  function getListObatById(string memory _obatId) public view returns(st_obatDetails memory) {
+function getListObatById(string memory _obatId)
+    public
+    view
+    returns (
+        st_obatDetails memory obatDetails,
+        address factoryAddress,
+        string memory factoryInstanceName,
+        string memory factoryUserName,
+        address bpomAddress,
+        string memory bpomInstanceName,
+        string memory bpomUserName
+    )
+{
     require(bytes(obatDetailsById[_obatId].obatId).length > 0, "No data found with this ID.");
-    return obatDetailsById[_obatId];
-  }
+
+    // Fetch obat details and related mappings
+    obatDetails = obatDetailsById[_obatId];
+    factoryAddress = factoryAddresses[_obatId];
+    factoryInstanceName = factoryInstanceNames[_obatId];
+    factoryUserName = factoryUserNames[_obatId];
+    bpomAddress = bpomAddresses[_obatId];
+    bpomInstanceName = bpomInstanceNames[_obatId];
+    bpomUserName = bpomUserNames[_obatId];
+
+    return (
+      obatDetails,
+      factoryAddress,
+      factoryInstanceName,
+      factoryUserName,
+      bpomAddress,
+      bpomInstanceName,
+      bpomUserName
+    );
+}
+
 }

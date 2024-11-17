@@ -28,6 +28,15 @@ function ObatPage() {
     1: "Suplemen Kesehatan"
   };
 
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  }
+
   useEffect(() => {
     document.title = "Obat Tradisional"; 
   }, []);
@@ -61,24 +70,19 @@ function ObatPage() {
       if (contract && userData.instanceName) {
         try {
           const tx = await contract.getListObatByFactory(userData.instanceName);
-          console.log(tx);
           const [obatIdArray, namaProdukArray, obatStatusArray, tipeProdukArray] = tx;
-          console.log(tx[1]);
 
           const reconstructedData = obatStatusArray.map((obatStatus, index) => {
             const readableObatStatus = obatStatusMap[obatStatus];
             const readableTipeProduk = tipeProdukMap[tipeProdukArray[index]];
   
             return {
-              NamaObat : namaProdukArray[index],
+              namaObat : namaProdukArray[index],
               tipeProduk: readableTipeProduk,
-              ObatStatus: readableObatStatus,
+              obatStatus: readableObatStatus,
               idObat: obatIdArray[index]
             };
           });
-  
-          // Log the transformed data
-          console.log("Reconstructed Data:", reconstructedData);
   
           setDataObat(reconstructedData);
   
@@ -91,142 +95,184 @@ function ObatPage() {
     loadData();
   }, [contract, userData.instanceName]);
 
-  // const getDetailObat = async (id) => {
-    
-  //   console.log(id);
+  const getDetailObat = async (id) => {
 
-  //   try {
-  //     const tx = await contract.getListCpotbById(id);
+    try {
+      const tx = await contract.getListObatById(id);
 
-  //     const detailCpotb = {
-  //       cpotbId: tx.cpotbId,
-  //       senderName: tx.senderName,
-  //       factoryAddr: tx.factoryAddr,
-  //       factoryName: tx.factoryName,
-  //       jenisSediaan: jenisSediaanMap[tx.jenisSediaan], 
-  //       status: statusMap[tx.status], 
-  //       timestampRequest: new Date(Number(tx.timestampRequest) * 1000).toLocaleDateString('id-ID', options), 
-  //       timestampApprove: Number(tx.timestampApprove) > 0 ? new Date(Number(tx.timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
-  //       cpotbNumber: tx.cpotbNumber ? tx.cpotbNumber : "-",
-  //       bpomAddr: tx.bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : tx.bpomAddr,
-  //       receiverName: tx.receiverName ? tx.receiverName : "-"
-  //     };
       
-  //     MySwal.fire({
-  //       title: "Sertifikat CPOTB",
-  //       html: (
-  //         <div className='form-swal'>
-  //           <div className="row">
-  //             <div className="col">
-  //               <ul>
-  //                 <li className="label">
-  //                   <p>Diajukan oleh</p>
-  //                 </li>
-  //                 <li className="input">
-  //                   <p>{detailCpotb.factoryName}</p>
-  //                 </li>
-  //               </ul>
+      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = tx
+        
+      // console.log({      obatDetails,
+      //   factoryAddress,
+      //   factoryInstanceName,
+      //   factoryUserName,
+      //   bpomAddress,
+      //   bpomInstanceName,
+      //   bpomUserName});
 
-  //               <ul>
-  //                 <li className="label">
-  //                   <p>Address Pengirim</p> 
-  //                 </li>
-  //                 <li className="input">
-  //                   <p>{detailCpotb.factoryAddr}</p> 
-  //                 </li>
-  //               </ul>
+      const detailObat = {
+        obatId: obatDetails.obatId,
+        merk: obatDetails.merk,
+        namaObat: obatDetails.namaProduk,
+        klaim: obatDetails.klaim,
+        kemasan: obatDetails.kemasan,
+        komposisi: obatDetails.komposisi,
+        factoryAddr: factoryAddress,
+        factoryInstanceName: factoryInstanceName,
+        factoryUserName: factoryUserName,
+        tipeProduk: tipeProdukMap[obatDetails.tipeProduk], 
+        obatStatus: obatStatusMap[obatDetails.obatStatus], 
+        nieRequestDate: obatDetails.nieRequestDate ? new Date(Number(obatDetails.nieRequestDate) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieApprovalDate: Number(obatDetails.nieApprovalDate) > 0 ? new Date(Number(obatDetails.nieApprovalDate) * 1000).toLocaleDateString('id-ID', options): "-",
+        nieNumber: obatDetails.nieNumber ? obatDetails.nieNumber : "-",
+        bpomAddr: bpomAddress === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddress,
+        bpomUserName:  bpomUserName ? bpomUserName : "-",
+        bpomInstanceNames:  bpomInstanceName ?  bpomInstanceName : "-"
+      };
 
-  //               <ul>
-  //                 <li className="label">
-  //                   <p>Nama Pengirim</p> 
-  //                 </li>
-  //                 <li className="input">
-  //                   <p>{detailCpotb.senderName}</p> 
-  //                 </li>
-  //               </ul>
+      console.log(detailObat);
+      
+      MySwal.fire({
+        title: "Detail Obat",
+        html: (
+          <div className='form-swal'>
+            <div className="row obat">
+              <div className="col col1">
 
-  //               <ul>
-  //                 <li className="label">
-  //                   <p>Address BPOM</p> 
-  //                 </li>
-  //                 <li className="input">
-  //                   <p>{detailCpotb.bpomAddr}</p> 
-  //                 </li>
-  //               </ul>
+                <ul>
+                  <li className="label">
+                    <p>Nomor NIE</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.nieNumber}</p> 
+                  </li>
+                </ul>
 
-  //               <ul>
-  //                 <li className="label">
-  //                   <p>Nama Penyutuju</p> 
-  //                 </li>
-  //                 <li className="input">
-  //                   <p>{detailCpotb.receiverName}</p> 
-  //                 </li>
-  //               </ul>
-  //             </div>
+                <ul>
+                  <li className="label">
+                    <p>Tanggal Pengajuan NIE</p> 
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.nieRequestDate}</p> 
+                  </li>
+                </ul>
 
-  //             <div className="col">
-  //               <ul>
-  //                 <li className="label">
-  //                   <p>Status Sertifikasi</p>
-  //                   <label htmlFor="statusCpotb"></label>
-  //                 </li>
-  //                 <li className="input">
-  //                   <p className={detailCpotb.status}>{detailCpotb.status}</p>
-  //                 </li>
-  //               </ul>
+                <ul>
+                  <li className="label">
+                    <p>Tanggal Disertifikasi NIE</p> 
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.nieApprovalDate}</p> 
+                  </li>
+                </ul>
 
-  //               <ul>
-  //                 <li className="label">
-  //                   <p>Nomor CPOTB</p>
-  //                   <label htmlFor="nomorCpotb"></label>
-  //                 </li>
-  //                 <li className="input">
-  //                   <p>{detailCpotb.cpotbNumber}</p> 
-  //                 </li>
-  //               </ul>
+                <ul>
+                  <li className="label">
+                    <p>Diajukan oleh</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.factoryInstanceName}</p>
+                  </li>
+                </ul>
 
-  //               <ul>
-  //                 <li className="label">
-  //                   <p>Jenis Sediaan</p>
-  //                 </li>
-  //                 <li className="input">
-  //                   <p>{detailCpotb.jenisSediaan}</p> 
-  //                 </li>
-  //               </ul>
+                <ul>
+                  <li className="label">
+                    <p>Address Pengirim</p> 
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.factoryAddr}</p> 
+                  </li>
+                </ul>
 
-  //               <ul>
-  //                 <li className="label">
-  //                   <p>Tanggal Pengajuan</p> 
-  //                 </li>
-  //                 <li className="input">
-  //                   <p>{detailCpotb.timestampRequest}</p> 
-  //                 </li>
-  //               </ul>
+                <ul>
+                  <li className="label">
+                    <p>Nama Pengirim</p> 
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.factoryUserName}</p> 
+                  </li>
+                </ul>
 
-  //               <ul>
-  //                 <li className="label">
-  //                   <p>Tanggal Disertifikasi</p> 
-  //                 </li>
-  //                 <li className="input">
-  //                   <p>{detailCpotb.timestampApprove}</p> 
-  //                 </li>
-  //               </ul>
-  //             </div>
-  //           </div>
+                <ul>
+                  <li className="label">
+                    <p>Address BPOM</p> 
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.bpomAddr}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Nama Penyutuju</p> 
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.bpomUserName}</p> 
+                  </li>
+                </ul>
+              </div>
+
+              <div className="col">
+                <ul>
+                  <li className="label">
+                    <p>Status Obat</p>
+                  </li>
+                  <li className="input">
+                    <p className={detailObat.obatStatus}>{detailObat.obatStatus}</p>
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Nama Obat</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.namaObat}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Tipe Produk</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.tipeProduk}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Klaim Obat</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.klaim}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Komposisi Obat</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.komposisi}</p> 
+                  </li>
+                </ul>
+
+              </div>
+            </div>
           
-  //         </div>
-  //       ),
-  //       width: '720',
-  //       showCancelButton: false,
-  //       confirmButtonText: 'Oke',
-  //     })
+          </div>
+        ),
+        width: '1200',
+        showCancelButton: false,
+        confirmButtonText: 'Oke',
+      })
 
-  //     console.log(detailCpotb);
-
-  //   } catch (e) {
-  //     errAlert(e, "Can't retrieve data")
-  //   }
-  // }
+    } catch (e) {
+      errAlert(e, "Can't retrieve data")
+    }
+  }
 
   return (
     <>
@@ -255,10 +301,10 @@ function ObatPage() {
               <ul>
                 {dataObat.map((item, index) => (
                   <li key={index}>
-                    {/* <button className='title' onClick={() => getDetailObat(item.idObat)}>{item.jenisSediaan}</button> */}
-                    <p>Tanggal Pengajuan: {item.latestTimestamp}</p>
-                    <button className={`statusPengajuan ${item.status}`}>
-                      {item.status}
+                    <button className='title' onClick={() => getDetailObat(item.idObat)} >{item.namaObat}</button>
+                    <p>{item.tipeProduk}</p>
+                    <button className={`statusPengajuan ${item.obatStatus}`}>
+                      {item.obatStatus}
                     </button>
                   </li>
                 ))}

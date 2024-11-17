@@ -143,8 +143,14 @@
             &.Pending{
               background-color: $yellow;
             }
+
             &.Approved{
               background-color: $green;
+              color: $white;
+            }
+            
+            &.In{
+              background-color: $grey;
               color: $white;
             }
           }

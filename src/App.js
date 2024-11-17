@@ -21,7 +21,7 @@ import ErrorPage from './pages/error/Error';
 function App() {
   return (
     
-    // <React.StrictMode>
+    <React.StrictMode>
       <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -152,7 +152,7 @@ function App() {
           
         </Routes>
       </Router>
-    // </React.StrictMode>
+    </React.StrictMode>
   );
 }
 
