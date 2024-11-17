@@ -140,7 +140,7 @@
               border-radius: 30px;
             }
 
-            &.Pending{
+            &.Pending, &.Requested{
               background-color: $yellow;
             }
 

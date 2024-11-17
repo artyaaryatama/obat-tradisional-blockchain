@@ -80,7 +80,7 @@ function ObatReqPage() {
             <div className='form-swal'>
               <ul>
                 <li className="label">
-                  <p>Diajukan oleh</p> 
+                  <p>Di produksi oleh</p> 
                 </li>
                 <li className="input">
                   <p>{_factoryInstanceName}</p> 
@@ -268,74 +268,6 @@ function ObatReqPage() {
       
       <div className='container-form'>
         <form onSubmit={createObat}>
-          {/* <div className="row">
-            <div className="col">
-              <ul>
-                <li className="label">
-                  <label htmlFor="namaProduk">Nama Produk</label>
-                </li>
-                <li className="input">
-                  <input
-                    type="text"
-                    id="namaProduk"
-                    value={namaProduk}
-                    onChange={(e) => setNamaProduk(e.target.value)}
-                    required
-                  />
-                </li>
-              </ul>
-
-              <ul>
-                <li className="label">
-                  <label htmlFor="namaProduk">Merk Produk</label>
-                </li>
-                <li className="input">
-                  <input
-                    type="text"
-                    id="namaProduk"
-                    value={merk}
-                    onChange={(e) => setMerk(e.target.value)}
-                  />
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <label htmlFor="klaimObat">Klaim Produk</label>
-                </li>
-                <li className="input">
-                  <textarea 
-                  id="klaimObat"
-                  rows="4"
-                  cols="50"
-                  onChange={(e) => setKlaim(e.value)}
-                  required
-                  >
-                  {klaim}
-                </textarea>
-                </li>
-              </ul>
-
-            </div>
-            <div className="col">
-              <ul>
-                <li className="label">
-                  <label htmlFor="namaProduk">Kemasan Produk</label>
-                </li>
-                <li className="input">
-                  <textarea 
-                  id="klaimObat"
-                  rows="4"
-                  cols="50"
-                  onChange={(e) => setKlaim(e.value)}
-                  required
-                  >
-                  {klaim}
-                </textarea>
-                </li>
-              </ul>
-
-            </div>
-          </div> */}
           <ul>
             <li className="label">
               <label htmlFor="formatedDate">Tanggal Pembuatan</label>
@@ -347,7 +279,7 @@ function ObatReqPage() {
 
           <ul>
             <li className="label">
-              <label htmlFor="instanceName">Diajukan oleh</label>
+              <label htmlFor="instanceName">Di produksi oleh</label>
             </li>
             <li className="input">
               <input type="text" name="instanceName" value={userdata.instanceName} readOnly />

@@ -51,8 +51,8 @@ function Navbar() {
                     <li className={currentPath === '/cpotb-bpom' || currentPath === '/cdob-bpom' ? 'active' : ''}>
                       <Link to="/cpotb-bpom">SERTIFIKASI</Link>
                     </li>
-                    <li className={currentPath === '/another-Link' ? 'active' : ''}>
-                      <Link to="/another-Link">IZIN EDAR</Link>
+                    <li className={currentPath === '/nie' ? 'active' : ''}>
+                      <Link to="/nie">IZIN EDAR</Link>
                     </li>
                   </>
                 )}

@@ -3,19 +3,26 @@ import { BrowserProvider, Contract } from "ethers";
 import contractObatTradisional from '../../auto-artifacts/ObatTradisional.json';
 import { useNavigate } from 'react-router-dom';
 
-import "../../styles/MainLayout.scss"
+import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import { Result } from 'ethers';
 
 const MySwal = withReactContent(Swal);
 
-function ObatPage() {
-  const [contract, setContract] = useState();
-  const navigate = useNavigate();
+function NieApprove() {
 
-  const userData = JSON.parse(sessionStorage.getItem('userdata'));
-  const [dataObat, setDataObat] = useState([]);
+  const navigate = useNavigate();
+  const [contract, setContract] = useState();
+  const [loader, setLoader] = useState(false)
+  
+  const [isApproved, setIsApproved] = useState(false);
+  const [nieNumber, setNieNumber] = useState("");
+  const [namaProduk, setNamaProduk] = useState("")
+  const [dataObat, setDataObat] = useState([])
+  
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'));
 
   const obatStatusMap = {
     0: "In Local Production",
@@ -38,7 +45,7 @@ function ObatPage() {
   }
 
   useEffect(() => {
-    document.title = "Obat Tradisional"; 
+    document.title = "NIE List"; 
   }, []);
 
   useEffect(() => {
@@ -55,8 +62,8 @@ function ObatPage() {
             
           setContract(contr);
         } catch (err) {
-          console.error("User access denied!")
-          errAlert(err, "User access denied!")
+          console.error("User access denied!");
+          errAlert(err, "User access denied!");
         }
       } else {
         console.error("MetaMask is not installed");
@@ -67,24 +74,29 @@ function ObatPage() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (contract && userData.instanceName) {
+      if (contract && userdata.instanceName) {
         try {
-          const tx = await contract.getListObatByFactory(userData.instanceName);
-          const [obatIdArray, namaProdukArray, obatStatusArray, tipeProdukArray] = tx;
+          const tx = await contract.getListAllObatNie();
+          const [obatIdArray, namaProdukArray, factoryInstanceNameArray, latestTimestampArray, obatStatusArray] = tx;
 
           const reconstructedData = obatStatusArray.map((obatStatus, index) => {
             const readableObatStatus = obatStatusMap[obatStatus];
-            const readableTipeProduk = tipeProdukMap[tipeProdukArray[index]];
   
+            const timestampDate = new Date(Number(latestTimestampArray[index]) * 1000);;
+            const formattedTimestamp = timestampDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric',});
+  
+
             return {
               namaObat : namaProdukArray[index],
-              tipeProduk: readableTipeProduk,
+              factoryInstanceName: factoryInstanceNameArray[index],
+              latestTimestamp: formattedTimestamp,
               obatStatus: readableObatStatus,
               idObat: obatIdArray[index]
             };
           });
   
           setDataObat(reconstructedData);
+          console.log(dataObat);
   
         } catch (error) {
           console.error("Error loading data: ", error);
@@ -93,66 +105,72 @@ function ObatPage() {
     };
   
     loadData();
-  }, [contract, userData.instanceName]);
+  }, [contract])
 
   useEffect(() => {
-    if (contract) {
-      console.log("Setting up listener for evt_nieRequested on contract", contract);
-      
-      contract.on("evt_nieRequested", ( _obatId, _timestampRequestNie,_namaProduk) => {
-
-        const timestamp = new Date(Number(_timestampRequestNie) * 1000).toLocaleDateString('id-ID', options)
-    
-        MySwal.fire({
-          title: "Success Request NIE",
-          html: (
-            <div className='form-swal'>
-              <ul>
-                <li className="label">
-                  <p>Nama Obat</p> 
-                </li>
-                <li className="input">
-                  <p>{_namaProduk}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Timestamp Request</p> 
-                </li>
-                <li className="input">
-                  <p>{timestamp}</p> 
-                </li>
-              </ul>
-            </div>
-          ),
-          icon: 'success',
-          width: '560',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-          allowOutsideClick: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.reload()
-          }
-        });
-
+    if (!contract) {
+      console.error("Contract is undefined");
+      return;
+    }
+  
+    try {
+      console.log('TRIGERRED evt_nieApproved listener');
+      contract.on('evt_nieApproved',  (nieNumber, namaProduk) => {
+        setNieNumber(nieNumber); 
+        setNamaProduk(namaProduk);
+        setIsApproved(true);
       });
   
       return () => {
-        console.log("Removing evt_nieRequested listener");
-        contract.removeAllListeners("evt_nieRequested");
+        console.log("Removing evt_nieApproved listener");
+        contract.removeAllListeners("evt_nieApproved");
       };
+    } catch (error) {
+      console.error(error);
+      errAlert(error);
     }
   }, [contract]);
 
-  const getDetailObat = async (id) => {
+  useEffect(() => {
+    if (isApproved && nieNumber) {
+      Swal.fire({
+        title: `NIE Approved!`,
+        text: `Success approve NIE (${nieNumber}) for produk ${namaProduk}`,
+        icon: 'success',
+        showCancelButton: false,
+        confirmButtonText: 'Ok',
+        allowOutsideClick: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setNieNumber('')
+          setNamaProduk('')
+          setIsApproved(false)
+          window.location.reload();
+        }
+      });
 
+    }
+  }, [isApproved, nieNumber]);
+  
+  
+  const getDetailObat = async (id) => {
+    
+    console.log(id); 
+
+    try {
+      const tc = await contract.getRole(userdata.address)
+      console.log(tc);
+      
+    } catch (error) {
+      console.error(error);
+    }
+    
     try {
       const tx = await contract.getListObatById(id);
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = tx
 
-      console.log(typeof(obatDetails.klaim));
+      console.log(obatDetails);
 
       const detailObat = {
         obatId: obatDetails.obatId,
@@ -175,7 +193,7 @@ function ObatPage() {
       };
 
       console.log(detailObat);
-      
+
       if(detailObat.obatStatus === 'Approved NIE'){
         MySwal.fire({
           title: `Detail Obat ${detailObat.namaObat}`,
@@ -329,7 +347,6 @@ function ObatPage() {
           showCancelButton: false,
           confirmButtonText: 'Oke',
         })
-
       } else{
         MySwal.fire({
           title: `Detail Obat ${detailObat.namaObat}`,
@@ -481,12 +498,20 @@ function ObatPage() {
           ),
           width: '820',
           showCancelButton: true,
-          confirmButtonText: 'Request NIE',
+          confirmButtonText: 'Approve NIE',
         }).then((result) => {
   
           if(result.isConfirmed){
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const day = String(currentDate.getDate()).padStart(2, '0');
+            const randomNumber = Math.floor(1000 + Math.random() * 9000); 
+  
+            const nieNum = `TR${year}${month}${day}${randomNumber}`;
+  
             MySwal.fire({
-              title: "Request NIE",
+              title: "Approve NIE",
               html: (
                 <div className='form-swal'>
                   <div className="row row--obat">
@@ -497,7 +522,7 @@ function ObatPage() {
                           <p>Nomor NIE</p>
                         </li>
                         <li className="input">
-                          <p>{detailObat.nieNumber}</p> 
+                          <p>{nieNum}</p> 
                         </li>
                       </ul>
         
@@ -551,7 +576,7 @@ function ObatPage() {
                           <p>Address BPOM</p> 
                         </li>
                         <li className="input">
-                          <p>{detailObat.bpomAddr}</p> 
+                          <p>{userdata.address}</p> 
                         </li>
                       </ul>
         
@@ -560,7 +585,7 @@ function ObatPage() {
                           <p>Nama Penyutuju</p> 
                         </li>
                         <li className="input">
-                          <p>{detailObat.bpomUserName}</p> 
+                          <p>{userdata.name}</p> 
                         </li>
                       </ul>
                     </div>
@@ -635,62 +660,60 @@ function ObatPage() {
               ),
               width: '820',
               showCancelButton: true,
-              confirmButtonText: 'Request',
-              allowOutsideClick: false
+              confirmButtonText: 'Yes, Approve!',
+              allowOutsideClick: false,
+              preConfirm: async () => {
+                try {
+                  console.log(userdata.address);
+                  const tx =  await contract.approveNie(id, userdata.address, userdata.instanceName, userdata.name, nieNum)
+                  console.log(tx);
+                  console.log(id, nieNum, userdata.name);
+                  return tx;
+                } catch (error) {
+                  errAlert(error);
+                  return null;
+                }
+              }
             }).then((result) => {
               if(result.isConfirmed){
-                requestNie(detailObat.obatId)
+                if (result.isConfirmed && result.value) {
+                  MySwal.fire({
+                    title:"Processing your request...",
+                    text:"Your request is on its way. This won't take long. 🚀",
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowOutsideClick: false
+                  })
+                }
               }
             })
           }
         })
 
       }
-
+      
 
     } catch (e) {
       errAlert(e, "Can't retrieve data")
     }
   }
 
-  const requestNie = async(id) => {
-
-    MySwal.fire({
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
-      icon: 'info',
-      showCancelButton: false,
-      showConfirmButton: false,
-      allowOutsideClick: false,
-    })
-
-    const tx = await contract.requestNie(id);
-    tx.wait()
-  }
-
   return (
     <>
-      <div id="ObatPage" className='Layout-Menu layout-page'>
+      <div id="CpotbPage" className='Layout-Menu layout-page'>
         <div className="title-menu">
-          <h1>Data Obat Tradisional</h1>
-          <p>Di produksi oleh {userData.instanceName}</p>
+          <h1>Data Izin Edar</h1>
         </div>
         <div className="container-data">
-          <div className="menu-data">
-            <div className="btn">
-              <button className='btn-menu' onClick={() => {navigate('/create-obat')}}>
-                <i className="fa-solid fa-plus"></i>
-                Add new data
-              </button>
-            </div>
-          </div>
           <div className="data-list">
             {dataObat.length > 0 ? (
               <ul>
                 {dataObat.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailObat(item.idObat)} >{item.namaObat}</button>
-                    <p>{item.tipeProduk}</p>
+                    <button className='title' onClick={() => getDetailObat(item.idObat)}>{item.namaObat}</button>
+                    <p>Diproduksi oleh : {item.factoryInstanceName}</p>
+                    <p>Tanggal Pengajuan: {item.latestTimestamp}</p>
                     <button className={`statusPengajuan ${item.obatStatus}`}>
                       {item.obatStatus}
                     </button>
@@ -726,4 +749,5 @@ function errAlert(err, customMsg){
   console.error(errorObject);
 }
 
-export default ObatPage;
+
+export default NieApprove;

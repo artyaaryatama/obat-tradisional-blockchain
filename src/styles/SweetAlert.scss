@@ -26,6 +26,10 @@
     flex-direction: column-reverse;
     justify-content: space-between;
     width: 100%;
+    
+    &--obat{
+      flex-direction: row-reverse;
+    }
 
     .col{
       // commented style for col
@@ -35,22 +39,34 @@
       ul{
         align-items: flex-start;
         padding-bottom: 4px;
+        flex-direction: row;
         // border-bottom: solid 1px $grey;
       }
 
       &.col1{
-        li.label{
-          width: 36%;
-        }
-  
-        li.input{
-          width: 64%;
+        width: 40%;
+
+        ul{
+          display: flex;
+          flex-direction: column;
+
+          li.label{
+            width: 100%;
+          }
+    
+          li.input{
+            width: 100%;
+          }
         }
       }
-    }
 
-    &.obat{
-      flex-direction: row;
+      &.col2{
+        width: 60%;
+        ul{
+          display: flex;
+          flex-direction: column;
+        }
+      }
     }
   }
   
@@ -183,5 +199,23 @@ ul.noList{
   
   li{
     margin-bottom: 4px;
+  }
+}
+
+ul.numbered {
+  list-style-type: decimal; 
+  list-style-position: outside; 
+  padding: 0;
+  margin: 0;
+  padding-left: 12px; 
+  color: $black;
+  text-align: start;
+
+  li {
+    
+    p {
+      display: inline; 
+      margin-left: 0; 
+    }
   }
 }

@@ -9,6 +9,7 @@ import CpotbReqPage from './pages/pabrik/CpotbRequestPage';
 import CdobReqPage from './pages/pbf/CdobRequestPage';
 import CpotbApprove from './pages/bpom/CpotbApprove';
 import CdobApprove from './pages/bpom/CdobApprove';
+import NieApprove from './pages/bpom/NieApprove';
 import ObatPage from './pages/pabrik/ObatPage';
 import ObatReqPage from './pages/pabrik/ObatRequestPage';
 import Navbar from './components/Navbar';
@@ -26,7 +27,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<LoginPage />} />
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
           <Route path="/register" element={<RegisterPage />} />
           
           <Route 
@@ -112,6 +113,17 @@ function App() {
               <ProtectedRoute allowedRoles={['2']}>
                 <Navbar />
                 <CdobApprove />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/nie" 
+            element={
+              <ProtectedRoute allowedRoles={['2']}>
+                <Navbar />
+                <NieApprove />
                 <Footer />
               </ProtectedRoute>
             } 

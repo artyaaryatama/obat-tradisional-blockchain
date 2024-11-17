@@ -54,7 +54,7 @@ contract ObatTradisional {
 
   event evt_obatCreated(string namaProduk, string factoryInstanceNames, string factoryUserNames, address factoryAddresses, string kemasan, en_tipeProduk en_tipeProduk);
   event evt_nieRequested(string obatId, uint timestampRequested, string namaProduk);
-  event evt_nieApproved(string nieNumber, uint timestampApprove, string namaProduk);
+  event evt_nieApproved(string nieNumber, string namaProduk);
 
   function createObat(
     string memory _obatId,
@@ -100,6 +100,15 @@ contract ObatTradisional {
     obatDetails.nieRequestDate = block.timestamp;
     obatDetails.obatStatus = en_obatStatus.Requested;
 
+    for(uint i=0; i<allObatData.length; i++){
+      if (keccak256(abi.encodePacked(allObatData[i].obatId)) == keccak256(abi.encodePacked(_obatId))) {
+        allObatData[i].nieRequestDate = block.timestamp;
+        allObatData[i].obatStatus = en_obatStatus.Requested;
+
+        break;
+      }
+    }
+
     emit evt_nieRequested(_obatId, block.timestamp, obatDetails.namaProduk);
   }
 
@@ -109,7 +118,7 @@ contract ObatTradisional {
     string memory _bpomInstanceName,
     string memory _bpomUserName,
     string memory _nieNumber
-  ) public onlyBPOM {
+  ) public {
     st_obatDetails storage obatDetails = obatDetailsById[_obatId];
     require(obatDetails.obatStatus == en_obatStatus.Requested, "Obat Tradisional status must be requested!");
 
@@ -122,9 +131,19 @@ contract ObatTradisional {
     bpomInstanceNames[_obatId] = _bpomInstanceName;
     bpomUserNames[_obatId] = _bpomUserName;
 
-    emit evt_nieApproved(_nieNumber, block.timestamp, obatDetails.namaProduk);
-  }
+    for(uint i=0; i<allObatData.length; i++){
+      if (keccak256(abi.encodePacked(allObatData[i].obatId)) == keccak256(abi.encodePacked(_obatId))) {
+        allObatData[i].nieApprovalDate = block.timestamp;
+        allObatData[i].obatStatus = en_obatStatus.Approved;
+        allObatData[i].nieNumber = _nieNumber;
 
+        break;  
+      }
+    }
+
+    emit evt_nieApproved(_nieNumber, obatDetails.namaProduk);
+  }
+  
   function getListObatByFactory(string memory _factoryInstanceName)
       public view returns (
           string[] memory, // obatId
@@ -168,68 +187,93 @@ contract ObatTradisional {
     );
   }
 
-  function getListAllObat ()  
-    public view returns (
-      string[] memory, //idobat
-      string[] memory, //namaproduk
-      string[] memory,
-      uint8[] memory ) //status
+  function getListAllObatNie()
+      public
+      view
+      returns (
+          string[] memory,
+          string[] memory,
+          string[] memory, 
+          uint256[] memory, 
+          uint8[] memory 
+      )
   {
-      uint length = allObatData.length;
- 
-      uint8[] memory obatStatusArray = new uint8[](length);
-      string[] memory obatIdArray = new string[](length);
-      string[] memory namaProdukArray = new string[](length);
-      string[] memory factoryInstanceNameArray = new string[](length);
-
-      for(uint i=0; i<length; i++){
-        obatStatusArray[i] = uint8(allObatData[i].obatStatus);
-        obatIdArray[i] = allObatData[i].obatId;
-        namaProdukArray[i] = allObatData[i].namaProduk;
-        factoryInstanceNameArray[i] = factoryInstanceNames[allObatData[i].obatId];
+      uint count = 0;
+      for (uint i=0; i < allObatData.length; i++) {
+          if (allObatData[i].obatStatus != en_obatStatus.inLocalProduction) {
+              count++;
+          }
       }
 
-      return(
-        obatIdArray,
-        namaProdukArray,
-        factoryInstanceNameArray,
-        obatStatusArray 
-      ); 
+      string[] memory obatIdArray = new string[](count);
+      string[] memory namaProdukArray = new string[](count);
+      string[] memory factoryInstanceNameArray = new string[](count);
+      uint256[] memory latestTimestampArray = new uint256[](count);
+      uint8[] memory obatStatusArray = new uint8[](count);
+
+      uint index = 0;
+      for (uint i= 0; i < allObatData.length; i++) {
+          if (allObatData[i].obatStatus != en_obatStatus.inLocalProduction) {
+              obatIdArray[index] = allObatData[i].obatId;
+              namaProdukArray[index] = allObatData[i].namaProduk;
+              factoryInstanceNameArray[index] = factoryInstanceNames[allObatData[i].obatId];
+              
+              uint latest = allObatData[i].nieApprovalDate > allObatData[i].nieRequestDate
+                  ? allObatData[i].nieApprovalDate
+                  : allObatData[i].nieRequestDate;
+
+              latestTimestampArray[index] = latest;
+              obatStatusArray[index] = uint8(allObatData[i].obatStatus);
+
+              index++;
+          }
+      }
+
+      return (
+          obatIdArray,
+          namaProdukArray,
+          factoryInstanceNameArray,
+          latestTimestampArray,
+          obatStatusArray
+      );
   }
 
-function getListObatById(string memory _obatId)
-    public
-    view
-    returns (
-        st_obatDetails memory obatDetails,
-        address factoryAddress,
-        string memory factoryInstanceName,
-        string memory factoryUserName,
-        address bpomAddress,
-        string memory bpomInstanceName,
-        string memory bpomUserName
-    )
-{
-    require(bytes(obatDetailsById[_obatId].obatId).length > 0, "No data found with this ID.");
 
-    // Fetch obat details and related mappings
-    obatDetails = obatDetailsById[_obatId];
-    factoryAddress = factoryAddresses[_obatId];
-    factoryInstanceName = factoryInstanceNames[_obatId];
-    factoryUserName = factoryUserNames[_obatId];
-    bpomAddress = bpomAddresses[_obatId];
-    bpomInstanceName = bpomInstanceNames[_obatId];
-    bpomUserName = bpomUserNames[_obatId];
+  function getListObatById(string memory _obatId)
+      public
+      view
+      returns (
+          st_obatDetails memory obatDetails,
+          address factoryAddress,
+          string memory factoryInstanceName,
+          string memory factoryUserName,
+          address bpomAddress,
+          string memory bpomInstanceName,
+          string memory bpomUserName
+      )
+  {
+      require(bytes(obatDetailsById[_obatId].obatId).length > 0, "No data found with this ID.");
 
-    return (
-      obatDetails,
-      factoryAddress,
-      factoryInstanceName,
-      factoryUserName,
-      bpomAddress,
-      bpomInstanceName,
-      bpomUserName
-    );
-}
+      obatDetails = obatDetailsById[_obatId];
+      factoryAddress = factoryAddresses[_obatId];
+      factoryInstanceName = factoryInstanceNames[_obatId];
+      factoryUserName = factoryUserNames[_obatId];
+      bpomAddress = bpomAddresses[_obatId];
+      bpomInstanceName = bpomInstanceNames[_obatId];
+      bpomUserName = bpomUserNames[_obatId];
 
+      return (
+        obatDetails,
+        factoryAddress,
+        factoryInstanceName,
+        factoryUserName,
+        bpomAddress,
+        bpomInstanceName,
+        bpomUserName
+      );
+  }
+
+  function getRole(address user) public view returns (en_roles, address) {
+      return (userRoles[user], msg.sender);
+  }
 }
