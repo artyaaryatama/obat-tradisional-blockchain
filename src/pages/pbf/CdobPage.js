@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
-import contractMainSupplyChain from '../../auto-artifacts/MainSupplyChain.json';
+import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 
 import "../../styles/MainLayout.scss"
@@ -47,8 +47,8 @@ function CdobPage() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const contr = new Contract(
-            contractMainSupplyChain.address, 
-            contractMainSupplyChain.abi, 
+            contractData.MainSupplyChain.address, 
+            contractData.MainSupplyChain.abi, 
             signer
           );
             

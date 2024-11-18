@@ -1,8 +1,14 @@
 {
-  "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+  "address": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
   "abi": [
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_roleManagerAddr",
+          "type": "address"
+        }
+      ],
       "stateMutability": "nonpayable",
       "type": "constructor"
     },
@@ -29,7 +35,7 @@
         },
         {
           "indexed": false,
-          "internalType": "enum MainSupplyChain.en_roles",
+          "internalType": "uint8",
           "name": "role",
           "type": "uint8"
         }
@@ -773,43 +779,6 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "user",
-          "type": "address"
-        }
-      ],
-      "name": "getRole",
-      "outputs": [
-        {
-          "internalType": "enum MainSupplyChain.en_roles",
-          "name": "",
-          "type": "uint8"
-        },
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "owner",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "string",
           "name": "_name",
           "type": "string"
@@ -881,7 +850,7 @@
           "type": "string"
         },
         {
-          "internalType": "enum MainSupplyChain.en_jenisSediaan",
+          "internalType": "uint8",
           "name": "_jenisSediaan",
           "type": "uint8"
         }
@@ -889,25 +858,6 @@
       "name": "requestCpotb",
       "outputs": [],
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "userRoles",
-      "outputs": [
-        {
-          "internalType": "enum MainSupplyChain.en_roles",
-          "name": "",
-          "type": "uint8"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     }
   ]

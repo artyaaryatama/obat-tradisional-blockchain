@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
-import contractMainSupplyChain from '../../auto-artifacts/MainSupplyChain.json';
+import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 
 import imgLoader from '../../assets/images/loader.svg';
@@ -34,8 +34,8 @@ function CdobReqPage() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const contr = new Contract(
-            contractMainSupplyChain.address, 
-            contractMainSupplyChain.abi, 
+            contractData.MainSupplyChain.address, 
+            contractData.MainSupplyChain.abi, 
             signer
           );
             
@@ -110,7 +110,7 @@ function CdobReqPage() {
               </ul>
               <ul>
                 <li className="label">
-                  <p>TIpe tipePermohonan</p> 
+                  <p>Tipe Permohonan</p> 
                 </li>
                 <li className="input">
                   <p>{tp[_tipePermohonan]}</p> 

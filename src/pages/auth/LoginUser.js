@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { BrowserProvider, Contract } from "ethers";
 import { useNavigate } from 'react-router-dom';
-import contractMainSupplyChain from '../../auto-artifacts/MainSupplyChain.json';
+import contractData from '../../auto-artifacts/deployments.json';
 import imgLogin from '../../assets/images/login.png';
 import imgLoader from '../../assets/images/loader.svg';
 
@@ -32,11 +32,12 @@ function LoginPage() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const contr = new Contract(
-            contractMainSupplyChain.address, 
-            contractMainSupplyChain.abi, 
+            contractData.MainSupplyChain.address, 
+            contractData.MainSupplyChain.abi, 
             signer);
 
           setContract(contr);
+          console.log(contr);
         } catch (err) {
           console.error("User denied access: ", err);
           errAlert(err)
@@ -127,15 +128,15 @@ function LoginPage() {
   function autoFilled(event, role) {
     event.preventDefault();
     console.log(role);
-    if(role===1){
+    if(role===0){
       setName('Takaki Yuya')
       setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
     } else if(role===2){ 
       setName('NILOJURI') 
       setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
-    } else if(role===3){ 
+    } else if(role===1){ 
       setName('STIPEN JENSEN') 
-      setUserAddr("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC")
+      setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
     }
   }
 
@@ -187,9 +188,9 @@ function LoginPage() {
             Don't have an account? <a href="/register">Sign Up here</a>
           </p>
 
-          <button className="test" onClick={(event) => autoFilled(event, 1)}>Auto Filled Pabrik</button>
+          <button className="test" onClick={(event) => autoFilled(event, 0)}>Auto Filled Pabrik</button>
               <button className="test" onClick={(event) => autoFilled(event, 2)}>Auto Filled BPOM</button>
-              <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled PBF</button>
+              <button className="test" onClick={(event) => autoFilled(event, 1)}>Auto Filled PBF</button>
         </div>
       </div>
     </div>

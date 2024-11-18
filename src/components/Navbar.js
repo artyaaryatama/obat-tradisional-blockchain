@@ -48,7 +48,7 @@ function Navbar() {
                 )}
                 {userRole === '2' && (
                   <>
-                    <li className={currentPath === '/cpotb-bpom' || currentPath === '/cdob-bpom' ? 'active' : ''}>
+                    <li className={currentPath === '/cpotb-bpom' || currentPath === '/cdob-pbf' ? 'active' : ''}>
                       <Link to="/cpotb-bpom">SERTIFIKASI</Link>
                     </li>
                     <li className={currentPath === '/nie' ? 'active' : ''}>

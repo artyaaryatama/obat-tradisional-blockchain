@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
-import contractObatTradisional from '../../auto-artifacts/ObatTradisional.json';
+import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 
 import "../../styles/MainLayout.scss"
@@ -48,8 +48,8 @@ function ObatPage() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const contr = new Contract(
-            contractObatTradisional.address, 
-            contractObatTradisional.abi, 
+            contractData.ObatTradisional.address, 
+            contractData.ObatTradisional.abi, 
             signer
           );
             

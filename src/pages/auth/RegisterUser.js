@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { BrowserProvider, Contract } from "ethers";
-import contractMainSupplyChain from '../../auto-artifacts/MainSupplyChain.json';
+import contractData from '../../auto-artifacts/deployments.json';
 import imgLoader from '../../assets/images/loader.svg';
 
 import Swal from 'sweetalert2';
@@ -33,8 +33,8 @@ function RegisterPage() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const contr = new Contract(
-            contractMainSupplyChain.address, 
-            contractMainSupplyChain.abi, 
+            contractData.MainSupplyChain.address, 
+            contractData.MainSupplyChain.abi, 
             signer
           );
 

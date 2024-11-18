@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
-import contractObatTradisional from '../../auto-artifacts/ObatTradisional.json';
+import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 
 import imgLoader from '../../assets/images/loader.svg';
@@ -42,8 +42,8 @@ function ObatReqPage() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const contr = new Contract(
-            contractObatTradisional.address, 
-            contractObatTradisional.abi, 
+            contractData.ObatTradisional.address, 
+            contractData.ObatTradisional.abi, 
             signer
           );
             
@@ -100,7 +100,7 @@ function ObatReqPage() {
               </ul>
               <ul>
                 <li className="label">
-                  <p>Jenis Sediaan</p> 
+                  <p>Tipe Produk</p> 
                 </li>
                 <li className="input">
                   <p>{tp[_tipeProduk]}</p> 

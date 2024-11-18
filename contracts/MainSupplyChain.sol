@@ -9,6 +9,7 @@ contract MainSupplyChain {
   RoleManager roleManager;
 
   constructor(address _roleManagerAddr) {
+    // contract address role manager => data ini dari scripts/deploy.js perhatikan line 11
     roleManager = RoleManager(_roleManagerAddr);
   }
 
@@ -29,7 +30,7 @@ contract MainSupplyChain {
 
   enum en_roles { Pabrik, PBF, BPOM, Retailer }
   enum en_statusCert { Pending, Approved }
-  enum en_jenisSediaan { TabletNonbetalaktam, KapsulKerasNonbetalaktam, SerbukOralNonbetalaktam, CairanOralNonbetalaktam }
+  enum en_jenisSediaan { Tablet, Kapsul, KapsulLunak, SerbukOral, CairanOral, CairanObatDalam, CairanObatLuar, FilmStrip, Pil}
   enum en_tipePermohonan { ObatLain, CCP }
 
   struct st_userData {
@@ -55,7 +56,7 @@ contract MainSupplyChain {
   struct st_cdobData {
     string cdobId;
     string senderName;
-    address pbfAddr;
+    address pbfAddr; 
     string pbfName; 
     en_tipePermohonan tipePermohonan;
     en_statusCert status;
@@ -67,8 +68,6 @@ contract MainSupplyChain {
   }
 
   mapping (address => st_userData) private userData; 
-  // mapping (address => en_roles) public userRoles; 
-  // mapping (address => bool) private isRegistered;
   mapping (string => st_cpotbData) public cpotbDataById;
   mapping (string => st_cdobData) cdobDataById;
   
@@ -91,13 +90,11 @@ contract MainSupplyChain {
       name: _name,
       instanceName: _instanceName,
       userAddr: _userAddr
-      // userRole: en_roles(_userRole) // this one is optional, we can delete it since i already make another contract for role
     });
 
     RoleManager.en_roles role = RoleManager.en_roles(uint8(_userRole));
     roleManager.assignRole(_userAddr, role);
 
-    // Emit the user registration event
     emit evt_UserRegistered(_userAddr, _name, _instanceName, uint8(role)); 
   }
 
@@ -114,14 +111,14 @@ contract MainSupplyChain {
       string memory _instanceName,
       string memory _cpotbId,
       string memory _senderName,
-      en_jenisSediaan _jenisSediaan
+      uint8 _jenisSediaan
   ) public onlyFactory {
       st_cpotbData memory newCpotbData = st_cpotbData({
           cpotbId: _cpotbId,
           senderName: _senderName,
           factoryAddr: msg.sender, 
           factoryName: _instanceName,
-          jenisSediaan: _jenisSediaan, 
+          jenisSediaan: en_jenisSediaan(_jenisSediaan), 
           status: en_statusCert.Pending,
           timestampRequest: block.timestamp,
           timestampApprove: 0,
@@ -129,11 +126,11 @@ contract MainSupplyChain {
           bpomAddr: address(0),
           receiverName: ""
       });
-
+ 
       cpotbDataById[_cpotbId] = newCpotbData;
       allCpotbData.push(newCpotbData); 
 
-      emit evt_cpotbRequested(_senderName, msg.sender, _instanceName, _jenisSediaan, _cpotbId, block.timestamp);
+      emit evt_cpotbRequested(_senderName, msg.sender, _instanceName, en_jenisSediaan(_jenisSediaan), _cpotbId, block.timestamp);
   } 
  
   function approveCpotb(

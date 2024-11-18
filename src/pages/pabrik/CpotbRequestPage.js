@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
-import contractMainSupplyChain from '../../auto-artifacts/MainSupplyChain.json';
+import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 
 import imgLoader from '../../assets/images/loader.svg';
@@ -23,6 +23,18 @@ function CpotbReqPage() {
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
+  const js = {
+    0n: "Tablet",
+    1n: "Kapsul",
+    2n: "Kapsul Lunak",
+    3n: "Serbuk Oral",
+    4n: "Cairan Oral",
+    5n: "Cairan Obat Dalam",
+    6n: "Cairan Obat Luar",
+    7n: "Film Strip / Edible Film",
+    8n: "Pil"
+  };
+  
   useEffect(() => {
     document.title = "Add New Obat Request"; 
   }, []);
@@ -34,8 +46,8 @@ function CpotbReqPage() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const contr = new Contract(
-            contractMainSupplyChain.address, 
-            contractMainSupplyChain.abi, 
+            contractData.MainSupplyChain.address, 
+            contractData.MainSupplyChain.abi, 
             signer
           );
             
@@ -66,13 +78,6 @@ function CpotbReqPage() {
           minute: '2-digit',
           second: '2-digit',
         });
-
-        const js = {
-          0n : "Tablet Non Betalaktam",
-          1n : "Kapsul Keras Non Betalaktam",
-          2n : "Serbuk Oral Non Betalaktam",
-          3n : "Cairan Oral Non Betalaktam"
-        };
     
         MySwal.fire({
           title: "Pengajuan Sertifikat CPOTB Berhasil",
@@ -148,10 +153,11 @@ function CpotbReqPage() {
     e.preventDefault();
 
     setLoader(true)
+    const jenisSediaanInt = parseInt(jenisSediaan)
 
-    if (!jenisSediaan) {
+    if (jenisSediaanInt === "" || isNaN(jenisSediaanInt)) {
       errAlert(0, "Please select a valid Jenis Sediaan");
-      setLoader(false)
+      setLoader(false);
       return;
     }
 
@@ -164,21 +170,13 @@ function CpotbReqPage() {
       allowOutsideClick: false,
     })
 
-    const js = {
-      "TabletNonbetalaktam": 0n,
-      "KapsulKerasNonbetalaktam": 1n,
-      "SerbukOralNonbetalaktam": 2n,
-      "CairanOralNonbetalaktam": 3n
-    };
-
+    
     const id = Math.random().toString(36).slice(2, 9);
     console.log('ini req id:', id);
-    console.log(userdata);
-
-    console.log(userdata.instanceName, id, userdata.name, js[jenisSediaan]);
+    console.log(userdata.instanceName, id, userdata.name, jenisSediaanInt);
 
     try {
-      const tx = await contract.requestCpotb(userdata.instanceName, id, userdata.name, js[jenisSediaan]);
+      const tx = await contract.requestCpotb(userdata.instanceName, id, userdata.name, jenisSediaanInt);
       await tx.wait();
       console.log('Receipt:', tx);
 
@@ -189,8 +187,8 @@ function CpotbReqPage() {
   };
 
   const handleOptionJenisSediaan = (e) => {
-    setJenisSediaan(e.target.value);
-    console.log("Selected value:", e.target.value);
+    setJenisSediaan((e.target.value)); 
+    console.log("Selected Jenis Sediaan (uint8):", parseInt(e.target.value));
   };
 
   return (
@@ -228,10 +226,15 @@ function CpotbReqPage() {
                 onChange={handleOptionJenisSediaan}
               >
                 <option value="" disabled>Select Jenis Sediaan</option>
-                <option value="TabletNonbetalaktam">Tablet Non Betalaktam</option>
-                <option value="KapsulKerasNonbetalaktam">Kapsul Keras Non Betalaktam</option>
-                <option value="SerbukOralNonbetalaktam">Serbuk Oral Non Betalaktam</option>
-                <option value="CairanOralNonbetalaktam">Cairan Oral Non Betalaktam</option>
+                <option value="0n">Tablet</option>
+                <option value="1n">Kapsul</option>
+                <option value="2n">Kapsul Lunak</option>
+                <option value="3n">Serbuk Oral</option>
+                <option value="4n">Cairan Oral</option>
+                <option value="5n">Cairan Obat Dalam</option>
+                <option value="6n">Cairan Obat Luar</option>
+                <option value="7n">Film Strip / Edible Film</option>
+                <option value="8n">Pil</option>
               </select>
             </li>
           </ul>

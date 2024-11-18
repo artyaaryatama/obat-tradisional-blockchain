@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
-import contractMainSupplyChain from '../../auto-artifacts/MainSupplyChain.json';
+import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 
 import "../../styles/MainLayout.scss"
@@ -18,11 +18,17 @@ function CpotbPage() {
   const [dataCpotb, setDataCpotb] = useState([]);
 
   const jenisSediaanMap = {
-    0: "Tablet Non Betalaktam",
-    1: "Kapsul Keras Non Betalaktam",
-    2: "Serbuk Oral Non Betalaktam",
-    3: "Cairan Oral Non Betalaktam"
+    0n: "Tablet",
+    1n: "Kapsul",
+    2n: "Kapsul Lunak",
+    3n: "Serbuk Oral",
+    4n: "Cairan Oral",
+    5n: "Cairan Obat Dalam",
+    6n: "Cairan Obat Luar",
+    7n: "Film Strip / Edible Film",
+    8n: "Pil"
   };
+
 
   const statusMap = {
     0: "Pending",
@@ -49,8 +55,8 @@ function CpotbPage() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const contr = new Contract(
-            contractMainSupplyChain.address, 
-            contractMainSupplyChain.abi, 
+            contractData.MainSupplyChain.address, 
+            contractData.MainSupplyChain.abi, 
             signer
           );
             
