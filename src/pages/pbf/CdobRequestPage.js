@@ -147,8 +147,6 @@ function CdobReqPage() {
 
     setLoader(true)
     console.log(userdata.address);
-    const rroletes = await contract.getRole(userdata.address)
-    console.log('INIII USER ADDRESS ROLENYAA',rroletes);
 
     if (!tipePermohonan) {
       errAlert(0, "Please select a valid Tipe Permohonan")

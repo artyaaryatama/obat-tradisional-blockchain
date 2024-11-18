@@ -114,8 +114,6 @@ function LoginPage() {
         } else {
           console.error("Wrong input! Username and User Address not match.")
         }
-
-        await testRole()
         
       } catch (err) {
         setLoader(false)
@@ -125,12 +123,6 @@ function LoginPage() {
       console.log("Please filled all input!")
     }
   }; 
-
-  const testRole = async () => {
-    const userdata = JSON.parse(sessionStorage.getItem('userdata')); 
-    const tx = await contract.getRole(userdata.address)
-    console.log('ini tx',tx);
-  }
 
   function autoFilled(event, role) {
     event.preventDefault();

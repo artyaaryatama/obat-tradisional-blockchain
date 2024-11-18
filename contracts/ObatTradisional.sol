@@ -2,22 +2,23 @@
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
+import "./RoleManager.sol";
  
 contract ObatTradisional {
 
-  address public owner; 
+  RoleManager roleManager;
 
-  constructor() {
-    owner = msg.sender;
+  constructor(address _roleManagerAddr) {
+    roleManager = RoleManager(_roleManagerAddr);
   }
 
   modifier onlyFactory() { 
-    require(userRoles[msg.sender] == en_roles.Pabrik, "Access restricted to Factory role");
+    require(roleManager.hasRole(msg.sender, RoleManager.en_roles.Pabrik), "Access restricted to Pabrik role");
     _;
-  }
+  } 
 
   modifier onlyBPOM() {
-    require(userRoles[msg.sender] == en_roles.BPOM, "Access restricted to BPOM role");
+    require(roleManager.hasRole(msg.sender, RoleManager.en_roles.BPOM), "Access restricted to BPOM role");
     _;
   }
 

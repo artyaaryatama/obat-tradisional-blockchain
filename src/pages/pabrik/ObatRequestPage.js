@@ -31,10 +31,6 @@ function ObatReqPage() {
 
   const klaimValue = klaim.join("\n");
 
-  const today = new Date();
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  const formattedDate = today.toLocaleDateString('id-ID', options);
-
   useEffect(() => {
     document.title = "Create Obat Tradisional"; 
   }, []);
@@ -217,20 +213,6 @@ function ObatReqPage() {
     setKomposisi(autoFillValues.komposisi);
   };
 
-  const handleOptionKemasanPrimer = (e) => {
-    setKemasanPrim(e.target.value);
-    console.log(e.target.value);
-  };
-
-  const handleOptionKemasanSekunder = (e) => {
-    setKemasanSeku(e.target.value);
-    console.log(e.target.value);
-  };
-    
-  const hancleOptionSatuan = (e) => {
-    setSatuanKemasanPrim(e.target.value);
-    console.log(e.target.value);
-  }
 
   const handleKomposisiChange = (index, e) => {
     const newKomposisi = [...komposisi];
@@ -268,14 +250,6 @@ function ObatReqPage() {
       
       <div className='container-form'>
         <form onSubmit={createObat}>
-          <ul>
-            <li className="label">
-              <label htmlFor="formatedDate">Tanggal Pembuatan</label>
-            </li>
-            <li className="input">
-              <input type="text" name="formatedDate" value={formattedDate} readOnly />
-            </li>
-          </ul>
 
           <ul>
             <li className="label">

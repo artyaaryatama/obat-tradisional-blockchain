@@ -2,32 +2,28 @@
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
+import "./RoleManager.sol";
 
 contract MainSupplyChain {
 
-  address public owner;
+  RoleManager roleManager;
 
-  constructor() {
-    owner = msg.sender;
+  constructor(address _roleManagerAddr) {
+    roleManager = RoleManager(_roleManagerAddr);
   }
 
-  modifier onlyOwner() {
-    require(owner == msg.sender, "You don't have authorization");
-    _;
-  } 
-
   modifier onlyFactory() { 
-    require(userRoles[msg.sender] == en_roles.Pabrik, "Access restricted to Factory role");
+    require(roleManager.hasRole(msg.sender, RoleManager.en_roles.Pabrik), "Access restricted to Factory role");
     _;
   }
 
   modifier onlyBPOM() {
-    require(userRoles[msg.sender] == en_roles.BPOM, "Access restricted to BPOM role");
+    require(roleManager.hasRole(msg.sender, RoleManager.en_roles.BPOM), "Access restricted to BPOM role");
     _;
   }
-
+ 
   modifier onlyPBF() {
-    require(userRoles[msg.sender] == en_roles.PBF, "Access restricted to PBF role");
+    require(roleManager.hasRole(msg.sender, RoleManager.en_roles.PBF), "Access restricted to PBF role");
     _; 
   }
 
@@ -39,8 +35,7 @@ contract MainSupplyChain {
   struct st_userData {
     string name;
     string instanceName;
-    address userAddr;
-    en_roles userRole; 
+    address userAddr; 
   }
 
   struct st_cpotbData {
@@ -72,15 +67,15 @@ contract MainSupplyChain {
   }
 
   mapping (address => st_userData) private userData; 
-  mapping (address => en_roles) public userRoles; 
-  mapping (address => bool) private isRegistered;
+  // mapping (address => en_roles) public userRoles; 
+  // mapping (address => bool) private isRegistered;
   mapping (string => st_cpotbData) public cpotbDataById;
   mapping (string => st_cdobData) cdobDataById;
   
   st_cpotbData[] public allCpotbData;
   st_cdobData[] public allCdobData;
 
-  event evt_UserRegistered(address userAddr, string name, string instanceName, en_roles role);
+  event evt_UserRegistered(address userAddr, string name, string instanceName, uint8 role);
   event evt_cpotbRequested(string senderName, address factoryAddr, string factoryName, en_jenisSediaan jenisSediaan, string cpotbId, uint timestampRequest);
   event evt_cpotbApproved(address bpomAddr, string receiverName, string factoryName, string cpotbNumber, uint timestampApprove);
   event evt_cdobRequested(string senderName, address pbfAddr, string pbfName, en_tipePermohonan tipePermohonan, string cdobId, uint timestampRequest);
@@ -95,20 +90,24 @@ contract MainSupplyChain {
     userData[_userAddr] = st_userData({
       name: _name,
       instanceName: _instanceName,
-      userAddr: _userAddr,
-      userRole: en_roles(_userRole)
+      userAddr: _userAddr
+      // userRole: en_roles(_userRole) // this one is optional, we can delete it since i already make another contract for role
     });
 
-    userRoles[_userAddr] = en_roles(_userRole); 
-    isRegistered[_userAddr] = true;
+    RoleManager.en_roles role = RoleManager.en_roles(uint8(_userRole));
+    roleManager.assignRole(_userAddr, role);
 
-    emit evt_UserRegistered(_userAddr, _name, _instanceName, en_roles(_userRole));  
+    // Emit the user registration event
+    emit evt_UserRegistered(_userAddr, _name, _instanceName, uint8(role)); 
   }
 
   function getRegisteredUser(address _userAddr) public view returns (address, string memory, string memory, uint8) {
-      require(isRegistered[_userAddr], "User is not registered");
+      require(roleManager.checkRegistration(_userAddr), "User is not registered"); 
+
       st_userData memory user = userData[_userAddr];
-      return (user.userAddr, user.name, user.instanceName, uint8(user.userRole)); 
+      RoleManager.en_roles role = roleManager.getRole(_userAddr);
+       
+      return (user.userAddr, user.name, user.instanceName, uint8(role)); 
   }
 
   function requestCpotb(
@@ -379,11 +378,9 @@ contract MainSupplyChain {
   }
 
   function getListCdobById(string memory _cdobId) public view returns(st_cdobData memory) {
-  require(bytes(cdobDataById[_cdobId].cdobId).length > 0, "No data found for this ID.");
-  return cdobDataById[_cdobId];
+    require(bytes(cdobDataById[_cdobId].cdobId).length > 0, "No data found for this ID.");
+
+    return cdobDataById[_cdobId];
   } 
 
-  function getRole(address user) public view returns (en_roles, address) {
-      return (userRoles[user], msg.sender);
-  }
 }

@@ -156,14 +156,6 @@ function NieApprove() {
   const getDetailObat = async (id) => {
     
     console.log(id); 
-
-    try {
-      const tc = await contract.getRole(userdata.address)
-      console.log(tc);
-      
-    } catch (error) {
-      console.error(error);
-    }
     
     try {
       const tx = await contract.getListObatById(id);
