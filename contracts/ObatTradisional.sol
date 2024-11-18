@@ -3,13 +3,16 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 import "./RoleManager.sol";
+import "./MainSupplyChain.sol";
  
 contract ObatTradisional {
 
-  RoleManager roleManager;
+  RoleManager public roleManager;
+  MainSupplyChain public mainSupplyChain; 
 
-  constructor(address _roleManagerAddr) {
+  constructor(address _roleManagerAddr, address _mainSupplyChainAddr) {
     roleManager = RoleManager(_roleManagerAddr);
+    mainSupplyChain = MainSupplyChain(_mainSupplyChainAddr);
   }
 
   modifier onlyFactory() { 
@@ -26,6 +29,7 @@ contract ObatTradisional {
   enum en_orderStatus { inProduction, inShipment, inDelivery }
   enum en_roles { Pabrik, PBF, BPOM, Retailer }
   enum en_tipeProduk {obatTradisional, suplemenKesehatan}
+  enum en_jenisSediaan { Tablet, Kapsul, KapsulLunak, SerbukOral, CairanOral, CairanObatDalam, CairanObatLuar, FilmStrip, Pil}
 
   struct st_obatDetails {
     string obatId;
@@ -44,6 +48,7 @@ contract ObatTradisional {
   st_obatDetails[] public allObatData;
   mapping (address => en_roles) public userRoles;
   mapping (string => st_obatDetails) public obatDetailsById;
+  mapping(address => mapping(uint8 => bool)) public approvedJenisSediaan; // factory_address => en_jenisSediaan => true/false 
 
   // New mappings for BPOM and Factory Details
   mapping(string => address) public bpomAddresses;
@@ -56,6 +61,13 @@ contract ObatTradisional {
   event evt_obatCreated(string namaProduk, string factoryInstanceNames, string factoryUserNames, address factoryAddresses, string kemasan, en_tipeProduk en_tipeProduk);
   event evt_nieRequested(string obatId, uint timestampRequested, string namaProduk);
   event evt_nieApproved(string nieNumber, string namaProduk);
+
+  function getJenisSediaanAvail(string memory _factoryInstanceName)
+  public view returns(uint8[] memory) {
+     uint8[] memory approvedJenisSediaan = mainSupplyChain.hasApprovedCpotb(_factoryInstanceName); 
+
+     return approvedJenisSediaan;
+  } 
 
   function createObat(
     string memory _obatId,
@@ -147,10 +159,10 @@ contract ObatTradisional {
   
   function getListObatByFactory(string memory _factoryInstanceName)
       public view returns (
-          string[] memory, // obatId
-          string[] memory, // namaProduk
-          uint8[] memory,  // obatStatus
-          uint8[] memory  // tipe produk
+        string[] memory, // obatId
+        string[] memory, // namaProduk
+        uint8[] memory,  // obatStatus
+        uint8[] memory  // tipe produk
       )
   {
     uint count = 0;

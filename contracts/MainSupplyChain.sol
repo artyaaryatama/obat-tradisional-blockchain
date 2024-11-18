@@ -70,6 +70,7 @@ contract MainSupplyChain {
   mapping (address => st_userData) private userData; 
   mapping (string => st_cpotbData) public cpotbDataById;
   mapping (string => st_cdobData) cdobDataById;
+  mapping (string => en_jenisSediaan) public cpotbJenisSediaan;
   
   st_cpotbData[] public allCpotbData;
   st_cdobData[] public allCdobData;
@@ -79,6 +80,7 @@ contract MainSupplyChain {
   event evt_cpotbApproved(address bpomAddr, string receiverName, string factoryName, string cpotbNumber, uint timestampApprove);
   event evt_cdobRequested(string senderName, address pbfAddr, string pbfName, en_tipePermohonan tipePermohonan, string cdobId, uint timestampRequest);
   event evt_cdobApptoved(address bpomAddr, string receiverName, string pbfName, string cdobNumber, uint timestampApprove);
+
 
   function registerUser(
     string memory _name, 
@@ -119,7 +121,8 @@ contract MainSupplyChain {
           factoryAddr: msg.sender, 
           factoryName: _instanceName,
           jenisSediaan: en_jenisSediaan(_jenisSediaan), 
-          status: en_statusCert.Pending,
+          // status: en_statusCert.Pending,
+          status: en_statusCert.Approved,
           timestampRequest: block.timestamp,
           timestampApprove: 0,
           cpotbNumber: "",
@@ -160,6 +163,42 @@ contract MainSupplyChain {
     } 
 
     emit evt_cpotbApproved(msg.sender, _receiverName, cpotbDatas.factoryName, _cpotbNumber, block.timestamp);
+  }
+
+  function hasApprovedCpotb(string memory _factoryName)
+      public
+      view
+      returns (uint8[] memory)
+  {
+      uint256 count = 0;
+
+      // First pass: Count how many entries match
+      for (uint256 i = 0; i < allCpotbData.length; i++) {
+          bool nameMatch = keccak256(abi.encodePacked(allCpotbData[i].factoryName)) == keccak256(abi.encodePacked(_factoryName));
+          bool statusApproved = allCpotbData[i].status == en_statusCert.Approved;
+  
+          if (nameMatch && statusApproved) {
+            count++;
+          }
+      }
+
+      // Create a fixed-size array for the results
+      uint8[] memory jenisSediaanAvailArray = new uint8[](count);
+
+      uint256 index = 0;
+
+      // Second pass: Populate the array
+      for (uint256 i = 0; i < allCpotbData.length; i++) {
+          bool nameMatch = keccak256(abi.encodePacked(allCpotbData[i].factoryName)) == keccak256(abi.encodePacked(_factoryName));
+          bool statusApproved = allCpotbData[i].status == en_statusCert.Approved;
+
+          if (nameMatch && statusApproved) {
+              jenisSediaanAvailArray[index] = uint8(allCpotbData[i].jenisSediaan);
+              index++;
+          }
+      }
+
+      return jenisSediaanAvailArray;
   }
 
   function getListCpotbByFactory(string memory _instanceName) 

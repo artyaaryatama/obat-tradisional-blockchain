@@ -16,7 +16,7 @@ async function main() {
 
     // Deploy ObatTradisional
     const ObatTradisional = await hre.ethers.getContractFactory("ObatTradisional");
-    const deployedObatTradisional = await ObatTradisional.deploy(deployedRoleManager.target);
+    const deployedObatTradisional = await ObatTradisional.deploy(deployedRoleManager.target, deployedMainSupplyChain.target);
     await deployedObatTradisional.waitForDeployment();
     console.log("ObatTradisional deployed to:", deployedObatTradisional.target);
 

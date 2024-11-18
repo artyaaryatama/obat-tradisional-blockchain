@@ -28,8 +28,21 @@ function ObatReqPage() {
   const [ketKemasanSeku, setKetKemasanSeku] = useState("")
   const [komposisi, setKomposisi] = useState([""])
   const [tipeProduk, setTipeProduk] = useState("obatTradisonal")
+  const [options, setOptions] = useState([]);
 
   const klaimValue = klaim.join("\n");
+
+  const js = {
+    0n: "Tablet",
+    1n: "Kapsul",
+    2n: "Kapsul Lunak",
+    3n: "Serbuk Oral",
+    4n: "Cairan Oral",
+    5n: "Cairan Obat Dalam",
+    6n: "Cairan Obat Luar",
+    7n: "Film Strip / Edible Film",
+    8n: "Pil"
+  };
 
   useEffect(() => {
     document.title = "Create Obat Tradisional"; 
@@ -58,6 +71,35 @@ function ObatReqPage() {
     }
     connectWallet();
   }, []);
+
+  useEffect(() => {
+
+    const loadJenisSediaan = async () => {
+      if(contract) {
+        try {
+          const tx = await contract.getJenisSediaanAvail(userdata.instanceName);
+          console.log("ini jenis sediaan yg ada", tx);
+  
+          if (tx.length > 0) {
+            const dynamicOptions = Object.entries(tx).reduce((acc, [key, value]) => {
+              acc[value] = js[value]; // Map BigInt value to the description
+              return acc;
+            }, {});
+            
+            setOptions(dynamicOptions)
+          } else {
+            console.log("No approved jenis sediaan found.");
+          }
+
+        } catch (error) {
+          errAlert(error, "Can't access Jenis Sediaan CPOTB")
+        }
+      }
+
+    }
+
+    loadJenisSediaan()
+  }, [contract])
 
   useEffect(() => {
     if (contract) {
@@ -158,8 +200,6 @@ function ObatReqPage() {
 
     console.log({id, namaProduk, tipeProduk, merk, klaim, kemasanSet, komposisi}, tp[tipeProduk], userdata.instanceName, userdata.name, userdata.address);
 
-    // console.log(userdata.instanceName, id, userdata.name, js[jenisSediaan]);
-
     try {
       const tx = await contract.createObat(
         id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.address, userdata.instanceName, userdata.name, tp[tipeProduk], 
@@ -212,7 +252,6 @@ function ObatReqPage() {
     setKetKemasanSeku(autoFillValues.ketKemasanSeku);
     setKomposisi(autoFillValues.komposisi);
   };
-
 
   const handleKomposisiChange = (index, e) => {
     const newKomposisi = [...komposisi];
@@ -331,19 +370,20 @@ function ObatReqPage() {
             <li className="input">
 
               <div className="input-group">
-                <select
-                  name="kemasanObat"
-                  id="kemasanObat"
-                  value={kemasanPrim}
-                  onChange= {(e) => setKemasanPrim(e.target.value)}
-                  required
-                >
-                  <option value="Botol Plastik">Botol Plastik</option>
-                  <option value="Botol Kaca">Botol Kaca</option>
-                  <option value="Sachet">Sachet</option>
-                  <option value="Strip">Strip</option>
-                  <option value="Blister Pack">Blister Pack</option>
-                </select>
+              <select
+                name="kemasanObat"
+                id="kemasanObat"
+                value={kemasanPrim}
+                onChange={(e) => setKemasanPrim(e.target.value)}
+                required
+              >
+                <option value="">Select an option</option>
+                {Object.entries(options).map(([key, value]) => (
+                  <option key={key} value={key}>
+                    {value}
+                  </option>
+                ))}
+              </select>
                 <input 
                   type="number" 
                   value= {ketKemasanPrim}

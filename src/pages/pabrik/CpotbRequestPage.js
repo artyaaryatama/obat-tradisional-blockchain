@@ -141,7 +141,7 @@ function CpotbReqPage() {
         console.log("Request CPOTB Event Triggered: ", { _name, _userAddr, _instanceName, jenisSediaan: js[_jenisSediaan], _cpotbId, _timestampRequest });
         
       });
-  
+
       return () => {
         console.log("Removing evt_cpotbRequested listener");
         contract.removeAllListeners("evt_cpotbRequested");
@@ -227,6 +227,7 @@ function CpotbReqPage() {
               >
                 <option value="" disabled>Select Jenis Sediaan</option>
                 <option value="0n">Tablet</option>
+                <option value="8n">Pil</option>
                 <option value="1n">Kapsul</option>
                 <option value="2n">Kapsul Lunak</option>
                 <option value="3n">Serbuk Oral</option>
@@ -234,7 +235,6 @@ function CpotbReqPage() {
                 <option value="5n">Cairan Obat Dalam</option>
                 <option value="6n">Cairan Obat Luar</option>
                 <option value="7n">Film Strip / Edible Film</option>
-                <option value="8n">Pil</option>
               </select>
             </li>
           </ul>

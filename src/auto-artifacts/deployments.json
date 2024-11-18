@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf",
+    "address": "0x1f10F3Ba7ACB61b2F50B9d6DdCf91a6f787C0E82",
     "abi": [
       {
         "inputs": [
@@ -458,6 +458,25 @@
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "name": "cpotbJenisSediaan",
+        "outputs": [
+          {
+            "internalType": "enum MainSupplyChain.en_jenisSediaan",
+            "name": "",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "getListAllCdob",
         "outputs": [
@@ -781,6 +800,25 @@
         "inputs": [
           {
             "internalType": "string",
+            "name": "_factoryName",
+            "type": "string"
+          }
+        ],
+        "name": "hasApprovedCpotb",
+        "outputs": [
+          {
+            "internalType": "uint8[]",
+            "name": "",
+            "type": "uint8[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
             "name": "_name",
             "type": "string"
           },
@@ -864,13 +902,18 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0x9d4454B023096f34B160D6B654540c56A1F81688",
+    "address": "0x457cCf29090fe5A24c19c1bc95F492168C0EaFdb",
     "abi": [
       {
         "inputs": [
           {
             "internalType": "address",
             "name": "_roleManagerAddr",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_mainSupplyChainAddr",
             "type": "address"
           }
         ],
@@ -1059,6 +1102,30 @@
       {
         "inputs": [
           {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "uint8",
+            "name": "",
+            "type": "uint8"
+          }
+        ],
+        "name": "approvedJenisSediaan",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
             "internalType": "string",
             "name": "",
             "type": "string"
@@ -1223,6 +1290,25 @@
             "internalType": "string",
             "name": "",
             "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_factoryInstanceName",
+            "type": "string"
+          }
+        ],
+        "name": "getJenisSediaanAvail",
+        "outputs": [
+          {
+            "internalType": "uint8[]",
+            "name": "",
+            "type": "uint8[]"
           }
         ],
         "stateMutability": "view",
@@ -1426,6 +1512,19 @@
         "type": "function"
       },
       {
+        "inputs": [],
+        "name": "mainSupplyChain",
+        "outputs": [
+          {
+            "internalType": "contract MainSupplyChain",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [
           {
             "internalType": "string",
@@ -1495,6 +1594,19 @@
         "name": "requestNie",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "roleManager",
+        "outputs": [
+          {
+            "internalType": "contract RoleManager",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
