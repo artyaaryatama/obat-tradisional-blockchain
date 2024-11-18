@@ -93,7 +93,7 @@ contract ObatTradisional {
 
     emit evt_obatCreated(_namaProduk, _factoryInstanceName, _factoryUserName, _factoryAddr, _kemasan, en_tipeProduk(_tipeProduk));
   }
-
+ 
   function requestNie(string memory _obatId) public onlyFactory {
     st_obatDetails storage obatDetails = obatDetailsById[_obatId];
     require(obatDetails.obatStatus == en_obatStatus.inLocalProduction, "Obat Tradisional status must be in local production!");

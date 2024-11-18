@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 contract RoleManager {
     enum en_roles { Pabrik, PBF, BPOM, Retailer }
-
+ 
     mapping(address => en_roles) private userRoles;
     mapping(address => bool) private isRegistered;
 

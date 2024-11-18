@@ -1,6 +1,6 @@
 {
-  "watch": ["contracts/MainSupplyChain.sol"],
-  "exec": "npx hardhat run scripts/DeployMainSupplyChain.js --network localhost",
+  "watch": ["contracts/MainSupplyChain.sol", "contracts/ObatTradisional.sol", "contracts/RoleManager.sol"],
+  "exec": "npx hardhat run scripts/DeployContract.js --network localhost",
   "ext": "sol",
   "delay": "1000"
 }
