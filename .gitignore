@@ -40,3 +40,6 @@ yarn-error.log*
 ignition/deployments/chain-31337
 
 blockchain-obat-tradisional.code-workspace
+
+/src/assets/images/fun
+src/components/Footer.js
