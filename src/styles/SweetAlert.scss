@@ -3,10 +3,11 @@
 
 .form-swal{
 
-  padding: 0 12px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-top: solid 2px $grey-light;
 
   &.form{
     padding: 0 20px;
@@ -21,6 +22,47 @@
       }
     }
   }
+
+  .row1{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+
+    .produce-obat{
+      // background-color: #a5dc86;
+      flex: 2;
+      padding-right: 14px;
+    }
+
+    .row{
+      flex: 1;
+
+      ul{
+        background-color: #a5dc86;
+
+        li.label-sm{
+          // background-color: #86947d;
+          width: 18%;
+          text-align: left;
+          font-weight: 600;
+
+          label{
+            font-size: 13px;
+            color: $black;
+          }
+        }
+
+      }
+
+      .column{
+        ul{
+          flex-direction: column;
+        }
+      }
+    }
+  }
+
   .row{
     display: flex;
     flex-direction: column-reverse;
@@ -41,6 +83,10 @@
         padding-bottom: 4px;
         flex-direction: row;
         // border-bottom: solid 1px $grey;
+
+        &.numbered{
+          flex-direction: column;
+        }
       }
 
       &.col1{
@@ -85,8 +131,8 @@
 
       &.label{
         font-weight: 600;
-        width: 28%;
         text-align: left;
+        width: 28%;
 
         label{
           font-size: 13px;
@@ -217,5 +263,13 @@ ul.numbered {
       display: inline; 
       margin-left: 0; 
     }
+  }
+}
+
+button.addQuantity{
+  @include btnIcon($white, $blue);
+
+  i{
+    margin-right: 8px;
   }
 }

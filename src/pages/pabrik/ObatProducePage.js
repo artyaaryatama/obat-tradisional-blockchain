@@ -2,13 +2,18 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
+import { create } from 'ipfs-http-client';
+
+import DataTable from '../../components/TableData';
 
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import { colors } from '@mui/material';
 
 const MySwal = withReactContent(Swal);
+const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 
 function ObatProduce() {
   const [contract, setContract] = useState();
@@ -16,6 +21,9 @@ function ObatProduce() {
 
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
+  const [obatDetail, setObatDetail] = useState({});
+  const [ipfsHashes, setIpfsHashes] = useState([])
+  
 
   const obatStatusMap = {
     0: "In Local Production",
@@ -73,6 +81,7 @@ function ObatProduce() {
           const tx = await contract.getListAllProducedObatByFactory(userData.instanceName);
           const [obatIdArray, namaProdukArray, obatQuantityArray] = tx;
 
+          // You then use map on obatIdArray, which iterates through each obatId
           const reconstructedData = obatIdArray.map((obatId, index) => ({
             namaObat: namaProdukArray[index],
             idObat: obatIdArray[index],
@@ -140,8 +149,138 @@ function ObatProduce() {
       };
     }
   }, [contract]);
+  
 
   const getDetailObat = async (id) => {
+    const ipfsHashes = [
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
+      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
+      // Add more hashes as needed
+    ];
 
     try {
       const tx = await contract.getListObatById(id);
@@ -170,9 +309,10 @@ function ObatProduce() {
         bpomInstanceNames:  bpomInstanceName ?  bpomInstanceName : "-"
       };
 
+      setObatDetail(detailObat)
       console.log(detailObat);
       
-      if(detailObat.obatStatus === 'Approved NIE'){
+      if(detailObat.obatStatus === ' NIE'){
         MySwal.fire({
           title: `Detail Obat ${detailObat.namaObat}`,
           html: (
@@ -328,258 +468,60 @@ function ObatProduce() {
 
       } else{
         MySwal.fire({
-          title: `Detail Obat ${detailObat.namaObat}`,
+          title: `Produksi Obat ${detailObat.namaObat}`,
           html: (
             <div className='form-swal'>
-              <div className="row row--obat">
-                <div className="col col1">
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nomor NIE</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.nieNumber}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Pengajuan NIE</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.nieRequestDate}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Disertifikasi NIE</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.nieApprovalDate}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Di Produksi oleh</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryInstanceName}</p>
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Address Pengirim</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryAddr}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nama Pengirim</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryUserName}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Address BPOM</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.bpomAddr}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nama Penyutuju</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.bpomUserName}</p> 
-                    </li>
-                  </ul>
-                </div>
-  
-                <div className="col col2">
-                  <ul>
-                    <li className="label">
-                      <p>Status Obat</p>
-                    </li>
-                    <li className="input">
-                      <p className={detailObat.obatStatus}>{detailObat.obatStatus}</p>
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nama Obat</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.namaObat}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tipe Produk</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.tipeProduk}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Kemasan Obat</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.kemasan}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Klaim Obat</p>
-                    </li>
-                    <li className="input">
-                      <ul className='numbered'>
-                        {detailObat.klaim.map((item, index) => (
-                          <li key={index}><p>{item}</p></li>
-                        ))}
-                      </ul>
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Komposisi Obat</p>
-                    </li>
-                    <li className="input">
-                      <ul className='numbered'>
-                        {detailObat.komposisi.map((item, index) => (
-                          <li key={index}><p>{item}</p></li>
-                        ))}
-                      </ul>
-                    </li>
-                  </ul>
-  
-                </div>
-              </div>
-            
-            </div>
-          ),
-          width: '820',
-          showCancelButton: true,
-          confirmButtonText: 'Request NIE',
-        }).then((result) => {
-  
-          if(result.isConfirmed){
-            MySwal.fire({
-              title: "Request NIE",
-              html: (
-                <div className='form-swal'>
-                  <div className="row row--obat">
-                    <div className="col col1">
-        
-                      <ul>
-                        <li className="label">
-                          <p>Nomor NIE</p>
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.nieNumber}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Tanggal Pengajuan NIE</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.nieRequestDate}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Tanggal Disertifikasi NIE</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.nieApprovalDate}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Di Produksi oleh</p>
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.factoryInstanceName}</p>
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Address Pengirim</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.factoryAddr}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Nama Pengirim</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.factoryUserName}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Address BPOM</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.bpomAddr}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Nama Penyutuju</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.bpomUserName}</p> 
-                        </li>
-                      </ul>
+              <div className="row1">
+                <div className="produce-obat">
+                  <div className="detailObat">
+                    <div className="row row--obat">
+                      <div className="col">
+                        <ul>
+                          <li className="label-sm">
+                            <p>Nama Obat</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailObat.namaObat}</p> 
+                          </li>
+                        </ul>
+
+                        <ul>
+                          <li className="label-sm">
+                            <p>Nomor NIE</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailObat.nieNumber}</p> 
+                          </li>
+                        </ul>
+                      
+                        <ul>
+                          <li className="label-sm">
+                            <p>Di Produksi oleh</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailObat.factoryInstanceName}</p>
+                          </li>
+                        </ul>
+
+                        <ul>
+                          <li className="label-sm">
+                            <p>Stok Tersedia</p>
+                          </li>
+                          <li className="input">
+                            <p>0 Obat</p>
+                          
+                          </li>
+                        </ul>
+                        
+                      </div>
                     </div>
-        
-                    <div className="col col2">
-                      <ul>
-                        <li className="label">
-                          <p>Status Obat</p>
-                        </li>
-                        <li className="input">
-                          <p className={detailObat.obatStatus}>{detailObat.obatStatus}</p>
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Nama Obat</p>
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.namaObat}</p> 
-                        </li>
-                      </ul>
-        
+
+                  </div>
+                  <DataTable ipfsHashes={ipfsHashes} />
+                </div>
+                <div className="row row--obat">
+                  <div className="col column">
+
                       <ul>
                         <li className="label">
                           <p>Tipe Produk</p>
@@ -588,7 +530,7 @@ function ObatProduce() {
                           <p>{detailObat.tipeProduk}</p> 
                         </li>
                       </ul>
-        
+
                       <ul>
                         <li className="label">
                           <p>Kemasan Obat</p>
@@ -597,7 +539,7 @@ function ObatProduce() {
                           <p>{detailObat.kemasan}</p> 
                         </li>
                       </ul>
-        
+
                       <ul>
                         <li className="label">
                           <p>Klaim Obat</p>
@@ -610,7 +552,7 @@ function ObatProduce() {
                           </ul>
                         </li>
                       </ul>
-  
+
                       <ul>
                         <li className="label">
                           <p>Komposisi Obat</p>
@@ -623,7 +565,65 @@ function ObatProduce() {
                           </ul>
                         </li>
                       </ul>
+
+                  </div>
+                </div>
+
+              </div>
+            
+            </div>
+          ),
+          width: '1220',
+          showCancelButton: true,
+          confirmButtonText: 'Tambah Stok Obat',
+        }).then((result) => {
+  
+          if(result.isConfirmed){
+            MySwal.fire({
+              title: "Tambah Stok Obat",
+              html: (
+                <div className='form-swal'>
+                  <div className="row row--obat">
+                    <div className="col">
         
+                      <ul>
+                        <li className="label">
+                          <p>Nama Produk</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.namaObat}</p> 
+                        </li>
+                      </ul>
+        
+                      <ul>
+                        <li className="label">
+                          <p>Nama Pabrik</p> 
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.factoryInstanceName}</p> 
+                        </li>
+                      </ul>
+        
+                      <ul>
+                        <li className="label">
+                          <p>Jumlah Stok</p> 
+                        </li>
+                        <li className="input">
+                          <input type="number" name="stok" id="stok" />
+                        </li>
+                      </ul>
+        
+                      <ul>
+                        <li className="label">
+                          <button id='addQuantity'  className='addQuantity' >
+                            <i className="fa-solid fa-arrows-rotate"></i>
+                            Generate Data Obat
+                            </button>
+                        </li>
+                        <li className="input">
+                          <DataTable ipfsHashes={[]} />
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 
@@ -632,7 +632,27 @@ function ObatProduce() {
               width: '820',
               showCancelButton: true,
               confirmButtonText: 'Request',
-              allowOutsideClick: false
+              allowOutsideClick: false,
+              didOpen: () => {
+                const generateIpfsHash = document.getElementById('addQuantity')
+                const stokInput = document.getElementById('stok');
+                
+                const handleGenerate = async () => {
+                  const quantity = parseInt(stokInput.value, 10);
+                  if (quantity <= 0) {
+                    MySwal.showValidationMessage('Jumlah stok harus lebih dari 0');
+                    return;
+                  }
+                  const hashes = await addStok(quantity);
+                  setIpfsHashes(hashes);
+                };
+              
+                generateIpfsHash.addEventListener('click', handleGenerate);
+              
+                return () => {
+                  generateIpfsHash.removeEventListener('click', handleGenerate);
+                };
+              }
             }).then((result) => {
               if(result.isConfirmed){
                 requestNie(detailObat.obatId)
@@ -647,6 +667,12 @@ function ObatProduce() {
     } catch (e) {
       errAlert(e, "Can't retrieve data")
     }
+  }
+
+  const addStok = async(quantity) => {
+    // const ipfsHashs = [];
+    console.log(obatDetail);
+
   }
 
   const requestNie = async(id) => {
