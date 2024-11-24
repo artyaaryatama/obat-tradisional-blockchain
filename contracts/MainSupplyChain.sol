@@ -29,7 +29,7 @@ contract MainSupplyChain {
   }
 
   enum en_roles { Pabrik, PBF, BPOM, Retailer }
-  enum en_statusCert { Pending, Approved }
+  enum en_statusCert { Requested, Approved }
   enum en_jenisSediaan { Tablet, Kapsul, KapsulLunak, SerbukOral, CairanOral, CairanObatDalam, CairanObatLuar, FilmStrip, Pil}
   enum en_tipePermohonan { ObatLain, CCP }
 
@@ -121,7 +121,7 @@ contract MainSupplyChain {
           factoryAddr: msg.sender, 
           factoryName: _instanceName,
           jenisSediaan: en_jenisSediaan(_jenisSediaan), 
-          // status: en_statusCert.Pending,
+          // status: en_statusCert.Requested,
           status: en_statusCert.Approved,
           timestampRequest: block.timestamp,
           timestampApprove: 0,
@@ -142,7 +142,7 @@ contract MainSupplyChain {
     string memory _receiverName
   ) public onlyBPOM {
     st_cpotbData storage cpotbDatas = cpotbDataById[_cpotbId];
-    require(cpotbDatas.status == en_statusCert.Pending, "CPOTB status must be pending!");
+    require(cpotbDatas.status == en_statusCert.Requested, "CPOTB status must be Requested!");
     
     cpotbDatas.status = en_statusCert.Approved;
     cpotbDatas.cpotbNumber = _cpotbNumber;
@@ -294,7 +294,7 @@ contract MainSupplyChain {
           pbfAddr: msg.sender, 
           pbfName: _instanceName, 
           tipePermohonan: _tipePermohonan, 
-          status: en_statusCert.Pending,
+          status: en_statusCert.Requested,
           timestampRequest: block.timestamp,
           timestampApprove: 0,
           cdobNumber: "",
@@ -314,7 +314,7 @@ contract MainSupplyChain {
     string memory _receiverName
   ) public onlyBPOM {
     st_cdobData storage cdobDatas = cdobDataById[_cdobId];
-    require(cdobDatas.status == en_statusCert.Pending, "CPOTB status must be pending!");
+    require(cdobDatas.status == en_statusCert.Requested, "CPOTB status must be Requested!");
     
     cdobDatas.status = en_statusCert.Approved;
     cdobDatas.cdobNumber = _cdobNumber;

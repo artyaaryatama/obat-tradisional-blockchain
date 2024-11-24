@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { UserProvider } from './UserContext';
 import ProtectedRoute from './routes/ProtectedRoute';
 
 import CpotbPage from './pages/pabrik/CpotbPage';
@@ -10,8 +9,9 @@ import CdobReqPage from './pages/pbf/CdobRequestPage';
 import CpotbApprove from './pages/bpom/CpotbApprove';
 import CdobApprove from './pages/bpom/CdobApprove';
 import NieApprove from './pages/bpom/NieApprove';
-import ObatPage from './pages/pabrik/ObatPage';
-import ObatReqPage from './pages/pabrik/ObatRequestPage';
+import ObatNie from './pages/pabrik/NiePage';
+import ObatProduce from './pages/pabrik/ObatProducePage';
+import ObatCreate from './pages/pabrik/ObatCreatePage';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LoginPage from './pages/auth/LoginUser';
@@ -27,7 +27,6 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<LoginPage />} />
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
           <Route path="/register" element={<RegisterPage />} />
           
           <Route 
@@ -75,6 +74,39 @@ function App() {
           />
 
           <Route 
+            path="/obat" 
+            element={
+              <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
+                <ObatNie />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/create-obat" 
+            element={
+              <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
+                <ObatCreate />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/obat-produce" 
+            element={
+              <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
+                <ObatProduce />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
             path="/cdob" 
             element={
               <ProtectedRoute allowedRoles={['1']}>
@@ -108,7 +140,7 @@ function App() {
           />
           
           <Route 
-            path="/cdob-pbf" 
+            path="/cdob-bpom" 
             element={
               <ProtectedRoute allowedRoles={['2']}>
                 <Navbar />
@@ -119,7 +151,7 @@ function App() {
           />
 
           <Route 
-            path="/nie" 
+            path="/nie-bpom" 
             element={
               <ProtectedRoute allowedRoles={['2']}>
                 <Navbar />
@@ -129,27 +161,6 @@ function App() {
             } 
           />
           
-          <Route 
-            path="/obat" 
-            element={
-              <ProtectedRoute allowedRoles={['0']}>
-                <Navbar />
-                <ObatPage />
-                <Footer />
-              </ProtectedRoute>
-            } 
-          />
-
-          <Route 
-            path="/create-obat" 
-            element={
-              <ProtectedRoute allowedRoles={['0']}>
-                <Navbar />
-                <ObatReqPage />
-                <Footer />
-              </ProtectedRoute>
-            } 
-          />
 
           {/* <Route 
             path="/cdob-bpom" 

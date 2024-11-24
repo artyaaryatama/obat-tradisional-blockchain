@@ -10,7 +10,7 @@ import './../../styles/SweetAlert.scss';
 
 const MySwal = withReactContent(Swal);
 
-function ObatPage() {
+function ObatProduce() {
   const [contract, setContract] = useState();
   const navigate = useNavigate();
 
@@ -38,7 +38,7 @@ function ObatPage() {
   }
 
   useEffect(() => {
-    document.title = "Obat Tradisional"; 
+    document.title = "Produksi Obat Tradisional"; 
   }, []);
 
   useEffect(() => {
@@ -69,23 +69,19 @@ function ObatPage() {
     const loadData = async () => {
       if (contract && userData.instanceName) {
         try {
-          const tx = await contract.getListObatByFactory(userData.instanceName);
-          const [obatIdArray, namaProdukArray, obatStatusArray, tipeProdukArray] = tx;
 
-          const reconstructedData = obatStatusArray.map((obatStatus, index) => {
-            const readableObatStatus = obatStatusMap[obatStatus];
-            const readableTipeProduk = tipeProdukMap[tipeProdukArray[index]];
-  
-            return {
-              namaObat : namaProdukArray[index],
-              tipeProduk: readableTipeProduk,
-              obatStatus: readableObatStatus,
-              idObat: obatIdArray[index]
-            };
-          });
-  
-          setDataObat(reconstructedData);
-  
+          const tx = await contract.getListAllProducedObatByFactory(userData.instanceName);
+          const [obatIdArray, namaProdukArray, obatQuantityArray] = tx;
+
+          const reconstructedData = obatIdArray.map((obatId, index) => ({
+            namaObat: namaProdukArray[index],
+            idObat: obatIdArray[index],
+            obatQuantity: obatQuantityArray[index].toString(),
+          }));
+
+          setDataObat(reconstructedData)
+          console.log(reconstructedData);
+
         } catch (error) {
           console.error("Error loading data: ", error);
         }
@@ -670,30 +666,25 @@ function ObatPage() {
 
   return (
     <>
-      <div id="ObatPage" className='Layout-Menu layout-page'>
+      <div id="ObatProduce" className='Layout-Menu layout-page'>
         <div className="title-menu">
-          <h1>Data Obat Tradisional</h1>
+          <h1>Data Produksi Obat Tradisional</h1>
           <p>Di produksi oleh {userData.instanceName}</p>
         </div>
-        <div className="container-data">
-          <div className="menu-data">
-            <div className="btn">
-              <button className='btn-menu' onClick={() => {navigate('/create-obat')}}>
-                <i className="fa-solid fa-plus"></i>
-                Add new data
-              </button>
-            </div>
-          </div>
+        <div className="tab-menu">
+          <ul>
+            <li><button className='active' onClick={() => navigate('/obat-produce')}>Produksi Obat</button></li>
+            <li><button onClick={() => navigate('/obat')}>Pengajuan NIE</button></li>
+          </ul>
+        </div>
+        <div className="container-data ">
           <div className="data-list">
             {dataObat.length > 0 ? (
               <ul>
                 {dataObat.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.idObat)} >{item.namaObat}</button>
-                    <p>{item.tipeProduk}</p>
-                    <button className={`statusPengajuan ${item.obatStatus}`}>
-                      {item.obatStatus}
-                    </button>
+                    <p>Stok tersedia: {item.obatQuantity} Obat</p>
                   </li>
                 ))}
               </ul>
@@ -726,4 +717,4 @@ function errAlert(err, customMsg){
   console.error(errorObject);
 }
 
-export default ObatPage;
+export default ObatProduce;

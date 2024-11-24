@@ -11,7 +11,7 @@ import './../../styles/SweetAlert.scss';
 
 const MySwal = withReactContent(Swal);
 
-function ObatReqPage() {
+function ObatCreate() {
   const [contract, setContract] = useState();
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
@@ -21,7 +21,7 @@ function ObatReqPage() {
   const [namaProduk, setNamaProduk] = useState("");
   const [merk, setMerk] = useState("")
   const [klaim, setKlaim] = useState([])
-  const [kemasanPrim, setKemasanPrim] = useState("Botol Plastik")
+  const [kemasanPrim, setKemasanPrim] = useState("")
   const [kemasanSeku, setKemasanSeku] = useState("Dus")
   const [ketKemasanPrim, setKetKemasanPrim] = useState("")
   const [satuanKemasanPrim, setSatuanKemasanPrim] = useState("ml")
@@ -188,8 +188,9 @@ function ObatReqPage() {
       "suplemenKesehatan": 1n
     };
 
-    const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @ ${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
+    const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
   
+    console.log(kemasanPrim);
     const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
     const randomTwoLetters = String.fromCharCode(
       65 + Math.floor(Math.random() * 26),
@@ -379,7 +380,7 @@ function ObatReqPage() {
               >
                 <option value="">Select an option</option>
                 {Object.entries(options).map(([key, value]) => (
-                  <option key={key} value={key}>
+                  <option key={key} value={value}>
                     {value}
                   </option>
                 ))}
@@ -510,5 +511,5 @@ function errAlert(err, customMsg){
   console.error(errorObject);
 }
 
-export default ObatReqPage;
+export default ObatCreate;
 

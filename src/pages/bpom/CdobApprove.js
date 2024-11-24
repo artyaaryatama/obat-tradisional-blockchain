@@ -568,7 +568,7 @@ function CdobApprove() {
         <div className="tab-menu">
           <ul>
             <li><button onClick={() => navigate('/cpotb-bpom')}>List CPOTB</button></li>
-            <li><button className='active' onClick={() => navigate('/cdob-pbf')}>List CDOB</button></li>
+            <li><button className='active' onClick={() => navigate('/cdob-bpom')}>List CDOB</button></li>
           </ul>
         </div>
         <div className="container-data">

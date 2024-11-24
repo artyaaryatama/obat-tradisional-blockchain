@@ -31,8 +31,8 @@ function Navbar() {
                     <li className={currentPath === '/cpotb' || currentPath === '/request-cpotb' ? 'active' : ''}>
                       <Link to="/cpotb">CPOTB</Link>
                     </li>
-                    <li className={currentPath === '/obat' || currentPath === '/create-obat' ? 'active' : ''}>
-                      <Link to="/obat">OBAT TRADISIONAL</Link>
+                    <li className={currentPath === '/obat-produce' || currentPath === '/create-obat' || currentPath === '/obat' ? 'active' : ''}>
+                      <Link to="/obat-produce">OBAT TRADISIONAL</Link>
                     </li>
                   </>
                 )}
@@ -48,11 +48,11 @@ function Navbar() {
                 )}
                 {userRole === '2' && (
                   <>
-                    <li className={currentPath === '/cpotb-bpom' || currentPath === '/cdob-pbf' ? 'active' : ''}>
+                    <li className={currentPath === '/cpotb-bpom' || currentPath === '/cdob-bpom' ? 'active' : ''}>
                       <Link to="/cpotb-bpom">SERTIFIKASI</Link>
                     </li>
-                    <li className={currentPath === '/nie' ? 'active' : ''}>
-                      <Link to="/nie">IZIN EDAR</Link>
+                    <li className={currentPath === '/nie-bpom' ? 'active' : ''}>
+                      <Link to="/nie-bpom">IZIN EDAR</Link>
                     </li>
                   </>
                 )}
