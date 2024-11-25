@@ -89,13 +89,14 @@ contract ObatTradisional {
 
   mapping (address => en_roles) public userRoles;
   mapping (string => st_obatDetails) public obatDetailsById;
+  mapping (string => st_obatProduction) public obatProductionDetailsById;
 
   mapping (string => st_orderObat) public orderObatById; 
 
   event evt_obatCreated(string namaProduk, string factoryInstanceNames, string factoryUserNames, address factoryAddresses, string kemasan, en_tipeProduk en_tipeProduk);
   event evt_nieRequested(string obatId, uint timestampRequested, string namaProduk);
   event evt_nieApproved(string nieNumber, string namaProduk);
-  event evt_obatProduced(string namaProduk, uint8 quantity, string obatId);
+  event evt_obatProduced(string namaProduk, uint8 quantity);
   event evt_obatOrdered(string namaProduk, uint8 quantity, string orderId, string instanceName, address instanceAddress, uint latestTimestamp );
 
   function getJenisSediaanAvail(string memory _factoryInstanceName)
@@ -153,6 +154,7 @@ contract ObatTradisional {
     }); 
  
     allProducedObat.push(newProduction); 
+    obatProductionDetailsById[_obatId] = newProduction;
 
     emit evt_obatCreated(_namaProduk, _factoryInstanceName, _factoryUserName, _factoryAddr, _kemasan, en_tipeProduk(_tipeProduk));
   }
@@ -217,11 +219,6 @@ contract ObatTradisional {
 
     emit evt_nieApproved(_nieNumber, obatDetails.namaProduk);
   }
-  
-  function getAllProducedObat() public view returns (st_obatProduction[] memory) {
-      return allProducedObat;
-  }
-
 
   function getListObatByFactory(string memory _factoryInstanceName)
       public view returns (
@@ -316,6 +313,84 @@ contract ObatTradisional {
           obatStatusArray
       );
   }
+    
+  function getAllProducedObat() public view returns (st_obatProduction[] memory) {
+      return allProducedObat;
+  }
+
+  function getListObatById(string memory _obatId)
+    public
+    view
+    returns (
+      st_obatDetails memory obatDetails,
+      address factoryAddress,
+      string memory factoryInstanceName,
+      string memory factoryUserName,
+      address bpomAddress,
+      string memory bpomInstanceName,
+      string memory bpomUserName
+    )
+  {
+    require(bytes(obatDetailsById[_obatId].obatId).length > 0, "No data found with this ID.");
+
+    obatDetails = obatDetailsById[_obatId];
+    factoryAddress = factoryAddresses[_obatId];
+    factoryInstanceName = factoryInstanceNames[_obatId];
+    factoryUserName = factoryUserNames[_obatId];
+    bpomAddress = bpomAddresses[_obatId];
+    bpomInstanceName = bpomInstanceNames[_obatId];
+    bpomUserName = bpomUserNames[_obatId];
+
+    return (
+      obatDetails,
+      factoryAddress,
+      factoryInstanceName,
+      factoryUserName,
+      bpomAddress,
+      bpomInstanceName,
+      bpomUserName
+    );
+  }
+
+  function produceObat(
+    string memory _namaProduk,
+    string memory _obatId,
+    uint8 _obatQuantity,
+    string  memory _factoryInstanceName,
+    string[] memory _obatIpfsHash
+  ) public onlyFactory {
+
+    require (_obatQuantity == _obatIpfsHash.length, "Quantity does not match the number of IDs");
+
+      if (keccak256(abi.encodePacked(obatProductionDetailsById[_obatId].namaProduk)) == keccak256(abi.encodePacked(_namaProduk))) {
+          obatProductionDetailsById[_obatId].obatQuantity = _obatQuantity;
+          obatProductionDetailsById[_obatId].obatIpfsHash = _obatIpfsHash;
+
+          for(uint i=0; i<allProducedObat.length; i++){
+            if (keccak256(abi.encodePacked(allProducedObat[i].obatId)) == keccak256(abi.encodePacked(_obatId))) {
+              allProducedObat[i].obatQuantity = _obatQuantity;
+              allProducedObat[i].obatIpfsHash = _obatIpfsHash; 
+              break; 
+          }
+    } 
+          
+      } else {
+          st_obatProduction memory newProduction = st_obatProduction({
+            obatId: _obatId,
+            namaProduk: _namaProduk,
+            obatQuantity: _obatQuantity,
+            factoryInstanceNames: _factoryInstanceName,
+            obatIpfsHash: _obatIpfsHash
+          });
+      
+          obatProductionDetailsById[_obatId] = newProduction;  
+          allProducedObat.push(newProduction); 
+      }
+
+
+    emit evt_obatProduced(_namaProduk, _obatQuantity);
+     
+  } 
 
   function getListAllProducedObatByFactory( string memory _factoryInstanceName )
     public
@@ -354,63 +429,17 @@ contract ObatTradisional {
       );
   }
 
-  function getListObatById(string memory _obatId)
-      public
-      view
-      returns (
-          st_obatDetails memory obatDetails,
-          address factoryAddress,
-          string memory factoryInstanceName,
-          string memory factoryUserName,
-          address bpomAddress,
-          string memory bpomInstanceName,
-          string memory bpomUserName
-      )
-  {
-      require(bytes(obatDetailsById[_obatId].obatId).length > 0, "No data found with this ID.");
+  function getDetailProducedObatById(string memory _obatId) public view returns (uint8 obatQuantity, string[] memory obatIpfsHash) {
+    require(bytes(obatProductionDetailsById[_obatId].obatId).length > 0, "No data found with this ID.");
 
-      obatDetails = obatDetailsById[_obatId];
-      factoryAddress = factoryAddresses[_obatId];
-      factoryInstanceName = factoryInstanceNames[_obatId];
-      factoryUserName = factoryUserNames[_obatId];
-      bpomAddress = bpomAddresses[_obatId];
-      bpomInstanceName = bpomInstanceNames[_obatId];
-      bpomUserName = bpomUserNames[_obatId];
-
-      return (
-        obatDetails,
-        factoryAddress,
-        factoryInstanceName,
-        factoryUserName,
-        bpomAddress,
-        bpomInstanceName,
-        bpomUserName
-      );
+    obatQuantity = obatProductionDetailsById[_obatId].obatQuantity;
+    obatIpfsHash = obatProductionDetailsById[_obatId].obatIpfsHash;
+    
+    return (
+      obatQuantity,
+      obatIpfsHash
+    );
   }
-
-  function produceObat(
-    string memory _namaProduk,
-    string memory _obatId,
-    uint8 _obatQuantity,
-    string  memory _factoryInstanceName,
-    string[] memory _obatIpfsHash
-  ) public onlyFactory {
-
-    require (_obatQuantity == _obatIpfsHash.length, "Quantity does not match the number of IDs");
-
-    st_obatProduction memory newProduction = st_obatProduction({
-      obatId: _obatId,
-      namaProduk: _namaProduk,
-      obatQuantity: _obatQuantity,
-      factoryInstanceNames: _factoryInstanceName,
-      obatIpfsHash: _obatIpfsHash
-    });
- 
-    allProducedObat.push(newProduction); 
-
-    emit evt_obatProduced(_namaProduk, _obatQuantity, _obatId);
-     
-  } 
 
   function pbfOrder(
     string memory _obatIdProduk,

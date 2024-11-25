@@ -108,7 +108,7 @@ function ObatProduce() {
         const timestamp = new Date(Number(_timestampRequestNie) * 1000).toLocaleDateString('id-ID', options)
     
         MySwal.fire({
-          title: "Success Request NIE",
+          title: "Success Add New Stock",
           html: (
             <div className='form-swal'>
               <ul>
@@ -145,7 +145,7 @@ function ObatProduce() {
       contract.on("evt_obatProduced", (_namaProduk, _obatQuantity, _obatId) => {
         const quantity = _obatQuantity.toString()
         MySwal.fire({
-          title: "Success Request NIE",
+          title: "Success Add New Stock",
           html: (
             <div className='form-swal'>
               <ul>
@@ -187,114 +187,14 @@ function ObatProduce() {
   
 
   const getDetailObat = async (id) => {
-    const ipfsHashesDummy = [
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-      "QmZg4J7tFbsDfDs8pF7FBvUjxMKxs6wbZZXZWt4qjT1sHx",
-      "QmNyeTK8rRA8wR3H7VXgh9zUJ3AxwGSo2z1HdxUoDNfkzF",
-      // Add more hashes as needed
-    ];
 
     try {
       const tx = await contract.getListObatById(id);
+      const tx1 = await contract.getDetailProducedObatById(id)
 
-      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = tx
+      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = tx;
+
+      const [obatQuantity, obatIpfsHash] = tx1;
 
       const detailObat = {
         obatId: obatDetails.obatId,
@@ -357,7 +257,7 @@ function ObatProduce() {
                           <p>Stok Tersedia</p>
                         </li>
                         <li className="input">
-                          <p>0 Obat</p>
+                          <p>{obatQuantity} Obat</p>
                         
                         </li>
                       </ul>
@@ -366,7 +266,7 @@ function ObatProduce() {
                   </div>
 
                 </div>
-                <DataTable ipfsHashes={[]} />
+                <DataTable ipfsHashes={obatIpfsHash} />
               </div>
               <div className="row row--obat">
                 <div className="col column">

@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    "address": "0x67d269191c92Caf3cD7723F116c85e6E9bf55933",
     "abi": [
       {
         "inputs": [
@@ -902,7 +902,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+    "address": "0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E",
     "abi": [
       {
         "inputs": [
@@ -1064,12 +1064,6 @@
             "internalType": "uint8",
             "name": "quantity",
             "type": "uint8"
-          },
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "obatId",
-            "type": "string"
           }
         ],
         "name": "evt_obatProduced",
@@ -1471,6 +1465,30 @@
         "inputs": [
           {
             "internalType": "string",
+            "name": "_obatId",
+            "type": "string"
+          }
+        ],
+        "name": "getDetailProducedObatById",
+        "outputs": [
+          {
+            "internalType": "uint8",
+            "name": "obatQuantity",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string[]",
+            "name": "obatIpfsHash",
+            "type": "string[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
             "name": "_factoryInstanceName",
             "type": "string"
           }
@@ -1754,6 +1772,40 @@
           {
             "internalType": "string",
             "name": "nieNumber",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "name": "obatProductionDetailsById",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "obatId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "namaProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "obatQuantity",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "factoryInstanceNames",
             "type": "string"
           }
         ],

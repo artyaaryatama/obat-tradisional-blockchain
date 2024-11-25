@@ -69,9 +69,6 @@ function ObatNie() {
     const loadData = async () => {
       if (contract && userData.instanceName) {
         try {
-          const tx1 =  await contract.getAllProducedObat();
-          console.log(tx1);
-
           const tx = await contract.getListObatByFactory(userData.instanceName);
           const [obatIdArray, namaProdukArray, obatStatusArray, tipeProdukArray] = tx;
 
