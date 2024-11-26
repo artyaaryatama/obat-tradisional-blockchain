@@ -41,8 +41,8 @@ function Navbar() {
                     <li className={currentPath === '/cdob' || currentPath === '/request-cdob' ? 'active' : ''}>
                       <Link to="/cdob">CDOB</Link>
                     </li>
-                    <li className={currentPath === '/another-Link' ? 'active' : ''}>
-                      <Link to="/another-Link">OBAT TRADISIONAL</Link>
+                    <li className={currentPath === '/obat-order-pbf' || currentPath=== '/obat-order-create-pbf'? 'active' : ''}>
+                      <Link to="/obat-order-pbf">ORDER OBAT TRADISIONAL</Link>
                     </li>
                   </>
                 )}

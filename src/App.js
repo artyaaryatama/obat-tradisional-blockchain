@@ -12,6 +12,8 @@ import NieApprove from './pages/bpom/NieApprove';
 import ObatNie from './pages/pabrik/NiePage';
 import ObatProduce from './pages/pabrik/ObatProducePage';
 import ObatCreate from './pages/pabrik/ObatCreatePage';
+import ObatOrderPbf from './pages/pbf/ObatOrderPagePbf';
+import ObatCreateOrderPbf from './pages/pbf/ObatCreateOrderPagePbf';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LoginPage from './pages/auth/LoginUser';
@@ -123,6 +125,28 @@ function App() {
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
                 <CdobReqPage />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/obat-order-pbf" 
+            element={
+              <ProtectedRoute allowedRoles={['1']}>
+                <Navbar />
+                <ObatOrderPbf />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/obat-order-create-pbf" 
+            element={
+              <ProtectedRoute allowedRoles={['1']}>
+                <Navbar />
+                <ObatCreateOrderPbf />
                 <Footer />
               </ProtectedRoute>
             } 

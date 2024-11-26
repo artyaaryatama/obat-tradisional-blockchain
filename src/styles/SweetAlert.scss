@@ -63,6 +63,13 @@
     }
   }
 
+  .col2{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+  }
+
   .row{
     display: flex;
     flex-direction: column-reverse;
@@ -132,7 +139,7 @@
       &.label{
         font-weight: 600;
         text-align: left;
-        width: 28%;
+        width: 32%;
 
         label{
           font-size: 13px;
@@ -142,7 +149,7 @@
 
       &.input{
         text-align: left;
-        width: 72%;
+        width: 68%;
         font-size: 12px;
 
         select{

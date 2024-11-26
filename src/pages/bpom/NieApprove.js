@@ -74,7 +74,7 @@ function NieApprove() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (contract && userdata.instanceName) {
+      if (contract) {
         try {
           const tx = await contract.getListAllObatNie();
           const [obatIdArray, namaProdukArray, factoryInstanceNameArray, latestTimestampArray, obatStatusArray] = tx;

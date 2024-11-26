@@ -79,7 +79,7 @@ function TablePaginationActions(props) {
   );
 }
 
-export default function DataTable({ ipfsHashes }) {
+export default function TableHash({ ipfsHashes }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 

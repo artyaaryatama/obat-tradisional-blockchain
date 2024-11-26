@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0x67d269191c92Caf3cD7723F116c85e6E9bf55933",
+    "address": "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
     "abi": [
       {
         "inputs": [
@@ -902,7 +902,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E",
+    "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
     "abi": [
       {
         "inputs": [
@@ -1064,10 +1064,54 @@
             "internalType": "uint8",
             "name": "quantity",
             "type": "uint8"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "batchNamee",
+            "type": "string"
           }
         ],
         "name": "evt_obatProduced",
         "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_namaProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_batchName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_obatId",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "_obatQuantity",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "_factoryInstanceName",
+            "type": "string"
+          },
+          {
+            "internalType": "string[]",
+            "name": "_obatIpfsHash",
+            "type": "string[]"
+          }
+        ],
+        "name": "addQuantityObat",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
       },
       {
         "inputs": [
@@ -1192,6 +1236,11 @@
         ],
         "name": "allProducedObat",
         "outputs": [
+          {
+            "internalType": "string",
+            "name": "batchName",
+            "type": "string"
+          },
           {
             "internalType": "string",
             "name": "obatId",
@@ -1429,6 +1478,11 @@
             "components": [
               {
                 "internalType": "string",
+                "name": "batchName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
                 "name": "obatId",
                 "type": "string"
               },
@@ -1531,6 +1585,29 @@
           {
             "internalType": "uint8[]",
             "name": "",
+            "type": "uint8[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "getListAllProducedObat",
+        "outputs": [
+          {
+            "internalType": "string[]",
+            "name": "obatIdArray",
+            "type": "string[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "namaProdukArray",
+            "type": "string[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "obatQuantityArray",
             "type": "uint8[]"
           }
         ],
@@ -1790,6 +1867,11 @@
         "outputs": [
           {
             "internalType": "string",
+            "name": "batchName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
             "name": "obatId",
             "type": "string"
           },
@@ -1897,47 +1979,9 @@
             "internalType": "string",
             "name": "_pbfInstanceName",
             "type": "string"
-          },
-          {
-            "internalType": "string[]",
-            "name": "_orderObatIpfsHash",
-            "type": "string[]"
           }
         ],
         "name": "pbfOrder",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_namaProduk",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_obatId",
-            "type": "string"
-          },
-          {
-            "internalType": "uint8",
-            "name": "_obatQuantity",
-            "type": "uint8"
-          },
-          {
-            "internalType": "string",
-            "name": "_factoryInstanceName",
-            "type": "string"
-          },
-          {
-            "internalType": "string[]",
-            "name": "_obatIpfsHash",
-            "type": "string[]"
-          }
-        ],
-        "name": "produceObat",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"

@@ -668,6 +668,25 @@ function ObatNie() {
     tx.wait()
   }
 
+  const autoFilledCreateObat = async(id) => {
+
+    const tx = await contract.createObat(
+      id,
+      "Buyung Upik Instan Rasa Coklat",
+      "[TEST] BUYUNG UPIK INSTANT RASA COKLAT",
+      ["Memelihara kesehatan", "Membantu memperbaiki nafsu makan", "Secara tradisional digunakan pada penderita kecacingan"],
+      "Dus, 11 @Tablet (5 gram)",
+      ["Cinnamomum Burmanii Cortex", "Curcuma Aeruginosa Rhizoma", "Curcuma Domestica Rhizoma", "Curcuma Xanthorrhiza Rhizoma"],
+      userData.address,
+      "PT. Budi Pekerti",
+      "TAKAKI YUYA",
+      0
+  );
+
+    await tx.wait();
+    console.log('Receipt:', tx);
+  }
+
   return (
     <>
       <div id="ObatNie" className='Layout-Menu layout-page'>
@@ -687,6 +706,12 @@ function ObatNie() {
               <button className='btn-menu' onClick={() => {navigate('/create-obat')}}>
                 <i className="fa-solid fa-plus"></i>
                 Add new data
+              </button>
+              <button className='btn-auto-filled' onClick={() => autoFilledCreateObat("ot-3385CI")}>
+                Auto Filled Data 1
+              </button>
+              <button className='btn-auto-filled' onClick={() => autoFilledCreateObat("ot-2485CI")}>
+                Auto Filled Data 2
               </button>
             </div>
           </div>

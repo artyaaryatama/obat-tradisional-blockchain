@@ -97,6 +97,10 @@ contract MainSupplyChain {
     RoleManager.en_roles role = RoleManager.en_roles(uint8(_userRole));
     roleManager.assignRole(_userAddr, role);
 
+    if(_userRole == uint8(en_roles.Pabrik)) {
+      requestCpotb('PT. Budi Pekerti', 'aauhd8j', 'TAKAKI YUYA', 0); 
+    }
+
     emit evt_UserRegistered(_userAddr, _name, _instanceName, uint8(role)); 
   }
 

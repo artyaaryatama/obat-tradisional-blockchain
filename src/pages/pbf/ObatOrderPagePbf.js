@@ -10,20 +10,18 @@ import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
-import { Opacity, Visibility } from '@mui/icons-material';
 
 const MySwal = withReactContent(Swal);
 
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 
 
-function ObatProduce() {
+function ObatOrderPbf() {
   const [contract, setContract] = useState();
   const navigate = useNavigate();
 
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
-  const [dataObat, setDataObat] = useState([]);
-  const [ipfsHashes, setIpfsHashes] = useState([])
+  const [datObatOrderAvailable, setDatObatOrderAvailable] = useState([]);
   
 
   const obatStatusMap = {
@@ -47,7 +45,7 @@ function ObatProduce() {
   }
 
   useEffect(() => {
-    document.title = "Produksi Obat Tradisional"; 
+    document.title = "Order Obat Tradisional"; 
   }, []);
 
   useEffect(() => {
@@ -76,21 +74,23 @@ function ObatProduce() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (contract && userData.instanceName) {
+      if (contract) {
         try {
 
-          const tx = await contract.getListAllProducedObatByFactory(userData.instanceName);
-          const [obatIdArray, namaProdukArray, obatQuantityArray] = tx;
+          const tx = await contract.getAllProducedObat();
+          console.log(tx);
+          // const [batchNamer] = tx;
 
-          // use map on obatIdArray, which iterates through each obatId
-          const reconstructedData = obatIdArray.map((obatId, index) => ({
-            namaObat: namaProdukArray[index],
-            idObat: obatIdArray[index],
-            obatQuantity: obatQuantityArray[index].toString()
-          }));
+          // // use map on obatIdArray, which iterates through each obatId
+          // const reconstructedData = obatIdArray.map((obatId, index) => ({
+          //   namaObat: namaProdukArray[index],
+          //   idObat: obatIdArray[index],
+          //   obatQuantity: obatQuantityArray[index].toString(),
+          //   batchName: batchName[index]
+          // }));
 
-          setDataObat(reconstructedData)
-          console.log(reconstructedData);
+          // setDatObatOrderAvailable(reconstructedData)
+          // console.log(reconstructedData);
 
         } catch (error) {
           console.error("Error loading data: ", error);
@@ -103,9 +103,11 @@ function ObatProduce() {
 
   useEffect(() => {
     if (contract) {
+      
+      contract.on("evt_nieRequested", ( _obatId, _timestampRequestNie,_namaProduk) => {
 
-      contract.on("evt_obatProduced", (_namaProduk, _obatQuantity, _batchName) => {
-        const quantity = _obatQuantity.toString()
+        const timestamp = new Date(Number(_timestampRequestNie) * 1000).toLocaleDateString('id-ID', options)
+    
         MySwal.fire({
           title: "Success Add New Stock",
           html: (
@@ -120,10 +122,39 @@ function ObatProduce() {
               </ul>
               <ul>
                 <li className="label">
-                  <p>Batch Name</p> 
+                  <p>Timestamp Request</p> 
                 </li>
                 <li className="input">
-                  <p>{_batchName}</p> 
+                  <p>{timestamp}</p> 
+                </li>
+              </ul>
+            </div>
+          ),
+          icon: 'success',
+          width: '560',
+          showCancelButton: false,
+          confirmButtonText: 'Oke',
+          allowOutsideClick: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload()
+          }
+        });
+
+      });
+
+      contract.on("evt_obatProduced", (_namaProduk, _obatQuantity, _obatId) => {
+        const quantity = _obatQuantity.toString()
+        MySwal.fire({
+          title: "Success Add New Stock",
+          html: (
+            <div className='form-swal'>
+              <ul>
+                <li className="label">
+                  <p>Nama Obat</p> 
+                </li>
+                <li className="input">
+                  <p>{_namaProduk}</p> 
                 </li>
               </ul>
               <ul>
@@ -149,6 +180,7 @@ function ObatProduce() {
       })
   
       return () => {
+        contract.removeAllListeners("evt_nieRequested");
         contract.removeAllListeners("evt_obatProduced");
       };
     }
@@ -380,31 +412,35 @@ function ObatProduce() {
     }
   }
 
+  const getNodeInfo = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:5001/api/v0/id', {
+        method: 'POST', // Use POST as required by IPFS API
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const nodeInfo = await response.json();
+      console.log(nodeInfo);
+    } catch (error) {
+      console.error('Error fetching node info:', error);
+    }
+  };
+  
+  // getNodeInfo();
   const addStok = async(quantity, data) => {
-
-    MySwal.fire({
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
-      icon: 'info',
-      showCancelButton: false,
-      showConfirmButton: false,
-      allowOutsideClick: false,
-    })
-
     const ipfsHashes = [];
-    const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
-    const randomTwoLetters = String.fromCharCode(
-      65 + Math.floor(Math.random() * 26),
-      65 + Math.floor(Math.random() * 26)
-    );
-    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-    const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase()
-
     for (let i = 0; i < quantity; i++) {
+      const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
+      const randomTwoLetters = String.fromCharCode(
+        65 + Math.floor(Math.random() * 26),
+        65 + Math.floor(Math.random() * 26)
+      );
       const obat = {
-        batchName: `BN-${date}-${randomCode}-${quantity}`,
         obatIdProduk: data.obatId,
-        obatIdPackage: `OT-${i * 23}${randomFourDigit}${randomTwoLetters}`,
+        obatIdPackage: `ot-${i * 23}${randomFourDigit}${randomTwoLetters}`,
         namaProduk: data.namaObat,
         obatQuantity: quantity,
         merk: data.merk,
@@ -424,15 +460,14 @@ function ObatProduce() {
         timestampOrderRetailer: "",
         timestampCompleteRetailer: ""
       };
-      
+
       try {
-        const result = await client.add(JSON.stringify(obat)); 
-        ipfsHashes.push(result.path); 
+        const result = await client.add(JSON.stringify(obat)); // Upload to IPFS
+        ipfsHashes.push(result.path); // Add IPFS hash to the array
       } catch (error) {
-        errAlert(error, "Can't upload Data Obat to IPFS."); 
+        console.error(error); // Log errors for debugging
       }
     }
-
     console.log("Generated IPFS Hashes:", ipfsHashes);
     
     MySwal.fire({
@@ -462,15 +497,6 @@ function ObatProduce() {
 
               <ul>
                 <li className="label">
-                  <p>Batch Number</p> 
-                </li>
-                <li className="input">
-                  <p>BN-${date}-${randomCode}</p> 
-                </li>
-              </ul>
-
-              <ul>
-                <li className="label">
                   <p>Jumlah Stok</p> 
                 </li>
                 <li className="input">
@@ -479,7 +505,13 @@ function ObatProduce() {
               </ul>
 
               <ul>
-                <li className="input" style={{ width: '100%' }}>
+                <li className="label">
+                  <button id='addQuantity'  className='addQuantity' >
+                    <i className="fa-solid fa-arrows-rotate"></i>
+                    Generate Data Obat
+                    </button>
+                </li>
+                <li className="input">
                   <DataIpfsHash ipfsHashes={ipfsHashes} />
                 </li>
               </ul>
@@ -494,7 +526,7 @@ function ObatProduce() {
       allowOutsideClick: false
     }).then((result) => {
       if(result.isConfirmed){
-        addQuantityObat(data.namaObat,`BN-${date}-${randomCode}-${quantity}`, data.obatId, quantity, data.factoryInstanceName, ipfsHashes)
+        produceObat(data.namaObat, data.obatId, quantity, data.factoryInstanceName, ipfsHashes)
       }
     })
 
@@ -502,7 +534,7 @@ function ObatProduce() {
 
   }
 
-  const addQuantityObat = async(namaObat, batchName, obatId, quantity, factoryInstanceName, ipfsHash) => {
+  const produceObat = async(namaObat, obatId, quantity, factoryInstanceName, ipfsHash) => {
 
     MySwal.fire({
       title:"Processing your request...",
@@ -515,7 +547,7 @@ function ObatProduce() {
 
     try {
       console.log(namaObat, obatId, quantity, factoryInstanceName, ipfsHash);
-      const tx = await contract.addQuantityObat(namaObat, batchName, obatId, quantity, factoryInstanceName, ipfsHash);
+      const tx = await contract.produceObat(namaObat, obatId, quantity, factoryInstanceName, ipfsHash);
       tx.wait()
       
     } catch (error) {
@@ -527,20 +559,20 @@ function ObatProduce() {
     <>
       <div id="ObatProduce" className='Layout-Menu layout-page'>
         <div className="title-menu">
-          <h1>Data Produksi Obat Tradisional</h1>
-          <p>Di produksi oleh {userData.instanceName}</p>
+          <h1>List Order Obat Tradisional</h1>
+          <p>Oleh {userData.instanceName}</p>
         </div>
         <div className="tab-menu">
           <ul>
-            <li><button className='active' onClick={() => navigate('/obat-produce')}>Produksi Obat</button></li>
-            <li><button onClick={() => navigate('/obat')}>Pengajuan NIE</button></li>
+            <li><button className='active' onClick={() => navigate('/obat-order-pbf')}>Order Obat Tradisional</button></li>
+            <li><button onClick={() => navigate('/obat-order-create-pbf')}>Pengajuan Order</button></li>
           </ul>
         </div>
         <div className="container-data ">
           <div className="data-list">
-            {dataObat.length > 0 ? (
+            {datObatOrderAvailable.length > 0 ? (
               <ul>
-                {dataObat.map((item, index) => (
+                {datObatOrderAvailable.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.idObat)} >{item.namaObat}</button>
                     <p>Stok tersedia: {item.obatQuantity} Obat</p>
@@ -576,4 +608,4 @@ function errAlert(err, customMsg){
   console.error(errorObject);
 }
 
-export default ObatProduce;
+export default ObatOrderPbf;
