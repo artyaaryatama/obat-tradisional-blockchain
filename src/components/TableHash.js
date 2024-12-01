@@ -79,7 +79,7 @@ function TablePaginationActions(props) {
   );
 }
 
-export default function TableHash({ ipfsHashes }) {
+export default function TableHash({ ipfsHashes = [] }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -103,31 +103,46 @@ export default function TableHash({ ipfsHashes }) {
     page * rowsPerPage + rowsPerPage
   );
 
-  return ( 
-    <TableContainer component={Paper} sx={{boxShadow: 'none', border: 'solid 1px #f2f3f59e', borderRadius: '10px'}}>
+  return (
+    <TableContainer component={Paper} sx={{ boxShadow: 'none', border: 'solid 1px #f2f3f59e', borderRadius: '10px' }}>
       <Table sx={{ minWidth: 500 }} aria-label="IPFS Hashes Table">
-        <TableHead sx={{ backgroundColor: '#f2f3f59e'}}>
+        <TableHead sx={{ backgroundColor: '#f2f3f59e' }}>
           <TableRow>
-            <TableCell align="left" style={{ width: "30px" }} 
-            sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontSize: '14px'}}>
+            <TableCell align="left" style={{ width: "30px" }} sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontSize: '14px' }}>
               No.
             </TableCell>
-            <TableCell align="left" sx={{padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontSize: '14px'}}>IPFS Hash</TableCell>
+            <TableCell align="left" sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontSize: '14px' }}>
+              IPFS Hash
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rowsToDisplay.map((hash, index) => (
-            <TableRow key={index}>
-              {/* Add the row number */}
-              <TableCell align="left" sx={{padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontWeight: 'normal', fontStyle: 'normal', fontSize: '12px'}}>
-                {page * rowsPerPage + index + 1}.
+          {/* Check if there are no IPFS hashes */}
+          {ipfsHashes.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={2} align="center" sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontSize: '14px', color: '#777' }}>
+                No entry found
               </TableCell>
-              <TableCell align="left" sx={{padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontWeight: 'normal', fontStyle: 'normal', fontSize: '12px'}} >{hash}</TableCell>
             </TableRow>
-          ))}
+          ) : (
+            rowsToDisplay.map((hash, index) => (
+              <TableRow key={index}>
+                {/* Add the row number */}
+                <TableCell align="left" sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontWeight: 'normal', fontStyle: 'normal', fontSize: '12px' }}>
+                  {page * rowsPerPage + index + 1}.
+                </TableCell>
+                <TableCell align="left" sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontWeight: 'normal', fontStyle: 'normal', fontSize: '12px' }}>
+                  {hash}
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+
           {emptyRows > 0 && (
             <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={2} sx={{padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontWeight: 'normal', fontStyle: 'normal', fontSize: '12px'}}> Empty </TableCell>
+              <TableCell colSpan={2} sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontWeight: 'normal', fontStyle: 'normal', fontSize: '12px' }}>
+                Empty
+              </TableCell>
             </TableRow>
           )}
         </TableBody>
@@ -142,10 +157,16 @@ export default function TableHash({ ipfsHashes }) {
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
               ActionsComponent={TablePaginationActions}
-              sx={{padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontSize: '12px', backgroundColor: '#f2f3f59e', '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+              sx={{
+                padding: '8px 16px',
+                fontFamily: 'Instrument Sans, sans-serif',
                 fontSize: '12px',
-                fontWeight: 'bold'
-              },}}
+                backgroundColor: '#f2f3f59e',
+                '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+                  fontSize: '12px',
+                  fontWeight: 'bold'
+                },
+              }}
             />
           </TableRow>
         </TableFooter>

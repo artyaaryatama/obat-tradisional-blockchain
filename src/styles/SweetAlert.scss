@@ -162,12 +162,26 @@
           width: 100%;
           padding: 6px 10px;
           font-size: 13px;   
-
+          
           &:read-only{
             background-color: $grey-light;   
           }
         }
       }
+      
+      &.select{
+
+        select{
+          margin: 0;
+          background-color: transparent;
+          border: solid 1px $grey;
+        }
+
+        input{
+          width: 100%;
+        }
+      }
+      
 
     }
     

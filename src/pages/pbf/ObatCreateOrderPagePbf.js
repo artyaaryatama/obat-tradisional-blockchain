@@ -43,6 +43,7 @@ function ObatCreateOrderPbf() {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
+    timeZoneName: 'short'
   }
 
   useEffect(() => {
@@ -106,7 +107,7 @@ function ObatCreateOrderPbf() {
   useEffect(() => {
     if (contract) {
       
-      contract.on("evt_obatOrdered", (_namaProduk, _orderQuantity, _orderId, _pbfInstanceName, _pbfAddr, _timestampOrder) => {
+      contract.on("evt_obatOrdered", (_namaProduk, _orderQuantity, _orderId, _pbfInstanceName, _pbfAddr, _targetInstanceName, _timestampOrder) => {
 
         const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
     
@@ -127,7 +128,15 @@ function ObatCreateOrderPbf() {
                   <p>Total Order</p> 
                 </li>
                 <li className="input">
-                  <p>{_orderQuantity} Obat</p> 
+                  <p>{_orderQuantity.toString()} Obat</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Dari Pabrik</p> 
+                </li>
+                <li className="input">
+                  <p>{_targetInstanceName}</p> 
                 </li>
               </ul>
               <ul>
@@ -161,11 +170,11 @@ function ObatCreateOrderPbf() {
   }, [contract]);
   
 
-  const orderDetail = async (id) => {
+  const orderDetail = async (id, batchName) => {
 
     try {
       const tx = await contract.getListObatById(id);
-      const tx1 = await contract.getDetailProducedObatById(id)
+      const tx1 = await contract.getDetailProducedObat(batchName)
       console.log(2);
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = tx;
@@ -293,7 +302,7 @@ function ObatCreateOrderPbf() {
       }).then((result) => {
 
         if(result.isConfirmed){
-          orderObat(id)
+          orderObat(id, factoryInstanceName)
         }
       })
       
@@ -302,7 +311,7 @@ function ObatCreateOrderPbf() {
     }
   }
 
-  const orderObat = async (id) => {
+  const orderObat = async (id, factoryInstanceName) => {
 
     MySwal.fire({
       title:"Processing your request...",
@@ -335,7 +344,9 @@ function ObatCreateOrderPbf() {
 
       console.log(orderObat.orderObatIpfsHash);
 
-      const tx = await contract.pbfOrder(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.pbfAddr, orderObat.pbfInstanceName);
+      console.log(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.pbfAddr, orderObat.pbfInstanceName, factoryInstanceName);
+
+      const tx = await contract.orderObat(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.pbfAddr, orderObat.pbfInstanceName, factoryInstanceName);
       tx.wait()
       console.log(tx);
 
@@ -354,8 +365,8 @@ function ObatCreateOrderPbf() {
         </div>
         <div className="tab-menu">
           <ul>
-            <li><button  onClick={() => navigate('/obat-order-pbf')}>Order Obat Tradisional</button></li>
             <li><button className='active' onClick={() => navigate('/obat-order-create-pbf')}>Pengajuan Order</button></li>
+            <li><button  onClick={() => navigate('/obat-order-pbf')}>Order Obat Tradisional</button></li>
           </ul>
         </div>
         <div className="container-data ">
@@ -371,7 +382,7 @@ function ObatCreateOrderPbf() {
 
                     </div>
                     <div className="order">
-                      <button className='order' onClick={() => orderDetail(item.idObat)} >
+                      <button className='order' onClick={() => orderDetail(item.idObat, item.batchName)} >
                         <i className="fa-solid fa-cart-shopping"></i>
                         Order Obat
                       </button>

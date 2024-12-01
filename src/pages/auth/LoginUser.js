@@ -124,22 +124,31 @@ function LoginPage() {
       console.log("Please filled all input!")
     }
   }; 
-
-  function autoFilled(event, role) {
+  
+  const autoFilled = async(event, role) => {
     event.preventDefault();
-    console.log(role);
     if(role===0){
+      const tx = await contract.registerUser('TAKAKI YUYA', 'PT. Budi Pekerti', '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', 0n);
+      console.log(tx);
+      
       setName('Takaki Yuya')
       setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
-    } else if(role===2){ 
-      setName('NILOJURI') 
-      setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
+      
     } else if(role===1){ 
+      const tx = await contract.registerUser('STIPEN JENSEN', 'PT. Mangga Arum', '0x90F79bf6EB2c4f870365E785982E1f101E93b906', 1n);
+      console.log(tx);
+
       setName('STIPEN JENSEN') 
       setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
-    }
-  }
+    } else if(role===2){ 
+      const tx = await contract.registerUser('NILOJURI', 'BPOM Makassar', '0x70997970C51812dc3A010C7d01b50e0d17dc79C8', 2n);
+      console.log(tx);
 
+      setName('NILOJURI') 
+      setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
+    }
+    
+  }
   const formattedAddress = (addr) => {
     if (!addr) return "";
     return `${addr.slice(0, 16)}...${addr.slice(-14)}`;

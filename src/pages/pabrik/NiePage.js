@@ -668,23 +668,29 @@ function ObatNie() {
     tx.wait()
   }
 
-  const autoFilledCreateObat = async(id) => {
+  const autoFilledCreateObat = async(id, name) => {
 
-    const tx = await contract.createObat(
-      id,
-      "Buyung Upik Instan Rasa Coklat",
-      "[TEST] BUYUNG UPIK INSTANT RASA COKLAT",
-      ["Memelihara kesehatan", "Membantu memperbaiki nafsu makan", "Secara tradisional digunakan pada penderita kecacingan"],
-      "Dus, 11 @Tablet (5 gram)",
-      ["Cinnamomum Burmanii Cortex", "Curcuma Aeruginosa Rhizoma", "Curcuma Domestica Rhizoma", "Curcuma Xanthorrhiza Rhizoma"],
-      userData.address,
-      "PT. Budi Pekerti",
-      "TAKAKI YUYA",
-      0
-  );
+    try {
+      const tx = await contract.createObat(
+        id,
+        name,
+        name,
+        ["Memelihara kesehatan", "Membantu memperbaiki nafsu makan", "Secara tradisional digunakan pada penderita kecacingan"],
+        "Dus, 11 @Tablet (5 gram)",
+        ["Cinnamomum Burmanii Cortex", "Curcuma Aeruginosa Rhizoma", "Curcuma Domestica Rhizoma", "Curcuma Xanthorrhiza Rhizoma"],
+        userData.address,
+        "PT. Budi Pekerti",
+        "TAKAKI YUYA",
+        0
+      );
+  
+      await tx.wait();
+      console.log('Receipt:', tx);
+      
+    } catch (error) {
+      errAlert(error, "Can't Create Obat")
+    }
 
-    await tx.wait();
-    console.log('Receipt:', tx);
   }
 
   return (
@@ -696,8 +702,9 @@ function ObatNie() {
         </div>
         <div className="tab-menu">
           <ul>
-            <li><button onClick={() => navigate('/obat-produce')}>Produksi Obat</button></li>
             <li><button className='active' onClick={() => navigate('/obat')}>Pengajuan NIE</button></li>
+            <li><button onClick={() => navigate('/obat-produce')}>Produksi Obat</button></li>
+            <li><button onClick={() => navigate('/order-obat-pabrik')}>Order Obat</button></li>
           </ul>
         </div>
         <div className="container-data">
@@ -707,10 +714,10 @@ function ObatNie() {
                 <i className="fa-solid fa-plus"></i>
                 Add new data
               </button>
-              <button className='btn-auto-filled' onClick={() => autoFilledCreateObat("ot-3385CI")}>
+              <button className='btn-auto-filled' onClick={() => autoFilledCreateObat("ot-3385CI", "Buyung Upik Instan Rasa Coklat")}>
                 Auto Filled Data 1
               </button>
-              <button className='btn-auto-filled' onClick={() => autoFilledCreateObat("ot-2485CI")}>
+              <button className='btn-auto-filled' onClick={() => autoFilledCreateObat("ot-2485CI", "Buyung Upik Instan Rasa Stoberi")}>
                 Auto Filled Data 2
               </button>
             </div>

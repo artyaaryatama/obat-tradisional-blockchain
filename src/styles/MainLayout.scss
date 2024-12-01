@@ -166,7 +166,7 @@
               }
             }
             
-            &.statusPengajuan{
+            &.statusPengajuan, &.statusOrder{
               margin-top: 14px;
               font-size: 12px;
               font-weight: 600;
@@ -174,16 +174,16 @@
               border-radius: 30px;
             }
 
-            &.Pending, &.Requested{
+            &.Pending, &.Requested, &.Shipped{
               background-color: $yellow;
             }
 
-            &.Approved{
+            &.Approved, &.Delivered{
               background-color: $green;
               color: $white;
             }
             
-            &.In{
+            &.In, &.Placed{
               background-color: $grey;
               color: $white;
             }
