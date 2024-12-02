@@ -70,6 +70,7 @@ contract ObatTradisional {
     string orderId;
     string namaProduk;
     string obatIdProduk;
+    string batchName;
     uint8 orderQuantity;
     string senderInstanceName;
     address senderInstanceAddr;
@@ -102,6 +103,7 @@ contract ObatTradisional {
   event evt_nieApproved(string nieNumber, string namaProduk);
   event evt_obatProduced(string namaProduk, uint8 quantity, string batchNamee);
   event evt_obatOrdered(string namaProduk, uint8 quantity, string orderId, string senderInstanceName, address senderAddr, string targetInstanceName, uint latestTimestamp );
+  event evt_updateOrder(string namaProduk, string batchName, string targetInstance, string senderInstance, uint8 quantity, uint latestTimestamp);
 
   function getJenisSediaanAvail(string memory _factoryInstanceName)
     public 
@@ -153,7 +155,7 @@ contract ObatTradisional {
       
     st_obatProduction memory newProduction = st_obatProduction({
       statusStok: en_obatAvailability.ready,
-      batchName: "BN-20241125-sdfz-X45A",
+      batchName: "BN-20241202-DR6V",
       obatId: _obatId, 
       namaProduk: _namaProduk, 
       obatQuantity: 15, 
@@ -234,7 +236,7 @@ contract ObatTradisional {
     emit evt_nieApproved(_nieNumber, obatDetails.namaProduk);
   }
 
-  // menambahkan quantity agar bisa di ordder
+  // menambahkan quantity agar bisa di ordder ADA BUG DISINI CEK NOTION!! 
   function addQuantityObat(
     string memory _namaProduk,
     string memory _batchName,
@@ -490,6 +492,7 @@ contract ObatTradisional {
       orderId: _orderId, 
       namaProduk: _namaProduk,
       obatIdProduk: _obatIdProduk,
+      batchName: "",
       orderQuantity: _orderQuantity,
       senderInstanceName: _senderInstanceName,
       senderInstanceAddr: _senderAddr,
@@ -514,7 +517,8 @@ contract ObatTradisional {
     string[] memory namaProdukArray,
     uint8[] memory statusOrderArray,
     uint8[] memory obatQuantityArray, 
-    string[] memory obatIdProdukArray
+    string[] memory obatIdProdukArray,
+    string[] memory batchNameArray
   ) {
 
     uint count = 0;
@@ -530,6 +534,7 @@ contract ObatTradisional {
     statusOrderArray = new uint8[](count);
     obatQuantityArray = new uint8[](count);
     obatIdProdukArray = new string[](count);
+    batchNameArray = new string[](count);
 
     uint index = 0; 
 
@@ -540,7 +545,8 @@ contract ObatTradisional {
         statusOrderArray[index] = uint8(allOrderedObat[i].statusOrder);
         obatQuantityArray[index] = allOrderedObat[i].orderQuantity;
         obatIdProdukArray[index] = allOrderedObat[i].obatIdProduk;
- 
+        batchNameArray[index] = allOrderedObat[i].batchName;
+  
         index++;
       }
     }
@@ -555,7 +561,8 @@ contract ObatTradisional {
     string[] memory namaProdukArray,
     uint8[] memory statusOrderArray,
     uint8[] memory obatQuantityArray,
-    string[] memory obatIdProdukArray
+    string[] memory obatIdProdukArray,
+    string[] memory batchNameArray
   ) {
 
     uint count = 0;
@@ -571,6 +578,7 @@ contract ObatTradisional {
     statusOrderArray = new uint8[](count);
     obatQuantityArray = new uint8[](count);
     obatIdProdukArray = new string[](count);
+    batchNameArray = new string[](count);
 
     uint index = 0; 
 
@@ -581,6 +589,7 @@ contract ObatTradisional {
         statusOrderArray[index] = uint8(allOrderedObat[i].statusOrder);
         obatQuantityArray[index] = allOrderedObat[i].orderQuantity;
         obatIdProdukArray[index] = allOrderedObat[i].obatIdProduk;
+        batchNameArray[index] = allOrderedObat[i].batchName;
  
         index++;
       }
@@ -599,7 +608,6 @@ contract ObatTradisional {
       uint latestTimestamp,
       string memory targetInstanceName,
       string[] memory orderObatIpfsHash
-
   ){
     require(bytes(orderObatById[_orderId].orderId).length > 0, "No data found with this ID.");
 
@@ -610,7 +618,55 @@ contract ObatTradisional {
     targetInstanceName = orderObatById[_orderId].targetInstanceName;
     statusOrder = uint8(orderObatById[_orderId].statusOrder);
     orderObatIpfsHash = orderObatById[_orderId].orderObatIpfsHash; 
-  }   
+  }  
+
+  function acceptOrder(
+    string memory _batchName, 
+    string memory _orderId
+  ) public {
+    require(bytes(obatProductionDetailsByBatchName[_batchName].obatId).length > 0, "No data found with this ID.");
+
+    st_obatProduction storage obatProduced = obatProductionDetailsByBatchName[_batchName];
+    st_orderObat storage obatOrdered = orderObatById[_orderId];
+
+    obatOrdered.orderObatIpfsHash = obatProduced.obatIpfsHash;
+    obatOrdered.batchName = _batchName;
+    obatOrdered.statusOrder = en_orderStatus.OrderShipped;
+    obatOrdered.latestTimestamp = block.timestamp;
+
+    obatProduced.obatIpfsHash = new string[](0);
+    obatProduced.obatQuantity = 0;
+
+    for(uint i=0; i < allOrderedObat.length; i++){
+      if(keccak256(abi.encodePacked(allOrderedObat[i].orderId)) == keccak256(abi.encodePacked(_orderId))){
+        allOrderedObat[i].orderObatIpfsHash = obatProduced.obatIpfsHash;
+        allOrderedObat[i].batchName = _batchName;
+        allOrderedObat[i].statusOrder = en_orderStatus.OrderShipped;
+        allOrderedObat[i].latestTimestamp = block.timestamp;
+
+        break;
+      }
+    }
+
+    for(uint i=0; i < allProducedObat.length; i++){
+      if(keccak256(abi.encodePacked(allProducedObat[i].batchName)) == keccak256(abi.encodePacked(_batchName))){
+        allProducedObat[i].obatQuantity = 0;
+        allProducedObat[i].obatIpfsHash = new string[](0);
+
+        break;
+      }
+    }
+
+
+    emit evt_updateOrder(obatOrdered.namaProduk, obatProduced.batchName, obatOrdered.targetInstanceName, obatOrdered.senderInstanceName, obatOrdered.orderQuantity, block.timestamp);
+
+    // for(uint i = 0; i < obatOrdered.orderQuantity; i++){
+    //   obatOrdered.orderObatIpfsHash.push(obatProduced.obatIpfsHash[i]);
+    // }
+
+    // obatProduced.obatQuantity -= obatOrdered.orderQuantity;
+  }
+
  
   // create function getListOrderObatbyPBF, getLIstOrderObatdri factory, get list order obat dri retailer, acceptOrder
   // oh iya aku belum update ipfs hash nya (berarti aku harus hapus getAllproducedObat yg pbf ya, krn aku butuh ipfs lama buat dimasukin ke data ipfs baru)

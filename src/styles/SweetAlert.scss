@@ -167,7 +167,11 @@
             background-color: $grey-light;   
           }
         }
+        &.full-width-table{
+          width: 100%;
+        }
       }
+
       
       &.select{
 

@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
+    "address": "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
     "abi": [
       {
         "inputs": [
@@ -902,7 +902,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
+    "address": "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
     "abi": [
       {
         "inputs": [
@@ -1082,6 +1082,67 @@
         "type": "event"
       },
       {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "namaProduk",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "batchName",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "targetInstance",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "senderInstance",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint8",
+            "name": "quantity",
+            "type": "uint8"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "latestTimestamp",
+            "type": "uint256"
+          }
+        ],
+        "name": "evt_updateOrder",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_batchName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_orderId",
+            "type": "string"
+          }
+        ],
+        "name": "acceptOrder",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [
           {
             "internalType": "string",
@@ -1201,6 +1262,11 @@
           {
             "internalType": "string",
             "name": "obatIdProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "batchName",
             "type": "string"
           },
           {
@@ -1548,7 +1614,7 @@
         "outputs": [
           {
             "internalType": "uint8",
-            "name": "obatQuantity",
+            "name": "orderQuantity",
             "type": "uint8"
           },
           {
@@ -1662,6 +1728,11 @@
             "internalType": "string[]",
             "name": "obatIdProdukArray",
             "type": "string[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "batchNameArray",
+            "type": "string[]"
           }
         ],
         "stateMutability": "view",
@@ -1700,6 +1771,11 @@
           {
             "internalType": "string[]",
             "name": "obatIdProdukArray",
+            "type": "string[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "batchNameArray",
             "type": "string[]"
           }
         ],
@@ -2227,6 +2303,11 @@
           {
             "internalType": "string",
             "name": "obatIdProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "batchName",
             "type": "string"
           },
           {

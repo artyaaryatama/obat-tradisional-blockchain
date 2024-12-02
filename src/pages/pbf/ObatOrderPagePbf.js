@@ -21,7 +21,7 @@ function ObatOrderPbf() {
   const navigate = useNavigate();
 
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
-  const [datObatOrder, setDatObatOrder] = useState([]);
+  const [dataObatOrder, setDataObatOrder] = useState([]);
   
 
   const obatStatusMap = {
@@ -79,17 +79,18 @@ function ObatOrderPbf() {
         try {
 
           const tx = await contract.getListAllOrderedObatFromSender(userData.instanceName);
-          const [orderIdArray, namaProdukArray, statusOrderArray, obatQuantityArray, obatIdArray] = tx
+          const [orderIdArray, namaProdukArray, statusOrderArray, obatQuantityArray, obatIdArray, batchNameArray] = tx
 
           const reconstructedData = orderIdArray.map((obatId, index) => ({
             namaObat: namaProdukArray[index],
             orderId: orderIdArray[index],
             obatQuantity: obatQuantityArray[index].toString(),
             statusOrder: obatStatusMap[statusOrderArray[index]],
-            obatId: obatIdArray[index]
+            obatId: obatIdArray[index],
+            batchName: batchNameArray[index]
           }));
 
-          setDatObatOrder(reconstructedData)
+          setDataObatOrder(reconstructedData)
           console.log(reconstructedData);
 
         } catch (error) {
@@ -103,45 +104,6 @@ function ObatOrderPbf() {
 
   useEffect(() => {
     if (contract) {
-      
-      contract.on("evt_nieRequested", ( _obatId, _timestampRequestNie,_namaProduk) => {
-
-        const timestamp = new Date(Number(_timestampRequestNie) * 1000).toLocaleDateString('id-ID', options)
-    
-        MySwal.fire({
-          title: "Success Add New Stock",
-          html: (
-            <div className='form-swal'>
-              <ul>
-                <li className="label">
-                  <p>Nama Obat</p> 
-                </li>
-                <li className="input">
-                  <p>{_namaProduk}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Timestamp Request</p> 
-                </li>
-                <li className="input">
-                  <p>{timestamp}</p> 
-                </li>
-              </ul>
-            </div>
-          ),
-          icon: 'success',
-          width: '560',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-          allowOutsideClick: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.reload()
-          }
-        });
-
-      });
 
       contract.on("evt_obatProduced", (_namaProduk, _obatQuantity, _obatId) => {
         const quantity = _obatQuantity.toString()
@@ -180,7 +142,6 @@ function ObatOrderPbf() {
       })
   
       return () => {
-        contract.removeAllListeners("evt_nieRequested");
         contract.removeAllListeners("evt_obatProduced");
       };
     }
@@ -590,12 +551,14 @@ function ObatOrderPbf() {
         </div>
         <div className="container-data ">
           <div className="data-list">
-            {datObatOrder.length > 0 ? (
+            {dataObatOrder.length > 0 ? (
               <ul>
-                {datObatOrder.map((item, index) => (
+                {dataObatOrder.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.obatId, item.orderId)} >{item.namaObat}</button>
-                    <p>Total Pemesanan: {item.obatQuantity} Obat</p>
+                    <p>
+                      {item.statusOrder !== 'Order Placed' ? `Total order: ${item.obatQuantity} Obat [${item.batchName}]` : `Total order: ${item.obatQuantity} Obat`}
+                    </p>
                     <button className={`statusOrder ${item.statusOrder}`}>
                       {item.statusOrder}
                     </button>
@@ -605,7 +568,7 @@ function ObatOrderPbf() {
             ) : (
               <h2 className='small'>No Records Found</h2>
             )}
-        </div>
+          </div>
         </div>
       </div>
     </>

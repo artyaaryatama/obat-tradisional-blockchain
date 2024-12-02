@@ -80,8 +80,10 @@ function ObatProduce() {
       if (contract && userData.instanceName) {
         try {
 
-          const tx = await contract.getListAllProducedObatByFactory(userData.instanceName);
-          const [obatIdArray, namaProdukArray, obatQuantityArray, batchNameArray] = tx;
+          const listProducedObatCt = await contract.getListAllProducedObatByFactory(userData.instanceName);
+          const [obatIdArray, namaProdukArray, obatQuantityArray, batchNameArray] = listProducedObatCt;
+
+          console.log(listProducedObatCt);
 
           // use map on obatIdArray, which iterates through each obatId
           const reconstructedData = obatIdArray.map((obatId, index) => ({
@@ -686,7 +688,7 @@ function ObatProduce() {
               <ul>
                 {dataObat.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailObat(item.idObat, item.batchName)} >{item.namaObat}</button>
+                    <button className='title' onClick={() => getDetailObat(item.idObat, item.batchName)} > [{item.batchName}] {item.namaObat}</button>
                     <p>Batch: {item.batchName}</p>
                     <p>Stok tersedia: {item.obatQuantity} Obat</p>
                   </li>
