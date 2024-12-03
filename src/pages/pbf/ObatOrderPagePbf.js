@@ -41,7 +41,6 @@ function ObatOrderPbf() {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit',
     timeZoneName: 'short'
   }
 
@@ -213,7 +212,7 @@ function ObatOrderPbf() {
         bpomUserName:  bpomUserName ? bpomUserName : "-",
         bpomInstanceNames:  bpomInstanceName ?  bpomInstanceName : "-"
       };
-      
+
       if(statusOrder === 1n) {
         MySwal.fire({
           title: `Detail Order Obat ${detailObat.namaObat}`,

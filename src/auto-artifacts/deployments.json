@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+    "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
     "abi": [
       {
         "inputs": [
@@ -902,7 +902,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+    "address": "0x9A676e781A523b5d0C0e43731313A708CB607508",
     "abi": [
       {
         "inputs": [
@@ -1033,12 +1033,6 @@
             "internalType": "string",
             "name": "senderInstanceName",
             "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "senderAddr",
-            "type": "address"
           },
           {
             "indexed": false,
@@ -1280,11 +1274,6 @@
             "type": "string"
           },
           {
-            "internalType": "address",
-            "name": "senderInstanceAddr",
-            "type": "address"
-          },
-          {
             "internalType": "string",
             "name": "targetInstanceName",
             "type": "string"
@@ -1296,7 +1285,17 @@
           },
           {
             "internalType": "uint256",
-            "name": "latestTimestamp",
+            "name": "timestampOrder",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampShipped",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampComplete",
             "type": "uint256"
           }
         ],
@@ -1512,6 +1511,44 @@
         "inputs": [
           {
             "internalType": "string",
+            "name": "_obatIdProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_orderId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_namaProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "_orderQuantity",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "_senderInstanceName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_targetInstanceName",
+            "type": "string"
+          }
+        ],
+        "name": "createOrder",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
             "name": "",
             "type": "string"
           }
@@ -1636,19 +1673,9 @@
             "type": "string"
           },
           {
-            "internalType": "address",
-            "name": "senderInstanceAddr",
-            "type": "address"
-          },
-          {
             "internalType": "uint8",
             "name": "statusOrder",
             "type": "uint8"
-          },
-          {
-            "internalType": "uint256",
-            "name": "latestTimestamp",
-            "type": "uint256"
           },
           {
             "internalType": "string",
@@ -2254,49 +2281,6 @@
         "inputs": [
           {
             "internalType": "string",
-            "name": "_obatIdProduk",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_orderId",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_namaProduk",
-            "type": "string"
-          },
-          {
-            "internalType": "uint8",
-            "name": "_orderQuantity",
-            "type": "uint8"
-          },
-          {
-            "internalType": "address",
-            "name": "_senderAddr",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "_senderInstanceName",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_targetInstanceName",
-            "type": "string"
-          }
-        ],
-        "name": "orderObat",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
             "name": "",
             "type": "string"
           }
@@ -2334,11 +2318,6 @@
             "type": "string"
           },
           {
-            "internalType": "address",
-            "name": "senderInstanceAddr",
-            "type": "address"
-          },
-          {
             "internalType": "string",
             "name": "targetInstanceName",
             "type": "string"
@@ -2350,7 +2329,17 @@
           },
           {
             "internalType": "uint256",
-            "name": "latestTimestamp",
+            "name": "timestampOrder",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampShipped",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampComplete",
             "type": "uint256"
           }
         ],
