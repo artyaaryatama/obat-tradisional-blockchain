@@ -210,6 +210,8 @@ function ObatOrderPagePabrik() {
 
       const [orderQuantity, senderInstanceName, senderInstanceAddress, statusOrder, latestTimestamp, targetInstanceName, orderObatIpfsHash] = detailObatCt;
 
+      console.log(statusOrder);
+
       const detailObat = {
         obatId: obatDetails.obatId,
         merk: obatDetails.merk,
@@ -229,207 +231,322 @@ function ObatOrderPagePabrik() {
         bpomInstanceNames:  bpomInstanceName ?  bpomInstanceName : "-"
       };
 
-      MySwal.fire({
-        title: `Detail Order Obat ${detailObat.namaObat}`,
-        html: (
-          <div className='form-swal'>
-            <div className="row1">
-              <div className="produce-obat">
-                <div className="detailObat">
+      if(statusOrder === 0n){
+        MySwal.fire({
+          title: `Detail Order Obat ${detailObat.namaObat}`,
+          html: (
+            <div className='form-swal'>
+              <div className="row1">
+                <div className="produce-obat">
+                  <div className="detailObat">
+                    <div className="row row--obat">
+                      <div className="col">
+                        <ul>
+                          <li className="label-sm">
+                            <p>Nama Obat</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailObat.namaObat}</p> 
+                          </li>
+                        </ul>
+  
+                        <ul>
+                          <li className="label-sm">
+                            <p>Nomor NIE</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailObat.nieNumber}</p> 
+                          </li>
+                        </ul>
+                      
+                        <ul>
+                          <li className="label-sm">
+                            <p>Di Order oleh</p>
+                          </li>
+                          <li className="input">
+                            <p>{senderInstanceName}</p>
+                          </li>
+                        </ul>
+  
+                        <ul>
+                          <li className="label-sm">
+                            <p>Total Order</p>
+                          </li>
+                          <li className="input">
+                            <p>{orderQuantity.toString()} Obat</p>
+                          
+                          </li>
+                        </ul>
+                        
+                      </div>
+                    </div>
+  
+                  </div>
+                  <DataIpfsHash ipfsHashes={orderObatIpfsHash} />
+                </div>
+                <div className="row row--obat">
+                  <div className="col column">
+  
+                      <ul>
+                        <li className="label">
+                          <p>Tipe Produk</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.tipeProduk}</p> 
+                        </li>
+                      </ul>
+  
+                      <ul>
+                        <li className="label">
+                          <p>Kemasan Obat</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.kemasan}</p> 
+                        </li>
+                      </ul>
+  
+                      <ul>
+                        <li className="label">
+                          <p>Klaim Obat</p>
+                        </li>
+                        <li className="input">
+                          <ul className='numbered'>
+                            {detailObat.klaim.map((item, index) => (
+                              <li key={index}><p>{item}</p></li>
+                            ))}
+                          </ul>
+                        </li>
+                      </ul>
+  
+                      <ul>
+                        <li className="label">
+                          <p>Komposisi Obat</p>
+                        </li>
+                        <li className="input">
+                          <ul className='numbered'>
+                            {detailObat.komposisi.map((item, index) => (
+                              <li key={index}><p>{item}</p></li>
+                            ))}
+                          </ul>
+                        </li>
+                      </ul>
+  
+                  </div>
+                </div>
+  
+              </div>
+            
+            </div>
+          ),
+          width: '1220',
+          showCancelButton: true,
+          confirmButtonText: 'Accept Order',
+          didOpen: async () => {
+            const dataObatSelected = dataObat.filter(item => item.namaProduk === detailObat.namaObat)
+  
+            if (dataObatSelected.length > 0) {
+              selectedBatchName = dataObatSelected[0].batchName;
+              const detailProducedObat = await contract.getDetailProducedObat(selectedBatchName)
+    
+              console.log(detailProducedObat);
+    
+              ObatQuantityReady = detailProducedObat[0];
+              obatIpfsHashReady = detailProducedObat[1];
+               
+              console.log(obatIpfsHashReady, ObatQuantityReady);
+              console.log(selectedBatchName);
+            }
+  
+  
+          }
+        }).then((result) => {
+  
+          if(result.isConfirmed){
+           
+            MySwal.fire({
+              title: `Order Obat ${detailObat.namaObat}`,
+              html: (
+                <div className='form-swal'>
                   <div className="row row--obat">
                     <div className="col">
+        
                       <ul>
-                        <li className="label-sm">
-                          <p>Nama Obat</p>
+                        <li className="label">
+                          <p>Nama Produk</p>
                         </li>
                         <li className="input">
                           <p>{detailObat.namaObat}</p> 
                         </li>
                       </ul>
-
+        
                       <ul>
-                        <li className="label-sm">
-                          <p>Nomor NIE</p>
+                        <li className="label">
+                          <p>Nama Pabrik</p> 
                         </li>
                         <li className="input">
-                          <p>{detailObat.nieNumber}</p> 
+                          <p>{targetInstanceName}</p> 
                         </li>
                       </ul>
-                    
+        
                       <ul>
-                        <li className="label-sm">
-                          <p>Di Order oleh</p>
+                        <li className="label">
+                          <p>Nama PBF</p> 
                         </li>
                         <li className="input">
-                          <p>{senderInstanceName}</p>
+                          <p>{senderInstanceName}</p> 
                         </li>
                       </ul>
-
+        
                       <ul>
-                        <li className="label-sm">
-                          <p>Total Order</p>
+                        <li className="label">
+                          <p>Total Stok Order</p> 
                         </li>
                         <li className="input">
-                          <p>{orderQuantity.toString()} Obat</p>
-                        
+                          <p>{ObatQuantityReady.toString()} Obat</p>
                         </li>
                       </ul>
-                      
+        
+                      <ul>
+                        {/* <li className="label">
+                          <button id='addQuantity'  className='addQuantity' >
+                            <i className="fa-solid fa-arrows-rotate"></i>
+                            Generate Data Obat
+                            </button>
+                        </li> */}
+                        <li className="input full-width-table">
+                          <DataIpfsHash ipfsHashes={obatIpfsHashReady} />
+                        </li>
+                      </ul>
                     </div>
                   </div>
-
+                
                 </div>
-                <DataIpfsHash ipfsHashes={orderObatIpfsHash} />
-              </div>
-              <div className="row row--obat">
-                <div className="col column">
-
-                    <ul>
-                      <li className="label">
-                        <p>Tipe Produk</p>
-                      </li>
-                      <li className="input">
-                        <p>{detailObat.tipeProduk}</p> 
-                      </li>
-                    </ul>
-
-                    <ul>
-                      <li className="label">
-                        <p>Kemasan Obat</p>
-                      </li>
-                      <li className="input">
-                        <p>{detailObat.kemasan}</p> 
-                      </li>
-                    </ul>
-
-                    <ul>
-                      <li className="label">
-                        <p>Klaim Obat</p>
-                      </li>
-                      <li className="input">
-                        <ul className='numbered'>
-                          {detailObat.klaim.map((item, index) => (
-                            <li key={index}><p>{item}</p></li>
-                          ))}
-                        </ul>
-                      </li>
-                    </ul>
-
-                    <ul>
-                      <li className="label">
-                        <p>Komposisi Obat</p>
-                      </li>
-                      <li className="input">
-                        <ul className='numbered'>
-                          {detailObat.komposisi.map((item, index) => (
-                            <li key={index}><p>{item}</p></li>
-                          ))}
-                        </ul>
-                      </li>
-                    </ul>
-
-                </div>
-              </div>
-
-            </div>
-          
-          </div>
-        ),
-        width: '1220',
-        showCancelButton: true,
-        confirmButtonText: 'Accept Order',
-        didOpen: async () => {
-          const dataObatSelected = dataObat.filter(item => item.namaProduk === detailObat.namaObat)
-
-          if (dataObatSelected.length > 0) {
-            selectedBatchName = dataObatSelected[0].batchName;
-            const detailProducedObat = await contract.getDetailProducedObat(selectedBatchName)
-  
-            console.log(detailProducedObat);
-  
-            ObatQuantityReady = detailProducedObat[0];
-            obatIpfsHashReady = detailProducedObat[1];
-             
-            console.log(obatIpfsHashReady, ObatQuantityReady);
-            console.log(selectedBatchName);
+              ),
+              width: '820',
+              showCancelButton: true,
+              confirmButtonText: 'Send Obat',
+              allowOutsideClick: false,
+            }).then((result) => {
+                if(result.isConfirmed){
+                  acceptOrder(selectedBatchName, orderId)
+                }
+            })
           }
-
-
-        }
-      }).then((result) => {
-
-        if(result.isConfirmed){
-         
-          MySwal.fire({
-            title: `Order Obat ${detailObat.namaObat}`,
-            html: (
-              <div className='form-swal'>
+        })
+      } else {
+        MySwal.fire({
+          title: `Detail Order Obat ${detailObat.namaObat}`,
+          html: (
+            <div className='form-swal'>
+              <div className="row1">
+                <div className="produce-obat">
+                  <div className="detailObat">
+                    <div className="row row--obat">
+                      <div className="col">
+                        <ul>
+                          <li className="label-sm">
+                            <p>Nama Obat</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailObat.namaObat}</p> 
+                          </li>
+                        </ul>
+  
+                        <ul>
+                          <li className="label-sm">
+                            <p>Nomor NIE</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailObat.nieNumber}</p> 
+                          </li>
+                        </ul>
+                      
+                        <ul>
+                          <li className="label-sm">
+                            <p>Di Order oleh</p>
+                          </li>
+                          <li className="input">
+                            <p>{senderInstanceName}</p>
+                          </li>
+                        </ul>
+  
+                        <ul>
+                          <li className="label-sm">
+                            <p>Total Order</p>
+                          </li>
+                          <li className="input">
+                            <p>{orderQuantity.toString()} Obat</p>
+                          
+                          </li>
+                        </ul>
+                        
+                      </div>
+                    </div>
+  
+                  </div>
+                  <DataIpfsHash ipfsHashes={orderObatIpfsHash} />
+                </div>
                 <div className="row row--obat">
-                  <div className="col">
-      
-                    <ul>
-                      <li className="label">
-                        <p>Nama Produk</p>
-                      </li>
-                      <li className="input">
-                        <p>{detailObat.namaObat}</p> 
-                      </li>
-                    </ul>
-      
-                    <ul>
-                      <li className="label">
-                        <p>Nama Pabrik</p> 
-                      </li>
-                      <li className="input">
-                        <p>{targetInstanceName}</p> 
-                      </li>
-                    </ul>
-      
-                    <ul>
-                      <li className="label">
-                        <p>Nama PBF</p> 
-                      </li>
-                      <li className="input">
-                        <p>{senderInstanceName}</p> 
-                      </li>
-                    </ul>
-      
-                    <ul>
-                      <li className="label">
-                        <p>Total Stok Order</p> 
-                      </li>
-                      <li className="input">
-                        <p>{ObatQuantityReady.toString()} Obat</p>
-                      </li>
-                    </ul>
-      
-                    <ul>
-                      {/* <li className="label">
-                        <button id='addQuantity'  className='addQuantity' >
-                          <i className="fa-solid fa-arrows-rotate"></i>
-                          Generate Data Obat
-                          </button>
-                      </li> */}
-                      <li className="input full-width-table">
-                        <DataIpfsHash ipfsHashes={obatIpfsHashReady} />
-                      </li>
-                    </ul>
+                  <div className="col column">
+  
+                      <ul>
+                        <li className="label">
+                          <p>Tipe Produk</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.tipeProduk}</p> 
+                        </li>
+                      </ul>
+  
+                      <ul>
+                        <li className="label">
+                          <p>Kemasan Obat</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.kemasan}</p> 
+                        </li>
+                      </ul>
+  
+                      <ul>
+                        <li className="label">
+                          <p>Klaim Obat</p>
+                        </li>
+                        <li className="input">
+                          <ul className='numbered'>
+                            {detailObat.klaim.map((item, index) => (
+                              <li key={index}><p>{item}</p></li>
+                            ))}
+                          </ul>
+                        </li>
+                      </ul>
+  
+                      <ul>
+                        <li className="label">
+                          <p>Komposisi Obat</p>
+                        </li>
+                        <li className="input">
+                          <ul className='numbered'>
+                            {detailObat.komposisi.map((item, index) => (
+                              <li key={index}><p>{item}</p></li>
+                            ))}
+                          </ul>
+                        </li>
+                      </ul>
+  
                   </div>
                 </div>
-              
+  
               </div>
-            ),
-            width: '820',
-            showCancelButton: true,
-            confirmButtonText: 'Send Obat',
-            allowOutsideClick: false,
-          }).then((result) => {
-              if(result.isConfirmed){
-                acceptOrder(selectedBatchName, orderId)
-              }
-          })
-        }
-      })
+            
+            </div>
+          ),
+          width: '1220',
+          showCancelButton: false,
+          showCloseButton: true,
+          showConfirmButton: false
+        })
+
+      }
       
     } catch (e) {
       errAlert(e, "Can't retrieve data")

@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
+    "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
     "abi": [
       {
         "inputs": [
@@ -902,7 +902,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+    "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
     "abi": [
       {
         "inputs": [
@@ -1435,6 +1435,19 @@
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_orderId",
+            "type": "string"
+          }
+        ],
+        "name": "completeOrder",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {

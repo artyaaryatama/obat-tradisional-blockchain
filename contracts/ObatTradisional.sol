@@ -657,14 +657,29 @@ contract ObatTradisional {
       }
     }
 
-
     emit evt_updateOrder(obatOrdered.namaProduk, obatProduced.batchName, obatOrdered.targetInstanceName, obatOrdered.senderInstanceName, obatOrdered.orderQuantity, block.timestamp);
+  }
 
-    // for(uint i = 0; i < obatOrdered.orderQuantity; i++){
-    //   obatOrdered.orderObatIpfsHash.push(obatProduced.obatIpfsHash[i]);
-    // }
+  function completeOrder(
+    string memory _orderId
+  ) public {
+    require(bytes(orderObatById[_orderId].orderId).length > 0, "No data found with this ID."); 
 
-    // obatProduced.obatQuantity -= obatOrdered.orderQuantity;
+    st_orderObat storage obatOrdered = orderObatById[_orderId];
+
+    obatOrdered.statusOrder = en_orderStatus.OrderDelivered;
+    obatOrdered.latestTimestamp = block.timestamp;
+
+    for(uint i=0; i < allOrderedObat.length; i++){
+      if(keccak256(abi.encodePacked(allOrderedObat[i].orderId)) == keccak256(abi.encodePacked(_orderId))){
+        allOrderedObat[i].statusOrder = en_orderStatus.OrderDelivered;
+        allOrderedObat[i].latestTimestamp = block.timestamp;
+
+        break;
+      }
+    }
+
+    emit evt_updateOrder(obatOrdered.namaProduk, obatOrdered.batchName, obatOrdered.targetInstanceName, obatOrdered.senderInstanceName, obatOrdered.orderQuantity, block.timestamp);
   }
 
  
