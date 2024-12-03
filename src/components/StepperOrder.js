@@ -1,0 +1,61 @@
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import StepContent from '@mui/material/StepContent';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+
+import "./../styles/Mui-Override.scss";
+
+export default function OrderStatusStepper({ orderStatus, timestamps }) {
+
+  const steps = [
+    {
+      label: 'Order Placed',
+      description: timestamps.timestampOrder,
+      isDisabled: timestamps.timestampOrder === 0
+    },
+    {
+      label: 'Order Shipped',
+      description: timestamps.timestampShipped,
+      isDisabled: timestamps.timestampShipped === 0
+    },
+    {
+      label: 'Order Delivered',
+      description: timestamps.timestampComplete,
+      isDisabled: timestamps.timestampComplete === 0
+    }
+  ];
+
+  const activeStep = parseInt(orderStatus);
+
+  return (
+    <Box sx={{ maxWidth: 700 }}>
+      <Stepper activeStep={activeStep} orientation="vertical">
+        {steps.map((step, index) => (
+          <Step key={step.label} completed={activeStep > index}>
+            <StepLabel 
+              className='customLabelStepper'
+              icon={null} // Prevent the check icon
+            >
+              {step.label}
+            </StepLabel>
+            <StepContent 
+              className='customDescStepper'
+              style={{ display: (activeStep >= index) ? 'block' : 'none' }} // Keep descriptions visible
+            >
+              <Typography>{step.description || 'No timestamp available'}</Typography>
+            </StepContent>
+          </Step>
+        ))}
+      </Stepper>
+      {activeStep === steps.length && (
+        <Paper square elevation={0} sx={{ p: 3 }}>
+          <Typography>Order Complete. 😎</Typography>
+        </Paper>
+      )}
+    </Box>
+  );
+}

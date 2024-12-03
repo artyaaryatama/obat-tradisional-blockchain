@@ -606,7 +606,7 @@ contract ObatTradisional {
       string memory senderInstanceName,
       uint8 statusOrder,
       string memory targetInstanceName,
-      string[] memory orderObatIpfsHash
+      string[] memory orderObatIpfsHash, 
   ){
     require(bytes(orderObatById[_orderId].orderId).length > 0, "No data found with this ID.");
 
@@ -614,8 +614,8 @@ contract ObatTradisional {
     senderInstanceName = orderObatById[_orderId].senderInstanceName;  
     targetInstanceName = orderObatById[_orderId].targetInstanceName;  
     statusOrder = uint8(orderObatById[_orderId].statusOrder);
-    orderObatIpfsHash = orderObatById[_orderId].orderObatIpfsHash; 
-  }  
+    orderObatIpfsHash = orderObatById[_orderId].orderObatIpfsHash;
+  }   
 
   function acceptOrder(
     string memory _batchName, 
@@ -630,7 +630,6 @@ contract ObatTradisional {
     obatOrdered.batchName = _batchName;
     obatOrdered.statusOrder = en_orderStatus.OrderShipped;
     obatOrdered.timestampShipped = block.timestamp;
-    obatOrdered.timestampComplete = 0;
 
     obatProduced.obatIpfsHash = new string[](0);
     obatProduced.obatQuantity = 0;
@@ -641,7 +640,6 @@ contract ObatTradisional {
         allOrderedObat[i].batchName = _batchName;
         allOrderedObat[i].statusOrder = en_orderStatus.OrderShipped;
         allOrderedObat[i].timestampShipped = block.timestamp;
-        allOrderedObat[i].timestampComplete = 0;
 
         break;
       }

@@ -23,6 +23,25 @@
     }
   }
 
+  &.order{
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+
+    .container-stepper{
+      padding: 14px;  
+      width: 16%;
+      background-color: $grey-light;
+      border-radius: 14px;
+    }
+
+    .row1{
+      .row--obat ul li.input, .row--obat ul li.label-sm{
+        width: 100%;
+      }
+    }
+  }
+
   .row1{
     display: flex;
     justify-content: space-between;

@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom/client';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
 
 import DataIpfsHash from '../../components/TableHash';
+import OrderStatusStepper from '../../components/StepperOrder';
 
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
@@ -109,7 +111,7 @@ function ObatOrderPbf() {
         const timestamp = new Date(Number(_latestTimestamp) * 1000).toLocaleDateString('id-ID', options)
 
         MySwal.fire({
-          title:  `Success Accept Order Obat ${_namaProduk}`,
+          title:  `Success Accept Order Delivery Obat ${_namaProduk}`,
           html: (
             <div className='form-swal'>
               <ul>
@@ -189,9 +191,15 @@ function ObatOrderPbf() {
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = tx;
 
-      const [orderQuantity, senderInstanceName, senderInstanceAddress, statusOrder, latestTimestamp, targetInstanceName, orderObatIpfsHash] = tx1;
+      const [orderQuantity, senderInstanceName, statusOrder, targetInstanceName, orderObatIpfsHash, timestampOrder, timestampShipped, timestampComplete] = tx1;
+      
+      const timestamps = {
+        timestampOrder: new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options), 
+        timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
+        timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
+      }
 
-      const readableLatestTimestamp = new Date(Number(latestTimestamp) * 1000).toLocaleDateString('id-ID', options)
+      console.log(timestamps);
 
       const detailObat = {
         obatId: obatDetails.obatId,
@@ -217,14 +225,14 @@ function ObatOrderPbf() {
         MySwal.fire({
           title: `Detail Order Obat ${detailObat.namaObat}`,
           html: (
-            <div className='form-swal'>
+            <div className='form-swal order'>
               <div className="row1">
                 <div className="produce-obat">
                   <div className="detailObat">
                     <div className="row row--obat">
                       <div className="col">
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>ID ORDER</p>
                           </li>
                           <li className="input">
@@ -233,17 +241,16 @@ function ObatOrderPbf() {
                         </ul>
   
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Status Order</p>
                           </li>
                           <li className="input">
                             <p>{obatStatusMap[statusOrder]}</p> 
-                            <span>Update Terakhir:   {readableLatestTimestamp}</span>
                           </li>
                         </ul>
   
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Nama Obat</p>
                           </li>
                           <li className="input">
@@ -252,7 +259,7 @@ function ObatOrderPbf() {
                         </ul>
                       
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Di Produksi oleh</p>
                           </li>
                           <li className="input">
@@ -261,7 +268,7 @@ function ObatOrderPbf() {
                         </ul>
   
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Total Pemesanan</p>
                           </li>
                           <li className="input">
@@ -335,12 +342,21 @@ function ObatOrderPbf() {
                 </div>
   
               </div>
-            
+              <div className="container-stepper">
+                <div id="stepperOrder"></div>
+              </div>
             </div>
           ),
           width: '1220',
           showCancelButton: true,
           confirmButtonText: 'Complete Order',
+          didOpen: () => {
+            const stepperOrder = document.getElementById('stepperOrder');
+            const root = ReactDOM.createRoot(stepperOrder);
+            root.render( 
+              <OrderStatusStepper orderStatus={statusOrder} timestamps={timestamps} />
+            );
+          }
         }).then((result) => {
           if (result.isConfirmed) {
             completeOrder(orderId)
@@ -351,14 +367,14 @@ function ObatOrderPbf() {
         MySwal.fire({
           title: `Detail Order Obat ${detailObat.namaObat}`,
           html: (
-            <div className='form-swal'>
+            <div className='form-swal order'>
               <div className="row1">
                 <div className="produce-obat">
                   <div className="detailObat">
                     <div className="row row--obat">
                       <div className="col">
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>ID ORDER</p>
                           </li>
                           <li className="input">
@@ -367,17 +383,16 @@ function ObatOrderPbf() {
                         </ul>
   
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Status Order</p>
                           </li>
                           <li className="input">
                             <p>{obatStatusMap[statusOrder]}</p> 
-                            <span>Update Terakhir:   {readableLatestTimestamp}</span>
                           </li>
                         </ul>
   
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Nama Obat</p>
                           </li>
                           <li className="input">
@@ -386,7 +401,7 @@ function ObatOrderPbf() {
                         </ul>
                       
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Di Produksi oleh</p>
                           </li>
                           <li className="input">
@@ -395,7 +410,7 @@ function ObatOrderPbf() {
                         </ul>
   
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Total Pemesanan</p>
                           </li>
                           <li className="input">
@@ -469,13 +484,22 @@ function ObatOrderPbf() {
                 </div>
   
               </div>
-            
+              <div className="container-stepper">
+                <div id="stepperOrder"></div>
+              </div>
             </div>
           ),
           width: '1220',
           showCancelButton: false,
           showCloseButton: true,
           showConfirmButton: false,
+          didOpen: () => {
+            const stepperOrder = document.getElementById('stepperOrder');
+            const root = ReactDOM.createRoot(stepperOrder);
+            root.render( 
+              <OrderStatusStepper orderStatus={statusOrder} timestamps={timestamps} />
+            );
+          }
         })
 
       }

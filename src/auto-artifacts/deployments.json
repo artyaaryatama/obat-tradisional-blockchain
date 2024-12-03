@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
+    "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
     "abi": [
       {
         "inputs": [
@@ -902,7 +902,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0x9A676e781A523b5d0C0e43731313A708CB607508",
+    "address": "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
     "abi": [
       {
         "inputs": [
@@ -1686,6 +1686,21 @@
             "internalType": "string[]",
             "name": "orderObatIpfsHash",
             "type": "string[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampOrder",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampShipped",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampComplete",
+            "type": "uint256"
           }
         ],
         "stateMutability": "view",

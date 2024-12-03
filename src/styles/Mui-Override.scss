@@ -1,0 +1,47 @@
+@import './main.scss';
+@import 'mixin';
+
+.customLabelStepper{
+  font-size: 14px;
+  
+  span.Mui-active, span.Mui-completed{
+    font-family: "Instrument Sans", sans-serif;
+    color: $black;
+    font-weight: bold;
+  }
+  
+  span.Mui-disabled{
+    font-family: "Instrument Sans", sans-serif;
+    color: $grey;
+    font-weight: bold;
+  }
+
+  svg.css-3hpdci-MuiSvgIcon-root-MuiStepIcon-root.Mui-active, svg.css-3hpdci-MuiSvgIcon-root-MuiStepIcon-root.Mui-completed{
+    color: $purple;
+    
+    text {
+      font-family: "Instrument Sans", sans-serif;
+      color: $grey
+    }
+  }
+
+  svg.css-3hpdci-MuiSvgIcon-root-MuiStepIcon-root.Mui-disabled{
+    color: $grey-light;
+    
+    text {
+      font-family: "Instrument Sans", sans-serif;
+      color: $grey
+    }
+  }
+}
+
+
+.customDescStepper{
+  
+  p{
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 12px;
+    color: $grey;
+    text-align: left;
+  }
+}
