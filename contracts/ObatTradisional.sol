@@ -73,10 +73,11 @@ contract ObatTradisional {
     string batchName;
     uint8 orderQuantity;
     string senderInstanceName;
-    address senderInstanceAddr;
     string targetInstanceName; // yg punya obatnya
     en_orderStatus statusOrder; 
-    uint latestTimestamp;
+    uint timestampOrder;
+    uint timestampShipped;
+    uint timestampComplete;
     string[] orderObatIpfsHash;
   }
 
@@ -102,7 +103,7 @@ contract ObatTradisional {
   event evt_nieRequested(string obatId, uint timestampRequested, string namaProduk);
   event evt_nieApproved(string nieNumber, string namaProduk);
   event evt_obatProduced(string namaProduk, uint8 quantity, string batchNamee);
-  event evt_obatOrdered(string namaProduk, uint8 quantity, string orderId, string senderInstanceName, address senderAddr, string targetInstanceName, uint latestTimestamp );
+  event evt_obatOrdered(string namaProduk, uint8 quantity, string orderId, string senderInstanceName, string targetInstanceName, uint latestTimestamp );
   event evt_updateOrder(string namaProduk, string batchName, string targetInstance, string senderInstance, uint8 quantity, uint latestTimestamp);
 
   function getJenisSediaanAvail(string memory _factoryInstanceName)
@@ -478,12 +479,11 @@ contract ObatTradisional {
   }
 
   // order dont need the ipfsHash, later after the order is accepted, we will added the ipfsfhash
-  function orderObat(
+  function createOrder(
     string memory _obatIdProduk,
     string memory _orderId,
     string memory _namaProduk,
     uint8 _orderQuantity,
-    address _senderAddr,
     string memory _senderInstanceName,
     string memory _targetInstanceName
   ) public {
@@ -495,17 +495,18 @@ contract ObatTradisional {
       batchName: "",
       orderQuantity: _orderQuantity,
       senderInstanceName: _senderInstanceName,
-      senderInstanceAddr: _senderAddr,
       targetInstanceName: _targetInstanceName,
       statusOrder: en_orderStatus.OrderPlaced,
-      latestTimestamp: block.timestamp,
+      timestampOrder: block.timestamp,
+      timestampShipped: 0,
+      timestampComplete: 0,
       orderObatIpfsHash: new string[](0)  
     });
     
     orderObatById[_orderId] = newOrderPbf;
     allOrderedObat.push(newOrderPbf);
 
-    emit evt_obatOrdered(_namaProduk, _orderQuantity, _orderId, _senderInstanceName, _senderAddr, _targetInstanceName, block.timestamp); 
+    emit evt_obatOrdered(_namaProduk, _orderQuantity, _orderId, _senderInstanceName, _targetInstanceName, block.timestamp); 
   } 
 
   // get lsit all ordered for pabrik and pbf
@@ -603,19 +604,15 @@ contract ObatTradisional {
     returns(
       uint8 orderQuantity,
       string memory senderInstanceName,
-      address senderInstanceAddr,
       uint8 statusOrder,
-      uint latestTimestamp,
       string memory targetInstanceName,
       string[] memory orderObatIpfsHash
   ){
     require(bytes(orderObatById[_orderId].orderId).length > 0, "No data found with this ID.");
 
     orderQuantity = orderObatById[_orderId].orderQuantity;  
-    senderInstanceName = orderObatById[_orderId].senderInstanceName; 
-    senderInstanceAddr = orderObatById[_orderId].senderInstanceAddr; 
-    latestTimestamp = orderObatById[_orderId].latestTimestamp;
-    targetInstanceName = orderObatById[_orderId].targetInstanceName;
+    senderInstanceName = orderObatById[_orderId].senderInstanceName;  
+    targetInstanceName = orderObatById[_orderId].targetInstanceName;  
     statusOrder = uint8(orderObatById[_orderId].statusOrder);
     orderObatIpfsHash = orderObatById[_orderId].orderObatIpfsHash; 
   }  
@@ -632,7 +629,8 @@ contract ObatTradisional {
     obatOrdered.orderObatIpfsHash = obatProduced.obatIpfsHash;
     obatOrdered.batchName = _batchName;
     obatOrdered.statusOrder = en_orderStatus.OrderShipped;
-    obatOrdered.latestTimestamp = block.timestamp;
+    obatOrdered.timestampShipped = block.timestamp;
+    obatOrdered.timestampComplete = 0;
 
     obatProduced.obatIpfsHash = new string[](0);
     obatProduced.obatQuantity = 0;
@@ -642,7 +640,8 @@ contract ObatTradisional {
         allOrderedObat[i].orderObatIpfsHash = obatProduced.obatIpfsHash;
         allOrderedObat[i].batchName = _batchName;
         allOrderedObat[i].statusOrder = en_orderStatus.OrderShipped;
-        allOrderedObat[i].latestTimestamp = block.timestamp;
+        allOrderedObat[i].timestampShipped = block.timestamp;
+        allOrderedObat[i].timestampComplete = 0;
 
         break;
       }
@@ -668,12 +667,12 @@ contract ObatTradisional {
     st_orderObat storage obatOrdered = orderObatById[_orderId];
 
     obatOrdered.statusOrder = en_orderStatus.OrderDelivered;
-    obatOrdered.latestTimestamp = block.timestamp;
+    obatOrdered.timestampComplete = block.timestamp;
 
     for(uint i=0; i < allOrderedObat.length; i++){
       if(keccak256(abi.encodePacked(allOrderedObat[i].orderId)) == keccak256(abi.encodePacked(_orderId))){
         allOrderedObat[i].statusOrder = en_orderStatus.OrderDelivered;
-        allOrderedObat[i].latestTimestamp = block.timestamp;
+        allOrderedObat[i].timestampComplete = block.timestamp;
 
         break;
       }

@@ -208,7 +208,7 @@ function ObatOrderPagePabrik() {
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = listObatCt;
 
-      const [orderQuantity, senderInstanceName, senderInstanceAddress, statusOrder, latestTimestamp, targetInstanceName, orderObatIpfsHash] = detailObatCt;
+      const [orderQuantity, senderInstanceName, statusOrder, targetInstanceName, orderObatIpfsHash] = detailObatCt;
 
       console.log(statusOrder);
 

@@ -107,7 +107,7 @@ function ObatCreateOrderPbf() {
   useEffect(() => {
     if (contract) {
       
-      contract.on("evt_obatOrdered", (_namaProduk, _orderQuantity, _orderId, _pbfInstanceName, _pbfAddr, _targetInstanceName, _timestampOrder) => {
+      contract.on("evt_obatOrdered", (_namaProduk, _orderQuantity, _orderId, _pbfInstanceName, _targetInstanceName, _timestampOrder) => {
 
         const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
     
@@ -346,7 +346,7 @@ function ObatCreateOrderPbf() {
 
       console.log(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.pbfAddr, orderObat.pbfInstanceName, factoryInstanceName);
 
-      const tx = await contract.orderObat(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.pbfAddr, orderObat.pbfInstanceName, factoryInstanceName);
+      const tx = await contract.createOrder(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.pbfInstanceName, factoryInstanceName);
       tx.wait()
       console.log(tx);
 
