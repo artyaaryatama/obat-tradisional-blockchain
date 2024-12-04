@@ -18,7 +18,7 @@ const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 
 
 function ObatOrderPagePabrik() {
-  const [contract, setContract] = useState();
+  const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
 
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
@@ -50,13 +50,23 @@ function ObatOrderPagePabrik() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const contr = new Contract(
-            contractData.ObatTradisional.address, 
-            contractData.ObatTradisional.abi, 
+
+          const orderManagementContract = new Contract(
+            contractData.OrderManagement.address,
+            contractData.OrderManagement.abi,
             signer
           );
-            
-          setContract(contr);
+          const obatTradisionalContract = new Contract(
+            contractData.ObatTradisional.address,
+            contractData.ObatTradisional.abi,
+            signer
+          );
+
+          // Update state with both contracts
+          setContracts({
+            orderManagement: orderManagementContract,
+            obatTradisional: obatTradisionalContract
+          });
         } catch (err) {
           console.error("User access denied!")
           errAlert(err, "User access denied!")
@@ -70,7 +80,7 @@ function ObatOrderPagePabrik() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (contract && userData.instanceName) {
+      if (contracts && userData.instanceName) {
 
         const statusOrderMap = {
           0: "Order Placed",
@@ -80,8 +90,8 @@ function ObatOrderPagePabrik() {
 
         try {
 
-          const listOrderedObatCt = await contract.getListAllOrderedObatFromTarget(userData.instanceName);
-          const listProducedObatCt = await contract.getListAllProducedObatByFactory(userData.instanceName);
+          const listOrderedObatCt = await contracts.orderManagement.getListAllOrderedObatFromTarget(userData.instanceName);
+          const listProducedObatCt = await contracts.obatTradisional.getListAllProducedObatByFactory(userData.instanceName);
           
           const [orderIdArray, namaProdukArray, statusOrderArray, orderQuantityArray, obatIdProdukArray, batchNameArr] = listOrderedObatCt;
           const [obatIdArray, namaProdukArr, obatQuantityArray, batchNameArray] = listProducedObatCt;
@@ -115,12 +125,12 @@ function ObatOrderPagePabrik() {
     };
   
     loadData();
-  }, [contract, userData.instanceName]);
+  }, [contracts, userData.instanceName]);
 
   useEffect(() => {
-    if (contract) {
+    if (contracts) {
 
-      contract.on("evt_updateOrder", (_namaProduk, _batchName, _targetInstanceName, _senderInstanceName, _orderQuantity, _latestTimestamp) => {
+      contracts.orderManagement.on("evt_updateOrder", (_namaProduk, _batchName, _targetInstanceName, _senderInstanceName, _orderQuantity, _latestTimestamp) => {
 
         const timestamp = new Date(Number(_latestTimestamp) * 1000).toLocaleDateString('id-ID', options)
 
@@ -191,10 +201,10 @@ function ObatOrderPagePabrik() {
       })
   
       return () => {
-        contract.removeAllListeners("evt_updateOrder");
+        contracts.orderManagement.removeAllListeners("evt_updateOrder");
       };
     }
-  }, [contract]);
+  }, [contracts]);
   
 
   const getDetailObat = async (id, orderId) => {
@@ -202,15 +212,15 @@ function ObatOrderPagePabrik() {
 
     try {
       let ObatQuantityReady, obatIpfsHashReady, selectedBatchName;
-      const listObatCt = await contract.getListObatById(id);
-      const detailObatCt = await contract.getDetailOrderedObat(orderId)
+      const listObatCt = await contracts.obatTradisional.getListObatById(id);
+      const detailObatCt = await contracts.orderManagement.getDetailOrderedObat(orderId)
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = listObatCt;
 
-      const [orderQuantity, senderInstanceName, statusOrder, targetInstanceName, orderObatIpfsHash] = detailObatCt;
+      const [orderQuantity, senderInstanceName, statusOrder, targetInstanceName, orderObatIpfsHash, timestampOrder, timestampShipped, timestampComplete] = detailObatCt;
 
       console.log(statusOrder);
-
+ 
       const detailObat = {
         obatId: obatDetails.obatId,
         merk: obatDetails.merk,
@@ -229,6 +239,17 @@ function ObatOrderPagePabrik() {
         bpomUserName:  bpomUserName ? bpomUserName : "-",
         bpomInstanceNames:  bpomInstanceName ?  bpomInstanceName : "-"
       };
+
+      const detailOrder = {
+        orderQuantity: orderQuantity,
+        senderInstanceName: senderInstanceName,
+        statusOrder : statusOrder,
+        targetInstanceName : targetInstanceName,
+        orderObatIpfsHash : orderObatIpfsHash,
+        timestampOrder: timestampOrder,
+        timestampShipped: timestampShipped,
+        timestampComplete: timestampComplete
+      }
 
       if(statusOrder === 0n){
         MySwal.fire({
@@ -345,7 +366,7 @@ function ObatOrderPagePabrik() {
   
             if (dataObatSelected.length > 0) {
               selectedBatchName = dataObatSelected[0].batchName;
-              const detailProducedObat = await contract.getDetailProducedObat(selectedBatchName)
+              const detailProducedObat = await contracts.obatTradisional.getDetailProducedObat(selectedBatchName)
     
               console.log(detailProducedObat);
     
@@ -406,13 +427,13 @@ function ObatOrderPagePabrik() {
                       </ul>
         
                       <ul>
-                        {/* <li className="label">
+                        <li className="label">
                           <button id='addQuantity'  className='addQuantity' >
                             <i className="fa-solid fa-arrows-rotate"></i>
                             Generate Data Obat
                             </button>
-                        </li> */}
-                        <li className="input full-width-table">
+                        </li>
+                        <li className="input">
                           <DataIpfsHash ipfsHashes={obatIpfsHashReady} />
                         </li>
                       </ul>
@@ -425,10 +446,25 @@ function ObatOrderPagePabrik() {
               showCancelButton: true,
               confirmButtonText: 'Send Obat',
               allowOutsideClick: false,
-            }).then((result) => {
-                if(result.isConfirmed){
-                  acceptOrder(selectedBatchName, orderId)
-                }
+              didOpen: () => {
+                const generateIpfsHash = document.getElementById('addQuantity')
+
+                const handleGenerate = async () => {
+                  const quantity = parseInt(ObatQuantityReady);
+                  if (quantity <= 0) {
+                    MySwal.showValidationMessage('Jumlah stok harus lebih dari 0');
+                    return;
+                  }
+                  addStok(detailObat, detailOrder, orderId)
+                };
+              
+                generateIpfsHash.addEventListener('click', handleGenerate);
+              
+                return () => {
+                  generateIpfsHash.removeEventListener('click', handleGenerate);
+                };
+              }
+
             })
           }
         })
@@ -552,7 +588,19 @@ function ObatOrderPagePabrik() {
     }
   }
 
-  const acceptOrder = async (batchName, orderId) => {
+  const acceptOrder = async (batchName, orderId, ipfsHashes) => {
+
+    try {
+      const acceptOrderCt = await contracts.orderManagement.acceptOrder(batchName, orderId, ipfsHashes)
+      console.log(acceptOrderCt);
+      
+    } catch (error) {
+      errAlert(error, "Can't Accept Order")
+    }
+
+  }
+
+  const addStok = async(dataObat, dataOrder, orderId) => {
 
     MySwal.fire({
       title:"Processing your request...",
@@ -563,12 +611,125 @@ function ObatOrderPagePabrik() {
       allowOutsideClick: false,
     })
 
-    const acceptOrderCt = await contract.acceptOrder(batchName, orderId)
+    const ipfsHashes = [];
+    const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
+    const randomTwoLetters = String.fromCharCode(
+      65 + Math.floor(Math.random() * 26),
+      65 + Math.floor(Math.random() * 26)
+    );
+    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+    const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase()
 
-    console.log(acceptOrderCt);
+    for (let i = 0; i < dataOrder.orderQuantity; i++) {
+      const obat = {
+        batchName: `BN-${date}-${randomCode}-${dataOrder.orderQuantity}`,
+        obatIdPackage: `OT-${i * 23}${randomFourDigit}${randomTwoLetters}`,
+        dataObat:  {
+          obatIdProduk: dataObat.obatId,
+          namaProduk: dataObat.namaObat,
+          merk: dataObat.merk,
+          klaim: dataObat.klaim,
+          kemasan: dataObat.kemasan,
+          komposisi: dataObat.komposisi,
+          factoryAddr: dataObat.factoryAddr,
+          factoryInstanceName: dataObat.factoryInstanceName,
+          factoryUserName: dataObat.factoryUserName,
+          tipeProduk: dataObat.tipeProduk,
+          nieNumber: dataObat.nieNumber,
+          nieRequestDate: dataObat.nieRequestDate,
+          nieApprovalDate: dataObat.nieApprovalDate,
+          bpomAddr: dataObat.bpomAddr,
+          bpomInstanceName: dataObat.bpomInstanceName,
+          bpomUserName: dataObat.bpomUserName
+        },
+        dataOrderPbf: {
+          orderQuantity: dataOrder.orderQuantity,
+          senderInstanceName: dataOrder.senderInstanceName,
+          statusOrder : dataOrder.statusOrder,
+          targetInstanceName : dataOrder.targetInstanceName,
+          orderObatIpfsHash : dataOrder.orderObatIpfsHash,
+          timestampOrder: dataOrder.timestampOrder
+        }
+      };
+      
+      try {
+        const result = await client.add(JSON.stringify(obat)); 
+        ipfsHashes.push(result.path); 
+      } catch (error) {
+        errAlert(error, "Can't upload Data Obat to IPFS."); 
+        break;
+      }
+    }
+
+    console.log("Generated IPFS Hashes:", ipfsHashes);
+
+    MySwal.fire({
+      title: `Order Obat ${dataObat.namaObat}`,
+      html: (
+        <div className='form-swal'>
+          <div className="row row--obat">
+            <div className="col">
+
+              <ul>
+                <li className="label">
+                  <p>Nama Produk</p>
+                </li>
+                <li className="input">
+                  <p>{dataObat.namaObat}</p> 
+                </li>
+              </ul>
+
+              <ul>
+                <li className="label">
+                  <p>Nama Pabrik</p> 
+                </li>
+                <li className="input">
+                  <p>{dataObat.targetInstanceName}</p> 
+                </li>
+              </ul>
+
+              <ul>
+                <li className="label">
+                  <p>Nama PBF</p> 
+                </li>
+                <li className="input">
+                  <p>{dataObat.senderInstanceName}</p> 
+                </li>
+              </ul>
+
+              <ul>
+                <li className="label">
+                  <p>Total Stok Order</p> 
+                </li>
+                <li className="input">
+                  <p>{dataOrder.obatQuantity} Obat</p>
+                </li>
+              </ul>
+
+              <ul>
+                <li className="input full-width-table">
+                  <DataIpfsHash ipfsHashes={ipfsHashes} />
+                </li>
+              </ul>
+            </div>
+          </div>
+        
+        </div>
+      ),
+      width: '820',
+      showCancelButton: true,
+      confirmButtonText: 'Send Obat',
+      allowOutsideClick: false,
+
+    }).then((result) => {
+        if(result.isConfirmed){
+          acceptOrder(`BN-${date}-${randomCode}-${dataOrder.orderQuantity}`, orderId, ipfsHashes)
+        }
+    })
   }
 
-  // const addStok = async(quantity, data) => {
+
+  // const addQuantityObat = async(namaObat, batchName, obatId, quantity, factoryInstanceName, ipfsHash) => {
 
   //   MySwal.fire({
   //     title:"Processing your request...",
@@ -579,137 +740,14 @@ function ObatOrderPagePabrik() {
   //     allowOutsideClick: false,
   //   })
 
-  //   const ipfsHashes = [];
-  //   const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
-  //   const randomTwoLetters = String.fromCharCode(
-  //     65 + Math.floor(Math.random() * 26),
-  //     65 + Math.floor(Math.random() * 26)
-  //   );
-  //   const date = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-  //   const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase()
-
-  //   for (let i = 0; i < quantity; i++) {
-  //     const obat = {
-  //       batchName: `BN-${date}-${randomCode}-${quantity}`,
-  //       obatIdProduk: data.obatId,
-  //       obatIdPackage: `OT-${i * 23}${randomFourDigit}${randomTwoLetters}`,
-  //       namaProduk: data.namaObat,
-  //       obatQuantity: quantity,
-  //       merk: data.merk,
-  //       klaim: data.klaim,
-  //       kemasan: data.kemasan,
-  //       komposisi: data.komposisi,
-  //       factoryAddr: data.factoryAddr,
-  //       factoryInstanceName: data.factoryInstanceName,
-  //       tipeProduk: data.tipeProduk,
-  //       nieNumber: data.nieNumber,
-  //       pbfAddr:"",
-  //       pbfInstanceName: "",
-  //       retailerAddr: "",
-  //       retailerInstanceName: "",
-  //       timestampOrderPbf: "",
-  //       timestampCompletePbf: "",
-  //       timestampOrderRetailer: "",
-  //       timestampCompleteRetailer: ""
-  //     };
+  //   try {
+  //     console.log(namaObat, obatId, quantity, factoryInstanceName, ipfsHash);
+  //     const tx = await contracts.obatTradisional.producedObat(namaObat, batchName, obatId, quantity, factoryInstanceName, ipfsHash);
+  //     tx.wait()
       
-  //     try {
-  //       const result = await client.add(JSON.stringify(obat)); 
-  //       ipfsHashes.push(result.path); 
-  //     } catch (error) {
-  //       errAlert(error, "Can't upload Data Obat to IPFS."); 
-  //       break;
-  //     }
+  //   } catch (error) {
+  //     errAlert(error, "Can't upload data.")
   //   }
-
-  //   console.log("Generated IPFS Hashes:", ipfsHashes);
-    
-  //   MySwal.fire({
-  //     title: "Tambah Stok Obat",
-  //     html: (
-  //       <div className='form-swal'>
-  //         <div className="row row--obat">
-  //           <div className="col">
-
-  //             <ul>
-  //               <li className="label">
-  //                 <p>Nama Produk</p>
-  //               </li>
-  //               <li className="input">
-  //                 <p>{data.namaObat}</p> 
-  //               </li>
-  //             </ul>
-
-  //             <ul>
-  //               <li className="label">
-  //                 <p>Nama Pabrik</p> 
-  //               </li>
-  //               <li className="input">
-  //                 <p>{data.factoryInstanceName}</p> 
-  //               </li>
-  //             </ul>
-
-  //             <ul>
-  //               <li className="label">
-  //                 <p>Batch Number</p> 
-  //               </li>
-  //               <li className="input">
-  //                 <p>BN-${date}-${randomCode}</p> 
-  //               </li>
-  //             </ul>
-
-  //             <ul>
-  //               <li className="label">
-  //                 <p>Jumlah Stok</p> 
-  //               </li>
-  //               <li className="input">
-  //                 <p>{quantity} Obat</p>
-  //               </li>
-  //             </ul>
-
-  //             <ul>
-  //               <li className="input" style={{ width: '100%' }}>
-  //                 <DataIpfsHash ipfsHashes={ipfsHashes} />
-  //               </li>
-  //             </ul>
-  //           </div>
-  //         </div>
-        
-  //       </div>
-  //     ),
-  //     width: '820',
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Request',
-  //     allowOutsideClick: false
-  //   }).then((result) => {
-  //     if(result.isConfirmed){
-  //       addQuantityObat(data.namaObat,`BN-${date}-${randomCode}-${quantity}`, data.obatId, quantity, data.factoryInstanceName, ipfsHashes)
-  //     }
-  //   })
-
-  //   return ipfsHashes;
-
-  // }
-
-  // const addQuantityObat = async(namaObat, batchName, obatId, quantity, factoryInstanceName, ipfsHash) => {
-
-    // MySwal.fire({
-      // title:"Processing your request...",
-    //   text:"Your request is on its way. This won't take long. 🚀",
-    //   icon: 'info',
-    //   showCancelButton: false,
-    //   showConfirmButton: false,
-    //   allowOutsideClick: false,
-    // })
-
-    // try {
-    //   console.log(namaObat, obatId, quantity, factoryInstanceName, ipfsHash);
-    //   const tx = await contract.addQuantityObat(namaObat, batchName, obatId, quantity, factoryInstanceName, ipfsHash);
-    //   tx.wait()
-      
-    // } catch (error) {
-    //   errAlert(error, "Can't upload data.")
-    // }
   // }
 
   return (

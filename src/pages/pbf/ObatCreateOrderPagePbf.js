@@ -17,7 +17,7 @@ const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 
 
 function ObatCreateOrderPbf() {
-  const [contract, setContract] = useState();
+  const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
 
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
@@ -55,13 +55,23 @@ function ObatCreateOrderPbf() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const contr = new Contract(
-            contractData.ObatTradisional.address, 
-            contractData.ObatTradisional.abi, 
+
+          const orderManagementContract = new Contract(
+            contractData.OrderManagement.address,
+            contractData.OrderManagement.abi,
             signer
           );
-            
-          setContract(contr);
+          const obatTradisionalContract = new Contract(
+            contractData.ObatTradisional.address,
+            contractData.ObatTradisional.abi,
+            signer
+          );
+
+          // Update state with both contracts
+          setContracts({
+            orderManagement: orderManagementContract,
+            obatTradisional: obatTradisionalContract
+          });
         } catch (err) {
           console.error("User access denied!")
           errAlert(err, "User access denied!")
@@ -75,10 +85,10 @@ function ObatCreateOrderPbf() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (contract) {
+      if (contracts) {
         try {
 
-          const tx = await contract.getAllProducedObat();
+          const tx = await contracts.obatTradisional.getAllProducedObat();
           console.log(tx);
 
           // use map on obatIdArray, which iterates through each obatId
@@ -101,12 +111,12 @@ function ObatCreateOrderPbf() {
     };
   
     loadData();
-  }, [contract]);
+  }, [contracts]);
 
   useEffect(() => {
-    if (contract) {
+    if (contracts) {
       
-      contract.on("evt_obatOrdered", (_namaProduk, _orderQuantity, _orderId, _pbfInstanceName, _targetInstanceName, _timestampOrder) => {
+      contracts.orderManagement.on("evt_obatOrdered", (_namaProduk, _orderQuantity, _orderId, _pbfInstanceName, _targetInstanceName, _timestampOrder) => {
 
         const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
     
@@ -163,17 +173,17 @@ function ObatCreateOrderPbf() {
 
   
       return () => {
-        contract.removeAllListeners("evt_obatOrdered");
+        contracts.orderManagement.removeAllListeners("evt_obatOrdered");
       };
     }
-  }, [contract]);
+  }, [contracts]);
   
 
   const orderDetail = async (id, batchName) => {
 
     try {
-      const tx = await contract.getListObatById(id);
-      const tx1 = await contract.getDetailProducedObat(batchName)
+      const tx = await contracts.obatTradisional.getListObatById(id);
+      const tx1 = await contracts.obatTradisional.getDetailProducedObat(batchName)
       console.log(2);
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = tx;
@@ -345,7 +355,7 @@ function ObatCreateOrderPbf() {
 
       console.log(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.pbfAddr, orderObat.pbfInstanceName, factoryInstanceName);
 
-      const tx = await contract.createOrder(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.pbfInstanceName, factoryInstanceName);
+      const tx = await contracts.orderManagement.createOrder(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.pbfInstanceName, orderObat.pbfAddr, factoryInstanceName);
       tx.wait()
       console.log(tx);
 

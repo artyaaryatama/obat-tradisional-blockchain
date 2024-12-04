@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
+    "address": "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
     "abi": [
       {
         "inputs": [
@@ -902,7 +902,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
+    "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
     "abi": [
       {
         "inputs": [
@@ -1025,154 +1025,12 @@
           {
             "indexed": false,
             "internalType": "string",
-            "name": "orderId",
-            "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "senderInstanceName",
-            "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "targetInstanceName",
-            "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "latestTimestamp",
-            "type": "uint256"
-          }
-        ],
-        "name": "evt_obatOrdered",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "namaProduk",
-            "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint8",
-            "name": "quantity",
-            "type": "uint8"
-          },
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "batchNamee",
+            "name": "batchName",
             "type": "string"
           }
         ],
         "name": "evt_obatProduced",
         "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "namaProduk",
-            "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "batchName",
-            "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "targetInstance",
-            "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "senderInstance",
-            "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint8",
-            "name": "quantity",
-            "type": "uint8"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "latestTimestamp",
-            "type": "uint256"
-          }
-        ],
-        "name": "evt_updateOrder",
-        "type": "event"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_batchName",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_orderId",
-            "type": "string"
-          }
-        ],
-        "name": "acceptOrder",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_namaProduk",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_batchName",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_obatId",
-            "type": "string"
-          },
-          {
-            "internalType": "uint8",
-            "name": "_obatQuantity",
-            "type": "uint8"
-          },
-          {
-            "internalType": "string",
-            "name": "_factoryInstanceName",
-            "type": "string"
-          },
-          {
-            "internalType": "string[]",
-            "name": "_obatIpfsHash",
-            "type": "string[]"
-          }
-        ],
-        "name": "addQuantityObat",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
       },
       {
         "inputs": [
@@ -1228,75 +1086,6 @@
             "internalType": "string",
             "name": "nieNumber",
             "type": "string"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "name": "allOrderedObat",
-        "outputs": [
-          {
-            "internalType": "string",
-            "name": "orderId",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "namaProduk",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "obatIdProduk",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "batchName",
-            "type": "string"
-          },
-          {
-            "internalType": "uint8",
-            "name": "orderQuantity",
-            "type": "uint8"
-          },
-          {
-            "internalType": "string",
-            "name": "senderInstanceName",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "targetInstanceName",
-            "type": "string"
-          },
-          {
-            "internalType": "enum ObatTradisional.en_orderStatus",
-            "name": "statusOrder",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampOrder",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampShipped",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampComplete",
-            "type": "uint256"
           }
         ],
         "stateMutability": "view",
@@ -1440,19 +1229,6 @@
         "inputs": [
           {
             "internalType": "string",
-            "name": "_orderId",
-            "type": "string"
-          }
-        ],
-        "name": "completeOrder",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
             "name": "_obatId",
             "type": "string"
           },
@@ -1503,44 +1279,6 @@
           }
         ],
         "name": "createObat",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_obatIdProduk",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_orderId",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_namaProduk",
-            "type": "string"
-          },
-          {
-            "internalType": "uint8",
-            "name": "_orderQuantity",
-            "type": "uint8"
-          },
-          {
-            "internalType": "string",
-            "name": "_senderInstanceName",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_targetInstanceName",
-            "type": "string"
-          }
-        ],
-        "name": "createOrder",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1653,54 +1391,50 @@
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_orderId",
-            "type": "string"
-          }
-        ],
-        "name": "getDetailOrderedObat",
+        "inputs": [],
+        "name": "getAllProducedObatArray",
         "outputs": [
           {
-            "internalType": "uint8",
-            "name": "orderQuantity",
-            "type": "uint8"
-          },
-          {
-            "internalType": "string",
-            "name": "senderInstanceName",
-            "type": "string"
-          },
-          {
-            "internalType": "uint8",
-            "name": "statusOrder",
-            "type": "uint8"
-          },
-          {
-            "internalType": "string",
-            "name": "targetInstanceName",
-            "type": "string"
-          },
-          {
-            "internalType": "string[]",
-            "name": "orderObatIpfsHash",
-            "type": "string[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampOrder",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampShipped",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampComplete",
-            "type": "uint256"
+            "components": [
+              {
+                "internalType": "enum ObatTradisional.en_obatAvailability",
+                "name": "statusStok",
+                "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "batchName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "obatId",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "namaProduk",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "obatQuantity",
+                "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "factoryInstanceNames",
+                "type": "string"
+              },
+              {
+                "internalType": "string[]",
+                "name": "obatIpfsHash",
+                "type": "string[]"
+              }
+            ],
+            "internalType": "struct ObatTradisional.st_obatProduction[]",
+            "name": "",
+            "type": "tuple[]"
           }
         ],
         "stateMutability": "view",
@@ -1744,94 +1478,6 @@
             "internalType": "uint8[]",
             "name": "",
             "type": "uint8[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_senderInstanceName",
-            "type": "string"
-          }
-        ],
-        "name": "getListAllOrderedObatFromSender",
-        "outputs": [
-          {
-            "internalType": "string[]",
-            "name": "orderIdArray",
-            "type": "string[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "namaProdukArray",
-            "type": "string[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "statusOrderArray",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "obatQuantityArray",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "obatIdProdukArray",
-            "type": "string[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "batchNameArray",
-            "type": "string[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_targetInstanceName",
-            "type": "string"
-          }
-        ],
-        "name": "getListAllOrderedObatFromTarget",
-        "outputs": [
-          {
-            "internalType": "string[]",
-            "name": "orderIdArray",
-            "type": "string[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "namaProdukArray",
-            "type": "string[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "statusOrderArray",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "obatQuantityArray",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "obatIdProdukArray",
-            "type": "string[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "batchNameArray",
-            "type": "string[]"
           }
         ],
         "stateMutability": "view",
@@ -2118,6 +1764,62 @@
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_batchName",
+            "type": "string"
+          }
+        ],
+        "name": "getObatProductionDetailsByBatchName",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "enum ObatTradisional.en_obatAvailability",
+                "name": "statusStok",
+                "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "batchName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "obatId",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "namaProduk",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "obatQuantity",
+                "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "factoryInstanceNames",
+                "type": "string"
+              },
+              {
+                "internalType": "string[]",
+                "name": "obatIpfsHash",
+                "type": "string[]"
+              }
+            ],
+            "internalType": "struct ObatTradisional.st_obatProduction",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "mainSupplyChain",
         "outputs": [
@@ -2296,69 +1998,38 @@
         "inputs": [
           {
             "internalType": "string",
-            "name": "",
-            "type": "string"
-          }
-        ],
-        "name": "orderObatById",
-        "outputs": [
-          {
-            "internalType": "string",
-            "name": "orderId",
+            "name": "_namaProduk",
             "type": "string"
           },
           {
             "internalType": "string",
-            "name": "namaProduk",
+            "name": "_batchName",
             "type": "string"
           },
           {
             "internalType": "string",
-            "name": "obatIdProduk",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "batchName",
+            "name": "_obatId",
             "type": "string"
           },
           {
             "internalType": "uint8",
-            "name": "orderQuantity",
+            "name": "_obatQuantity",
             "type": "uint8"
           },
           {
             "internalType": "string",
-            "name": "senderInstanceName",
+            "name": "_factoryInstanceName",
             "type": "string"
           },
           {
-            "internalType": "string",
-            "name": "targetInstanceName",
-            "type": "string"
-          },
-          {
-            "internalType": "enum ObatTradisional.en_orderStatus",
-            "name": "statusOrder",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampOrder",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampShipped",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampComplete",
-            "type": "uint256"
+            "internalType": "string[]",
+            "name": "_obatIpfsHash",
+            "type": "string[]"
           }
         ],
-        "stateMutability": "view",
+        "name": "producedObat",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -2401,6 +2072,630 @@
             "internalType": "enum ObatTradisional.en_roles",
             "name": "",
             "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ]
+  },
+  "OrderManagement": {
+    "address": "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
+    "abi": [
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_obatTradisionalAddr",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_roleManagerAddr",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "namaProduk",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint8",
+            "name": "quantity",
+            "type": "uint8"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "orderId",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "senderInstanceName",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "targetInstanceName",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "latestTimestamp",
+            "type": "uint256"
+          }
+        ],
+        "name": "evt_obatOrdered",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "namaProduk",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "batchName",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "targetInstance",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "senderInstance",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint8",
+            "name": "quantity",
+            "type": "uint8"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "latestTimestamp",
+            "type": "uint256"
+          }
+        ],
+        "name": "evt_updateOrder",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_batchName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_orderId",
+            "type": "string"
+          },
+          {
+            "internalType": "string[]",
+            "name": "_obatIpfsHash",
+            "type": "string[]"
+          }
+        ],
+        "name": "acceptOrder",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "allOrderedObat",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "orderId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "namaProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "obatIdProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "batchName",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "orderQuantity",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "senderInstanceName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "targetInstanceName",
+            "type": "string"
+          },
+          {
+            "internalType": "enum OrderManagement.en_orderStatus",
+            "name": "statusOrder",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampOrder",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampShipped",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampComplete",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_orderId",
+            "type": "string"
+          }
+        ],
+        "name": "completeOrder",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_obatIdProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_orderId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_namaProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "_orderQuantity",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "_senderInstanceName",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "_senderInstanceAddr",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "_targetInstanceName",
+            "type": "string"
+          }
+        ],
+        "name": "createOrder",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "getAllProducedObatArray",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "enum ObatTradisional.en_obatAvailability",
+                "name": "statusStok",
+                "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "batchName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "obatId",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "namaProduk",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "obatQuantity",
+                "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "factoryInstanceNames",
+                "type": "string"
+              },
+              {
+                "internalType": "string[]",
+                "name": "obatIpfsHash",
+                "type": "string[]"
+              }
+            ],
+            "internalType": "struct ObatTradisional.st_obatProduction[]",
+            "name": "",
+            "type": "tuple[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_orderId",
+            "type": "string"
+          }
+        ],
+        "name": "getDetailOrderedObat",
+        "outputs": [
+          {
+            "internalType": "uint8",
+            "name": "orderQuantity",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "senderInstanceName",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "statusOrder",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "targetInstanceName",
+            "type": "string"
+          },
+          {
+            "internalType": "string[]",
+            "name": "orderObatIpfsHash",
+            "type": "string[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampOrder",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampShipped",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampComplete",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_senderInstanceName",
+            "type": "string"
+          }
+        ],
+        "name": "getListAllOrderedObatFromSender",
+        "outputs": [
+          {
+            "internalType": "string[]",
+            "name": "orderIdArray",
+            "type": "string[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "namaProdukArray",
+            "type": "string[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "statusOrderArray",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "obatQuantityArray",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "obatIdProdukArray",
+            "type": "string[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "batchNameArray",
+            "type": "string[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_targetInstanceName",
+            "type": "string"
+          }
+        ],
+        "name": "getListAllOrderedObatFromTarget",
+        "outputs": [
+          {
+            "internalType": "string[]",
+            "name": "orderIdArray",
+            "type": "string[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "namaProdukArray",
+            "type": "string[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "statusOrderArray",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "obatQuantityArray",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "obatIdProdukArray",
+            "type": "string[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "batchNameArray",
+            "type": "string[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_factoryInstanceName",
+            "type": "string"
+          }
+        ],
+        "name": "getListAllProducedObatByFactory",
+        "outputs": [
+          {
+            "internalType": "string[]",
+            "name": "obatIdArray",
+            "type": "string[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "namaProdukArray",
+            "type": "string[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "obatQuantityArray",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "batchNameArray",
+            "type": "string[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "obatTradisional",
+        "outputs": [
+          {
+            "internalType": "contract ObatTradisional",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "name": "orderObatById",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "orderId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "namaProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "obatIdProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "batchName",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "orderQuantity",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "senderInstanceName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "targetInstanceName",
+            "type": "string"
+          },
+          {
+            "internalType": "enum OrderManagement.en_orderStatus",
+            "name": "statusOrder",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampOrder",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampShipped",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampComplete",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "orderRetailerInstanceAddress",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "orderSenderInstanceAddress",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "roleManager",
+        "outputs": [
+          {
+            "internalType": "contract RoleManager",
+            "name": "",
+            "type": "address"
           }
         ],
         "stateMutability": "view",

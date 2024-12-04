@@ -80,6 +80,7 @@ function ObatProduce() {
       if (contract && userData.instanceName) {
         try {
 
+          
           const listProducedObatCt = await contract.getListAllProducedObatByFactory(userData.instanceName);
           const [obatIdArray, namaProdukArray, obatQuantityArray, batchNameArray] = listProducedObatCt;
 
