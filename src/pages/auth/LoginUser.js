@@ -106,7 +106,7 @@ function LoginPage() {
             } else if (userdata.role  === "0") {
               navigate('/cpotb');
             } else if (userdata.role === '2') {
-              navigate('/cpotb-bpom')
+              navigate('/cpotb-approval')
             } else{
               navigate('/unauthorized');
             }
@@ -197,7 +197,7 @@ function LoginPage() {
             Don't have an account? <a href="/register">Sign Up here</a>
           </p>
 
-          <button className="test" onClick={(event) => autoFilled(event, 0)}>Auto Filled Pabrik</button>
+          <button className="test" onClick={(event) => autoFilled(event, 0)}>Auto Filled Factory</button>
               <button className="test" onClick={(event) => autoFilled(event, 2)}>Auto Filled BPOM</button>
               <button className="test" onClick={(event) => autoFilled(event, 1)}>Auto Filled PBF</button>
         </div>

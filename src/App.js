@@ -2,20 +2,20 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './routes/ProtectedRoute';
 
-import CpotbPage from './pages/pabrik/CpotbPage';
-import CdobPage from './pages/pbf/CdobPage';
-import CpotbReqPage from './pages/pabrik/CpotbRequestPage';
-import CdobReqPage from './pages/pbf/CdobRequestPage';
+import ManageCpotb from './pages/factory/ManageCpotb';
+import ManageCdob from './pages/pbf/ManageCdob';
+import CpotbRequest from './pages/factory/CpotbRequest';
+import CdobRequest from './pages/pbf/CdobRequest';
 import CpotbApprove from './pages/bpom/CpotbApprove';
 import CdobApprove from './pages/bpom/CdobApprove';
 import NieApprove from './pages/bpom/NieApprove';
-import ObatNie from './pages/pabrik/NiePage';
-import ObatProduce from './pages/pabrik/ObatProducePage';
-import ObatCreate from './pages/pabrik/ObatCreatePage';
-import ObatOrderPagePabrik from './pages/pabrik/ObatOrderPagePabrik';
-import ObatOrderPbf from './pages/pbf/ObatOrderPagePbf';
-import ObatCreateOrderPbf from './pages/pbf/ObatCreateOrderPagePbf';
-import ObatReadyPbf from './pages/pbf/ObatReadyPbf';
+import ManageNieFactory from './pages/factory/ManageNieFactory';
+import StockObatFactory from './pages/factory/StockObatFactory';
+import CreateObat from './pages/factory/CreateObat';
+import ManageOrderFactoryPbf from './pages/factory/ManageOrderFactoryPbf';
+import ManageOrderPbf from './pages/pbf/ManageOrderPbf';
+import CreateOrderPbf from './pages/pbf/CreateOrderPbf';
+import StockObatPbf from './pages/pbf/StockObatPbf';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LoginPage from './pages/auth/LoginUser';
@@ -60,7 +60,7 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
-                <CpotbPage />
+                <ManageCpotb />
                 <Footer />
               </ProtectedRoute>
             } 
@@ -71,7 +71,7 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
-                <CpotbReqPage />
+                <CpotbRequest />
                 <Footer />
               </ProtectedRoute>
             } 
@@ -82,7 +82,7 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
-                <ObatNie />
+                <ManageNieFactory />
                 <Footer />
               </ProtectedRoute>
             } 
@@ -93,29 +93,29 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
-                <ObatCreate />
+                <CreateObat />
                 <Footer />
               </ProtectedRoute>
             } 
           />
           
           <Route 
-            path="/obat-produce" 
+            path="/obat-available-factory" 
             element={
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
-                <ObatProduce />
+                <StockObatFactory />
                 <Footer />
               </ProtectedRoute>
             } 
           />
           
           <Route 
-            path="/order-obat-pabrik" 
+            path="/manage-orders-factory" 
             element={
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
-                <ObatOrderPagePabrik />
+                <ManageOrderFactoryPbf />
                 <Footer />
               </ProtectedRoute>
             } 
@@ -126,7 +126,7 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
-                <CdobPage />
+                <ManageCdob />
                 <Footer />
               </ProtectedRoute>
             } 
@@ -137,47 +137,47 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
-                <CdobReqPage />
+                <CdobRequest />
                 <Footer />
               </ProtectedRoute>
             } 
           />
 
           <Route 
-            path="/obat-order-pbf" 
+            path="/pbf-orders" 
             element={
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
-                <ObatOrderPbf />
+                <ManageOrderPbf />
                 <Footer />
               </ProtectedRoute>
             } 
           />
 
           <Route 
-            path="/obat-order-create-pbf" 
+            path="/create-pbf-order" 
             element={
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
-                <ObatCreateOrderPbf />
+                <CreateOrderPbf />
                 <Footer />
               </ProtectedRoute>
             } 
           />
 
           <Route 
-            path="/obat-ready-pbf" 
+            path="/obat-available-pbf" 
             element={
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
-                <ObatReadyPbf />
+                <StockObatPbf />
                 <Footer />
               </ProtectedRoute>
             } 
           />
 
           <Route 
-            path="/cpotb-bpom" 
+            path="/cpotb-approval" 
             element={
               <ProtectedRoute allowedRoles={['2']}>
                 <Navbar />
@@ -188,7 +188,7 @@ function App() {
           />
           
           <Route 
-            path="/cdob-bpom" 
+            path="/cdob-approval" 
             element={
               <ProtectedRoute allowedRoles={['2']}>
                 <Navbar />
@@ -199,7 +199,7 @@ function App() {
           />
 
           <Route 
-            path="/nie-bpom" 
+            path="/nie-approval" 
             element={
               <ProtectedRoute allowedRoles={['2']}>
                 <Navbar />
@@ -211,7 +211,7 @@ function App() {
           
 
           {/* <Route 
-            path="/cdob-bpom" 
+            path="/cdob-approval" 
             element={
               <ProtectedRoute allowedRoles={['2']}>
                 <Navbar />

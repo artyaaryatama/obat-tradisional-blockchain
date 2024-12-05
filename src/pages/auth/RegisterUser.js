@@ -72,7 +72,7 @@ function RegisterPage() {
         console.log("User Registered Event: ", { _userAddr, _name, _instanceName, _role});
 
         const roles = {
-          0n: "Pabrik",
+          0n: "Factory",
           1n: "PBF", 
           2n: "BPOM",
           3n: "Retailer"
@@ -202,7 +202,7 @@ function RegisterPage() {
                 onChange={(e) => parseIntSelect(e.target.value)} 
                 required >
                 <option value="" disabled>Pilih role user</option>
-                <option value="0">Pabrik</option>
+                <option value="0">Factory</option>
                 <option value="1">PBF</option>
                 <option value="2">BPOM</option>
                 <option value="3">Retailer</option>
@@ -223,7 +223,7 @@ function RegisterPage() {
               ALready have an account? <a href="/login">login here</a>
             </p>
 
-              <button className="test" onClick={(event) => autoFilled(event, 1)}>Auto Filled Pabrik</button>
+              <button className="test" onClick={(event) => autoFilled(event, 1)}>Auto Filled Factory</button>
               <button className="test" onClick={(event) => autoFilled(event, 2)}>Auto Filled BPOM</button>
               <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled PBF</button>
           </div>

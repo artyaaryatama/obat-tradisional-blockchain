@@ -89,7 +89,7 @@ contract OrderManagement {
     emit evt_obatOrdered(_namaProduk, _orderQuantity, _orderId, _senderInstanceName, _targetInstanceName, block.timestamp); 
   } 
 
-  // get lsit all ordered for pabrik and pbf
+  // get lsit all ordered for Factory and pbf
   function getListAllOrderedObatFromTarget(string memory _targetInstanceName) 
     public  
     view 

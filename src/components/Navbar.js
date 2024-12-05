@@ -31,7 +31,7 @@ function Navbar() {
                     <li className={currentPath === '/cpotb' || currentPath === '/request-cpotb' ? 'active' : ''}>
                       <Link to="/cpotb">CPOTB</Link>
                     </li>
-                    <li className={currentPath === '/obat-produce' || currentPath === '/create-obat' || currentPath === '/obat' | currentPath === '/order-obat-pabrik' ? 'active' : ''}>
+                    <li className={currentPath === '/obat-available-factory' || currentPath === '/create-obat' || currentPath === '/obat' | currentPath === '/manage-orders-factory' ? 'active' : ''}>
                       <Link to="/obat">OBAT TRADISIONAL</Link>
                     </li>
                   </>
@@ -41,21 +41,21 @@ function Navbar() {
                     <li className={currentPath === '/cdob' || currentPath === '/request-cdob' ? 'active' : ''}>
                       <Link to="/cdob">CDOB</Link>
                     </li>
-                    <li className={currentPath === '/obat-order-pbf' || currentPath=== '/obat-order-create-pbf'? 'active' : ''}>
-                      <Link to="/obat-order-create-pbf">ORDER OBAT TRADISIONAL</Link>
+                    <li className={currentPath === '/pbf-orders' || currentPath=== '/create-pbf-order'? 'active' : ''}>
+                      <Link to="/create-pbf-order">ORDER OBAT TRADISIONAL</Link>
                     </li>
-                    <li className={currentPath === '/obat-ready-pbf' ? 'active' : ''}>
-                      <Link to="/obat-ready-pbf">SELL OBAT TRADISIONAL</Link>
+                    <li className={currentPath === '/obat-available-pbf' ? 'active' : ''}>
+                      <Link to="/obat-available-pbf">SELL OBAT TRADISIONAL</Link>
                     </li>
                   </>
                 )}
                 {userRole === '2' && (
                   <>
-                    <li className={currentPath === '/cpotb-bpom' || currentPath === '/cdob-bpom' ? 'active' : ''}>
-                      <Link to="/cpotb-bpom">SERTIFIKASI</Link>
+                    <li className={currentPath === '/cpotb-approval' || currentPath === '/cdob-approval' ? 'active' : ''}>
+                      <Link to="/cpotb-approval">SERTIFIKASI</Link>
                     </li>
-                    <li className={currentPath === '/nie-bpom' ? 'active' : ''}>
-                      <Link to="/nie-bpom">IZIN EDAR</Link>
+                    <li className={currentPath === '/nie-approval' ? 'active' : ''}>
+                      <Link to="/nie-approval">IZIN EDAR</Link>
                     </li>
                   </>
                 )}

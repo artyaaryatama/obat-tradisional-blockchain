@@ -16,7 +16,7 @@ contract ObatTradisional {
   }
 
   modifier onlyFactory() { 
-    require(roleManager.hasRole(msg.sender, RoleManager.en_roles.Pabrik), "Access restricted to Pabrik role");
+    require(roleManager.hasRole(msg.sender, RoleManager.en_roles.Factory), "Access restricted to Factory role");
     _;
   } 
 
@@ -38,7 +38,7 @@ contract ObatTradisional {
   enum en_nieStatus { inLocalProduction, RequestedNIE, ApprovedNIE }
   enum en_orderStatus { OrderPlaced , OrderShipped , OrderDelivered  }
   enum en_obatAvailability { ready, sold }
-  enum en_roles { Pabrik, PBF, BPOM, Retailer }
+  enum en_roles { Factory, PBF, BPOM, Retailer }
   enum en_tipeProduk {obatTradisional, suplemenKesehatan}
   enum en_jenisSediaan { Tablet, Kapsul, KapsulLunak, SerbukOral, CairanOral, CairanObatDalam, CairanObatLuar, FilmStrip, Pil}
 
@@ -59,7 +59,7 @@ contract ObatTradisional {
   struct st_obatProduction {
     en_obatAvailability statusStok;
     string batchName;
-    string obatId; // untuk collect data pabrik, sm detail obat kyk nie, klaim dst
+    string obatId; // untuk collect data Factory, sm detail obat kyk nie, klaim dst
     string namaProduk;
     uint8 obatQuantity;
     string factoryInstanceNames;
@@ -428,7 +428,7 @@ contract ObatTradisional {
       }
       return obatProductionClean;
 
-    } else if (roleManager.hasRole(msg.sender, RoleManager.en_roles.Pabrik)) {
+    } else if (roleManager.hasRole(msg.sender, RoleManager.en_roles.Factory)) {
         return allProducedObat;
 
     } else {
@@ -451,7 +451,7 @@ contract ObatTradisional {
     if (roleManager.hasRole(msg.sender, RoleManager.en_roles.PBF)) {
       obatIpfsHash = new string[](0);
 
-    } else if (roleManager.hasRole(msg.sender, RoleManager.en_roles.Pabrik)) {
+    } else if (roleManager.hasRole(msg.sender, RoleManager.en_roles.Factory)) {
       obatIpfsHash = obatProductionDetailsByBatchName[_batchName].obatIpfsHash;
     }
   }

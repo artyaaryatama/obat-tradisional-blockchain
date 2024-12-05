@@ -6,7 +6,7 @@
 
 // const addressAcc = {
 //   "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": "BPOM",
-//   "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266": "Pabrik Axxz" 
+//   "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266": "Factory Axxz" 
 // }
 
 // function CpotbPage() {
@@ -135,9 +135,9 @@
 //         const tx = await contract.get_obat_byId(obatIds[i])
 //         console.log(tx)
 //         obatData.push({
-//           pabrikAddress: tx[0], 
+//           factoryAddress: tx[0], 
 //           bpomAddress: tx[1],
-//           pabrikName: tx[2],
+//           factoryName: tx[2],
 //           timestampReq: tx[3]? new Date(Number(tx[3])*1000).toLocaleString() : '-',
 //           timestampApprove: tx[4]? new Date(Number(tx[4])*1000).toLocaleString() : '-',
 //           obatName: tx[5],
@@ -171,9 +171,9 @@
 //       itemDiv.innerHTML = `
 //         <p><strong>Obat Name:</strong> ${item.obatName}</p>
 //         <p><strong>Obat ID:</strong> ${item.obatId}</p>
-//         <p><strong>Pabrik Address:</strong> ${item.pabrikAddress}</p>
+//         <p><strong>Factory Address:</strong> ${item.factoryAddress}</p>
 //         <p><strong>BPOM Address:</strong> ${item.bpomAddress}</p>
-//         <p><strong>Pabrik Name:</strong> ${item.pabrikName}</p>
+//         <p><strong>Factory Name:</strong> ${item.factoryName}</p>
 //         <p><strong>Timestamp Dibuat:</strong> ${item.timestampReq}</p>
 //         <p><strong>Timestamp Approve:</strong> ${item.timestampApprove}</p>
 //         <p><strong>Obat Merk:</strong> ${item.obatMerk}</p>

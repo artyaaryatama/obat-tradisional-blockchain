@@ -571,8 +571,8 @@ function CpotbApprove() {
         </div>
         <div className="tab-menu">
           <ul>
-            <li><button className='active' onClick={() => navigate('/cpotb-bpom')}>List CPOTB</button></li>
-            <li><button onClick={() => navigate('/cdob-bpom')}>List CDOB</button></li>
+            <li><button className='active' onClick={() => navigate('/cpotb-approval')}>List CPOTB</button></li>
+            <li><button onClick={() => navigate('/cdob-approval')}>List CDOB</button></li>
           </ul>
         </div>
         <div className="container-data">

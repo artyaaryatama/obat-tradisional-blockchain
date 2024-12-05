@@ -14,7 +14,7 @@ contract MainSupplyChain {
   }
 
   modifier onlyFactory() { 
-    require(roleManager.hasRole(msg.sender, RoleManager.en_roles.Pabrik), "Access restricted to Factory role");
+    require(roleManager.hasRole(msg.sender, RoleManager.en_roles.Factory), "Access restricted to Factory role");
     _;
   }
 
@@ -28,7 +28,7 @@ contract MainSupplyChain {
     _; 
   }
 
-  enum en_roles { Pabrik, PBF, BPOM, Retailer }
+  enum en_roles { Factory, PBF, BPOM, Retailer }
   enum en_statusCert { Requested, Approved }
   enum en_jenisSediaan { Tablet, Kapsul, KapsulLunak, SerbukOral, CairanOral, CairanObatDalam, CairanObatLuar, FilmStrip, Pil}
   enum en_tipePermohonan { ObatLain, CCP }
@@ -97,7 +97,7 @@ contract MainSupplyChain {
     RoleManager.en_roles role = RoleManager.en_roles(uint8(_userRole));
     roleManager.assignRole(_userAddr, role);
 
-    if(_userRole == uint8(en_roles.Pabrik)) {
+    if(_userRole == uint8(en_roles.Factory)) {
       requestCpotb('PT. Budi Pekerti', 'aauhd8j', 'TAKAKI YUYA', 0); 
     }
 
