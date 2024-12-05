@@ -44,6 +44,9 @@ function Navbar() {
                     <li className={currentPath === '/obat-order-pbf' || currentPath=== '/obat-order-create-pbf'? 'active' : ''}>
                       <Link to="/obat-order-create-pbf">ORDER OBAT TRADISIONAL</Link>
                     </li>
+                    <li className={currentPath === '/obat-ready-pbf' ? 'active' : ''}>
+                      <Link to="/obat-ready-pbf">SELL OBAT TRADISIONAL</Link>
+                    </li>
                   </>
                 )}
                 {userRole === '2' && (

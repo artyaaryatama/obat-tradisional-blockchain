@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom/client';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
 
 import DataIpfsHash from '../../components/TableHash';
+import OrderStatusStepper from '../../components/StepperOrder';
 
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
@@ -29,7 +31,7 @@ function ObatOrderPagePabrik() {
   const obatStatusMap = {
     0: "Order Placed",
     1: "Order Shipped",
-    2: "Order Delivered"
+    2: "Order Completed"
   };
 
   const tipeProdukMap = {
@@ -88,12 +90,6 @@ function ObatOrderPagePabrik() {
     const loadData = async () => {
       if (contracts && userData.instanceName) {
 
-        const statusOrderMap = {
-          0: "Order Placed",
-          1: "Order Shipped",
-          2: "Order Delivered"
-        };
-
         try {
 
           const listOrderedObatCt = await contracts.orderManagement.getListAllOrderedObatFromTarget(userData.instanceName);
@@ -106,7 +102,7 @@ function ObatOrderPagePabrik() {
           const reconstructedDataorder = orderIdArray.map((orderId, index) => ({
             namaObat: namaProdukArray[index],
             orderId: orderIdArray[index],
-            statusOrder: statusOrderMap[statusOrderArray[index]],
+            statusOrder: obatStatusMap[statusOrderArray[index]],
             obatQuantity: orderQuantityArray[index].toString(),
             obatId: obatIdProdukArray[index],
             batchName: batchNameArr[index]
@@ -225,7 +221,11 @@ function ObatOrderPagePabrik() {
 
       const [orderQuantity, senderInstanceName, statusOrder, targetInstanceName, orderObatIpfsHash, timestampOrder, timestampShipped, timestampComplete] = detailObatCt;
 
-      console.log(statusOrder);
+      const timestamps = {
+        timestampOrder: new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options), 
+        timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
+        timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
+      }
  
       const detailObat = {
         obatId: obatDetails.obatId,
@@ -261,14 +261,14 @@ function ObatOrderPagePabrik() {
         MySwal.fire({
           title: `Detail Order Obat ${detailObat.namaObat}`,
           html: (
-            <div className='form-swal'>
+            <div className='form-swal order'>
               <div className="row1">
                 <div className="produce-obat">
                   <div className="detailObat">
                     <div className="row row--obat">
                       <div className="col">
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Nama Obat</p>
                           </li>
                           <li className="input">
@@ -277,7 +277,7 @@ function ObatOrderPagePabrik() {
                         </ul>
   
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Nomor NIE</p>
                           </li>
                           <li className="input">
@@ -286,7 +286,7 @@ function ObatOrderPagePabrik() {
                         </ul>
                       
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Di Order oleh</p>
                           </li>
                           <li className="input">
@@ -295,7 +295,7 @@ function ObatOrderPagePabrik() {
                         </ul>
   
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Total Order</p>
                           </li>
                           <li className="input">
@@ -359,15 +359,23 @@ function ObatOrderPagePabrik() {
   
                   </div>
                 </div>
-  
               </div>
-            
+              <div className="container-stepper">
+                <div id="stepperOrder"></div>
+              </div>
             </div>
           ),
           width: '1220',
           showCancelButton: true,
           confirmButtonText: 'Accept Order',
           didOpen: async () => {
+
+            const stepperOrder = document.getElementById('stepperOrder');
+            const root = ReactDOM.createRoot(stepperOrder);
+            root.render( 
+              <OrderStatusStepper orderStatus={statusOrder} timestamps={timestamps} />
+            );
+
             const dataObatSelected = dataObat.filter(item => item.namaProduk === detailObat.namaObat)
   
             if (dataObatSelected.length > 0) {
@@ -458,7 +466,7 @@ function ObatOrderPagePabrik() {
                     MySwal.showValidationMessage('Jumlah total order harus sesuai dengan stok obat.');
                     return;
                   }
-                  addStok(detailObat, detailOrder, orderId)
+                  addStok(detailObat, detailOrder, orderId, selectedBatchName)
                 };
               
                 generateIpfsHash.addEventListener('click', handleGenerate);
@@ -475,14 +483,14 @@ function ObatOrderPagePabrik() {
         MySwal.fire({
           title: `Detail Order Obat ${detailObat.namaObat}`,
           html: (
-            <div className='form-swal'>
+            <div className='form-swal order'>
               <div className="row1">
                 <div className="produce-obat">
                   <div className="detailObat">
                     <div className="row row--obat">
                       <div className="col">
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Nama Obat</p>
                           </li>
                           <li className="input">
@@ -491,7 +499,7 @@ function ObatOrderPagePabrik() {
                         </ul>
   
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Nomor NIE</p>
                           </li>
                           <li className="input">
@@ -500,7 +508,7 @@ function ObatOrderPagePabrik() {
                         </ul>
                       
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Di Order oleh</p>
                           </li>
                           <li className="input">
@@ -509,7 +517,7 @@ function ObatOrderPagePabrik() {
                         </ul>
   
                         <ul>
-                          <li className="label-sm">
+                          <li className="label">
                             <p>Total Order</p>
                           </li>
                           <li className="input">
@@ -575,13 +583,22 @@ function ObatOrderPagePabrik() {
                 </div>
   
               </div>
-            
+              <div className="container-stepper">
+                <div id="stepperOrder"></div>
+              </div>
             </div>
           ),
           width: '1220',
           showCancelButton: false,
           showCloseButton: true,
-          showConfirmButton: false
+          showConfirmButton: false,
+          didOpen: () => {
+            const stepperOrder = document.getElementById('stepperOrder');
+            const root = ReactDOM.createRoot(stepperOrder);
+            root.render( 
+              <OrderStatusStepper orderStatus={statusOrder} timestamps={timestamps} />
+            );
+          }
         })
 
       }
@@ -592,8 +609,19 @@ function ObatOrderPagePabrik() {
   }
 
   const acceptOrder = async (batchName, orderId, ipfsHashes) => {
+    
+    MySwal.fire({
+      title:"Processing your request...",
+      text:"Your request is on its way. This won't take long. 🚀",
+      icon: 'info',
+      showCancelButton: false,
+      showConfirmButton: false,
+      allowOutsideClick: false,
+    })
 
     try {
+      const acce = await contracts.obatTradisional.getObatProductionDetailsByBatchName(batchName)
+      console.log(acce);
       const acceptOrderCt = await contracts.orderManagement.acceptOrder(batchName, orderId, ipfsHashes)
       console.log(acceptOrderCt);
       
@@ -602,9 +630,9 @@ function ObatOrderPagePabrik() {
     }
 
   }
-
-  const addStok = async(dataObat, dataOrder, orderId) => {
-
+  
+  const addStok = async(dataObat, dataOrder, orderId, batchName) => {
+    
     MySwal.fire({
       title:"Processing your request...",
       text:"Your request is on its way. This won't take long. 🚀",
@@ -620,12 +648,9 @@ function ObatOrderPagePabrik() {
       65 + Math.floor(Math.random() * 26),
       65 + Math.floor(Math.random() * 26)
     );
-    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-    const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase()
-
     for (let i = 0; i < dataOrder.orderQuantity; i++) {
       const obat = {
-        batchName: `BN-${date}-${randomCode}-${dataOrder.orderQuantity}`,
+        batchName: batchName,
         obatIdPackage: `OT-${i * 23}${randomFourDigit}${randomTwoLetters}`,
         dataObat:  {
           obatIdProduk: dataObat.obatId,
@@ -651,7 +676,7 @@ function ObatOrderPagePabrik() {
           statusOrder : obatStatusMap[dataOrder.statusOrder],
           targetInstanceName : dataOrder.targetInstanceName,
           timestampOrder: dataOrder.timestampOrder
-        }
+        },
       };
       
       try {
@@ -670,92 +695,71 @@ function ObatOrderPagePabrik() {
 
     console.log("Generated IPFS Hashes:", ipfsHashes);
 
-    // MySwal.fire({
-    //   title: `Order Obat ${dataObat.namaObat}`,
-    //   html: (
-    //     <div className='form-swal'>
-    //       <div className="row row--obat">
-    //         <div className="col">
+    MySwal.fire({
+      title: `Order Obat ${dataObat.namaObat}`,
+      html: (
+        <div className='form-swal'>
+          <div className="row row--obat">
+            <div className="col">
 
-    //           <ul>
-    //             <li className="label label-1">
-    //               <p>Nama Produk</p>
-    //             </li>
-    //             <li className="input input-1">
-    //               <p>{dataObat.namaObat}</p> 
-    //             </li>
-    //           </ul>
+              <ul>
+                <li className="label label-1">
+                  <p>Nama Produk</p>
+                </li>
+                <li className="input input-1">
+                  <p>{dataObat.namaObat}</p> 
+                </li>
+              </ul>
 
-    //           <ul>
-    //             <li className="label label-1">
-    //               <p>Nama Pabrik</p> 
-    //             </li>
-    //             <li className="input input-1">
-    //               <p>{dataObat.targetInstanceName}</p> 
-    //             </li>
-    //           </ul>
+              <ul>
+                <li className="label label-1">
+                  <p>Nama Pabrik</p> 
+                </li>
+                <li className="input input-1">
+                  <p>{dataOrder.targetInstanceName}</p> 
+                </li>
+              </ul>
 
-    //           <ul>
-    //             <li className="label label-1">
-    //               <p>Nama PBF</p> 
-    //             </li>
-    //             <li className="input input-1">
-    //               <p>{dataObat.senderInstanceName}</p> 
-    //             </li>
-    //           </ul>
+              <ul>
+                <li className="label label-1">
+                  <p>Nama PBF</p> 
+                </li>
+                <li className="input input-1">
+                  <p>{dataOrder.senderInstanceName}</p> 
+                </li>
+              </ul>
 
-    //           <ul>
-    //             <li className="label label-1">
-    //               <p>Total Stok Order</p> 
-    //             </li>
-    //             <li className="input input-1">
-    //               <p>{dataOrder.obatQuantity} Obat</p>
-    //             </li>
-    //           </ul>
+              <ul>
+                <li className="label label-1">
+                  <p>Total Stok Order</p> 
+                </li>
+                <li className="input input-1">
+                  <p>{dataOrder.obatQuantity} Obat</p>
+                </li>
+              </ul>
 
-    //           <ul>
-    //             <li className="input full-width-table">
-    //               <DataIpfsHash ipfsHashes={ipfsHashes} />
-    //             </li>
-    //           </ul>
-    //         </div>
-    //       </div>
+              <ul>
+                <li className="input full-width-table">
+                  <DataIpfsHash ipfsHashes={ipfsHashes} />
+                </li>
+              </ul>
+            </div>
+          </div>
         
-    //     </div>
-    //   ),
-    //   width: '820',
-    //   showCancelButton: true,
-    //   confirmButtonText: 'Send Obat',
-    //   allowOutsideClick: false,
+        </div>
+      ),
+      width: '820',
+      showCancelButton: true,
+      confirmButtonText: 'Send Obat',
+      allowOutsideClick: false,
 
-    // }).then((result) => {
-    //     if(result.isConfirmed){
-    //       acceptOrder(`BN-${date}-${randomCode}-${dataOrder.orderQuantity}`, orderId, ipfsHashes)
-    //     }
-    // })
+    }).then((result) => {
+        if(result.isConfirmed){
+          acceptOrder(batchName, orderId, ipfsHashes)
+          // console.log(`BN-${date}-${randomCode}-${dataOrder.orderQuantity}`, orderId, ipfsHashes)
+        }
+    })
   }
-
-
-  // const addQuantityObat = async(namaObat, batchName, obatId, quantity, factoryInstanceName, ipfsHash) => {
-
-  //   MySwal.fire({
-  //     title:"Processing your request...",
-  //     text:"Your request is on its way. This won't take long. 🚀",
-  //     icon: 'info',
-  //     showCancelButton: false,
-  //     showConfirmButton: false,
-  //     allowOutsideClick: false,
-  //   })
-
-  //   try {
-  //     console.log(namaObat, obatId, quantity, factoryInstanceName, ipfsHash);
-  //     const tx = await contracts.obatTradisional.producedObat(namaObat, batchName, obatId, quantity, factoryInstanceName, ipfsHash);
-  //     tx.wait()
-      
-  //   } catch (error) {
-  //     errAlert(error, "Can't upload data.")
-  //   }
-  // }
 
   return (
     <>

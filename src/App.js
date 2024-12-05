@@ -15,6 +15,7 @@ import ObatCreate from './pages/pabrik/ObatCreatePage';
 import ObatOrderPagePabrik from './pages/pabrik/ObatOrderPagePabrik';
 import ObatOrderPbf from './pages/pbf/ObatOrderPagePbf';
 import ObatCreateOrderPbf from './pages/pbf/ObatCreateOrderPagePbf';
+import ObatReadyPbf from './pages/pbf/ObatReadyPbf';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LoginPage from './pages/auth/LoginUser';
@@ -159,6 +160,17 @@ function App() {
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
                 <ObatCreateOrderPbf />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/obat-ready-pbf" 
+            element={
+              <ProtectedRoute allowedRoles={['1']}>
+                <Navbar />
+                <ObatReadyPbf />
                 <Footer />
               </ProtectedRoute>
             } 

@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
+    "address": "0x9A676e781A523b5d0C0e43731313A708CB607508",
     "abi": [
       {
         "inputs": [
@@ -902,7 +902,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
+    "address": "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
     "abi": [
       {
         "inputs": [
@@ -2080,7 +2080,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
+    "address": "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
     "abi": [
       {
         "inputs": [
@@ -2215,6 +2215,55 @@
             "type": "uint256"
           }
         ],
+        "name": "allObatPbf",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "orderId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "batchName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "obatIdProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "namaProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "enum OrderManagement.en_obatAvailability",
+            "name": "statusStok",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "obatQuantity",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "ownerInstanceName",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
         "name": "allOrderedObat",
         "outputs": [
           {
@@ -2333,50 +2382,34 @@
         "type": "function"
       },
       {
-        "inputs": [],
-        "name": "getAllProducedObatArray",
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_obatId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_userInstanceName",
+            "type": "string"
+          }
+        ],
+        "name": "detailQuantityReadyObat",
         "outputs": [
           {
-            "components": [
-              {
-                "internalType": "enum ObatTradisional.en_obatAvailability",
-                "name": "statusStok",
-                "type": "uint8"
-              },
-              {
-                "internalType": "string",
-                "name": "batchName",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "obatId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "namaProduk",
-                "type": "string"
-              },
-              {
-                "internalType": "uint8",
-                "name": "obatQuantity",
-                "type": "uint8"
-              },
-              {
-                "internalType": "string",
-                "name": "factoryInstanceNames",
-                "type": "string"
-              },
-              {
-                "internalType": "string[]",
-                "name": "obatIpfsHash",
-                "type": "string[]"
-              }
-            ],
-            "internalType": "struct ObatTradisional.st_obatProduction[]",
-            "name": "",
-            "type": "tuple[]"
+            "internalType": "uint8",
+            "name": "obatQuantity",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "batchName",
+            "type": "string"
+          },
+          {
+            "internalType": "string[]",
+            "name": "obatIpfsHash",
+            "type": "string[]"
           }
         ],
         "stateMutability": "view",
@@ -2528,31 +2561,80 @@
         "inputs": [
           {
             "internalType": "string",
-            "name": "_factoryInstanceName",
+            "name": "_instanceName",
             "type": "string"
           }
         ],
-        "name": "getListAllProducedObatByFactory",
+        "name": "getListAllReadyObat",
         "outputs": [
           {
             "internalType": "string[]",
-            "name": "obatIdArray",
+            "name": "obatIdProduk",
             "type": "string[]"
           },
           {
             "internalType": "string[]",
-            "name": "namaProdukArray",
+            "name": "namaProduk",
             "type": "string[]"
           },
           {
             "internalType": "uint8[]",
-            "name": "obatQuantityArray",
+            "name": "obatQuantity",
             "type": "uint8[]"
           },
           {
             "internalType": "string[]",
-            "name": "batchNameArray",
+            "name": "batchName",
             "type": "string[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "name": "obatPbfByIdProduk",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "orderId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "batchName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "obatIdProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "namaProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "enum OrderManagement.en_obatAvailability",
+            "name": "statusStok",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "obatQuantity",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "ownerInstanceName",
+            "type": "string"
           }
         ],
         "stateMutability": "view",

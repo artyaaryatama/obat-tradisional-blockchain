@@ -19,7 +19,7 @@ const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 
 
 function ObatOrderPbf() {
-  const [contract, setContract] = useState();
+  const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
 
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
@@ -29,7 +29,7 @@ function ObatOrderPbf() {
   const obatStatusMap = {
     0: "Order Placed",
     1: "Order Shipped",
-    2: "Order Delivered"
+    2: "Order Completed"
   };
 
   const tipeProdukMap = {
@@ -56,13 +56,23 @@ function ObatOrderPbf() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const contr = new Contract(
-            contractData.ObatTradisional.address, 
-            contractData.ObatTradisional.abi, 
+
+          const orderManagementContract = new Contract(
+            contractData.OrderManagement.address,
+            contractData.OrderManagement.abi,
             signer
           );
-            
-          setContract(contr);
+          const obatTradisionalContract = new Contract(
+            contractData.ObatTradisional.address,
+            contractData.ObatTradisional.abi,
+            signer
+          );
+
+          // Update state with both contracts
+          setContracts({
+            orderManagement: orderManagementContract,
+            obatTradisional: obatTradisionalContract
+          });
         } catch (err) {
           console.error("User access denied!")
           errAlert(err, "User access denied!")
@@ -76,10 +86,10 @@ function ObatOrderPbf() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (contract) {
+      if (contracts) {
         try {
 
-          const tx = await contract.getListAllOrderedObatFromSender(userData.instanceName);
+          const tx = await contracts.orderManagement.getListAllOrderedObatFromSender(userData.instanceName);
           const [orderIdArray, namaProdukArray, statusOrderArray, obatQuantityArray, obatIdArray, batchNameArray] = tx
 
           const reconstructedData = orderIdArray.map((obatId, index) => ({
@@ -101,12 +111,12 @@ function ObatOrderPbf() {
     };
   
     loadData();
-  }, [contract, userData.instanceName]);
+  }, [contracts, userData.instanceName]);
 
   useEffect(() => {
-    if (contract) {
+    if (contracts) {
 
-      contract.on("evt_updateOrder", (_namaProduk, _batchName, _targetInstanceName, _senderInstanceName, _orderQuantity, _latestTimestamp) => {
+      contracts.orderManagement.on("evt_updateOrder", (_namaProduk, _batchName, _targetInstanceName, _senderInstanceName, _orderQuantity, _latestTimestamp) => {
 
         const timestamp = new Date(Number(_latestTimestamp) * 1000).toLocaleDateString('id-ID', options)
 
@@ -177,17 +187,17 @@ function ObatOrderPbf() {
       })
   
       return () => {
-        contract.removeAllListeners("evt_updateOrder");
+        contracts.orderManagement.removeAllListeners("evt_updateOrder");
       };
     }
-  }, [contract]);
+  }, [contracts]);
   
 
   const getDetailObat = async (id, orderId) => {
 
     try {
-      const tx = await contract.getListObatById(id);
-      const tx1 = await contract.getDetailOrderedObat(orderId)
+      const tx = await contracts.obatTradisional.getListObatById(id);
+      const tx1 = await contracts.orderManagement.getDetailOrderedObat(orderId)
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = tx;
 
@@ -220,6 +230,17 @@ function ObatOrderPbf() {
         bpomUserName:  bpomUserName ? bpomUserName : "-",
         bpomInstanceNames:  bpomInstanceName ?  bpomInstanceName : "-"
       };
+
+      const detailOrder = {
+        orderQuantity: parseInt(orderQuantity),
+        senderInstanceName: senderInstanceName,
+        statusOrder : statusOrder,
+        targetInstanceName : targetInstanceName,
+        orderObatIpfsHash : orderObatIpfsHash,
+        timestampOrder: timestampOrder.toString(),
+        timestampShipped: timestampShipped.toString(),
+        timestampComplete: timestampComplete.toString()
+      }
 
       if(statusOrder === 1n) {
         MySwal.fire({
@@ -520,13 +541,11 @@ function ObatOrderPbf() {
       allowOutsideClick: false,
     })
 
-    const completeOrderCt = await contract.completeOrder(orderId)
+    const completeOrderCt = await contracts.orderManagement.completeOrder(orderId)
 
     console.log(completeOrderCt);
   }
   
-
-
   // getNodeInfo();
   const addStok = async(quantity, data) => {
     const ipfsHashes = [];
@@ -645,7 +664,7 @@ function ObatOrderPbf() {
 
     try {
       console.log(namaObat, obatId, quantity, factoryInstanceName, ipfsHash);
-      const tx = await contract.produceObat(namaObat, obatId, quantity, factoryInstanceName, ipfsHash);
+      const tx = await contracts.obatTradisional.produceObat(namaObat, obatId, quantity, factoryInstanceName, ipfsHash);
       tx.wait()
       
     } catch (error) {

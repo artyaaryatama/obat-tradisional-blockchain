@@ -23,7 +23,7 @@ export default function OrderStatusStepper({ orderStatus, timestamps }) {
       isDisabled: timestamps.timestampShipped === 0
     },
     {
-      label: 'Order Delivered',
+      label: 'Order Completed',
       description: timestamps.timestampComplete,
       isDisabled: timestamps.timestampComplete === 0
     }
@@ -38,14 +38,10 @@ export default function OrderStatusStepper({ orderStatus, timestamps }) {
           <Step key={step.label} completed={activeStep > index}>
             <StepLabel 
               className='customLabelStepper'
-              icon={null} // Prevent the check icon
             >
               {step.label}
             </StepLabel>
-            <StepContent 
-              className='customDescStepper'
-              style={{ display: (activeStep >= index) ? 'block' : 'none' }} // Keep descriptions visible
-            >
+            <StepContent className='customDescStepper'>
               <Typography>{step.description || 'No timestamp available'}</Typography>
             </StepContent>
           </Step>
