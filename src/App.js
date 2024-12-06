@@ -16,6 +16,9 @@ import ManageOrderFactoryPbf from './pages/factory/ManageOrderFactoryPbf';
 import ManageOrderPbf from './pages/pbf/ManageOrderPbf';
 import CreateOrderPbf from './pages/pbf/CreateOrderPbf';
 import StockObatPbf from './pages/pbf/StockObatPbf';
+import ManageOrderPbfRetailer from './pages/pbf/ManageOrderPbfRetailer';
+import CreateOrderRetailer from './pages/retailer/CreateOrderRetailer';
+import ManageOrderRetailer from './pages/retailer/ManageOrderRetailer';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LoginPage from './pages/auth/LoginUser';
@@ -177,6 +180,17 @@ function App() {
           />
 
           <Route 
+            path="/manage-orders-pbf" 
+            element={
+              <ProtectedRoute allowedRoles={['1']}>
+                <Navbar />
+                <ManageOrderPbfRetailer />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
             path="/cpotb-approval" 
             element={
               <ProtectedRoute allowedRoles={['2']}>
@@ -204,6 +218,28 @@ function App() {
               <ProtectedRoute allowedRoles={['2']}>
                 <Navbar />
                 <NieApprove />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/create-retailer-order" 
+            element={
+              <ProtectedRoute allowedRoles={['3']}>
+                <Navbar />
+                <CreateOrderRetailer />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/retailer-orders" 
+            element={
+              <ProtectedRoute allowedRoles={['3']}>
+                <Navbar />
+                <ManageOrderRetailer />
                 <Footer />
               </ProtectedRoute>
             } 

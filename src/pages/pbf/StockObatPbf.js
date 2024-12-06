@@ -100,6 +100,7 @@ function StockObatPbf() {
           }));
 
           setDataObatReady(reconstructedData)
+          console.log(reconstructedData);
 
         } catch (error) {
           errAlert(error, "Can't access order data.");
@@ -193,13 +194,13 @@ function StockObatPbf() {
   const getDetailObat = async (id) => {
 
     try {
-      const listObatCt = await contracts.obatTradisional.getListObatById(id);
-      const quantityObatCt = await contracts.orderManagement.detailQuantityReadyObat(id, userData.instanceName)
-      console.log(quantityObatCt);
+      const listObatCt = await contracts.obatTradisional.getDetailPbfObat(id);
+      const detailObatPbf = await contracts.orderManagement.getDetailPbfObat(id, userData.instanceName)
+      console.log(detailObatPbf);
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = listObatCt;
 
-      const [obatQuantity, batchName, obatIpfsHash] = quantityObatCt;
+      const [orderId, batchName, obatIdProduk, namaProduk, statusStok, obatQuantity, obatIpfsHash, ownerInstanceName] = detailObatPbf;
 
       const detailObat = {
         obatId: obatDetails.obatId,
@@ -250,22 +251,39 @@ function StockObatPbf() {
                     
                       <ul>
                         <li className="label-sm">
-                          <p>Di Produksi oleh</p>
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.factoryInstanceName}</p>
-                        </li>
-                      </ul>
-
-                      <ul>
-                        <li className="label-sm">
                           <p>Batch</p>
                         </li>
                         <li className="input">
                           <p>{batchName}</p>
                         </li>
                       </ul>
-                      
+
+                      <ul>
+                        <li className="label-sm">
+                          <p>Di Produksi oleh</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.factoryInstanceName}</p>
+                        </li>
+                      </ul>
+                    
+                      <ul>
+                        <li className="label-sm">
+                          <p>Di Distribusikan oleh</p>
+                        </li>
+                        <li className="input">
+                          <p>{ownerInstanceName}</p>
+                        </li>
+                      </ul>
+                    
+                      <ul>
+                        <li className="label-sm">
+                          <p>Status Stok</p>
+                        </li>
+                        <li className="input">
+                          <p>{statusStok}</p>
+                        </li>
+                      </ul>
 
                       <ul>
                         <li className="label-sm">
@@ -351,13 +369,13 @@ function StockObatPbf() {
     <>
       <div id="ObatProduce" className='Layout-Menu layout-page'>
         <div className="title-menu">
-          <h1>List Obat Tradisional Ready</h1>
+          <h1>Data Obat Tradisional PBF</h1>
           <p>Oleh {userData.instanceName}</p>
         </div>
         <div className="tab-menu">
           <ul>
-            <li><button className='active' onClick={() => navigate('/pbf-orders')}>Ready Stok</button></li>
-            <li><button onClick={() => navigate('/create-pbf-order')}>Order Obat</button></li>
+            <li><button className='active' onClick={() => navigate('/obat-available-pbf')}>Ready Stok</button></li>
+            <li><button onClick={() => navigate('/manage-orders-pbf')}>Order Obat</button></li>
           </ul>
         </div>
         <div className="container-data ">

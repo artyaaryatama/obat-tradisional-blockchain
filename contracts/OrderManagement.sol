@@ -67,24 +67,61 @@ contract OrderManagement {
     string memory _targetInstanceName
   ) public {
 
-    st_orderObat memory newOrderPbf = st_orderObat({
+    // st_orderObat memory newOrderPbf = st_orderObat({
+    //   orderId: _orderId, 
+    //   namaProduk: _namaProduk,
+    //   obatIdProduk: _obatIdProduk,
+    //   batchName: "",
+    //   orderQuantity: _orderQuantity,
+    //   senderInstanceName: _senderInstanceName,
+    //   targetInstanceName: _targetInstanceName,
+    //   statusOrder: en_orderStatus.OrderPlaced,
+    //   timestampOrder: block.timestamp,
+    //   timestampShipped: 0,
+    //   timestampComplete: 0,
+    //   orderObatIpfsHash: new string[](0)  
+    // });
+
+    //  for testing purposes
+    string memory batchName =  obatTradisional.getObatProductionDetailsByOrderId(_obatIdProduk).batchName; 
+    uint8 obatQuantity =  obatTradisional.getObatProductionDetailsByOrderId(_obatIdProduk).obatQuantity;
+    string[] memory obatIpfsHash =  obatTradisional.getObatProductionDetailsByOrderId(_obatIdProduk).obatIpfsHash;
+
+    st_orderObat memory newOrderFilled = st_orderObat({
       orderId: _orderId, 
       namaProduk: _namaProduk,
       obatIdProduk: _obatIdProduk,
-      batchName: "",
-      orderQuantity: _orderQuantity,
+      batchName: batchName,
+      orderQuantity: obatQuantity,
       senderInstanceName: _senderInstanceName,
       targetInstanceName: _targetInstanceName,
-      statusOrder: en_orderStatus.OrderPlaced,
+      statusOrder: en_orderStatus.OrderCompleted,
       timestampOrder: block.timestamp,
-      timestampShipped: 0,
-      timestampComplete: 0,
-      orderObatIpfsHash: new string[](0)  
+      timestampShipped: block.timestamp,
+      timestampComplete: block.timestamp,
+      orderObatIpfsHash: obatIpfsHash
     });
 
-    orderObatById[_orderId] = newOrderPbf;
+    st_obatPbf memory obatPbf = st_obatPbf({
+      orderId: _orderId,
+      batchName: batchName,
+      obatIdProduk: newOrderFilled.obatIdProduk, 
+      namaProduk: newOrderFilled.namaProduk,
+      statusStok: en_obatAvailability.ready,
+      obatQuantity: newOrderFilled.orderQuantity,
+      obatIpfsHash: newOrderFilled.orderObatIpfsHash,
+      ownerInstanceName: newOrderFilled.senderInstanceName
+    }); 
+
+    obatPbfByIdProduk[obatPbf.obatIdProduk] = obatPbf;
+    allObatPbf.push(obatPbf);
+    
+    
+    // orderObatById[_orderId] = newOrderPbf;
     orderSenderInstanceAddress[_senderInstanceName].push(_senderInstanceAddr);
-    allOrderedObat.push(newOrderPbf);
+    // allOrderedObat.push(newOrderPbf);
+    orderObatById[_orderId] = newOrderFilled;
+    allOrderedObat.push(newOrderFilled);
 
     emit evt_obatOrdered(_namaProduk, _orderQuantity, _orderId, _senderInstanceName, _targetInstanceName, block.timestamp); 
   } 
@@ -354,32 +391,57 @@ contract OrderManagement {
     }
   }
 
-  function detailQuantityReadyObat(
+  function getDetailPbfObat(
     string memory _obatId,
     string memory _userInstanceName
   )
     public
     view
-    returns (
-      uint8 obatQuantity,
-      string memory batchName,
-      string[] memory obatIpfsHash
+    returns(
+      st_obatPbf memory
   ){
     require(bytes(obatPbfByIdProduk[_obatId].obatIdProduk).length > 0, "No data found with this ID." );
 
-    obatQuantity = obatPbfByIdProduk[_obatId].obatQuantity;
-
-    if (roleManager.hasRole(msg.sender, RoleManager.en_roles.PBF)){
-      if(keccak256(abi.encodePacked(obatPbfByIdProduk[_obatId].ownerInstanceName)) == keccak256(abi.encodePacked(_userInstanceName))) {
-        obatIpfsHash = obatPbfByIdProduk[_obatId].obatIpfsHash;
-        batchName = obatPbfByIdProduk[_obatId].batchName;
-      }
+    if (keccak256(abi.encodePacked(obatPbfByIdProduk[_obatId].ownerInstanceName)) == keccak256(abi.encodePacked(_userInstanceName))) {
+      return obatPbfByIdProduk[_obatId];
 
     } else {
-      batchName = "";
-      obatIpfsHash = new string[](0);
+      st_obatPbf memory detailObatPbf = obatPbfByIdProduk[_obatId];
+
+      detailObatPbf.orderId = ""; 
+      detailObatPbf.obatIpfsHash = new string[](0);
+        
+      return detailObatPbf;
     }
   }
+
+  // for pbf per instance only
+  // function detailQuantityReadyObat(
+  //   string memory _obatId,
+  //   string memory _userInstanceName
+  // )
+  //   public
+  //   view
+  //   returns (
+  //     uint8 obatQuantity,
+  //     string memory batchName,
+  //     string[] memory obatIpfsHash
+  // ){
+  //   require(bytes(obatPbfByIdProduk[_obatId].obatIdProduk).length > 0, "No data found with this ID." );
+
+  //   obatQuantity = obatPbfByIdProduk[_obatId].obatQuantity;
+
+  //   if (roleManager.hasRole(msg.sender, RoleManager.en_roles.PBF)){
+  //     if(keccak256(abi.encodePacked(obatPbfByIdProduk[_obatId].ownerInstanceName)) == keccak256(abi.encodePacked(_userInstanceName))) {
+  //       obatIpfsHash = obatPbfByIdProduk[_obatId].obatIpfsHash;
+  //       batchName = obatPbfByIdProduk[_obatId].batchName;
+  //     }
+
+  //   } else {
+  //     batchName = "";
+  //     obatIpfsHash = new string[](0);
+  //   }
+  // }
 
  
   // create function getListOrderObatbyPBF, getLIstOrderObatdri factory, get list order obat dri retailer, acceptOrder

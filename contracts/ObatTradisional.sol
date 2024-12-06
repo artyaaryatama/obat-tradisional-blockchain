@@ -80,6 +80,8 @@ contract ObatTradisional {
   mapping (string => st_obatDetails) public obatDetailsById;
   mapping (string => st_obatDetails) public obatDetailsByNameProduct;
   mapping (string => st_obatProduction) public obatProductionDetailsByBatchName;
+  // for testing purposes in the create order auto filled
+  mapping (string => st_obatProduction) public obatProductionDetailsByObatId;
 
   event evt_obatCreated(string namaProduk, string factoryInstanceNames, string factoryUserNames, address factoryAddresses, string kemasan, en_tipeProduk en_tipeProduk);
   event evt_nieRequested(string obatId, uint timestampRequested, string namaProduk);
@@ -163,6 +165,9 @@ contract ObatTradisional {
     allProducedObat.push(newProduction);   
     obatProductionDetailsByBatchName[newProduction.batchName] = newProduction;
 
+    // for test purposes create order auto filled
+    obatProductionDetailsByObatId[newProduction.obatId] = newProduction;
+
     emit evt_obatCreated(_namaProduk, _factoryInstanceName, _factoryUserName, _factoryAddr, _kemasan, en_tipeProduk(_tipeProduk));
   }
  
@@ -217,15 +222,58 @@ contract ObatTradisional {
     emit evt_nieApproved(_nieNumber, obatDetails.namaProduk);
   }
 
-  // untuk ditampilkan di halaman list NIE (karena di page ini yg ada nie sm nggak ada nie nya jdi satu)
+  function getListAllObatNie()
+      public
+      view
+      onlyBPOM
+      returns (
+        string[] memory obatIdArray,
+        string[] memory namaProdukArray,
+        string[] memory factoryInstanceNameArray, 
+        uint256[] memory latestTimestampArray, 
+        uint8[] memory obatStatusArray 
+      )
+  {
+      uint count = 0;
+      for (uint i=0; i < allObatData.length; i++) {
+          if (allObatData[i].obatStatus != en_nieStatus.inLocalProduction) {
+              count++;
+          }
+      }
+
+      obatIdArray = new string[](count);
+      namaProdukArray = new string[](count);
+      factoryInstanceNameArray = new string[](count);
+      latestTimestampArray = new uint256[](count);
+      obatStatusArray = new uint8[](count);
+
+      uint index = 0;
+      for (uint i= 0; i < allObatData.length; i++) {
+          if (allObatData[i].obatStatus != en_nieStatus.inLocalProduction) {
+              obatIdArray[index] = allObatData[i].obatId;
+              namaProdukArray[index] = allObatData[i].namaProduk;
+              factoryInstanceNameArray[index] = factoryInstanceNames[allObatData[i].obatId];
+              
+              uint latest = allObatData[i].nieApprovalDate > allObatData[i].nieRequestDate
+                  ? allObatData[i].nieApprovalDate
+                  : allObatData[i].nieRequestDate;
+
+              latestTimestampArray[index] = latest;
+              obatStatusArray[index] = uint8(allObatData[i].obatStatus);
+
+              index++;
+          }
+      }
+  }
+
   function getListObatByFactory(string memory _factoryInstanceName)
     public 
     view 
     returns (
-      string[] memory, // obatId
-      string[] memory, // namaProduk
-      uint8[] memory,  // obatStatus
-      uint8[] memory  // tipe produk
+      string[] memory obatIdArray, // obatId
+      string[] memory namaProdukArray, // namaProduk
+      uint8[] memory obatStatusArray,  // obatStatus
+      uint8[] memory tipeProdukArray  // tipe produk
   ){
     uint count = 0;
 
@@ -237,29 +285,22 @@ contract ObatTradisional {
     }
 
     // Initialize arrays with the correct size
-    string[] memory obatIdArray = new string[](count);
-    string[] memory namaProdukArray = new string[](count);
-    uint8[] memory obatStatusArray = new uint8[](count);
-    uint8[] memory tipeProdukArray = new uint8[](count);
+    obatIdArray = new string[](count);
+    namaProdukArray = new string[](count);
+    obatStatusArray = new uint8[](count);
+    tipeProdukArray = new uint8[](count);
 
     // Populate arrays with matching records
     uint index = 0;
     for (uint i = 0; i < allObatData.length; i++) {
         if (keccak256(abi.encodePacked(factoryInstanceNames[allObatData[i].obatId])) == keccak256(abi.encodePacked(_factoryInstanceName))) {
-            obatIdArray[index] = allObatData[i].obatId;
-            namaProdukArray[index] = allObatData[i].namaProduk;
-            obatStatusArray[index] = uint8(allObatData[i].obatStatus);
-            tipeProdukArray[index] = uint8(allObatData[i].tipeProduk);
-            index++;
+          obatIdArray[index] = allObatData[i].obatId;
+          namaProdukArray[index] = allObatData[i].namaProduk;
+          obatStatusArray[index] = uint8(allObatData[i].obatStatus);
+          tipeProdukArray[index] = uint8(allObatData[i].tipeProduk);
+          index++;
         }
     }
-
-    return (
-        obatIdArray,
-        namaProdukArray,
-        obatStatusArray, 
-        tipeProdukArray
-    );
   }
 
   // detail obat
@@ -420,7 +461,7 @@ contract ObatTradisional {
             obatId: allProducedObat[i].obatId,
             namaProduk: allProducedObat[i].namaProduk,
             obatQuantity: allProducedObat[i].obatQuantity,
-            factoryInstanceNames: "",
+            factoryInstanceNames: allProducedObat[i].factoryInstanceNames, 
             obatIpfsHash: new string[](0)       
             });
           index++;
@@ -468,6 +509,16 @@ contract ObatTradisional {
       st_obatProduction memory
   ) {
       return obatProductionDetailsByBatchName[_batchName];
+  }
+
+  // for testing purposes in the create order
+  function getObatProductionDetailsByOrderId(string memory _obatId) 
+    public 
+    view 
+    returns (
+      st_obatProduction memory
+  ) {
+      return obatProductionDetailsByObatId[_obatId];
   }
 
 

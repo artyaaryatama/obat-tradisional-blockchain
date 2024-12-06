@@ -466,7 +466,7 @@ function ManageOrderFactoryPbf() {
                     MySwal.showValidationMessage('Jumlah total order harus sesuai dengan stok obat.');
                     return;
                   }
-                  addStok(detailObat, detailOrder, orderId, selectedBatchName)
+                  generateIpfs(detailObat, detailOrder, orderId, selectedBatchName)
                 };
               
                 generateIpfsHash.addEventListener('click', handleGenerate);
@@ -631,7 +631,7 @@ function ManageOrderFactoryPbf() {
 
   }
   
-  const addStok = async(dataObat, dataOrder, orderId, batchName) => {
+  const generateIpfs = async(dataObat, dataOrder, orderId, batchName) => {
     
     MySwal.fire({
       title:"Processing your request...",
@@ -648,6 +648,7 @@ function ManageOrderFactoryPbf() {
       65 + Math.floor(Math.random() * 26),
       65 + Math.floor(Math.random() * 26)
     );
+
     for (let i = 0; i < dataOrder.orderQuantity; i++) {
       const obat = {
         batchName: batchName,
@@ -693,72 +694,74 @@ function ManageOrderFactoryPbf() {
       }
     }
 
-    console.log("Generated IPFS Hashes:", ipfsHashes);
+    console.log("Generated IPFS Hashes:", ipfsHashes.length);
 
-    MySwal.fire({
-      title: `Order Obat ${dataObat.namaObat}`,
-      html: (
-        <div className='form-swal'>
-          <div className="row row--obat">
-            <div className="col">
-
-              <ul>
-                <li className="label label-1">
-                  <p>Nama Produk</p>
-                </li>
-                <li className="input input-1">
-                  <p>{dataObat.namaObat}</p> 
-                </li>
-              </ul>
-
-              <ul>
-                <li className="label label-1">
-                  <p>Nama Factory</p> 
-                </li>
-                <li className="input input-1">
-                  <p>{dataOrder.targetInstanceName}</p> 
-                </li>
-              </ul>
-
-              <ul>
-                <li className="label label-1">
-                  <p>Nama PBF</p> 
-                </li>
-                <li className="input input-1">
-                  <p>{dataOrder.senderInstanceName}</p> 
-                </li>
-              </ul>
-
-              <ul>
-                <li className="label label-1">
-                  <p>Total Stok Order</p> 
-                </li>
-                <li className="input input-1">
-                  <p>{dataOrder.obatQuantity} Obat</p>
-                </li>
-              </ul>
-
-              <ul>
-                <li className="input full-width-table">
-                  <DataIpfsHash ipfsHashes={ipfsHashes} />
-                </li>
-              </ul>
+    if(ipfsHashes.length !== 0){
+      MySwal.fire({
+        title: `Order Obat ${dataObat.namaObat}`,
+        html: (
+          <div className='form-swal'>
+            <div className="row row--obat">
+              <div className="col">
+  
+                <ul>
+                  <li className="label label-1">
+                    <p>Nama Produk</p>
+                  </li>
+                  <li className="input input-1">
+                    <p>{dataObat.namaObat}</p> 
+                  </li>
+                </ul>
+  
+                <ul>
+                  <li className="label label-1">
+                    <p>Nama Factory</p> 
+                  </li>
+                  <li className="input input-1">
+                    <p>{dataOrder.targetInstanceName}</p> 
+                  </li>
+                </ul>
+  
+                <ul>
+                  <li className="label label-1">
+                    <p>Nama PBF</p> 
+                  </li>
+                  <li className="input input-1">
+                    <p>{dataOrder.senderInstanceName}</p> 
+                  </li>
+                </ul>
+  
+                <ul>
+                  <li className="label label-1">
+                    <p>Total Stok Order</p> 
+                  </li>
+                  <li className="input input-1">
+                    <p>{dataOrder.obatQuantity} Obat</p>
+                  </li>
+                </ul>
+  
+                <ul>
+                  <li className="input full-width-table">
+                    <DataIpfsHash ipfsHashes={ipfsHashes} />
+                  </li>
+                </ul>
+              </div>
             </div>
+          
           </div>
-        
-        </div>
-      ),
-      width: '820',
-      showCancelButton: true,
-      confirmButtonText: 'Send Obat',
-      allowOutsideClick: false,
-
-    }).then((result) => {
+        ),
+        width: '820',
+        showCancelButton: true,
+        confirmButtonText: 'Send Obat',
+        allowOutsideClick: false,
+  
+      }).then((result) => {
         if(result.isConfirmed){
           acceptOrder(batchName, orderId, ipfsHashes)
-          // console.log(`BN-${date}-${randomCode}-${dataOrder.orderQuantity}`, orderId, ipfsHashes)
         }
-    })
+      })
+    }
+
   }
 
   return (

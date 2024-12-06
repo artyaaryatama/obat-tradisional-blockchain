@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
@@ -93,57 +94,57 @@ function ManageNieFactory() {
     };
   
     loadData();
-  }, [contract, userData.instanceName]);
+  }, [contract, userData.instanceName, obatStatusMap, tipeProdukMap]);
 
-  useEffect(() => {
-    if (contract) {
-      console.log("Setting up listener for evt_nieRequested on contract", contract);
+  // useEffect(() => {
+  //   if (contract) {
+  //     console.log("Setting up listener for evt_nieRequested on contract", contract);
       
-      contract.on("evt_nieRequested", ( _obatId, _timestampRequestNie,_namaProduk) => {
+  //     contract.on("evt_nieRequested", ( _obatId, _timestampRequestNie,_namaProduk) => {
 
-        const timestamp = new Date(Number(_timestampRequestNie) * 1000).toLocaleDateString('id-ID', options)
+  //       const timestamp = new Date(Number(_timestampRequestNie) * 1000).toLocaleDateString('id-ID', options)
     
-        MySwal.fire({
-          title: "Success Request NIE",
-          html: (
-            <div className='form-swal'>
-              <ul>
-                <li className="label">
-                  <p>Nama Obat</p> 
-                </li>
-                <li className="input">
-                  <p>{_namaProduk}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Timestamp Request</p> 
-                </li>
-                <li className="input">
-                  <p>{timestamp}</p> 
-                </li>
-              </ul>
-            </div>
-          ),
-          icon: 'success',
-          width: '560',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-          allowOutsideClick: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.reload()
-          }
-        });
+  //       MySwal.fire({
+  //         title: "Success Request NIE",
+  //         html: (
+  //           <div className='form-swal'>
+  //             <ul>
+  //               <li className="label">
+  //                 <p>Nama Obat</p> 
+  //               </li>
+  //               <li className="input">
+  //                 <p>{_namaProduk}</p> 
+  //               </li>
+  //             </ul>
+  //             <ul>
+  //               <li className="label">
+  //                 <p>Timestamp Request</p> 
+  //               </li>
+  //               <li className="input">
+  //                 <p>{timestamp}</p> 
+  //               </li>
+  //             </ul>
+  //           </div>
+  //         ),
+  //         icon: 'success',
+  //         width: '560',
+  //         showCancelButton: false,
+  //         confirmButtonText: 'Oke',
+  //         allowOutsideClick: true,
+  //       }).then((result) => {
+  //         if (result.isConfirmed) {
+  //           window.location.reload()
+  //         }
+  //       });
 
-      });
+  //     });
   
-      return () => {
-        console.log("Removing evt_nieRequested listener");
-        contract.removeAllListeners("evt_nieRequested");
-      };
-    }
-  }, [contract]);
+  //     return () => {
+  //       console.log("Removing evt_nieRequested listener");
+  //       contract.removeAllListeners("evt_nieRequested");
+  //     };
+  //   }
+  // }, [contract]);
 
   const getDetailObat = async (id) => {
 
@@ -697,7 +698,7 @@ function ManageNieFactory() {
     <>
       <div id="ObatNie" className='Layout-Menu layout-page'>
         <div className="title-menu">
-          <h1>Data NIE Obat Tradisional</h1>
+          <h1>Data Obat Tradisional</h1>
           <p>Di produksi oleh {userData.instanceName}</p>
         </div>
         <div className="tab-menu">

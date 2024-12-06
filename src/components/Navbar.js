@@ -42,10 +42,10 @@ function Navbar() {
                       <Link to="/cdob">CDOB</Link>
                     </li>
                     <li className={currentPath === '/pbf-orders' || currentPath=== '/create-pbf-order'? 'active' : ''}>
-                      <Link to="/create-pbf-order">ORDER OBAT TRADISIONAL</Link>
+                      <Link to="/create-pbf-order">ORDER OBAT</Link>
                     </li>
-                    <li className={currentPath === '/obat-available-pbf' ? 'active' : ''}>
-                      <Link to="/obat-available-pbf">SELL OBAT TRADISIONAL</Link>
+                    <li className={currentPath === '/obat-available-pbf' || currentPath === '/manage-orders-pbf' ? 'active' : ''}>
+                      <Link to="/obat-available-pbf">SELL OBAT</Link>
                     </li>
                   </>
                 )}
@@ -56,6 +56,16 @@ function Navbar() {
                     </li>
                     <li className={currentPath === '/nie-approval' ? 'active' : ''}>
                       <Link to="/nie-approval">IZIN EDAR</Link>
+                    </li>
+                  </>
+                )}
+                {userRole === '3' && (
+                  <>
+                    <li className={currentPath === '/retailer-orders' || currentPath === '/create-retailer-order' ? 'active' : ''}>
+                      <Link to="/retailer-orders">ORDER OBAT</Link>
+                    </li>
+                    <li className={currentPath === '/nie-approval' ? 'active' : ''}>
+                      <Link to="/error">CEK OBAT</Link>
                     </li>
                   </>
                 )}

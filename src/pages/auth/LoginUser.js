@@ -107,6 +107,8 @@ function LoginPage() {
               navigate('/cpotb');
             } else if (userdata.role === '2') {
               navigate('/cpotb-approval')
+            } else if (userdata.role === '3') {
+              navigate('/create-retailer-order')
             } else{
               navigate('/unauthorized');
             }
@@ -143,9 +145,15 @@ function LoginPage() {
     } else if(role===2){ 
       const tx = await contract.registerUser('NILOJURI', 'BPOM Makassar', '0x70997970C51812dc3A010C7d01b50e0d17dc79C8', 2n);
       console.log(tx);
-
+      
       setName('NILOJURI') 
       setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
+    } else if(role===3){
+      const tx = await contract.registerUser('かみき あさこ', 'Apotek Sejahtera', '0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65', 3n);
+      console.log(tx);
+
+      setName('かみき あさこ') 
+      setUserAddr('0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65')
     }
     
   }
@@ -198,8 +206,9 @@ function LoginPage() {
           </p>
 
           <button className="test" onClick={(event) => autoFilled(event, 0)}>Auto Filled Factory</button>
-              <button className="test" onClick={(event) => autoFilled(event, 2)}>Auto Filled BPOM</button>
-              <button className="test" onClick={(event) => autoFilled(event, 1)}>Auto Filled PBF</button>
+          <button className="test" onClick={(event) => autoFilled(event, 2)}>Auto Filled BPOM</button>
+          <button className="test" onClick={(event) => autoFilled(event, 1)}>Auto Filled PBF</button>
+          <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled Retailer</button>
         </div>
       </div>
     </div>

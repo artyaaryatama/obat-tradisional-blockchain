@@ -152,6 +152,11 @@ function RegisterPage() {
       setName('STIPEN JENSEN')
       setRole(parseInt(1))
       setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
+    } else if(role===4){
+      setInstanceName('Apotek Sejahtera')
+      setName('かみき あさこ')
+      setRole(parseInt(3))
+      setUserAddr("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65")
     }
   }
   
@@ -226,6 +231,7 @@ function RegisterPage() {
               <button className="test" onClick={(event) => autoFilled(event, 1)}>Auto Filled Factory</button>
               <button className="test" onClick={(event) => autoFilled(event, 2)}>Auto Filled BPOM</button>
               <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled PBF</button>
+              <button className="test" onClick={(event) => autoFilled(event, 4)}>Auto Filled Retailer</button>
           </div>
         </div>
       </div>

@@ -87,7 +87,6 @@ function CreateOrderPbf() {
     const loadData = async () => {
       if (contracts) {
         try {
-
           const tx = await contracts.obatTradisional.getAllProducedObat();
           console.log(tx);
 
@@ -180,11 +179,10 @@ function CreateOrderPbf() {
   
 
   const orderDetail = async (id, batchName) => {
-
+    console.log(id, batchName);
     try {
       const tx = await contracts.obatTradisional.getListObatById(id);
       const tx1 = await contracts.obatTradisional.getDetailProducedObat(batchName)
-      console.log(2);
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = tx;
 
