@@ -683,6 +683,7 @@ function ManageOrderRetailer() {
           <ul>
             <li><button onClick={() => navigate('/create-retailer-order')}>Pengajuan Order</button></li>
             <li><button className='active' onClick={() => navigate('/retailer-orders')}>Order Obat Tradisional</button></li>
+            <li><button onClick={() => navigate('/obat-available-retailer')}>Obat Ready Stock</button></li>
           </ul>
         </div>
         <div className="container-data ">

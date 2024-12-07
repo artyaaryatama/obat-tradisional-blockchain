@@ -19,6 +19,7 @@ import StockObatPbf from './pages/pbf/StockObatPbf';
 import ManageOrderPbfRetailer from './pages/pbf/ManageOrderPbfRetailer';
 import CreateOrderRetailer from './pages/retailer/CreateOrderRetailer';
 import ManageOrderRetailer from './pages/retailer/ManageOrderRetailer';
+import StockObatRetailer from './pages/retailer/stckObatRetailer';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LoginPage from './pages/auth/LoginUser';
@@ -240,6 +241,18 @@ function App() {
               <ProtectedRoute allowedRoles={['3']}>
                 <Navbar />
                 <ManageOrderRetailer />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+          
+
+          <Route 
+            path="/obat-available-retailer" 
+            element={
+              <ProtectedRoute allowedRoles={['3']}>
+                <Navbar />
+                <StockObatRetailer />
                 <Footer />
               </ProtectedRoute>
             } 

@@ -716,10 +716,10 @@ function ManageNieFactory() {
                 Add new data
               </button>
               <button className='btn-auto-filled' onClick={() => autoFilledCreateObat("ot-3385CI", "Buyung Upik Instan Rasa Coklat")}>
-                Auto Filled Data 1
+                Auto Rasa Coklat
               </button>
               <button className='btn-auto-filled' onClick={() => autoFilledCreateObat("ot-2485CI", "Buyung Upik Instan Rasa Stoberi")}>
-                Auto Filled Data 2
+                Auto Rasa Stoberi
               </button>
             </div>
           </div>

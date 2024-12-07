@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom/client';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { create } from 'ipfs-http-client';
 
 import DataIpfsHash from '../../components/TableHash';
 import OrderStatusStepper from '../../components/StepperOrder';
@@ -14,9 +12,6 @@ import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 
 const MySwal = withReactContent(Swal);
-
-const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
-
 
 function StockObatPbf() {
   const [contracts, setContracts] = useState(null);
@@ -89,7 +84,7 @@ function StockObatPbf() {
       if (contracts) {
         try {
 
-          const tx = await contracts.orderManagement.getListAllReadyObat(userData.instanceName);
+          const tx = await contracts.orderManagement.getListAllReadyObatPbf(userData.instanceName);
           const [obatIdArray, namaProdukArray, obatQuantityArray, batchNameArray] = tx
 
           const reconstructedData = obatIdArray.map((obatId, index) => ({
@@ -194,7 +189,7 @@ function StockObatPbf() {
   const getDetailObat = async (id) => {
 
     try {
-      const listObatCt = await contracts.obatTradisional.getDetailPbfObat(id);
+      const listObatCt = await contracts.obatTradisional.getListObatById(id);
       const detailObatPbf = await contracts.orderManagement.getDetailPbfObat(id, userData.instanceName)
       console.log(detailObatPbf);
 
@@ -273,15 +268,6 @@ function StockObatPbf() {
                         </li>
                         <li className="input">
                           <p>{ownerInstanceName}</p>
-                        </li>
-                      </ul>
-                    
-                      <ul>
-                        <li className="label-sm">
-                          <p>Status Stok</p>
-                        </li>
-                        <li className="input">
-                          <p>{statusStok}</p>
                         </li>
                       </ul>
 

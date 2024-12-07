@@ -89,12 +89,16 @@ function ManageOrderPbfRetailer() {
       if (contracts && userData.instanceName) {
 
         try {
-
           const listOrderedObatCt = await contracts.orderManagement.getListAllOrderedObatFromTarget(userData.instanceName);
-          const listProducedObatCt = await contracts.obatTradisional.getListAllProducedObatByFactory(userData.instanceName);
+          // const listProducedObatCt = await contracts.OrderManagement.getListAllOrderedObatFromSender(userData.instanceName);
+
+          console.log(listOrderedObatCt);
+          // console.log(listProducedObatCt);
           
           const [orderIdArray, namaProdukArray, statusOrderArray, orderQuantityArray, obatIdProdukArray, batchNameArr] = listOrderedObatCt;
-          const [obatIdArray, namaProdukArr, obatQuantityArray, batchNameArray] = listProducedObatCt;
+          
+          console.log(orderIdArray);
+          // const [obatIdArray, namaProdukArr, obatQuantityArray, batchNameArray] = listProducedObatCt;
 
           // use map on obatIdArray, which iterates through each obatId
           const reconstructedDataorder = orderIdArray.map((orderId, index) => ({
@@ -106,17 +110,17 @@ function ManageOrderPbfRetailer() {
             batchName: batchNameArr[index]
           }));
 
-          const reconstructedDataObat = obatIdArray.map((obatId, index) => ({
-            obatId: obatIdArray[index],
-            namaProduk: namaProdukArr[index],
-            obatQuantity: obatQuantityArray[index],
-            batchName: batchNameArray[index]
-          }))
+          // const reconstructedDataObat = obatIdArray.map((obatId, index) => ({
+          //   obatId: obatIdArray[index],
+          //   namaProduk: namaProdukArr[index],
+          //   obatQuantity: obatQuantityArray[index],
+          //   batchName: batchNameArray[index]
+          // }))
 
           setDataOrder(reconstructedDataorder)
-          setDataObat(reconstructedDataObat)
+          // setDataObat(reconstructedDataObat)
           console.log(reconstructedDataorder);
-          console.log(reconstructedDataObat);
+          // console.log(reconstructedDataObat);
 
         } catch (error) {
           console.error("Error loading data: ", error);
@@ -211,7 +215,7 @@ function ManageOrderPbfRetailer() {
     console.log(id, orderId);
 
     try {
-      let ObatQuantityReady, obatIpfsHashReady, selectedBatchName;
+      let ObatQuantityReady, obatIpfsHashReady, dataObatSelected;
       const listObatCt = await contracts.obatTradisional.getListObatById(id);
       const detailObatCt = await contracts.orderManagement.getDetailOrderedObat(orderId)
 
@@ -374,22 +378,17 @@ function ManageOrderPbfRetailer() {
               <OrderStatusStepper orderStatus={statusOrder} timestamps={timestamps} />
             );
 
-            const dataObatSelected = dataObat.filter(item => item.namaProduk === detailObat.namaObat)
+            dataObatSelected = dataOrder.filter(item => item.namaObat === detailObat.namaObat)
   
-            if (dataObatSelected.length > 0) {
-              selectedBatchName = dataObatSelected[0].batchName;
-              const detailProducedObat = await contracts.obatTradisional.getDetailProducedObat(selectedBatchName)
-    
-              console.log(detailProducedObat);
-    
-              ObatQuantityReady = detailProducedObat[0];
-              obatIpfsHashReady = [];
-            }
-  
-  
+            console.log(dataObatSelected[0].batchName);
+            console.log(dataObatSelected);
+            ObatQuantityReady = dataObatSelected[0].obatQuantity;
+            obatIpfsHashReady = [];
+            
           }
         }).then((result) => {
   
+          console.log(dataObatSelected[0]);
           if(result.isConfirmed){
            
             MySwal.fire({
@@ -410,7 +409,7 @@ function ManageOrderPbfRetailer() {
         
                       <ul>
                         <li className="label label-1">
-                          <p>Nama Factory</p> 
+                          <p>Nama PBF</p> 
                         </li>
                         <li className="input input-1">
                           <p>{targetInstanceName}</p> 
@@ -419,7 +418,7 @@ function ManageOrderPbfRetailer() {
         
                       <ul>
                         <li className="label label-1">
-                          <p>Nama PBF</p> 
+                          <p>Nama Retailer</p> 
                         </li>
                         <li className="input input-1">
                           <p>{senderInstanceName}</p> 
@@ -431,7 +430,7 @@ function ManageOrderPbfRetailer() {
                           <p>Total Stok Order</p> 
                         </li>
                         <li className="input input-1">
-                          <p>{ObatQuantityReady.toString()} Obat</p>
+                          <p>{ObatQuantityReady} Obat</p>
                         </li>
                       </ul>
         
@@ -453,7 +452,7 @@ function ManageOrderPbfRetailer() {
               ),
               width: '820',
               showCancelButton: true,
-              confirmButtonText: 'Send Obat',
+              showConfirmButton: false,
               allowOutsideClick: false,
               didOpen: () => {
                 const generateIpfsHash = document.getElementById('addQuantity')
@@ -464,7 +463,8 @@ function ManageOrderPbfRetailer() {
                     MySwal.showValidationMessage('Jumlah total order harus sesuai dengan stok obat.');
                     return;
                   }
-                  addStok(detailObat, detailOrder, orderId, selectedBatchName)
+
+                  generateIpfs(detailObat, detailOrder, orderId, dataObatSelected[0].batchName)
                 };
               
                 generateIpfsHash.addEventListener('click', handleGenerate);
@@ -606,7 +606,7 @@ function ManageOrderPbfRetailer() {
     }
   }
 
-  const acceptOrder = async (batchName, orderId, ipfsHashes) => {
+  const acceptOrder = async (batchName, orderId, obatId, ipfsHashes) => {
     
     MySwal.fire({
       title:"Processing your request...",
@@ -616,11 +616,9 @@ function ManageOrderPbfRetailer() {
       showConfirmButton: false,
       allowOutsideClick: false,
     })
-
+    console.log(orderId)
     try {
-      const acce = await contracts.obatTradisional.getObatProductionDetailsByBatchName(batchName)
-      console.log(acce);
-      const acceptOrderCt = await contracts.orderManagement.acceptOrder(batchName, orderId, ipfsHashes)
+      const acceptOrderCt = await contracts.orderManagement.acceptOrder(batchName, orderId, obatId, ipfsHashes)
       console.log(acceptOrderCt);
       
     } catch (error) {
@@ -629,8 +627,8 @@ function ManageOrderPbfRetailer() {
 
   }
   
-  const addStok = async(dataObat, dataOrder, orderId, batchName) => {
-    
+  const generateIpfs = async(dataObat, dataOrder, orderId, batchName) => {
+    console.log(batchName);
     MySwal.fire({
       title:"Processing your request...",
       text:"Your request is on its way. This won't take long. 🚀",
@@ -640,6 +638,8 @@ function ManageOrderPbfRetailer() {
       allowOutsideClick: false,
     })
 
+    console.log('ini data obat', dataObat);
+    console.log('ini data ORder', dataOrder);
     const ipfsHashes = [];
     const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
     const randomTwoLetters = String.fromCharCode(
@@ -678,7 +678,6 @@ function ManageOrderPbfRetailer() {
       };
       
       try {
-        console.log(obat);
         const result = await client.add(JSON.stringify(obat), 
           { progress: (bytes) => 
             console.log(`Uploading ${i+1}/${dataOrder.orderQuantity}: ${bytes} bytes uploaded`) }
@@ -693,70 +692,73 @@ function ManageOrderPbfRetailer() {
 
     console.log("Generated IPFS Hashes:", ipfsHashes);
 
-    MySwal.fire({
-      title: `Order Obat ${dataObat.namaObat}`,
-      html: (
-        <div className='form-swal'>
-          <div className="row row--obat">
-            <div className="col">
-
-              <ul>
-                <li className="label label-1">
-                  <p>Nama Produk</p>
-                </li>
-                <li className="input input-1">
-                  <p>{dataObat.namaObat}</p> 
-                </li>
-              </ul>
-
-              <ul>
-                <li className="label label-1">
-                  <p>Nama Factory</p> 
-                </li>
-                <li className="input input-1">
-                  <p>{dataOrder.targetInstanceName}</p> 
-                </li>
-              </ul>
-
-              <ul>
-                <li className="label label-1">
-                  <p>Nama PBF</p> 
-                </li>
-                <li className="input input-1">
-                  <p>{dataOrder.senderInstanceName}</p> 
-                </li>
-              </ul>
-
-              <ul>
-                <li className="label label-1">
-                  <p>Total Stok Order</p> 
-                </li>
-                <li className="input input-1">
-                  <p>{dataOrder.obatQuantity} Obat</p>
-                </li>
-              </ul>
-
-              <ul>
-                <li className="input full-width-table">
-                  <DataIpfsHash ipfsHashes={ipfsHashes} />
-                </li>
-              </ul>
+    if(ipfsHashes.length !== 0){
+      MySwal.fire({
+        title: `Order Obat ${dataObat.namaObat}`,
+        html: (
+          <div className='form-swal'>
+            <div className="row row--obat">
+              <div className="col">
+  
+                <ul>
+                  <li className="label label-1">
+                    <p>Nama Produk</p>
+                  </li>
+                  <li className="input input-1">
+                    <p>{dataObat.namaObat}</p> 
+                  </li>
+                </ul>
+  
+                <ul>
+                  <li className="label label-1">
+                    <p>Nama PBF</p> 
+                  </li>
+                  <li className="input input-1">
+                    <p>{dataOrder.targetInstanceName}</p> 
+                  </li>
+                </ul>
+  
+                <ul>
+                  <li className="label label-1">
+                    <p>Nama Retailer</p> 
+                  </li>
+                  <li className="input input-1">
+                    <p>{dataOrder.senderInstanceName}</p> 
+                  </li>
+                </ul>
+  
+                <ul>
+                  <li className="label label-1">
+                    <p>Total Stok Order</p> 
+                  </li>
+                  <li className="input input-1">
+                    <p>{dataOrder.orderQuantity} Obat</p>
+                  </li>
+                </ul>
+  
+                <ul>
+                  <li className="input full-width-table">
+                    <DataIpfsHash ipfsHashes={ipfsHashes} />
+                  </li>
+                </ul>
+              </div>
             </div>
+          
           </div>
-        
-        </div>
-      ),
-      width: '820',
-      showCancelButton: true,
-      confirmButtonText: 'Send Obat',
-      allowOutsideClick: false,
-
-    }).then((result) => {
-        if(result.isConfirmed){
-          acceptOrder(batchName, orderId, ipfsHashes)
-          // console.log(`BN-${date}-${randomCode}-${dataOrder.orderQuantity}`, orderId, ipfsHashes)
-        }
-    })
+        ),
+        width: '820',
+        showCancelButton: true,
+        confirmButtonText: 'Send Obat',
+        allowOutsideClick: false,
+  
+      }).then((result) => {
+          if(result.isConfirmed){
+            
+            acceptOrder(batchName, orderId, dataObat.obatId, ipfsHashes)
+            // console.log(`BN-${date}-${randomCode}-${dataOrder.orderQuantity}`, orderId, ipfsHashes)
+          }
+      })
+    }
   }
 
   return (

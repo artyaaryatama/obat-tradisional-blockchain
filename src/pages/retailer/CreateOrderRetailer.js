@@ -85,7 +85,7 @@ function CreateOrderRetailer() {
       if (contracts) {
         try {
 
-          const tx = await contracts.orderManagement.getListAllReadyObat(userData.instanceName);
+          const tx = await contracts.orderManagement.getListAllReadyObatPbf(userData.instanceName);
           console.log(tx);
 
           const [obatIdArray, namaProdukArray, obatQuantityArray, batchNameArray] = tx
@@ -175,12 +175,11 @@ function CreateOrderRetailer() {
     }
   }, [contracts]);
 
-  const orderDetail = async (id, batchName) => {
+  const orderDetail = async (id) => {
 
     try {
       const listDetailObatCt = await contracts.obatTradisional.getListObatById(id);
-      const detailObatPbfCt = await contracts.orderManagement.getDetailPbfObat(batchName)
-      console.log(2);
+      const detailObatPbfCt = await contracts.orderManagement.getDetailPbfObat(id, userData.instanceName)
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = listDetailObatCt;
 
@@ -340,8 +339,8 @@ function CreateOrderRetailer() {
         obatId: idOrderObat.idObat,
         namaProduk: idOrderObat.namaObat,
         orderQuantity: parseInt(idOrderObat.obatQuantity, 10),
-        pbfAddr: userData.address, // ndk kutau akses dri mana ini
-        pbfInstanceName: userData.instanceName,
+        retailerAddr: userData.address, // ndk kutau akses dri mana ini
+        retailerInstanceName: userData.instanceName,
         orderObatIpfsHash: idOrderObat.obatIpfshash
       };
     } else {
@@ -353,11 +352,9 @@ function CreateOrderRetailer() {
       const randomNumber = Math.floor(100000 + Math.random() * 900000); 
       const idOrder =  `ORDER-${randomNumber}`; 
 
-      console.log(orderObat.orderObatIpfsHash);
+      console.log(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.retailerInstanceName, orderObat.retailerAddr, ownerInstanceName);
 
-      console.log(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.pbfAddr, orderObat.pbfInstanceName);
-
-      const tx = await contracts.orderManagement.createOrder(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.pbfInstanceName, orderObat.pbfAddr, ownerInstanceName);
+      const tx = await contracts.orderManagement.createOrder(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.retailerInstanceName, orderObat.retailerAddr, ownerInstanceName);
       tx.wait()
       console.log(tx);
 
@@ -378,6 +375,7 @@ function CreateOrderRetailer() {
           <ul>
             <li><button className='active' onClick={() => navigate('/create-retailer-order')}>Pengajuan Order</button></li>
             <li><button  onClick={() => navigate('/retailer-orders')}>Order Obat Tradisional</button></li>
+            <li><button onClick={() => navigate('/obat-available-retailer')}>Obat Ready Stock</button></li>
           </ul>
         </div>
         <div className="container-data ">
@@ -391,7 +389,7 @@ function CreateOrderRetailer() {
                       <p>Stok tersedia: {item.obatQuantity} Obat</p>
                     </div>
                     <div className="order">
-                      <button className='order' onClick={() => orderDetail(item.idObat, item.batchName)} >
+                      <button className='order' onClick={() => orderDetail(item.idObat)} >
                         <i className="fa-solid fa-cart-shopping"></i>
                         Order Obat
                       </button>

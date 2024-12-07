@@ -455,7 +455,7 @@ function ManageOrderFactoryPbf() {
               ),
               width: '820',
               showCancelButton: true,
-              confirmButtonText: 'Send Obat',
+              showConfirmButton: false,
               allowOutsideClick: false,
               didOpen: () => {
                 const generateIpfsHash = document.getElementById('addQuantity')
@@ -608,7 +608,7 @@ function ManageOrderFactoryPbf() {
     }
   }
 
-  const acceptOrder = async (batchName, orderId, ipfsHashes) => {
+  const acceptOrder = async (batchName, orderId, obatId, ipfsHashes) => {
     
     MySwal.fire({
       title:"Processing your request...",
@@ -620,9 +620,7 @@ function ManageOrderFactoryPbf() {
     })
 
     try {
-      const acce = await contracts.obatTradisional.getObatProductionDetailsByBatchName(batchName)
-      console.log(acce);
-      const acceptOrderCt = await contracts.orderManagement.acceptOrder(batchName, orderId, ipfsHashes)
+      const acceptOrderCt = await contracts.orderManagement.acceptOrder(batchName, orderId, obatId, ipfsHashes)
       console.log(acceptOrderCt);
       
     } catch (error) {
@@ -736,7 +734,7 @@ function ManageOrderFactoryPbf() {
                     <p>Total Stok Order</p> 
                   </li>
                   <li className="input input-1">
-                    <p>{dataOrder.obatQuantity} Obat</p>
+                    <p>{dataOrder.orderQuantity} Obat</p>
                   </li>
                 </ul>
   
@@ -757,7 +755,7 @@ function ManageOrderFactoryPbf() {
   
       }).then((result) => {
         if(result.isConfirmed){
-          acceptOrder(batchName, orderId, ipfsHashes)
+          acceptOrder(batchName, orderId, dataObat.obatId, ipfsHashes)
         }
       })
     }

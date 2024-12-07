@@ -9,6 +9,8 @@ import Typography from '@mui/material/Typography';
 
 import "./../styles/Mui-Override.scss";
 
+
+
 export default function OrderStatusStepper({ orderStatus, timestamps }) {
 
   const steps = [
@@ -35,14 +37,16 @@ export default function OrderStatusStepper({ orderStatus, timestamps }) {
     <Box sx={{ maxWidth: 700 }}>
       <Stepper activeStep={activeStep} orientation="vertical">
         {steps.map((step, index) => (
-          <Step key={step.label} completed={activeStep > index}>
+          <Step key={step.label} completed={activeStep > index} disabled={step.isDisabled}>
             <StepLabel 
               className='customLabelStepper'
             >
               {step.label}
             </StepLabel>
             <StepContent className='customDescStepper'>
-              <Typography>{step.description || 'No timestamp available'}</Typography>
+              <Typography>
+              {index === activeStep ? step.description : 'No timestamp available'}
+              </Typography>
             </StepContent>
           </Step>
         ))}
