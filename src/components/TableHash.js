@@ -15,7 +15,7 @@ import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
-import "./../styles/DataTable.scss"
+// import "./../styles/DataTable.scss"
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -103,6 +103,16 @@ export default function TableHash({ ipfsHashes = [] }) {
     page * rowsPerPage + rowsPerPage
   );
 
+  const handleMouseEnter = (e) => {
+    e.target.style.color = "#530AF7";
+    e.target.style.textDecoration = "underline"; 
+  };
+
+  const handleMouseLeave = (e) => {
+    e.target.style.color = "#1B1C1E";
+    e.target.style.textDecoration = "none"; 
+  };
+
   return (
     <TableContainer component={Paper} sx={{ boxShadow: 'none', border: 'solid 1px #f2f3f59e', borderRadius: '10px' }}>
       <Table sx={{ minWidth: 500 }} aria-label="IPFS Hashes Table">
@@ -132,7 +142,21 @@ export default function TableHash({ ipfsHashes = [] }) {
                   {page * rowsPerPage + index + 1}.
                 </TableCell>
                 <TableCell align="left" sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontWeight: 'normal', fontStyle: 'normal', fontSize: '12px' }}>
+                  <a
+                    href={`http://localhost:8080/ipfs/${hash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: "#1B1C1E",          
+                      textDecoration: "none",  
+                    }}
+                    onFocus={(e) => e.target.style.color = '#1B1C1E'}  
+                    onBlur={(e) => e.target.style.color = '#1B1C1E'}
+                    onMouseEnter={handleMouseEnter}   
+                    onMouseLeave={handleMouseLeave}
+                  >
                   {hash}
+                  </a>
                 </TableCell>
               </TableRow>
             ))

@@ -223,7 +223,7 @@ function ManageOrderFactoryPbf() {
       const [orderIdProduk, namaProduk, obatIdProduk, batchName, orderQuantity, senderInstanceName, targetInstanceName, statusOrder, timestampOrder, timestampShipped, timestampComplete, orderObatIpfsHash] = detailObatCt;
 
       const timestamps = {
-        timestampOrder: new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options), 
+        timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
         timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
         timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
       }
@@ -255,7 +255,7 @@ function ManageOrderFactoryPbf() {
         statusOrder : statusOrder,
         targetInstanceName : targetInstanceName,
         orderObatIpfsHash : orderObatIpfsHash,
-        timestampOrder: new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options),
+        timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
         timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
         timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
       }
@@ -539,7 +539,7 @@ function ManageOrderFactoryPbf() {
     })
 
     try {
-      const acceptOrderCt = await contracts.orderManagement.acceptOrder(batchName, orderId, obatId, ipfsHashes)
+      const acceptOrderCt = await contracts.orderManagement.acceptOrderFactory(batchName, orderId, ipfsHashes)
       console.log(acceptOrderCt);
       
     } catch (error) {
@@ -559,7 +559,6 @@ function ManageOrderFactoryPbf() {
     })
 
     let newIpfsHashes = [];
-    let oldIpfsHashes = [];
     const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
     const randomTwoLetters = String.fromCharCode(
       65 + Math.floor(Math.random() * 26),
@@ -573,14 +572,6 @@ function ManageOrderFactoryPbf() {
     dataOrder.statusOrder = obatStatusMap[dataOrder.statusOrder]
 
     console.log(batchName);
-    try {
-      const dataProduceObat = await contracts.obatTradisional.getObatProductionDetailsByBatchName(batchName)
-      oldIpfsHashes = dataProduceObat[6];
-      console.log("old ipfs hash: ",oldIpfsHashes);
-
-    } catch (error) {
-      errAlert(error, "Can't Find obat data.")
-    }
 
     for (let i = 0; i < dataOrder.orderQuantity; i++) {
       const obat = {
@@ -611,11 +602,6 @@ function ManageOrderFactoryPbf() {
           targetInstanceName : dataOrder.targetInstanceName,
           timestampOrder: dataOrder.timestampOrder,
           timestampShipped: dataOrder.timestampShipped
-        },
-        dataHistoryHash: {
-          hashOrderPbf: {
-            order: oldIpfsHashes[i]
-          }
         }
       };
       

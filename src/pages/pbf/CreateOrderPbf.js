@@ -2,9 +2,6 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { create } from 'ipfs-http-client';
-
-import DataIpfsHash from '../../components/TableHash';
 
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
@@ -12,9 +9,6 @@ import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 
 const MySwal = withReactContent(Swal);
-
-const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
-
 
 function CreateOrderPbf() {
   const [contracts, setContracts] = useState(null);
@@ -66,11 +60,10 @@ function CreateOrderPbf() {
             contractData.ObatTradisional.abi,
             signer
           );
-
-          // Update state with both contracts
+          
           setContracts({
             orderManagement: orderManagementContract,
-            obatTradisional: obatTradisionalContract
+            obatTradisional: obatTradisionalContract,
           });
         } catch (err) {
           console.error("User access denied!")
@@ -87,11 +80,11 @@ function CreateOrderPbf() {
     const loadData = async () => {
       if (contracts) {
         try {
-          const tx = await contracts.obatTradisional.getAllProducedObat();
-          console.log(tx);
+          const allProduceObatCt = await contracts.obatTradisional.getAllProducedObat();
+          console.log(allProduceObatCt);
 
           // use map on obatIdArray, which iterates through each obatId
-          const reconstructedData = tx.map((item, index) => ({
+          const reconstructedData = allProduceObatCt.map(item => ({
             batchName: item.batchName,
             namaObat: item.namaProduk,
             idObat: item.obatId,
@@ -353,7 +346,8 @@ function CreateOrderPbf() {
 
       console.log(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.pbfAddr, orderObat.pbfInstanceName, factoryInstanceName);
 
-      const tx = await contracts.orderManagement.createOrder(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.pbfInstanceName, orderObat.pbfAddr, factoryInstanceName);
+      const tx = await contracts.orderManagement.createOrder(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.pbfInstanceName, orderObat.pbfAddr, factoryInstanceName
+      );
       tx.wait()
       console.log(tx);
 

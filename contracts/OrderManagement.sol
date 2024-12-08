@@ -55,6 +55,11 @@ contract OrderManagement {
     string ownerInstanceName;
   }
 
+  struct st_orderIdHistoryPBFRetailer {
+    string orderIdPbf;
+    string orderIdRetailer;
+  }
+
   st_orderObat[] public allOrderedObat;
   st_obatPbf[] public allObatPbf;
   st_obatRetailer[] public allObatRetailer;
@@ -63,8 +68,9 @@ contract OrderManagement {
   mapping (string => st_orderObat) public orderObatById;
   mapping (string => st_obatPbf) public obatPbfByIdProduk;
   mapping (string => st_obatRetailer) public obatRetailerByIdProduk;
-  mapping(string => address[]) public orderSenderInstanceAddress;
-  mapping(string => address[]) public orderRetailerInstanceAddress;
+  mapping (string => address[]) public orderSenderInstanceAddress;
+  mapping (string => address[]) public orderRetailerInstanceAddress;
+  mapping (string => st_orderIdHistoryPBFRetailer) public orderHistoryPbfRetailerByBatchName; // buat menampilkan order id di ipfs
 
   event evt_obatOrdered(string namaProduk, uint8 quantity, string orderId, string senderInstanceName, string targetInstanceName, uint latestTimestamp );
   event evt_updateOrder(string namaProduk, string batchName, string targetInstance, string senderInstance, uint8 quantity, uint latestTimestamp);
@@ -96,6 +102,7 @@ contract OrderManagement {
         timestampComplete: 0,
         orderObatIpfsHash: new string[](0)  
       });
+      
     } else if (roleManager.hasRole(msg.sender, RoleManager.en_roles.Retailer)){
       newOrder = st_orderObat({
         orderId: _orderId, 
@@ -112,113 +119,143 @@ contract OrderManagement {
         orderObatIpfsHash: new string[](0)  
       });
 
+
+
     }
  
-      allOrderedObat.push(newOrder);  
-      orderObatById[_orderId] = newOrder;
-      orderSenderInstanceAddress[_senderInstanceName].push(_senderInstanceAddr);
+    allOrderedObat.push(newOrder);  
+    orderObatById[_orderId] = newOrder;
+    orderSenderInstanceAddress[_senderInstanceName].push(_senderInstanceAddr);
+
     emit evt_obatOrdered(_namaProduk, _orderQuantity, _orderId, _senderInstanceName, _targetInstanceName, block.timestamp); 
   } 
 
-  function acceptOrder(
+  function acceptOrderFactory(
+    string memory _batchName, 
+    string memory _orderId,
+    string[] memory _obatIpfsHash
+  ) public {
+    require(abi.encodePacked(obatTradisional.getObatProductionDetailsByBatchName(_batchName).obatId).length > 0, "No data found with this ID.");
+ 
+    ObatTradisional.st_obatProduction memory obatProduced = obatTradisional.getObatProductionDetailsByBatchName(_batchName);
+
+    ObatTradisional.st_obatProduction[] memory allProducedObat = obatTradisional.getAllProducedObatArray();
+
+    st_orderObat storage obatOrdered = orderObatById[_orderId];
+
+    obatOrdered.orderObatIpfsHash = _obatIpfsHash;
+    obatOrdered.batchName = _batchName;
+    obatOrdered.statusOrder = en_orderStatus.OrderShipped;
+    obatOrdered.timestampShipped = block.timestamp;
+
+    obatProduced.statusStok = ObatTradisional.en_obatAvailability.sold;
+    obatProduced.obatIpfsHash = _obatIpfsHash;
+
+    // untuk detail history order buat ipfs
+    orderHistoryPbfRetailerByBatchName[_batchName].orderIdPbf = _orderId;
+    orderHistoryPbfRetailerByBatchName[_batchName].orderIdRetailer = "";
+
+    for(uint i=0; i < allOrderedObat.length; i++){
+      if(keccak256(abi.encodePacked(allOrderedObat[i].orderId)) == keccak256(abi.encodePacked(_orderId))){
+        allOrderedObat[i].orderObatIpfsHash = _obatIpfsHash;
+        allOrderedObat[i].batchName = _batchName;
+        allOrderedObat[i].statusOrder = en_orderStatus.OrderShipped;
+        allOrderedObat[i].timestampShipped = block.timestamp;
+
+        break;
+      }
+    }
+
+    for(uint i=0; i < allProducedObat.length; i++){
+      if(keccak256(abi.encodePacked(allProducedObat[i].batchName)) == keccak256(abi.encodePacked(_batchName))){
+        allProducedObat[i].obatIpfsHash = _obatIpfsHash;
+        allProducedObat[i].statusStok = ObatTradisional.en_obatAvailability.sold;
+
+        break;
+      }
+    }
+
+    emit evt_updateOrder(obatOrdered.namaProduk, obatProduced.batchName, obatOrdered.targetInstanceName, obatOrdered.senderInstanceName, obatOrdered.orderQuantity, block.timestamp);
+   
+  }
+
+  function acceptOrderPbf(
     string memory _batchName, 
     string memory _orderId,
     string memory _obatId,
     string[] memory _obatIpfsHash
   ) public {
-    
-    if (roleManager.hasRole(msg.sender, RoleManager.en_roles.Factory)){
-      require(abi.encodePacked(obatTradisional.getObatProductionDetailsByBatchName(_batchName).obatId).length > 0, "No data found with this ID.");
+    require(abi.encodePacked(obatPbfByIdProduk[_obatId].obatIdProduk).length > 0, "No data found with this ID.");
 
-      ObatTradisional.st_obatProduction memory obatProduced = obatTradisional.getObatProductionDetailsByBatchName(_batchName);
+    st_obatPbf memory obatPbf = obatPbfByIdProduk[_orderId];
+    st_orderObat storage obatOrdered = orderObatById[_orderId];
 
-      ObatTradisional.st_obatProduction[] memory allProducedObat = obatTradisional.getAllProducedObatArray();
+    // update ipfs
+    ObatTradisional.st_obatProduction memory obatProduced = obatTradisional.getObatProductionDetailsByBatchName(_batchName);
+    ObatTradisional.st_obatProduction[] memory allProducedObat = obatTradisional.getAllProducedObatArray();
 
-      st_orderObat storage obatOrdered = orderObatById[_orderId];
+    obatOrdered.orderObatIpfsHash = _obatIpfsHash;
+    obatOrdered.batchName = _batchName;
+    obatOrdered.statusOrder = en_orderStatus.OrderShipped;
+    obatOrdered.timestampShipped = block.timestamp;
 
-      obatOrdered.orderObatIpfsHash = _obatIpfsHash;
-      obatOrdered.batchName = _batchName;
-      obatOrdered.statusOrder = en_orderStatus.OrderShipped;
-      obatOrdered.timestampShipped = block.timestamp;
+    obatPbf.obatIpfsHash = _obatIpfsHash;
+    obatPbf.statusStok = en_obatAvailability.sold;
 
-      obatProduced.statusStok = ObatTradisional.en_obatAvailability.sold;
+    obatProduced.obatIpfsHash = _obatIpfsHash;
 
-      for(uint i=0; i < allOrderedObat.length; i++){
-        if(keccak256(abi.encodePacked(allOrderedObat[i].orderId)) == keccak256(abi.encodePacked(_orderId))){
-          allOrderedObat[i].orderObatIpfsHash = obatProduced.obatIpfsHash;
-          allOrderedObat[i].batchName = _batchName;
-          allOrderedObat[i].statusOrder = en_orderStatus.OrderShipped;
-          allOrderedObat[i].timestampShipped = block.timestamp;
-  
-          break;
-        }
+    // untuk detail history order buat ipfs
+    orderHistoryPbfRetailerByBatchName[_batchName].orderIdRetailer = _orderId;
+
+    for(uint i=0; i < allOrderedObat.length; i++){
+      if(keccak256(abi.encodePacked(allOrderedObat[i].orderId)) == keccak256(abi.encodePacked(_orderId))){
+        allOrderedObat[i].orderObatIpfsHash = obatPbf.obatIpfsHash;
+        allOrderedObat[i].batchName = _batchName;
+        allOrderedObat[i].statusOrder = en_orderStatus.OrderShipped;
+        allOrderedObat[i].timestampShipped = block.timestamp;
+
+        break;
       }
-
-      for(uint i=0; i < allProducedObat.length; i++){
-        if(keccak256(abi.encodePacked(allProducedObat[i].batchName)) == keccak256(abi.encodePacked(_batchName))){
-          allProducedObat[i].obatQuantity = 0;
-          allProducedObat[i].obatIpfsHash = new string[](0);
-          allProducedObat[i].statusStok = ObatTradisional.en_obatAvailability.sold;
-
-          break;
-        }
-      }
-      emit evt_updateOrder(obatOrdered.namaProduk, obatProduced.batchName, obatOrdered.targetInstanceName, obatOrdered.senderInstanceName, obatOrdered.orderQuantity, block.timestamp);
-    } else if (roleManager.hasRole(msg.sender, RoleManager.en_roles.PBF)){
-      require(abi.encodePacked(obatPbfByIdProduk[_obatId].obatIdProduk).length > 0, "No data found with this ID.");
-
-      st_obatPbf memory obatPbf = obatPbfByIdProduk[_orderId];
-
-      st_orderObat storage obatOrdered = orderObatById[_orderId];
-
-      obatOrdered.orderObatIpfsHash = _obatIpfsHash;
-      obatOrdered.batchName = _batchName;
-      obatOrdered.statusOrder = en_orderStatus.OrderShipped;
-      obatOrdered.timestampShipped = block.timestamp;
-
-      obatPbf.obatIpfsHash = new string[](0);
-      obatPbf.obatQuantity = 0; 
-      obatPbf.statusStok = en_obatAvailability.sold;
-
-      for(uint i=0; i < allOrderedObat.length; i++){
-        if(keccak256(abi.encodePacked(allOrderedObat[i].orderId)) == keccak256(abi.encodePacked(_orderId))){
-          allOrderedObat[i].orderObatIpfsHash = obatPbf.obatIpfsHash;
-          allOrderedObat[i].batchName = _batchName;
-          allOrderedObat[i].statusOrder = en_orderStatus.OrderShipped;
-          allOrderedObat[i].timestampShipped = block.timestamp;
-  
-          break;
-        }
-      }
-
-      for(uint i=0; i < allObatPbf.length; i++){
-        if(keccak256(abi.encodePacked(allObatPbf[i].batchName)) == keccak256(abi.encodePacked(_batchName))){
-          allObatPbf[i].obatQuantity = 0;
-          allObatPbf[i].obatIpfsHash = new string[](0);
-          allObatPbf[i].statusStok = en_obatAvailability.sold;
-
-          break;
-        }
-      }
-      emit evt_updateOrder(obatOrdered.namaProduk, obatPbf.batchName, obatOrdered.targetInstanceName, obatOrdered.senderInstanceName, obatOrdered.orderQuantity, block.timestamp);
-
     }
+
+    for(uint i=0; i < allObatPbf.length; i++){
+      if(keccak256(abi.encodePacked(allObatPbf[i].batchName)) == keccak256(abi.encodePacked(_batchName))){
+        allObatPbf[i].obatIpfsHash = _obatIpfsHash;
+        allObatPbf[i].statusStok = en_obatAvailability.sold;
+
+        break;
+      }
+    }
+
+    for(uint i=0; i < allProducedObat.length; i++){
+      if(keccak256(abi.encodePacked(allProducedObat[i].batchName)) == keccak256(abi.encodePacked(_batchName))){
+        allProducedObat[i].obatIpfsHash = _obatIpfsHash;
+
+        break;
+      }
+    }
+
+    emit evt_updateOrder(obatOrdered.namaProduk, obatPbf.batchName, obatOrdered.targetInstanceName, obatOrdered.senderInstanceName, obatOrdered.orderQuantity, block.timestamp);
 
   }
 
   function completeOrder(
-    string memory _orderId
+    string memory _orderId,
+    string[] memory _obatIpfsHash
   ) public {
 
     require(abi.encodePacked(orderObatById[_orderId].orderId).length > 0, "No data found with this ID."); 
     st_orderObat storage obatOrdered = orderObatById[_orderId];
+
     obatOrdered.statusOrder = en_orderStatus.OrderCompleted;
     obatOrdered.timestampComplete = block.timestamp;
-
+    obatOrdered.orderObatIpfsHash = _obatIpfsHash;
+ 
     for(uint i=0; i < allOrderedObat.length; i++){
       if(keccak256(abi.encodePacked(allOrderedObat[i].orderId)) == keccak256(abi.encodePacked(_orderId))){
         allOrderedObat[i].statusOrder = en_orderStatus.OrderCompleted;
         allOrderedObat[i].timestampComplete = block.timestamp;
+        allOrderedObat[i].orderObatIpfsHash = _obatIpfsHash;
         break;
       }
     }
@@ -231,7 +268,7 @@ contract OrderManagement {
         namaProduk: obatOrdered.namaProduk,
         statusStok: en_obatAvailability.ready,
         obatQuantity: obatOrdered.orderQuantity,
-        obatIpfsHash: obatOrdered.orderObatIpfsHash,
+        obatIpfsHash: _obatIpfsHash,
         ownerInstanceName: obatOrdered.senderInstanceName
       }); 
 
@@ -246,7 +283,7 @@ contract OrderManagement {
         namaProduk: obatOrdered.namaProduk,
         statusStok: en_obatAvailability.ready,
         obatQuantity: obatOrdered.orderQuantity,
-        obatIpfsHash: obatOrdered.orderObatIpfsHash,
+        obatIpfsHash: _obatIpfsHash,
         ownerInstanceName: obatOrdered.senderInstanceName
       }); 
 
@@ -346,7 +383,7 @@ contract OrderManagement {
     }
   }
 
-  // GET DETAIL PER ORDER ID ipfs and quantity
+  // GET DETAIL PER ORDER ID 
   function getDetailOrderedObat(string memory _orderId)
     public
     view
@@ -535,6 +572,39 @@ contract OrderManagement {
       return detailObatRetailer;
     }
   }
+
+  function getHistoryOrderObatPbf(string memory _batchName)
+    public
+    view 
+    returns (
+      st_orderObat memory orderObatPbf
+    ) {
+      require(abi.encodePacked(orderHistoryPbfRetailerByBatchName[_batchName].orderIdPbf).length > 0, "No data found with this ID.");
+
+      string memory orderIdPbf = orderHistoryPbfRetailerByBatchName[_batchName].orderIdPbf;
+
+      orderObatPbf = orderObatById[orderIdPbf];
+
+  }
+
+  function getHistoryOrderObatRetailer(string memory _batchName)
+    public
+    view 
+    returns (
+      st_orderObat memory orderObatPbf,
+      st_orderObat memory orderObatRetailer
+    ) {
+      require(abi.encodePacked(orderHistoryPbfRetailerByBatchName[_batchName].orderIdPbf).length > 0, "No data found with this ID.");
+
+      string memory orderIdPbf = orderHistoryPbfRetailerByBatchName[_batchName].orderIdPbf;
+      string memory orderIdRetailer = orderHistoryPbfRetailerByBatchName[_batchName].orderIdRetailer;
+
+      orderObatPbf = orderObatById[orderIdPbf];
+      orderObatRetailer = orderObatById[orderIdRetailer];
+
+    }
+    
+  
 
   // for pbf per instance only
   // function detailQuantityReadyObat(

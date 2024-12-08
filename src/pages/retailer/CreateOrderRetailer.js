@@ -23,9 +23,9 @@ function CreateOrderRetailer() {
   
 
   const obatStatusMap = {
-    0: "In Local Production",
-    1: "Requested NIE",
-    2: "Approved NIE"
+    0: "Order Placed",
+    1: "Order Shipped",
+    2: "Order Completed"
   };
 
   const tipeProdukMap = {
@@ -139,7 +139,7 @@ function CreateOrderRetailer() {
               </ul>
               <ul>
                 <li className="label">
-                  <p>Dari Factory</p> 
+                  <p>Dari PBF</p> 
                 </li>
                 <li className="input">
                   <p>{_targetInstanceName}</p> 
@@ -147,7 +147,7 @@ function CreateOrderRetailer() {
               </ul>
               <ul>
                 <li className="label">
-                  <p>Timestamp Request</p> 
+                  <p>Tanggal </p> 
                 </li>
                 <li className="input">
                   <p>{timestamp}</p> 
@@ -177,12 +177,14 @@ function CreateOrderRetailer() {
 
   const orderDetail = async (id) => {
 
+    
+
     try {
       const listDetailObatCt = await contracts.obatTradisional.getListObatById(id);
       const detailObatPbfCt = await contracts.orderManagement.getDetailPbfObat(id, userData.instanceName)
-
+      
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = listDetailObatCt;
-
+      
       const [orderId, batchName, obatIdProduk, namaProduk, statusStok, obatQuantity, obatIpfsHash, ownerInstanceName] = detailObatPbfCt;
 
       const detailObat = {
@@ -312,7 +314,7 @@ function CreateOrderRetailer() {
       }).then((result) => {
 
         if(result.isConfirmed){
-          orderObat(id, ownerInstanceName)
+          orderObat(id, namaProduk, parseInt(obatQuantity), userData.instanceName, userData.address, ownerInstanceName)
         }
       })
       
@@ -321,7 +323,7 @@ function CreateOrderRetailer() {
     }
   }
 
-  const orderObat = async (id, ownerInstanceName) => {
+  const orderObat = async (idProduk, namaProduk, orderQuantity, retailerInstanceName, retailerAddr ,ownerInstanceName) => {
 
     MySwal.fire({
       title:"Processing your request...",
@@ -331,38 +333,183 @@ function CreateOrderRetailer() {
       showConfirmButton: false,
       allowOutsideClick: false,
     })
-
-    const idOrderObat = dataObat.find(obat => obat.idObat === id)
-    let orderObat = {}
-    if (idOrderObat) {
-      orderObat = {
-        obatId: idOrderObat.idObat,
-        namaProduk: idOrderObat.namaObat,
-        orderQuantity: parseInt(idOrderObat.obatQuantity, 10),
-        retailerAddr: userData.address, // ndk kutau akses dri mana ini
-        retailerInstanceName: userData.instanceName,
-        orderObatIpfsHash: idOrderObat.obatIpfshash
-      };
-    } else {
-      errAlert("Obat not found");
-      return;
-    }
   
     try {
       const randomNumber = Math.floor(100000 + Math.random() * 900000); 
       const idOrder =  `ORDER-${randomNumber}`; 
 
-      console.log(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.retailerInstanceName, orderObat.retailerAddr, ownerInstanceName);
+      console.log(idProduk, idOrder, namaProduk, orderQuantity, retailerInstanceName, retailerAddr, ownerInstanceName);
 
-      const tx = await contracts.orderManagement.createOrder(orderObat.obatId, idOrder, orderObat.namaProduk, orderObat.orderQuantity, orderObat.retailerInstanceName, orderObat.retailerAddr, ownerInstanceName);
-      tx.wait()
-      console.log(tx);
+      const createOrderCt = await contracts.orderManagement.createOrder(idProduk, idOrder, namaProduk, orderQuantity, retailerInstanceName, retailerAddr, ownerInstanceName);
+
+      console.log(createOrderCt);
 
     } catch (error) {
       errAlert(error, "Can't make an obat order.")
     }
 
   }
+
+  // const generateIpfs = async(dataObat, orderId, batchName) => {
+  //   MySwal.fire({
+  //     title:"Processing your request...",
+  //     text:"Your request is on its way. This won't take long. 🚀",
+  //     icon: 'info',
+  //     showCancelButton: false,
+  //     showConfirmButton: false,
+  //     allowOutsideClick: false,
+  //   })
+
+  //   try {
+  //     const detailOrderPbfCt = await contracts.orderManagement.getHistoryOrderObatPbf(batchName)
+  //     const [orderIdPbf, namaProdukPbf, obatIdProdukPbf, batchNamePbf, obatQuantityPbf, senderPbf, targetPbf, statusOrderPbf, timestampOrderPbf, timestampShippedPbf, timestampCompletePbf] = detailOrderPbfCt
+
+  //     const detailOrderPbf = {
+  //       orderId: orderIdPbf,
+  //       batchName: batchNamePbf,
+  //       orderQuantity: parseInt(obatQuantityPbf),
+  //       senderInstanceName: senderPbf,
+  //       statusOrder : obatStatusMap[statusStok],
+  //       targetInstanceName : targetPbf,
+  //       timestampOrder: timestampOrderPbf ? new Date(Number(timestampOrderPbf) * 1000).toLocaleDateString('id-ID', options) : 0, 
+  //       timestampShipped: timestampOrderPbf ? new Date(Number(timestampOrderPbf) * 1000).toLocaleDateString('id-ID', options) : 0,
+  //       timestampComplete: timestampCompletePbf ?  new Date(Number(timestampCompletePbf) * 1000).toLocaleDateString('id-ID', options) : 0
+  //     };
+
+  //     let newIpfsHashes = [];
+  //     const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
+  //     const randomTwoLetters = String.fromCharCode(
+  //       65 + Math.floor(Math.random() * 26),
+  //       65 + Math.floor(Math.random() * 26)
+  //     );
+      
+  //     for (let i = 0; i < dataOrder.orderQuantity; i++) {
+  //       const obat = {
+  //         batchName: batchName,
+  //         obatIdPackage: `OT-${i * 23}${randomFourDigit}${randomTwoLetters}`,
+  //         dataObat:  {
+  //           obatIdProduk: dataObat.obatId,
+  //           namaProduk: dataObat.namaObat,
+  //           merk: dataObat.merk,
+  //           klaim: dataObat.klaim,
+  //           kemasan: dataObat.kemasan,
+  //           komposisi: dataObat.komposisi,
+  //           factoryAddr: dataObat.factoryAddr,
+  //           factoryInstanceName: dataObat.factoryInstanceName,
+  //           factoryUserName: dataObat.factoryUserName,
+  //           tipeProduk: dataObat.tipeProduk,
+  //           nieNumber: dataObat.nieNumber,
+  //           nieRequestDate: dataObat.nieRequestDate,
+  //           nieApprovalDate: dataObat.nieApprovalDate,
+  //           bpomAddr: dataObat.bpomAddr,
+  //           bpomInstanceName: dataObat.bpomInstanceName,
+  //           bpomUserName: dataObat.bpomUserName
+  //         },
+  //         datOrderPbf: {
+  //           orderQuantity: ,
+  //           senderInstanceName: ,
+  //           statusOrder : ,
+  //           targetInstanceName : ,
+  //           timestampOrder: ,
+  //           timestampShipped: 
+  //         },
+  //         dataOrderRetailer: {
+  //           orderQuantity: dataOrder.orderQuantity,
+  //           senderInstanceName: dataOrder.senderInstanceName,
+  //           statusOrder : dataOrder.statusOrder,
+  //           targetInstanceName : dataOrder.targetInstanceName,
+  //           timestampOrder: dataOrder.timestampOrder,
+  //           timestampShipped: dataOrder.timestampShipped
+  //         }
+  //       };
+        
+  //       try {
+  //         console.log(obat);
+  //         const result = await client.add(JSON.stringify(obat), 
+  //           { progress: (bytes) => 
+  //             console.log(`Uploading ${i+1}/${dataOrder.orderQuantity}: ${bytes} bytes uploaded`) }
+  //         );
+  
+  //         newIpfsHashes.push(result.path); 
+  //       } catch (error) {
+  //         errAlert(error, "Can't upload Data Obat to IPFS."); 
+  //         break;
+  //       }
+  //     }
+  
+  //     console.log("Generated IPFS Hashes:", newIpfsHashes);
+  
+  //     if(newIpfsHashes.length !== 0){
+  //       MySwal.fire({
+  //         title: `Order Obat ${dataObat.namaObat}`,
+  //         html: (
+  //           <div className='form-swal'>
+  //             <div className="row row--obat">
+  //               <div className="col">
+    
+  //                 <ul>
+  //                   <li className="label label-1">
+  //                     <p>Nama Produk</p>
+  //                   </li>
+  //                   <li className="input input-1">
+  //                     <p>{dataObat.namaObat}</p> 
+  //                   </li>
+  //                 </ul>
+    
+  //                 <ul>
+  //                   <li className="label label-1">
+  //                     <p>Nama PBF</p> 
+  //                   </li>
+  //                   <li className="input input-1">
+  //                     <p>{dataOrder.targetInstanceName}</p> 
+  //                   </li>
+  //                 </ul>
+    
+  //                 <ul>
+  //                   <li className="label label-1">
+  //                     <p>Nama Retailer</p> 
+  //                   </li>
+  //                   <li className="input input-1">
+  //                     <p>{dataOrder.senderInstanceName}</p> 
+  //                   </li>
+  //                 </ul>
+    
+  //                 <ul>
+  //                   <li className="label label-1">
+  //                     <p>Total Order</p> 
+  //                   </li>
+  //                   <li className="input input-1">
+  //                     <p>{dataOrder.orderQuantity} Obat</p>
+  //                   </li>
+  //                 </ul>
+    
+  //                 <ul>
+  //                   <li className="input full-width-table">
+  //                     <DataIpfsHash ipfsHashes={newIpfsHashes} />
+  //                   </li>
+  //                 </ul>
+  //               </div>
+  //             </div>
+            
+  //           </div>
+  //         ),
+  //         width: '820',
+  //         showCancelButton: true,
+  //         confirmButtonText: 'Send Obat',
+  //         allowOutsideClick: false,
+    
+  //       }).then((result) => {
+  //         if(result.isConfirmed){
+  //           acceptOrder(batchName, orderId, dataObat.obatId, newIpfsHashes)
+  //         }
+  //       })
+  //     }
+
+  //   } catch (error) {
+  //     errAlert(error, "Can't find data history order PBF.")
+  //   }
+
+  // }
 
   return (
     <>

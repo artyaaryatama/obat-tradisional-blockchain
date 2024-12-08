@@ -27,6 +27,11 @@ function StockObatFactory() {
   const [newStok, setNewStok] = useState(null)
   
 
+  const stokStatusMap = {
+    0: "Stok Available",
+    1: "Stok Empty",
+  };
+
   const obatStatusMap = {
     0: "In Local Production",
     1: "Requested NIE",
@@ -80,8 +85,8 @@ function StockObatFactory() {
       if (contract && userData.instanceName) {
         try {
 
-          
           const listProducedObatCt = await contract.getListAllProducedObatByFactory(userData.instanceName);
+          
           const [obatIdArray, namaProdukArray, obatQuantityArray, batchNameArray] = listProducedObatCt;
 
           console.log(listProducedObatCt);
@@ -168,7 +173,7 @@ function StockObatFactory() {
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = tx;
 
-      const [obatQuantity, obatIpfsHash] = tx1;
+      const [obatQuantity, obatIpfsHash, statusStok] = tx1;
       console.log(tx1);
 
       const detailObat = {
@@ -242,7 +247,7 @@ function StockObatFactory() {
                           <p>Stok Tersedia</p>
                         </li>
                         <li className="input">
-                          <p>{obatQuantity.toString()} Obat</p>
+                          <p>{obatQuantity.toString()} Obat ({stokStatusMap[statusStok]})</p>
                         </li>
                       </ul>
                     </div>
@@ -308,7 +313,8 @@ function StockObatFactory() {
         ),
         width: '1220',
         showCancelButton: true,
-        confirmButtonText: 'Tambah Stok Obat',
+        // confirmButtonText: 'Tambah Stok Obat',
+        showConfirmButton: false,
       }).then((result) => {
 
         if(result.isConfirmed){
@@ -432,15 +438,7 @@ function StockObatFactory() {
         factoryAddr: data.factoryAddr,
         factoryInstanceName: data.factoryInstanceName,
         tipeProduk: data.tipeProduk,
-        nieNumber: data.nieNumber,
-        pbfAddr:"",
-        pbfInstanceName: "",
-        retailerAddr: "",
-        retailerInstanceName: "",
-        timestampOrderPbf: "",
-        timestampCompletePbf: "",
-        timestampOrderRetailer: "",
-        timestampCompleteRetailer: ""
+        nieNumber: data.nieNumber
       };
       
       try {
