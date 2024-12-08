@@ -524,6 +524,21 @@ contract ObatTradisional {
       return obatProductionDetailsByObatId[_obatId];
   }
 
+  function updateObatProductionDetails(string memory _batchName, string[] memory _obatIpfsHash) 
+    public {
+    obatProductionDetailsByBatchName[_batchName].statusStok = ObatTradisional.en_obatAvailability.sold;
+    obatProductionDetailsByBatchName[_batchName].obatIpfsHash = _obatIpfsHash;
+
+    for(uint i=0; i < allProducedObat.length; i++){
+      if(keccak256(abi.encodePacked(allProducedObat[i].batchName)) == keccak256(abi.encodePacked(_batchName))){
+        allProducedObat[i].obatIpfsHash = _obatIpfsHash;
+        allProducedObat[i].statusStok = ObatTradisional.en_obatAvailability.sold;
+
+        break;
+      }
+    }
+  }
+
 
 
 }
