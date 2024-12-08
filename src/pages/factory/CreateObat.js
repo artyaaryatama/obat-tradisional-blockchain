@@ -199,8 +199,6 @@ function CreateObat() {
     const id = `ot-${randomFourDigit}${randomTwoLetters}`;
     console.log(userdata);
 
-    console.log({id, namaProduk, tipeProduk, merk, klaim, kemasanSet, komposisi}, tp[tipeProduk], userdata.instanceName, userdata.name, userdata.address);
-
     try {
       const tx = await contract.createObat(
         id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.address, userdata.instanceName, userdata.name, tp[tipeProduk], 

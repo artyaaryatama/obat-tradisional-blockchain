@@ -190,12 +190,12 @@ function StockObatPbf() {
 
     try {
       const listObatCt = await contracts.obatTradisional.getListObatById(id);
-      const detailObatPbf = await contracts.orderManagement.getDetailPbfObat(id, userData.instanceName)
-      console.log(detailObatPbf);
+      const detailObatPbfCt = await contracts.orderManagement.getDetailPbfObat(id, userData.instanceName)
+      console.log(detailObatPbfCt);
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = listObatCt;
 
-      const [orderId, batchName, obatIdProduk, namaProduk, statusStok, obatQuantity, obatIpfsHash, ownerInstanceName] = detailObatPbf;
+      const [orderId, batchName, obatIdProduk, namaProduk, statusStok, obatQuantity, obatIpfsHash, ownerInstanceName] = detailObatPbfCt;
 
       const detailObat = {
         obatId: obatDetails.obatId,

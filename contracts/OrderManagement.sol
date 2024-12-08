@@ -55,11 +55,6 @@ contract OrderManagement {
     string ownerInstanceName;
   }
 
-  struct st_orderIdHistoryPBFRetailer {
-    string orderIdPbf;
-    string orderIdRetailer;
-  }
-
   st_orderObat[] public allOrderedObat;
   st_obatPbf[] public allObatPbf;
   st_obatRetailer[] public allObatRetailer;
@@ -70,7 +65,7 @@ contract OrderManagement {
   mapping (string => st_obatRetailer) public obatRetailerByIdProduk;
   mapping (string => address[]) public orderSenderInstanceAddress;
   mapping (string => address[]) public orderRetailerInstanceAddress;
-  mapping (string => st_orderIdHistoryPBFRetailer) public orderHistoryPbfRetailerByBatchName; // buat menampilkan order id di ipfs
+  mapping (string => string) public orderHistoryPbfByBatchName; // buat menampilkan order id di ipfs
 
   event evt_obatOrdered(string namaProduk, uint8 quantity, string orderId, string senderInstanceName, string targetInstanceName, uint latestTimestamp );
   event evt_updateOrder(string namaProduk, string batchName, string targetInstance, string senderInstance, uint8 quantity, uint latestTimestamp);
@@ -152,8 +147,7 @@ contract OrderManagement {
     obatProduced.obatIpfsHash = _obatIpfsHash;
 
     // untuk detail history order buat ipfs
-    orderHistoryPbfRetailerByBatchName[_batchName].orderIdPbf = _orderId;
-    orderHistoryPbfRetailerByBatchName[_batchName].orderIdRetailer = "";
+    orderHistoryPbfByBatchName[_batchName] = _orderId;
 
     for(uint i=0; i < allOrderedObat.length; i++){
       if(keccak256(abi.encodePacked(allOrderedObat[i].orderId)) == keccak256(abi.encodePacked(_orderId))){
@@ -204,9 +198,6 @@ contract OrderManagement {
 
     obatProduced.obatIpfsHash = _obatIpfsHash;
 
-    // untuk detail history order buat ipfs
-    orderHistoryPbfRetailerByBatchName[_batchName].orderIdRetailer = _orderId;
-
     for(uint i=0; i < allOrderedObat.length; i++){
       if(keccak256(abi.encodePacked(allOrderedObat[i].orderId)) == keccak256(abi.encodePacked(_orderId))){
         allOrderedObat[i].orderObatIpfsHash = obatPbf.obatIpfsHash;
@@ -235,7 +226,7 @@ contract OrderManagement {
       }
     }
 
-    emit evt_updateOrder(obatOrdered.namaProduk, obatPbf.batchName, obatOrdered.targetInstanceName, obatOrdered.senderInstanceName, obatOrdered.orderQuantity, block.timestamp);
+    emit evt_updateOrder(obatOrdered.namaProduk, obatOrdered.batchName, obatOrdered.targetInstanceName, obatOrdered.senderInstanceName, obatOrdered.orderQuantity, block.timestamp);
 
   }
 
@@ -577,33 +568,25 @@ contract OrderManagement {
     public
     view 
     returns (
-      st_orderObat memory orderObatPbf
+      uint orderQuantity,
+      string memory senderInstanceName,
+      string memory targetInstanceName,
+      uint timestampOrder,
+      uint timestampShipped,
+      uint timestampComplete
     ) {
-      require(abi.encodePacked(orderHistoryPbfRetailerByBatchName[_batchName].orderIdPbf).length > 0, "No data found with this ID.");
+      require(abi.encodePacked(orderHistoryPbfByBatchName[_batchName]).length > 0, "No data found with this ID.");
 
-      string memory orderIdPbf = orderHistoryPbfRetailerByBatchName[_batchName].orderIdPbf;
+      string memory orderIdPbf = orderHistoryPbfByBatchName[_batchName];
 
-      orderObatPbf = orderObatById[orderIdPbf];
+      orderQuantity = orderObatById[orderIdPbf].orderQuantity;
+      senderInstanceName = orderObatById[orderIdPbf].senderInstanceName;
+      targetInstanceName = orderObatById[orderIdPbf].targetInstanceName;
+      timestampOrder = orderObatById[orderIdPbf].timestampOrder;
+      timestampShipped = orderObatById[orderIdPbf].timestampShipped;
+      timestampComplete = orderObatById[orderIdPbf].timestampComplete;
 
   }
-
-  function getHistoryOrderObatRetailer(string memory _batchName)
-    public
-    view 
-    returns (
-      st_orderObat memory orderObatPbf,
-      st_orderObat memory orderObatRetailer
-    ) {
-      require(abi.encodePacked(orderHistoryPbfRetailerByBatchName[_batchName].orderIdPbf).length > 0, "No data found with this ID.");
-
-      string memory orderIdPbf = orderHistoryPbfRetailerByBatchName[_batchName].orderIdPbf;
-      string memory orderIdRetailer = orderHistoryPbfRetailerByBatchName[_batchName].orderIdRetailer;
-
-      orderObatPbf = orderObatById[orderIdPbf];
-      orderObatRetailer = orderObatById[orderIdRetailer];
-
-    }
-    
   
 
   // for pbf per instance only

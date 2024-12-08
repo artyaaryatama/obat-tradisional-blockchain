@@ -212,7 +212,6 @@ function ManageOrderFactoryPbf() {
   const getDetailObat = async (id, orderId) => {
     console.log(id, orderId);
 
-
     try {
       let ObatQuantityReady, obatIpfsHashReady, selectedBatchName;
       const listObatCt = await contracts.obatTradisional.getListObatById(id);
@@ -227,7 +226,9 @@ function ManageOrderFactoryPbf() {
         timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
         timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
       }
- 
+
+      console.log(detailObatCt);
+  
       const detailObat = {
         obatId: obatDetails.obatId,
         merk: obatDetails.merk,
@@ -396,7 +397,8 @@ function ManageOrderFactoryPbf() {
           }
         }).then((result) => {
           if (result.isConfirmed) {
-            generateIpfs(detailObat, detailOrder, orderId, selectedBatchName)          }
+            generateIpfs(detailObat, detailOrder, orderId, selectedBatchName)
+          }
         })
       } else {
         MySwal.fire({
@@ -521,13 +523,13 @@ function ManageOrderFactoryPbf() {
         })
 
       }
-      
+
     } catch (e) {
       errAlert(e, "Can't retrieve data")
     }
   }
 
-  const acceptOrder = async (batchName, orderId, obatId, ipfsHashes) => {
+  const acceptOrder = async (batchName, orderId, ipfsHashes) => {
     
     MySwal.fire({
       title:"Processing your request...",
@@ -682,7 +684,7 @@ function ManageOrderFactoryPbf() {
   
       }).then((result) => {
         if(result.isConfirmed){
-          acceptOrder(batchName, orderId, dataObat.obatId, newIpfsHashes)
+          acceptOrder(batchName, orderId, newIpfsHashes)
         }
       })
     }

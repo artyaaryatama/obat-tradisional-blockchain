@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
-import { useNavigate } from 'react-router-dom';
+import { data, useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
 
 import DataIpfsHash from '../../components/TableHash';
@@ -221,7 +221,7 @@ function ManageOrderPbfRetailer() {
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = listObatCt;
 
-      const [orderQuantity, senderInstanceName, statusOrder, targetInstanceName, orderObatIpfsHash, timestampOrder, timestampShipped, timestampComplete] = detailObatCt;
+      const [orderIdProduk, namaProduk, obatIdProduk, batchName, orderQuantity, senderInstanceName, targetInstanceName, statusOrder, timestampOrder, timestampShipped, timestampComplete, orderObatIpfsHash] = detailObatCt;
 
       const timestamps = {
         timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
@@ -248,359 +248,280 @@ function ManageOrderPbfRetailer() {
         bpomInstanceName:  bpomInstanceName ?  bpomInstanceName : "-"
       };
 
-      console.log(orderObatIpfsHash);
+      console.log(detailObatCt);
 
       const detailOrder = {
+        orderId: orderIdProduk,
+        batchName: batchName,
         orderQuantity: parseInt(orderQuantity),
         senderInstanceName: senderInstanceName,
         statusOrder : obatStatusMap[statusOrder],
         targetInstanceName : targetInstanceName,
-        timestampOrder: timestampOrder.toString(),
-        timestampShipped: timestampShipped.toString(),
-        timestampComplete: timestampComplete.toString()
+        orderObatIpfsHash : orderObatIpfsHash,
+        timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
+        timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
+        timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
       }
 
-      // if(statusOrder === 0n){
-      //   MySwal.fire({
-      //     title: `Detail Order Obat ${detailObat.namaObat}`,
-      //     html: (
-      //       <div className='form-swal order'>
-      //         <div className="row1">
-      //           <div className="produce-obat">
-      //             <div className="detailObat">
-      //               <div className="row row--obat">
-      //                 <div className="col">
-      //                   <ul>
-      //                     <li className="label">
-      //                       <p>Nama Obat</p>
-      //                     </li>
-      //                     <li className="input">
-      //                       <p>{detailObat.namaObat}</p> 
-      //                     </li>
-      //                   </ul>
+      if(statusOrder === 0n){
+        MySwal.fire({
+          title: `Detail Order Obat ${detailObat.namaObat}`,
+          html: (
+            <div className='form-swal order'>
+              <div className="row1">
+                <div className="produce-obat">
+                  <div className="detailObat">
+                    <div className="row row--obat">
+                      <div className="col">
+                        <ul>
+                          <li className="label">
+                            <p>Nama Obat</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailObat.namaObat}</p> 
+                          </li>
+                        </ul>
   
-      //                   <ul>
-      //                     <li className="label">
-      //                       <p>Nomor NIE</p>
-      //                     </li>
-      //                     <li className="input">
-      //                       <p>{detailObat.nieNumber}</p> 
-      //                     </li>
-      //                   </ul>
+                        <ul>
+                          <li className="label">
+                            <p>Nomor NIE</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailObat.nieNumber}</p> 
+                          </li>
+                        </ul>
                       
-      //                   <ul>
-      //                     <li className="label">
-      //                       <p>Di Order oleh</p>
-      //                     </li>
-      //                     <li className="input">
-      //                       <p>{senderInstanceName}</p>
-      //                     </li>
-      //                   </ul>
+                        <ul>
+                          <li className="label">
+                            <p>Di Order oleh</p>
+                          </li>
+                          <li className="input">
+                            <p>{senderInstanceName}</p>
+                          </li>
+                        </ul>
   
-      //                   <ul>
-      //                     <li className="label">
-      //                       <p>Total Order</p>
-      //                     </li>
-      //                     <li className="input">
-      //                       <p>{orderQuantity.toString()} Obat</p>
+                        <ul>
+                          <li className="label">
+                            <p>Total Order</p>
+                          </li>
+                          <li className="input">
+                            <p>{orderQuantity.toString()} Obat</p>
                           
-      //                     </li>
-      //                   </ul>
+                          </li>
+                        </ul>
                         
-      //                 </div>
-      //               </div>
+                      </div>
+                    </div>
   
-      //             </div>
-      //             <DataIpfsHash ipfsHashes={orderObatIpfsHash} />
-      //           </div>
-      //           <div className="row row--obat">
-      //             <div className="col column">
+                  </div>
+                  <DataIpfsHash ipfsHashes={orderObatIpfsHash} />
+                </div>
+                <div className="row row--obat">
+                  <div className="col column">
   
-      //                 <ul>
-      //                   <li className="label">
-      //                     <p>Tipe Produk</p>
-      //                   </li>
-      //                   <li className="input">
-      //                     <p>{detailObat.tipeProduk}</p> 
-      //                   </li>
-      //                 </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Tipe Produk</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.tipeProduk}</p> 
+                        </li>
+                      </ul>
   
-      //                 <ul>
-      //                   <li className="label">
-      //                     <p>Kemasan Obat</p>
-      //                   </li>
-      //                   <li className="input">
-      //                     <p>{detailObat.kemasan}</p> 
-      //                   </li>
-      //                 </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Kemasan Obat</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.kemasan}</p> 
+                        </li>
+                      </ul>
   
-      //                 <ul>
-      //                   <li className="label">
-      //                     <p>Klaim Obat</p>
-      //                   </li>
-      //                   <li className="input">
-      //                     <ul className='numbered'>
-      //                       {detailObat.klaim.map((item, index) => (
-      //                         <li key={index}><p>{item}</p></li>
-      //                       ))}
-      //                     </ul>
-      //                   </li>
-      //                 </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Klaim Obat</p>
+                        </li>
+                        <li className="input">
+                          <ul className='numbered'>
+                            {detailObat.klaim.map((item, index) => (
+                              <li key={index}><p>{item}</p></li>
+                            ))}
+                          </ul>
+                        </li>
+                      </ul>
   
-      //                 <ul>
-      //                   <li className="label">
-      //                     <p>Komposisi Obat</p>
-      //                   </li>
-      //                   <li className="input">
-      //                     <ul className='numbered'>
-      //                       {detailObat.komposisi.map((item, index) => (
-      //                         <li key={index}><p>{item}</p></li>
-      //                       ))}
-      //                     </ul>
-      //                   </li>
-      //                 </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Komposisi Obat</p>
+                        </li>
+                        <li className="input">
+                          <ul className='numbered'>
+                            {detailObat.komposisi.map((item, index) => (
+                              <li key={index}><p>{item}</p></li>
+                            ))}
+                          </ul>
+                        </li>
+                      </ul>
   
-      //             </div>
-      //           </div>
-      //         </div>
-      //         <div className="container-stepper">
-      //           <div id="stepperOrder"></div>
-      //         </div>
-      //       </div>
-      //     ),
-      //     width: '1220',
-      //     showCancelButton: true,
-      //     confirmButtonText: 'Accept Order',
-      //     didOpen: async () => {
+                  </div>
+                </div>
+              </div>
+              <div className="container-stepper">
+                <div id="stepperOrder"></div>
+              </div>
+            </div>
+          ),
+          width: '1220',
+          showCancelButton: true,
+          confirmButtonText: 'Accept Order',
+          didOpen: async () => {
 
-      //       const stepperOrder = document.getElementById('stepperOrder');
-      //       const root = ReactDOM.createRoot(stepperOrder);
-      //       root.render( 
-      //         <OrderStatusStepper orderStatus={statusOrder} timestamps={timestamps} />
-      //       );
+            const stepperOrder = document.getElementById('stepperOrder');
+            const root = ReactDOM.createRoot(stepperOrder);
+            root.render( 
+              <OrderStatusStepper orderStatus={statusOrder} timestamps={timestamps} />
+            );
 
-      //       dataObatSelected = dataOrder.filter(item => item.namaObat === detailObat.namaObat)
+            // dataObatSelected = dataOrder.filter(item => item.namaObat === detailObat.namaObat)
   
-      //       console.log(dataObatSelected[0].batchName);
-      //       console.log(dataObatSelected);
-      //       ObatQuantityReady = dataObatSelected[0].obatQuantity;
-      //       obatIpfsHashReady = [];
+            // console.log(dataObatSelected[0].batchName);
+            // console.log(dataObatSelected);
+            // ObatQuantityReady = dataObatSelected[0].obatQuantity;
+            // obatIpfsHashReady = [];
             
-      //     }
-      //   }).then((result) => {
+          }
+        }).then((result) => {
   
-      //     console.log(dataObatSelected[0]);
-      //     if(result.isConfirmed){
+          if(result.isConfirmed){
            
-      //       MySwal.fire({
-      //         title: `Order Obat ${detailObat.namaObat}`,
-      //         html: (
-      //           <div className='form-swal'>
-      //             <div className="row row--obat">
-      //               <div className="col">
-        
-      //                 <ul>
-      //                   <li className="label label-1">
-      //                     <p>Nama Produk</p>
-      //                   </li>
-      //                   <li className="input input-1">
-      //                     <p>{detailObat.namaObat}</p> 
-      //                   </li>
-      //                 </ul>
-        
-      //                 <ul>
-      //                   <li className="label label-1">
-      //                     <p>Nama PBF</p> 
-      //                   </li>
-      //                   <li className="input input-1">
-      //                     <p>{targetInstanceName}</p> 
-      //                   </li>
-      //                 </ul>
-        
-      //                 <ul>
-      //                   <li className="label label-1">
-      //                     <p>Nama Retailer</p> 
-      //                   </li>
-      //                   <li className="input input-1">
-      //                     <p>{senderInstanceName}</p> 
-      //                   </li>
-      //                 </ul>
-        
-      //                 <ul>
-      //                   <li className="label label-1">
-      //                     <p>Total Stok Order</p> 
-      //                   </li>
-      //                   <li className="input input-1">
-      //                     <p>{ObatQuantityReady} Obat</p>
-      //                   </li>
-      //                 </ul>
-        
-      //                 <ul>
-      //                   <li className="label label-1">
-      //                     <button id='addQuantity'  className='addQuantity' >
-      //                       <i className="fa-solid fa-arrows-rotate"></i>
-      //                       Generate Data Obat
-      //                       </button>
-      //                   </li>
-      //                   <li className="input input-1">
-      //                     <DataIpfsHash ipfsHashes={obatIpfsHashReady} />
-      //                   </li>
-      //                 </ul>
-      //               </div>
-      //             </div>
-                
-      //           </div>
-      //         ),
-      //         width: '820',
-      //         showCancelButton: true,
-      //         showConfirmButton: false,
-      //         allowOutsideClick: false,
-      //         didOpen: () => {
-      //           const generateIpfsHash = document.getElementById('addQuantity')
-
-      //           const handleGenerate = async () => {
-      //             const quantity = parseInt(ObatQuantityReady);
-      //             if (quantity === ObatQuantityReady) {
-      //               MySwal.showValidationMessage('Jumlah total order harus sesuai dengan stok obat.');
-      //               return;
-      //             }
-
-      //             generateIpfs(detailObat, detailOrder, orderId, dataObatSelected[0].batchName)
-      //           };
-              
-      //           generateIpfsHash.addEventListener('click', handleGenerate);
-              
-      //           return () => {
-      //             generateIpfsHash.removeEventListener('click', handleGenerate);
-      //           };
-      //         }
-
-      //       })
-      //     }
-      //   })
-      // } else {
-      //   MySwal.fire({
-      //     title: `Detail Order Obat ${detailObat.namaObat}`,
-      //     html: (
-      //       <div className='form-swal order'>
-      //         <div className="row1">
-      //           <div className="produce-obat">
-      //             <div className="detailObat">
-      //               <div className="row row--obat">
-      //                 <div className="col">
-      //                   <ul>
-      //                     <li className="label">
-      //                       <p>Nama Obat</p>
-      //                     </li>
-      //                     <li className="input">
-      //                       <p>{detailObat.namaObat}</p> 
-      //                     </li>
-      //                   </ul>
+            if (result.isConfirmed) {
+              generateIpfs(detailObat, detailOrder, orderId, batchName)
+            }
+          }
+        })
+      } else {
+        MySwal.fire({
+          title: `Detail Order Obat ${detailObat.namaObat}`,
+          html: (
+            <div className='form-swal order'>
+              <div className="row1">
+                <div className="produce-obat">
+                  <div className="detailObat">
+                    <div className="row row--obat">
+                      <div className="col">
+                        <ul>
+                          <li className="label">
+                            <p>Nama Obat</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailObat.namaObat}</p> 
+                          </li>
+                        </ul>
   
-      //                   <ul>
-      //                     <li className="label">
-      //                       <p>Nomor NIE</p>
-      //                     </li>
-      //                     <li className="input">
-      //                       <p>{detailObat.nieNumber}</p> 
-      //                     </li>
-      //                   </ul>
+                        <ul>
+                          <li className="label">
+                            <p>Nomor NIE</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailObat.nieNumber}</p> 
+                          </li>
+                        </ul>
                       
-      //                   <ul>
-      //                     <li className="label">
-      //                       <p>Di Order oleh</p>
-      //                     </li>
-      //                     <li className="input">
-      //                       <p>{senderInstanceName}</p>
-      //                     </li>
-      //                   </ul>
+                        <ul>
+                          <li className="label">
+                            <p>Di Order oleh</p>
+                          </li>
+                          <li className="input">
+                            <p>{senderInstanceName}</p>
+                          </li>
+                        </ul>
   
-      //                   <ul>
-      //                     <li className="label">
-      //                       <p>Total Order</p>
-      //                     </li>
-      //                     <li className="input">
-      //                       <p>{orderQuantity.toString()} Obat</p>
+                        <ul>
+                          <li className="label">
+                            <p>Total Order</p>
+                          </li>
+                          <li className="input">
+                            <p>{orderQuantity.toString()} Obat</p>
                           
-      //                     </li>
-      //                   </ul>
+                          </li>
+                        </ul>
                         
-      //                 </div>
-      //               </div>
+                      </div>
+                    </div>
   
-      //             </div>
-      //             <DataIpfsHash ipfsHashes={orderObatIpfsHash} />
-      //           </div>
-      //           <div className="row row--obat">
-      //             <div className="col column">
+                  </div>
+                  <DataIpfsHash ipfsHashes={orderObatIpfsHash} />
+                </div>
+                <div className="row row--obat">
+                  <div className="col column">
   
-      //                 <ul>
-      //                   <li className="label">
-      //                     <p>Tipe Produk</p>
-      //                   </li>
-      //                   <li className="input">
-      //                     <p>{detailObat.tipeProduk}</p> 
-      //                   </li>
-      //                 </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Tipe Produk</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.tipeProduk}</p> 
+                        </li>
+                      </ul>
   
-      //                 <ul>
-      //                   <li className="label">
-      //                     <p>Kemasan Obat</p>
-      //                   </li>
-      //                   <li className="input">
-      //                     <p>{detailObat.kemasan}</p> 
-      //                   </li>
-      //                 </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Kemasan Obat</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.kemasan}</p> 
+                        </li>
+                      </ul>
   
-      //                 <ul>
-      //                   <li className="label">
-      //                     <p>Klaim Obat</p>
-      //                   </li>
-      //                   <li className="input">
-      //                     <ul className='numbered'>
-      //                       {detailObat.klaim.map((item, index) => (
-      //                         <li key={index}><p>{item}</p></li>
-      //                       ))}
-      //                     </ul>
-      //                   </li>
-      //                 </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Klaim Obat</p>
+                        </li>
+                        <li className="input">
+                          <ul className='numbered'>
+                            {detailObat.klaim.map((item, index) => (
+                              <li key={index}><p>{item}</p></li>
+                            ))}
+                          </ul>
+                        </li>
+                      </ul>
   
-      //                 <ul>
-      //                   <li className="label">
-      //                     <p>Komposisi Obat</p>
-      //                   </li>
-      //                   <li className="input">
-      //                     <ul className='numbered'>
-      //                       {detailObat.komposisi.map((item, index) => (
-      //                         <li key={index}><p>{item}</p></li>
-      //                       ))}
-      //                     </ul>
-      //                   </li>
-      //                 </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Komposisi Obat</p>
+                        </li>
+                        <li className="input">
+                          <ul className='numbered'>
+                            {detailObat.komposisi.map((item, index) => (
+                              <li key={index}><p>{item}</p></li>
+                            ))}
+                          </ul>
+                        </li>
+                      </ul>
   
-      //             </div>
-      //           </div>
+                  </div>
+                </div>
   
-      //         </div>
-      //         <div className="container-stepper">
-      //           <div id="stepperOrder"></div>
-      //         </div>
-      //       </div>
-      //     ),
-      //     width: '1220',
-      //     showCancelButton: false,
-      //     showCloseButton: true,
-      //     showConfirmButton: false,
-      //     didOpen: () => {
-      //       const stepperOrder = document.getElementById('stepperOrder');
-      //       const root = ReactDOM.createRoot(stepperOrder);
-      //       root.render( 
-      //         <OrderStatusStepper orderStatus={statusOrder} timestamps={timestamps} />
-      //       );
-      //     }
-      //   })
+              </div>
+              <div className="container-stepper">
+                <div id="stepperOrder"></div>
+              </div>
+            </div>
+          ),
+          width: '1220',
+          showCancelButton: false,
+          showCloseButton: true,
+          showConfirmButton: false,
+          didOpen: () => {
+            const stepperOrder = document.getElementById('stepperOrder');
+            const root = ReactDOM.createRoot(stepperOrder);
+            root.render( 
+              <OrderStatusStepper orderStatus={statusOrder} timestamps={timestamps} />
+            );
+          }
+        })
 
-      // }
+      }
       
     } catch (e) {
       errAlert(e, "Can't retrieve data")
@@ -653,141 +574,149 @@ function ManageOrderPbfRetailer() {
     console.log(batchName);
 
     try {
-      const detailOrderPbf = await contracts.orderManagement.getHistoryOrderObatRetailer(batchName)
+      const detailOrderPbf = await contracts.orderManagement.getHistoryOrderObatPbf(batchName)
 
       console.log(detailOrderPbf);
+      const [orderQuantity, senderInstanceName, targetInstanceName, timestampOrder, timestampShipped, timestampComplete] = detailOrderPbf
+
+      const timestampOrderPbf= timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0;
+      const timestampShippedPbf= timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0;
+      const timestampCompletePbf= timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0;
+
+      const orderQuantityPbf = parseInt(orderQuantity)
+
+      for (let i = 0; i < dataOrder.orderQuantity; i++) {
+        const obat = {
+          batchName: batchName,
+          obatIdPackage: `OT-${i * 23}${randomFourDigit}${randomTwoLetters}`,
+          dataObat:  {
+            obatIdProduk: dataObat.obatId,
+            namaProduk: dataObat.namaObat,
+            merk: dataObat.merk,
+            klaim: dataObat.klaim,
+            kemasan: dataObat.kemasan,
+            komposisi: dataObat.komposisi,
+            factoryAddr: dataObat.factoryAddr,
+            factoryInstanceName: dataObat.factoryInstanceName,
+            factoryUserName: dataObat.factoryUserName,
+            tipeProduk: dataObat.tipeProduk,
+            nieNumber: dataObat.nieNumber,
+            nieRequestDate: dataObat.nieRequestDate,
+            nieApprovalDate: dataObat.nieApprovalDate,
+            bpomAddr: dataObat.bpomAddr,
+            bpomInstanceName: dataObat.bpomInstanceName,
+            bpomUserName: dataObat.bpomUserName
+          },
+          datOrderPbf: {
+            orderQuantity: orderQuantityPbf,
+            senderInstanceName: senderInstanceName,
+            targetInstanceName : targetInstanceName,
+            timestampOrder: timestampOrderPbf,
+            timestampShipped: timestampShippedPbf,
+            timestampComplete: timestampCompletePbf 
+          },
+          dataOrderRetailer: {
+            orderQuantity: dataOrder.orderQuantity,
+            senderInstanceName: dataOrder.senderInstanceName,
+            statusOrder : dataOrder.statusOrder,
+            targetInstanceName : dataOrder.targetInstanceName,
+            timestampOrder: dataOrder.timestampOrder,
+            timestampShipped: dataOrder.timestampShipped
+          }
+        };
+        
+        try {
+          console.log(obat);
+          const result = await client.add(JSON.stringify(obat), 
+            { progress: (bytes) => 
+              console.log(`Uploading ${i+1}/${dataOrder.orderQuantity}: ${bytes} bytes uploaded`) }
+          );
+  
+          newIpfsHashes.push(result.path); 
+        } catch (error) {
+          errAlert(error, "Can't upload Data Obat to IPFS."); 
+          break;
+        }
+      }
+  
+      console.log("Generated IPFS Hashes:", newIpfsHashes);
+  
+      if(newIpfsHashes.length !== 0){
+        MySwal.fire({
+          title: `Order Obat ${dataObat.namaObat}`,
+          html: (
+            <div className='form-swal'>
+              <div className="row row--obat">
+                <div className="col">
+    
+                  <ul>
+                    <li className="label label-1">
+                      <p>Nama Produk</p>
+                    </li>
+                    <li className="input input-1">
+                      <p>{dataObat.namaObat}</p> 
+                    </li>
+                  </ul>
+    
+                  <ul>
+                    <li className="label label-1">
+                      <p>Nama PBF</p> 
+                    </li>
+                    <li className="input input-1">
+                      <p>{dataOrder.targetInstanceName}</p> 
+                    </li>
+                  </ul>
+    
+                  <ul>
+                    <li className="label label-1">
+                      <p>Nama Retailer</p> 
+                    </li>
+                    <li className="input input-1">
+                      <p>{dataOrder.senderInstanceName}</p> 
+                    </li>
+                  </ul>
+    
+                  <ul>
+                    <li className="label label-1">
+                      <p>Total Order</p> 
+                    </li>
+                    <li className="input input-1">
+                      <p>{dataOrder.orderQuantity} Obat</p>
+                    </li>
+                  </ul>
+    
+                  <ul>
+                    <li className="input full-width-table">
+                      <DataIpfsHash ipfsHashes={newIpfsHashes} />
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            
+            </div>
+          ),
+          width: '820',
+          showCancelButton: true,
+          confirmButtonText: 'Send Obat',
+          allowOutsideClick: false,
+    
+        }).then((result) => {
+          if(result.isConfirmed){
+            acceptOrder(batchName, orderId, dataObat.obatId, newIpfsHashes)
+          }
+        })
+      }
     } catch (error) {
       errAlert(error, "Can't find data order.")
     }
 
-    // for (let i = 0; i < dataOrder.orderQuantity; i++) {
-    //   const obat = {
-    //     batchName: batchName,
-    //     obatIdPackage: `OT-${i * 23}${randomFourDigit}${randomTwoLetters}`,
-    //     dataObat:  {
-    //       obatIdProduk: dataObat.obatId,
-    //       namaProduk: dataObat.namaObat,
-    //       merk: dataObat.merk,
-    //       klaim: dataObat.klaim,
-    //       kemasan: dataObat.kemasan,
-    //       komposisi: dataObat.komposisi,
-    //       factoryAddr: dataObat.factoryAddr,
-    //       factoryInstanceName: dataObat.factoryInstanceName,
-    //       factoryUserName: dataObat.factoryUserName,
-    //       tipeProduk: dataObat.tipeProduk,
-    //       nieNumber: dataObat.nieNumber,
-    //       nieRequestDate: dataObat.nieRequestDate,
-    //       nieApprovalDate: dataObat.nieApprovalDate,
-    //       bpomAddr: dataObat.bpomAddr,
-    //       bpomInstanceName: dataObat.bpomInstanceName,
-    //       bpomUserName: dataObat.bpomUserName
-    //     },
-    //     datOrderPbf: {
-    //       orderQuantity: ,
-    //       senderInstanceName: ,
-    //       statusOrder : ,
-    //       targetInstanceName : ,
-    //       timestampOrder: ,
-    //       timestampShipped: 
-    //     },
-    //     dataOrderRetailer: {
-    //       orderQuantity: dataOrder.orderQuantity,
-    //       senderInstanceName: dataOrder.senderInstanceName,
-    //       statusOrder : dataOrder.statusOrder,
-    //       targetInstanceName : dataOrder.targetInstanceName,
-    //       timestampOrder: dataOrder.timestampOrder,
-    //       timestampShipped: dataOrder.timestampShipped
-    //     }
-    //   };
-      
-    //   try {
-    //     console.log(obat);
-    //     const result = await client.add(JSON.stringify(obat), 
-    //       { progress: (bytes) => 
-    //         console.log(`Uploading ${i+1}/${dataOrder.orderQuantity}: ${bytes} bytes uploaded`) }
-    //     );
-
-    //     newIpfsHashes.push(result.path); 
-    //   } catch (error) {
-    //     errAlert(error, "Can't upload Data Obat to IPFS."); 
-    //     break;
-    //   }
-    // }
-
-    // console.log("Generated IPFS Hashes:", newIpfsHashes);
-
-    // if(newIpfsHashes.length !== 0){
-    //   MySwal.fire({
-    //     title: `Order Obat ${dataObat.namaObat}`,
-    //     html: (
-    //       <div className='form-swal'>
-    //         <div className="row row--obat">
-    //           <div className="col">
-  
-    //             <ul>
-    //               <li className="label label-1">
-    //                 <p>Nama Produk</p>
-    //               </li>
-    //               <li className="input input-1">
-    //                 <p>{dataObat.namaObat}</p> 
-    //               </li>
-    //             </ul>
-  
-    //             <ul>
-    //               <li className="label label-1">
-    //                 <p>Nama PBF</p> 
-    //               </li>
-    //               <li className="input input-1">
-    //                 <p>{dataOrder.targetInstanceName}</p> 
-    //               </li>
-    //             </ul>
-  
-    //             <ul>
-    //               <li className="label label-1">
-    //                 <p>Nama Retailer</p> 
-    //               </li>
-    //               <li className="input input-1">
-    //                 <p>{dataOrder.senderInstanceName}</p> 
-    //               </li>
-    //             </ul>
-  
-    //             <ul>
-    //               <li className="label label-1">
-    //                 <p>Total Order</p> 
-    //               </li>
-    //               <li className="input input-1">
-    //                 <p>{dataOrder.orderQuantity} Obat</p>
-    //               </li>
-    //             </ul>
-  
-    //             <ul>
-    //               <li className="input full-width-table">
-    //                 <DataIpfsHash ipfsHashes={newIpfsHashes} />
-    //               </li>
-    //             </ul>
-    //           </div>
-    //         </div>
-          
-    //       </div>
-    //     ),
-    //     width: '820',
-    //     showCancelButton: true,
-    //     confirmButtonText: 'Send Obat',
-    //     allowOutsideClick: false,
-  
-    //   }).then((result) => {
-    //     if(result.isConfirmed){
-    //       acceptOrder(batchName, orderId, dataObat.obatId, newIpfsHashes)
-    //     }
-    //   })
-    // }
   }
 
   return (
     <>
       <div id="ObatProduce" className='Layout-Menu layout-page'>
         <div className="title-menu">
-          <h1>Data Order Obat Tradisional Pbf</h1>
+          <h1>Data Order Obat Tradisional PBF</h1>
           <p>Di kelola oleh {userData.instanceName}</p>
         </div>
         <div className="tab-menu">

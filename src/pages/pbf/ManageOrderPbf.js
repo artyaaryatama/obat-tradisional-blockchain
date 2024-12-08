@@ -601,7 +601,6 @@ function ManageOrderPbf() {
         dataOrderPbf: {
           orderQuantity: dataOrder.orderQuantity,
           senderInstanceName: dataOrder.senderInstanceName,
-          statusOrder : dataOrder.statusOrder,
           targetInstanceName : dataOrder.targetInstanceName,
           timestampOrder: dataOrder.timestampOrder,
           timestampShipped: dataOrder.timestampShipped,
