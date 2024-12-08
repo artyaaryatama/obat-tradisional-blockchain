@@ -130,7 +130,7 @@ contract OrderManagement {
     string memory _orderId,
     string[] memory _obatIpfsHash
   ) public {
-    require(abi.encodePacked(obatTradisional.getObatProductionDetailsByBatchName(_batchName).obatId).length > 0, "No data found with this ID.");
+    require(abi.encodePacked(orderObatById[_orderId].obatIdProduk).length > 0, "No data found with this ID.");
 
     st_orderObat storage obatOrdered = orderObatById[_orderId];
 

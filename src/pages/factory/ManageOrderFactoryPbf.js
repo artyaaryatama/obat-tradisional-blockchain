@@ -12,7 +12,6 @@ import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
-import { Result } from 'ethers';
 
 const MySwal = withReactContent(Swal);
 

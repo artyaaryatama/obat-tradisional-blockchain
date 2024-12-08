@@ -31,7 +31,7 @@ function Navbar() {
                     <li className={currentPath === '/cpotb' || currentPath === '/request-cpotb' ? 'active' : ''}>
                       <Link to="/cpotb">CPOTB</Link>
                     </li>
-                    <li className={currentPath === '/obat-available-factory' || currentPath === '/create-obat' || currentPath === '/obat' | currentPath === '/manage-orders-factory' ? 'active' : ''}>
+                    <li className={currentPath === '/obat-available-factory' || currentPath === '/create-obat' || currentPath === '/obat' || currentPath === '/manage-orders-factory' || currentPath === '/add-quantity-obat' ? 'active' : ''}>
                       <Link to="/obat">OBAT TRADISIONAL</Link>
                     </li>
                   </>
@@ -61,7 +61,7 @@ function Navbar() {
                 )}
                 {userRole === '3' && (
                   <>
-                    <li className={currentPath === '/retailer-orders' || currentPath === '/create-retailer-order' ? 'active' : ''}>
+                    <li className={currentPath === '/retailer-orders' || currentPath === '/create-retailer-order' || currentPath === '/obat-available-retailer' ? 'active' : ''}>
                       <Link to="/retailer-orders">ORDER OBAT</Link>
                     </li>
                     <li className={currentPath === '/nie-approval' ? 'active' : ''}>

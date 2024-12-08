@@ -12,6 +12,7 @@ import NieApprove from './pages/bpom/NieApprove';
 import ManageNieFactory from './pages/factory/ManageNieFactory';
 import StockObatFactory from './pages/factory/StockObatFactory';
 import CreateObat from './pages/factory/CreateObat';
+import AddQuantityObat from './pages/factory/AddQuantityObat';
 import ManageOrderFactoryPbf from './pages/factory/ManageOrderFactoryPbf';
 import ManageOrderPbf from './pages/pbf/ManageOrderPbf';
 import CreateOrderPbf from './pages/pbf/CreateOrderPbf';
@@ -98,6 +99,17 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <CreateObat />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/add-quantity-obat" 
+            element={
+              <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
+                <AddQuantityObat />
                 <Footer />
               </ProtectedRoute>
             } 

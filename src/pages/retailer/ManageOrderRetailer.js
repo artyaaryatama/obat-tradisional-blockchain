@@ -709,27 +709,6 @@ function ManageOrderRetailer() {
 
   }
 
-  const produceObat = async(namaObat, obatId, quantity, factoryInstanceName, ipfsHash) => {
-
-    MySwal.fire({
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
-      icon: 'info',
-      showCancelButton: false,
-      showConfirmButton: false,
-      allowOutsideClick: false,
-    })
-
-    try {
-      console.log(namaObat, obatId, quantity, factoryInstanceName, ipfsHash);
-      const tx = await contracts.obatTradisional.produceObat(namaObat, obatId, quantity, factoryInstanceName, ipfsHash);
-      tx.wait()
-      
-    } catch (error) {
-      errAlert(error, "Can't upload data.")
-    }
-  }
-
   return (
     <>
       <div id="ObatProduce" className='Layout-Menu layout-page'>

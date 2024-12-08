@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0x998abeb3E57409262aE5b751f60747921B33613E",
+    "address": "0x51A1ceB83B83F1985a81C295d1fF28Afef186E02",
     "abi": [
       {
         "inputs": [
@@ -902,7 +902,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0x70e0bA845a1A0F2DA3359C97E0285013525FFC49",
+    "address": "0x36b58F5C1969B7b6591D752ea6F5486D069010AB",
     "abi": [
       {
         "inputs": [
@@ -919,6 +919,31 @@
         ],
         "stateMutability": "nonpayable",
         "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "namaProduk",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint8",
+            "name": "quantity",
+            "type": "uint8"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "batchName",
+            "type": "string"
+          }
+        ],
+        "name": "evt_addObatQuantity",
+        "type": "event"
       },
       {
         "anonymous": false,
@@ -1008,29 +1033,37 @@
         "type": "event"
       },
       {
-        "anonymous": false,
         "inputs": [
           {
-            "indexed": false,
             "internalType": "string",
-            "name": "namaProduk",
+            "name": "_obatId",
             "type": "string"
           },
           {
-            "indexed": false,
+            "internalType": "string",
+            "name": "_batchName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_factoryInstanceName",
+            "type": "string"
+          },
+          {
             "internalType": "uint8",
-            "name": "quantity",
+            "name": "_obatQuantity",
             "type": "uint8"
           },
           {
-            "indexed": false,
-            "internalType": "string",
-            "name": "batchName",
-            "type": "string"
+            "internalType": "string[]",
+            "name": "_obatIpfsHash",
+            "type": "string[]"
           }
         ],
-        "name": "evt_obatProduced",
-        "type": "event"
+        "name": "addObatQuantity",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
       },
       {
         "inputs": [
@@ -1085,6 +1118,11 @@
           {
             "internalType": "string",
             "name": "nieNumber",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "factoryInstanceName",
             "type": "string"
           }
         ],
@@ -1310,25 +1348,6 @@
             "type": "string"
           }
         ],
-        "name": "factoryInstanceNames",
-        "outputs": [
-          {
-            "internalType": "string",
-            "name": "",
-            "type": "string"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "",
-            "type": "string"
-          }
-        ],
         "name": "factoryUserNames",
         "outputs": [
           {
@@ -1343,56 +1362,6 @@
       {
         "inputs": [],
         "name": "getAllProducedObat",
-        "outputs": [
-          {
-            "components": [
-              {
-                "internalType": "enum ObatTradisional.en_obatAvailability",
-                "name": "statusStok",
-                "type": "uint8"
-              },
-              {
-                "internalType": "string",
-                "name": "batchName",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "obatId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "namaProduk",
-                "type": "string"
-              },
-              {
-                "internalType": "uint8",
-                "name": "obatQuantity",
-                "type": "uint8"
-              },
-              {
-                "internalType": "string",
-                "name": "factoryInstanceNames",
-                "type": "string"
-              },
-              {
-                "internalType": "string[]",
-                "name": "obatIpfsHash",
-                "type": "string[]"
-              }
-            ],
-            "internalType": "struct ObatTradisional.st_obatProduction[]",
-            "name": "",
-            "type": "tuple[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "getAllProducedObatArray",
         "outputs": [
           {
             "components": [
@@ -1489,6 +1458,30 @@
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_factoryInstanceName",
+            "type": "string"
+          }
+        ],
+        "name": "getListAllApprovedObatNie",
+        "outputs": [
+          {
+            "internalType": "string[]",
+            "name": "obatIdArray",
+            "type": "string[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "namaProdukArray",
+            "type": "string[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "getListAllObatNie",
         "outputs": [
@@ -1504,7 +1497,7 @@
           },
           {
             "internalType": "string[]",
-            "name": "factoryInstanceNameArray",
+            "name": "factoryInstanceArray",
             "type": "string[]"
           },
           {
@@ -1655,6 +1648,11 @@
                 "internalType": "string",
                 "name": "nieNumber",
                 "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "factoryInstanceName",
+                "type": "string"
               }
             ],
             "internalType": "struct ObatTradisional.st_obatDetails",
@@ -1761,6 +1759,11 @@
                 "internalType": "string",
                 "name": "nieNumber",
                 "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "factoryInstanceName",
+                "type": "string"
               }
             ],
             "internalType": "struct ObatTradisional.st_obatDetails",
@@ -1771,11 +1774,6 @@
             "internalType": "address",
             "name": "factoryAddress",
             "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "factoryInstanceName",
-            "type": "string"
           },
           {
             "internalType": "string",
@@ -1805,112 +1803,38 @@
         "inputs": [
           {
             "internalType": "string",
+            "name": "_namaProduk",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
             "name": "_batchName",
             "type": "string"
-          }
-        ],
-        "name": "getObatProductionDetailsByBatchName",
-        "outputs": [
-          {
-            "components": [
-              {
-                "internalType": "enum ObatTradisional.en_obatAvailability",
-                "name": "statusStok",
-                "type": "uint8"
-              },
-              {
-                "internalType": "string",
-                "name": "batchName",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "obatId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "namaProduk",
-                "type": "string"
-              },
-              {
-                "internalType": "uint8",
-                "name": "obatQuantity",
-                "type": "uint8"
-              },
-              {
-                "internalType": "string",
-                "name": "factoryInstanceNames",
-                "type": "string"
-              },
-              {
-                "internalType": "string[]",
-                "name": "obatIpfsHash",
-                "type": "string[]"
-              }
-            ],
-            "internalType": "struct ObatTradisional.st_obatProduction",
-            "name": "",
-            "type": "tuple"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
+          },
           {
             "internalType": "string",
             "name": "_obatId",
             "type": "string"
-          }
-        ],
-        "name": "getObatProductionDetailsByOrderId",
-        "outputs": [
+          },
           {
-            "components": [
-              {
-                "internalType": "enum ObatTradisional.en_obatAvailability",
-                "name": "statusStok",
-                "type": "uint8"
-              },
-              {
-                "internalType": "string",
-                "name": "batchName",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "obatId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "namaProduk",
-                "type": "string"
-              },
-              {
-                "internalType": "uint8",
-                "name": "obatQuantity",
-                "type": "uint8"
-              },
-              {
-                "internalType": "string",
-                "name": "factoryInstanceNames",
-                "type": "string"
-              },
-              {
-                "internalType": "string[]",
-                "name": "obatIpfsHash",
-                "type": "string[]"
-              }
-            ],
-            "internalType": "struct ObatTradisional.st_obatProduction",
-            "name": "",
-            "type": "tuple"
+            "internalType": "uint8",
+            "name": "_obatQuantity",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "_factoryInstanceName",
+            "type": "string"
+          },
+          {
+            "internalType": "string[]",
+            "name": "_obatIpfsHash",
+            "type": "string[]"
           }
         ],
-        "stateMutability": "view",
+        "name": "getListProducedObat",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -1980,6 +1904,11 @@
             "internalType": "string",
             "name": "nieNumber",
             "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "factoryInstanceName",
+            "type": "string"
           }
         ],
         "stateMutability": "view",
@@ -2039,6 +1968,11 @@
             "internalType": "string",
             "name": "nieNumber",
             "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "factoryInstanceName",
+            "type": "string"
           }
         ],
         "stateMutability": "view",
@@ -2086,88 +2020,6 @@
           }
         ],
         "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "",
-            "type": "string"
-          }
-        ],
-        "name": "obatProductionDetailsByObatId",
-        "outputs": [
-          {
-            "internalType": "enum ObatTradisional.en_obatAvailability",
-            "name": "statusStok",
-            "type": "uint8"
-          },
-          {
-            "internalType": "string",
-            "name": "batchName",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "obatId",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "namaProduk",
-            "type": "string"
-          },
-          {
-            "internalType": "uint8",
-            "name": "obatQuantity",
-            "type": "uint8"
-          },
-          {
-            "internalType": "string",
-            "name": "factoryInstanceNames",
-            "type": "string"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_namaProduk",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_batchName",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_obatId",
-            "type": "string"
-          },
-          {
-            "internalType": "uint8",
-            "name": "_obatQuantity",
-            "type": "uint8"
-          },
-          {
-            "internalType": "string",
-            "name": "_factoryInstanceName",
-            "type": "string"
-          },
-          {
-            "internalType": "string[]",
-            "name": "_obatIpfsHash",
-            "type": "string[]"
-          }
-        ],
-        "name": "producedObat",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -2236,7 +2088,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0x4826533B4897376654Bb4d4AD88B7faFD0C98528",
+    "address": "0x8198f5d8F8CfFE8f9C413d98a0A55aEB8ab9FbB7",
     "abi": [
       {
         "inputs": [

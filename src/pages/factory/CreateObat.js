@@ -103,7 +103,6 @@ function CreateObat() {
 
   useEffect(() => {
     if (contract) {
-      console.log("Setting up listener for evt_obatCreated on contract", contract);
       
       contract.on("evt_obatCreated", (_namaProduk, _factoryInstanceName, _factoryUserName, _factoryAddr, _kemasan, _tipeProduk) => {
 
@@ -165,7 +164,6 @@ function CreateObat() {
       });
   
       return () => {
-        console.log("Removing evt_obatCreated listener");
         contract.removeAllListeners("evt_obatCreated");
       };
     }

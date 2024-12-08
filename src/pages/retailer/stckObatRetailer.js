@@ -281,8 +281,8 @@ function StockObatRetailer() {
         </div>
         <div className="tab-menu">
           <ul>
-            <li><button onClick={() => navigate('/obat-available-pbf')}>Ready Stok</button></li>
-            <li><button onClick={() => navigate('/manage-orders-pbf')}>Order Obat</button></li>
+          <li><button onClick={() => navigate('/create-retailer-order')}>Pengajuan Order</button></li>
+          <li><button onClick={() => navigate('/retailer-orders')}>Order Obat Tradisional</button></li>
             <li><button className='active' onClick={() => navigate('/obat-available-retailer')}>Obat Ready Stock</button></li>
           </ul>
         </div>

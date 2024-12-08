@@ -84,17 +84,18 @@ function ManageNieFactory() {
               idObat: obatIdArray[index]
             };
           });
-  
+          
           setDataObat(reconstructedData);
-  
+          console.log(reconstructedData); 
+          
         } catch (error) {
           console.error("Error loading data: ", error);
         }
       }
     };
-  
+    
     loadData();
-  }, [contract, userData.instanceName, obatStatusMap, tipeProdukMap]);
+  }, [contract, userData.instanceName]);
 
   // useEffect(() => {
   //   if (contract) {

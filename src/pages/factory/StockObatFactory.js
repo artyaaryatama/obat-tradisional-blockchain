@@ -23,8 +23,6 @@ function StockObatFactory() {
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
   const [namaObatArray, setNamaObatArray] = useState([""])
-  const [namaObatSelected, setNamaObatSelected] = useState("");
-  const [newStok, setNewStok] = useState(null)
   
 
   const stokStatusMap = {
@@ -112,69 +110,69 @@ function StockObatFactory() {
     loadData();
   }, [contract, userData.instanceName]);
 
-  useEffect(() => {
-    if (contract) {
+  // useEffect(() => {
+  //   if (contract) {
 
-      contract.on("evt_obatProduced", (_namaProduk, _obatQuantity, _batchName) => {
-        const quantity = _obatQuantity.toString()
-        MySwal.fire({
-          title: "Success Add New Stock",
-          html: (
-            <div className='form-swal'>
-              <ul>
-                <li className="label">
-                  <p>Nama Obat</p> 
-                </li>
-                <li className="input">
-                  <p>{_namaProduk}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Batch Name</p> 
-                </li>
-                <li className="input">
-                  <p>{_batchName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Total Stok Baru</p> 
-                </li>
-                <li className="input">
-                  <p>{quantity} Obat</p> 
-                </li>
-              </ul>
-            </div>
-          ),
-          icon: 'success',
-          width: '560',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-          allowOutsideClick: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.reload()
-          }
-        });
-      })
+  //     contract.on("evt_addObatQuantity", (_namaProduk, _obatQuantity, _batchName) => {
+  //       const quantity = _obatQuantity.toString()
+  //       MySwal.fire({
+  //         title: "Success Add New Stock",
+  //         html: (
+  //           <div className='form-swal'>
+  //             <ul>
+  //               <li className="label">
+  //                 <p>Nama Obat</p> 
+  //               </li>
+  //               <li className="input">
+  //                 <p>{_namaProduk}</p> 
+  //               </li>
+  //             </ul>
+  //             <ul>
+  //               <li className="label">
+  //                 <p>Batch Name</p> 
+  //               </li>
+  //               <li className="input">
+  //                 <p>{_batchName}</p> 
+  //               </li>
+  //             </ul>
+  //             <ul>
+  //               <li className="label">
+  //                 <p>Total Stok Baru</p> 
+  //               </li>
+  //               <li className="input">
+  //                 <p>{quantity} Obat</p> 
+  //               </li>
+  //             </ul>
+  //           </div>
+  //         ),
+  //         icon: 'success',
+  //         width: '560',
+  //         showCancelButton: false,
+  //         confirmButtonText: 'Oke',
+  //         allowOutsideClick: true,
+  //       }).then((result) => {
+  //         if (result.isConfirmed) {
+  //           window.location.reload()
+  //         }
+  //       });
+  //     })
   
-      return () => {
-        contract.removeAllListeners("evt_obatProduced");
-      };
-    }
-  }, [contract]);
+  //     return () => {
+  //       contract.removeAllListeners("evt_addObatQuantity");
+  //     };
+  //   }
+  // }, [contract]);
 
   const getDetailObat = async (id, batchName) => {
 
     try {
-      const tx = await contract.getListObatById(id);
-      const tx1 = await contract.getDetailProducedObat(batchName)
+      const detailObatCt = await contract.getListObatById(id);
+      const detailProducedObat = await contract.getDetailProducedObat(batchName)
 
-      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = tx;
+      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = detailObatCt;
 
-      const [obatQuantity, obatIpfsHash, statusStok] = tx1;
-      console.log(tx1);
+      const [obatQuantity, obatIpfsHash, statusStok] = detailProducedObat;
+      console.log(detailProducedObat);
 
       const detailObat = {
         obatId: obatDetails.obatId,
@@ -383,7 +381,6 @@ function StockObatFactory() {
                   MySwal.showValidationMessage('Jumlah stok harus lebih dari 0');
                   return;
                 }
-                addStok(quantity, detailObat);
               };
             
               generateIpfsHash.addEventListener('click', handleGenerate);
@@ -401,265 +398,6 @@ function StockObatFactory() {
     }
   }
 
-  // the old one code
-  const addStok = async(quantity, data) => {
-
-    MySwal.fire({
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
-      icon: 'info',
-      showCancelButton: false,
-      showConfirmButton: false,
-      allowOutsideClick: false,
-    })
-
-    let ipfsHashes = [];
-    const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
-    const randomTwoLetters = String.fromCharCode(
-      65 + Math.floor(Math.random() * 26),
-      65 + Math.floor(Math.random() * 26)
-    );
-    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-    const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase()
-
-    const batchNameGenerated = 'BN-' + date + '-' + randomCode;
-
-    for (let i = 0; i < quantity; i++) {
-      const obat = {
-        batchName: batchNameGenerated,
-        obatIdProduk: data.obatId,
-        obatIdPackage: `OT-${i * 23}${randomFourDigit}${randomTwoLetters}`,
-        namaProduk: data.namaObat,
-        obatQuantity: quantity,
-        merk: data.merk,
-        klaim: data.klaim,
-        kemasan: data.kemasan,
-        komposisi: data.komposisi,
-        factoryAddr: data.factoryAddr,
-        factoryInstanceName: data.factoryInstanceName,
-        tipeProduk: data.tipeProduk,
-        nieNumber: data.nieNumber
-      };
-      
-      try {
-        console.log(`Uploading batch ${i + 1} of ${quantity}`);
-
-        const result = await client.add(JSON.stringify(obat), {
-          progress: (prog) => 
-            console.log(`Uploading... ${prog} bytes uploaded`),
-        });
-
-        ipfsHashes.push(result.path); 
-      } catch (error) {
-        errAlert(error, "Can't upload Data Obat to IPFS."); 
-        break;
-      }
-    }
-
-    console.log("Generated IPFS Hashes:", ipfsHashes);
-    
-    MySwal.fire({
-      title: "Tambah Stok Obat",
-      html: (
-        <div className='form-swal'>
-          <div className="row row--obat">
-            <div className="col">
-
-              <ul>
-                <li className="label">
-                  <p>Nama Produk</p>
-                </li>
-                <li className="input">
-                  <p>{data.namaObat}</p> 
-                </li>
-              </ul>
-
-              <ul>
-                <li className="label">
-                  <p>Nama Factory</p> 
-                </li>
-                <li className="input">
-                  <p>{data.factoryInstanceName}</p> 
-                </li>
-              </ul>
-
-              <ul>
-                <li className="label">
-                  <p>Batch Number</p> 
-                </li>
-                <li className="input">
-                  <p>{batchNameGenerated}</p> 
-                </li>
-              </ul>
-
-              <ul>
-                <li className="label">
-                  <p>Jumlah Stok</p> 
-                </li>
-                <li className="input">
-                  <p>{quantity} Obat</p>
-                </li>
-              </ul>
-
-              <ul>
-                <li className="input" style={{ width: '100%' }}>
-                  <DataIpfsHash ipfsHashes={ipfsHashes} />
-                </li>
-              </ul>
-            </div>
-          </div>
-        
-        </div>
-      ),
-      width: '820',
-      showCancelButton: true,
-      confirmButtonText: 'Request',
-      allowOutsideClick: false
-    }).then((result) => {
-      if(result.isConfirmed){
-        addQuantityObat(data.namaObat, batchNameGenerated, data.obatId, quantity, data.factoryInstanceName, ipfsHashes)
-      }
-    })
-
-    return ipfsHashes;
-
-  }
-
-  const addQuantityObat = async(namaObat, batchName, obatId, quantity, factoryInstanceName, ipfsHash) => {
-
-    MySwal.fire({
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
-      icon: 'info',
-      showCancelButton: false,
-      showConfirmButton: false,
-      allowOutsideClick: false,
-    })
-
-    try {
-      console.log(namaObat, obatId, quantity, factoryInstanceName, ipfsHash);
-      const tx = await contract.addQuantityObat(namaObat, batchName, obatId, quantity, factoryInstanceName, ipfsHash);
-      tx.wait()
-      
-    } catch (error) {
-      errAlert(error, "Can't upload data.")
-    }
-  }
-
-  // const produceObat = async() => {
-
-  //   console.log(dataObat);
-
-  //   MySwal.fire({
-  //     title: "Tambah Stok Obat",
-  //     html: (
-  //       <div className='form-swal'>
-  //         <div className="row row--obat">
-  //           <div className="col">
-
-  //             <ul>
-  //               <li className="label">
-  //                 <p>Nama Obat</p>
-  //               </li>
-
-  //               <li className="input select">
-  //                 <select
-  //                   name="namaObat"
-  //                   id="namaObat"
-  //                   value={namaObatSelected}
-  //                   onChange={(e) => setNamaObatSelected(e.target.value)}
-  //                   required
-  //                 >
-  //                   <option value="" disabled>Pilih Nama Obat</option>
-  //                   {dataObat.map((obat) => (
-  //                     <option key={obat.idObat} value={obat.idObat}>
-  //                       {obat.namaObat}
-  //                     </option>
-  //                   ))}
-  //                 </select>
-  //               </li>
-  //             </ul>
-
-  //             <ul>
-  //               <li className="label">
-  //                 <p>Jumlah Stok</p> 
-  //               </li>
-  //               <li className="input select">
-  //               <select
-  //                   name="stokObat"
-  //                   id="stokObat"
-  //                   value={newStok}
-  //                   onChange={(e) => setNewStok(parseInt(e.target.value))}
-  //                   required
-  //                 >
-  //                 <option value="50">50 Obat</option>
-  //                 <option value="100">100 Obat</option>
-  //                 <option value="200">200 Obat</option>
-  //                 <option value="500">500 Obat</option>
-  //                 <option value="1000">1000 Obat</option>
-  //               </select>
-  //               </li>
-  //             </ul>
-
-  //             <ul>
-  //               <li className="label">
-  //                 <button id='addQuantity'  className='addQuantity' >
-  //                   <i className="fa-solid fa-arrows-rotate"></i>
-  //                   Generate Data Obat
-  //                   </button>
-  //               </li>
-  //               <li className="input">
-  //                 <DataIpfsHash ipfsHashes={[]} />
-  //               </li>
-  //             </ul>
-  //           </div>
-  //         </div>
-        
-  //       </div>
-  //     ),
-  //     width: '820',
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Request',
-  //     allowOutsideClick: true, 
-  //     didOpen: async () => {
-  //       const generateIpfsHash = document.getElementById('addQuantity');
-
-  //       const handleGenerate = async () => {
-  //         const quantity = parseInt(newStok, 10);
-  //         if (quantity <= 0) {
-  //           MySwal.showValidationMessage('Jumlah stok harus lebih dari 0');
-  //           return;
-  //         }
-
-  //         console.log(namaObatSelected); // Check the selected value
-  //         try {
-  //           // const tx = await contract.getListObatByNameProduct(namaObatSelected);
-
-  //           // const [obatDetails] = tx;
-
-  //           // const detailObat = {
-  //           //   obatId: obatDetails.obatId,
-  //           //   merk: obatDetails.merk,
-  //           //   namaObat: obatDetails.namaProduk,
-  //           //   // Add more details as needed
-  //           // };
-
-  //           // addStok(quantity, detailObat);
-  //         } catch (error) {
-  //           errAlert(error, `No data found for ${namaObatSelected}.`);
-  //         }
-  //       };
-
-  //       // generateIpfsHash.addEventListener('click', handleGenerate);
-
-  //       // return () => {
-  //       //   generateIpfsHash.removeEventListener('click', handleGenerate);
-  //       // };
-  //     },
-  //   })
-
-  // }
-
   return (
     <>
       <div id="ObatProduce" className='Layout-Menu layout-page'>
@@ -675,14 +413,14 @@ function StockObatFactory() {
           </ul>
         </div>
         <div className="container-data ">
-          {/* <div className="menu-data">
+          <div className="menu-data">
             <div className="btn">
-              <button className='btn-menu' onClick={produceObat}>
+              <button className='btn-menu' onClick={() => navigate('/add-quantity-obat')}>
                 <i className="fa-solid fa-plus"></i>
                 Add new data
               </button>
             </div>
-          </div> */}
+          </div>
           <div className="data-list">
             {dataObat.length > 0 ? (
               <ul>
