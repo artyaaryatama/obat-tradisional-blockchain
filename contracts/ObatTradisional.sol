@@ -440,6 +440,7 @@ contract ObatTradisional {
     returns (
       st_obatProduction[] memory
   ) {
+
     if (roleManager.hasRole(msg.sender, RoleManager.en_roles.PBF)) {
       st_obatProduction[] memory obatProductionClean;
       uint count = 0;
@@ -483,11 +484,13 @@ contract ObatTradisional {
     view 
     returns (
       uint8 obatQuantity, 
-      string[] memory obatIpfsHash
+      string[] memory obatIpfsHash,
+      uint8 statusStok
   ) {
     require(bytes(obatProductionDetailsByBatchName[_batchName].obatId).length > 0, "No data found with this ID.");
 
     obatQuantity = obatProductionDetailsByBatchName[_batchName].obatQuantity;
+    statusStok = uint8(obatProductionDetailsByBatchName[_batchName].statusStok);
     
     if (roleManager.hasRole(msg.sender, RoleManager.en_roles.PBF)) {
       obatIpfsHash = new string[](0);

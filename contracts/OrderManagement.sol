@@ -126,7 +126,7 @@ contract OrderManagement {
     string memory _obatId,
     string[] memory _obatIpfsHash
   ) public {
-
+    
     if (roleManager.hasRole(msg.sender, RoleManager.en_roles.Factory)){
       require(abi.encodePacked(obatTradisional.getObatProductionDetailsByBatchName(_batchName).obatId).length > 0, "No data found with this ID.");
 
@@ -141,8 +141,6 @@ contract OrderManagement {
       obatOrdered.statusOrder = en_orderStatus.OrderShipped;
       obatOrdered.timestampShipped = block.timestamp;
 
-      obatProduced.obatIpfsHash = new string[](0);
-      obatProduced.obatQuantity = 0; 
       obatProduced.statusStok = ObatTradisional.en_obatAvailability.sold;
 
       for(uint i=0; i < allOrderedObat.length; i++){
@@ -353,26 +351,11 @@ contract OrderManagement {
     public
     view
     returns(
-      uint8 orderQuantity,
-      string memory senderInstanceName,
-      uint8 statusOrder,
-      string memory targetInstanceName,
-      string[] memory orderObatIpfsHash,
-      uint timestampOrder,
-      uint timestampShipped,
-      uint timestampComplete
-
+      st_orderObat memory 
   ){
     require(abi.encodePacked(orderObatById[_orderId].orderId).length > 0, "No data found with this ID.");
 
-    orderQuantity = orderObatById[_orderId].orderQuantity;  
-    senderInstanceName = orderObatById[_orderId].senderInstanceName;  
-    targetInstanceName = orderObatById[_orderId].targetInstanceName;  
-    statusOrder = uint8(orderObatById[_orderId].statusOrder);
-    orderObatIpfsHash = orderObatById[_orderId].orderObatIpfsHash;
-    timestampOrder = orderObatById[_orderId].timestampOrder;
-    timestampShipped = orderObatById[_orderId].timestampShipped;
-    timestampComplete = orderObatById[_orderId].timestampComplete;
+    return orderObatById[_orderId];
   }   
 
   function getListAllReadyObatPbf(string memory _instanceName)
