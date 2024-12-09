@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
+import ReactDOM from 'react-dom/client';
+
+import NieStatusStepper from '../../components/StepperNie'
 
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
@@ -97,62 +100,62 @@ function ManageNieFactory() {
     loadData();
   }, [contract, userData.instanceName]);
 
-  // useEffect(() => {
-  //   if (contract) {
-  //     console.log("Setting up listener for evt_nieRequested on contract", contract);
+  useEffect(() => {
+    if (contract) {
+      console.log("Setting up listener for evt_nieRequested on contract", contract);
       
-  //     contract.on("evt_nieRequested", ( _obatId, _timestampRequestNie,_namaProduk) => {
+      contract.on("evt_nieRequested", ( _obatId, _timestampRequestNie,_namaProduk) => {
 
-  //       const timestamp = new Date(Number(_timestampRequestNie) * 1000).toLocaleDateString('id-ID', options)
+        const timestamp = new Date(Number(_timestampRequestNie) * 1000).toLocaleDateString('id-ID', options)
     
-  //       MySwal.fire({
-  //         title: "Success Request NIE",
-  //         html: (
-  //           <div className='form-swal'>
-  //             <ul>
-  //               <li className="label">
-  //                 <p>Nama Obat</p> 
-  //               </li>
-  //               <li className="input">
-  //                 <p>{_namaProduk}</p> 
-  //               </li>
-  //             </ul>
-  //             <ul>
-  //               <li className="label">
-  //                 <p>Timestamp Request</p> 
-  //               </li>
-  //               <li className="input">
-  //                 <p>{timestamp}</p> 
-  //               </li>
-  //             </ul>
-  //           </div>
-  //         ),
-  //         icon: 'success',
-  //         width: '560',
-  //         showCancelButton: false,
-  //         confirmButtonText: 'Oke',
-  //         allowOutsideClick: true,
-  //       }).then((result) => {
-  //         if (result.isConfirmed) {
-  //           window.location.reload()
-  //         }
-  //       });
+        MySwal.fire({
+          title: "Success Request NIE",
+          html: (
+            <div className='form-swal'>
+              <ul>
+                <li className="label">
+                  <p>Nama Obat</p> 
+                </li>
+                <li className="input">
+                  <p>{_namaProduk}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Timestamp Request</p> 
+                </li>
+                <li className="input">
+                  <p>{timestamp}</p> 
+                </li>
+              </ul>
+            </div>
+          ),
+          icon: 'success',
+          width: '560',
+          showCancelButton: false,
+          confirmButtonText: 'Oke',
+          allowOutsideClick: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload()
+          }
+        });
 
-  //     });
+      });
   
-  //     return () => {
-  //       console.log("Removing evt_nieRequested listener");
-  //       contract.removeAllListeners("evt_nieRequested");
-  //     };
-  //   }
-  // }, [contract]);
+      return () => {
+        console.log("Removing evt_nieRequested listener");
+        contract.removeAllListeners("evt_nieRequested");
+      };
+    }
+  }, [contract]);
 
   const getDetailObat = async (id) => {
 
     try {
-      const tx = await contract.getListObatById(id);
+      const detailObatCt = await contract.getListObatById(id);
 
-      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = tx
+      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = detailObatCt
 
       console.log(typeof(obatDetails.klaim));
 
@@ -163,112 +166,38 @@ function ManageNieFactory() {
         klaim: obatDetails.klaim,
         kemasan: obatDetails.kemasan,
         komposisi: obatDetails.komposisi,
+        tipeProduk: tipeProdukMap[obatDetails.tipeProduk], 
+        obatStatus: obatStatusMap[obatDetails.obatStatus], 
+        produtionTimestamp: obatDetails.productionTimestamp ? new Date(Number(obatDetails.productionTimestamp) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieRequestDate: obatDetails.nieRequestDate ? new Date(Number(obatDetails.nieRequestDate) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieApprovalDate:  obatDetails.nieApprovalDate ? new Date(Number(obatDetails.nieApprovalDate) * 1000).toLocaleDateString('id-ID', options): "-",
+        nieNumber: obatDetails.nieNumber ? obatDetails.nieNumber : "-",
         factoryAddr: factoryAddress,
         factoryInstanceName: factoryInstanceName,
         factoryUserName: factoryUserName,
-        tipeProduk: tipeProdukMap[obatDetails.tipeProduk], 
-        obatStatus: obatStatusMap[obatDetails.obatStatus], 
-        nieRequestDate: obatDetails.nieRequestDate ? new Date(Number(obatDetails.nieRequestDate) * 1000).toLocaleDateString('id-ID', options) : '-', 
-        nieApprovalDate: Number(obatDetails.nieApprovalDate) > 0 ? new Date(Number(obatDetails.nieApprovalDate) * 1000).toLocaleDateString('id-ID', options): "-",
-        nieNumber: obatDetails.nieNumber ? obatDetails.nieNumber : "-",
         bpomAddr: bpomAddress === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddress,
-        bpomUserName:  bpomUserName ? bpomUserName : "-",
+        bpomUserName:  bpomUserName ? bpomUserName : "",
         bpomInstanceNames:  bpomInstanceName ?  bpomInstanceName : "-"
       };
 
+      console.log(detailObatCt);
+
+      const timestamps = {
+        timestampProduction : obatDetails.productionTimestamp ? new Date(Number(obatDetails.productionTimestamp) * 1000).toLocaleDateString('id-ID', options) : 0,
+        timestampNieRequest :obatDetails.nieRequestDate ? new Date(Number(obatDetails.nieRequestDate) * 1000).toLocaleDateString('id-ID', options) : 0,
+        timestampNieApprove : obatDetails.nieApprovalDate ? new Date(Number(obatDetails.nieApprovalDate) * 1000).toLocaleDateString('id-ID', options): 0
+      }
+
       console.log(detailObat);
       
-      if(detailObat.obatStatus === 'Approved NIE'){
+      if(detailObat.obatStatus === 'In Local Production'){
         MySwal.fire({
           title: `Detail Obat ${detailObat.namaObat}`,
           html: (
             <div className='form-swal'>
-              <div className="row row--obat">
-                <div className="col col1">
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nomor NIE</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.nieNumber}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Pengajuan NIE</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.nieRequestDate}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Disertifikasi NIE</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.nieApprovalDate}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Di Produksi oleh</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryInstanceName}</p>
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Address Pengirim</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryAddr}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nama Pengirim</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryUserName}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Address BPOM</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.bpomAddr}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nama Penyutuju</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.bpomUserName}</p> 
-                    </li>
-                  </ul>
-                </div>
-  
+              <div className="row row--row">
+                
                 <div className="col col2">
-                  <ul>
-                    <li className="label">
-                      <p>Status Obat</p>
-                    </li>
-                    <li className="input">
-                      <p className={detailObat.obatStatus}>{detailObat.obatStatus}</p>
-                    </li>
-                  </ul>
-  
                   <ul>
                     <li className="label">
                       <p>Nama Obat</p>
@@ -323,23 +252,9 @@ function ManageNieFactory() {
                   </ul>
   
                 </div>
-              </div>
-            
-            </div>
-          ),
-          width: '820',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-        })
 
-      } else{
-        MySwal.fire({
-          title: `Detail Obat ${detailObat.namaObat}`,
-          html: (
-            <div className='form-swal'>
-              <div className="row row--obat">
                 <div className="col col1">
-  
+    
                   <ul>
                     <li className="label">
                       <p>Nomor NIE</p>
@@ -348,7 +263,7 @@ function ManageNieFactory() {
                       <p>{detailObat.nieNumber}</p> 
                     </li>
                   </ul>
-  
+
                   <ul>
                     <li className="label">
                       <p>Tanggal Pengajuan NIE</p> 
@@ -357,7 +272,7 @@ function ManageNieFactory() {
                       <p>{detailObat.nieRequestDate}</p> 
                     </li>
                   </ul>
-  
+
                   <ul>
                     <li className="label">
                       <p>Tanggal Disertifikasi NIE</p> 
@@ -366,217 +281,79 @@ function ManageNieFactory() {
                       <p>{detailObat.nieApprovalDate}</p> 
                     </li>
                   </ul>
-  
+
                   <ul>
                     <li className="label">
-                      <p>Di Produksi oleh</p>
+                      <p>Factory Instance</p>
                     </li>
                     <li className="input">
-                      <p>{detailObat.factoryInstanceName}</p>
+                      <p>{detailObat.factoryInstanceName}
+                      <span className='username'>({detailObat.factoryUserName})</span>
+                      </p>
                     </li>
                   </ul>
-  
+
                   <ul>
                     <li className="label">
-                      <p>Address Pengirim</p> 
+                      <p>Factory Address</p> 
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryAddr}</p> 
                     </li>
                   </ul>
-  
+
                   <ul>
                     <li className="label">
-                      <p>Nama Pengirim</p> 
+                      <p>BPOM Instance</p> 
                     </li>
                     <li className="input">
-                      <p>{detailObat.factoryUserName}</p> 
+                      <p>{detailObat.bpomInstanceNames}
+                        {
+                        detailObat.bpomUserName? (
+                          <span className='username'>({detailObat.bpomUserName})</span>) : <span></span>                        
+                        }
+                      </p> 
                     </li>
                   </ul>
-  
+
                   <ul>
                     <li className="label">
-                      <p>Address BPOM</p> 
+                      <p>BPOM Address</p> 
                     </li>
                     <li className="input">
                       <p>{detailObat.bpomAddr}</p> 
                     </li>
                   </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nama Penyutuju</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.bpomUserName}</p> 
-                    </li>
-                  </ul>
+
                 </div>
-  
-                <div className="col col2">
-                  <ul>
-                    <li className="label">
-                      <p>Status Obat</p>
-                    </li>
-                    <li className="input">
-                      <p className={detailObat.obatStatus}>{detailObat.obatStatus}</p>
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nama Obat</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.namaObat}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tipe Produk</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.tipeProduk}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Kemasan Obat</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.kemasan}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Klaim Obat</p>
-                    </li>
-                    <li className="input">
-                      <ul className='numbered'>
-                        {detailObat.klaim.map((item, index) => (
-                          <li key={index}><p>{item}</p></li>
-                        ))}
-                      </ul>
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Komposisi Obat</p>
-                    </li>
-                    <li className="input">
-                      <ul className='numbered'>
-                        {detailObat.komposisi.map((item, index) => (
-                          <li key={index}><p>{item}</p></li>
-                        ))}
-                      </ul>
-                    </li>
-                  </ul>
-  
+
+                <div className="container-stepper">
+                  <div id="stepperOrder"></div>
                 </div>
               </div>
             
             </div>
           ),
-          width: '820',
+          width: '1020',
           showCancelButton: true,
           confirmButtonText: 'Request NIE',
+          didOpen: () => {
+            const stepperOrder = document.getElementById('stepperOrder');
+            const root = ReactDOM.createRoot(stepperOrder);
+            root.render( 
+              <NieStatusStepper nieStatus={parseInt(obatDetails.obatStatus)} timestamps={timestamps} />
+            );
+          }
         }).then((result) => {
   
           if(result.isConfirmed){
             MySwal.fire({
-              title: "Request NIE",
+              title: `Request NIE`,
               html: (
                 <div className='form-swal'>
-                  <div className="row row--obat">
-                    <div className="col col1">
-        
-                      <ul>
-                        <li className="label">
-                          <p>Nomor NIE</p>
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.nieNumber}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Tanggal Pengajuan NIE</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.nieRequestDate}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Tanggal Disertifikasi NIE</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.nieApprovalDate}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Di Produksi oleh</p>
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.factoryInstanceName}</p>
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Address Pengirim</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.factoryAddr}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Nama Pengirim</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.factoryUserName}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Address BPOM</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.bpomAddr}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Nama Penyutuju</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.bpomUserName}</p> 
-                        </li>
-                      </ul>
-                    </div>
-        
+                  <div className="row row--row">
+                    
                     <div className="col col2">
-                      <ul>
-                        <li className="label">
-                          <p>Status Obat</p>
-                        </li>
-                        <li className="input">
-                          <p className={detailObat.obatStatus}>{detailObat.obatStatus}</p>
-                        </li>
-                      </ul>
-        
                       <ul>
                         <li className="label">
                           <p>Nama Obat</p>
@@ -585,7 +362,7 @@ function ManageNieFactory() {
                           <p>{detailObat.namaObat}</p> 
                         </li>
                       </ul>
-        
+      
                       <ul>
                         <li className="label">
                           <p>Tipe Produk</p>
@@ -594,7 +371,7 @@ function ManageNieFactory() {
                           <p>{detailObat.tipeProduk}</p> 
                         </li>
                       </ul>
-        
+      
                       <ul>
                         <li className="label">
                           <p>Kemasan Obat</p>
@@ -603,7 +380,7 @@ function ManageNieFactory() {
                           <p>{detailObat.kemasan}</p> 
                         </li>
                       </ul>
-        
+      
                       <ul>
                         <li className="label">
                           <p>Klaim Obat</p>
@@ -616,7 +393,7 @@ function ManageNieFactory() {
                           </ul>
                         </li>
                       </ul>
-  
+      
                       <ul>
                         <li className="label">
                           <p>Komposisi Obat</p>
@@ -629,13 +406,33 @@ function ManageNieFactory() {
                           </ul>
                         </li>
                       </ul>
-        
+
+                      <ul>
+                        <li className="label">
+                          <p>Factory Instance</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.factoryInstanceName}
+                          <span className='username'>({detailObat.factoryUserName})</span>
+                          </p>
+                        </li>
+                      </ul>
+    
+                      <ul>
+                        <li className="label">
+                          <p>Factory Address</p> 
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.factoryAddr}</p> 
+                        </li>
+                      </ul>
+      
                     </div>
                   </div>
                 
                 </div>
               ),
-              width: '820',
+              width: '520',
               showCancelButton: true,
               confirmButtonText: 'Request',
               allowOutsideClick: false
@@ -646,7 +443,164 @@ function ManageNieFactory() {
             })
           }
         })
+        
+      } else{
+        MySwal.fire({
+          title: `Detail Obat ${detailObat.namaObat}`,
+          html: (
+            <div className='form-swal'>
+              <div className="row row--row">
+                
+                <div className="col col2">
+                  <ul>
+                    <li className="label">
+                      <p>Nama Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.namaObat}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Produk</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.tipeProduk}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Kemasan Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.kemasan}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Klaim Obat</p>
+                    </li>
+                    <li className="input">
+                      <ul className='numbered'>
+                        {detailObat.klaim.map((item, index) => (
+                          <li key={index}><p>{item}</p></li>
+                        ))}
+                      </ul>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Komposisi Obat</p>
+                    </li>
+                    <li className="input">
+                      <ul className='numbered'>
+                        {detailObat.komposisi.map((item, index) => (
+                          <li key={index}><p>{item}</p></li>
+                        ))}
+                      </ul>
+                    </li>
+                  </ul>
+  
+                </div>
 
+                <div className="col col1">
+    
+                  <ul>
+                    <li className="label">
+                      <p>Nomor NIE</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.nieNumber}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Pengajuan NIE</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.nieRequestDate}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Disertifikasi NIE</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.nieApprovalDate}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Factory Instance</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.factoryInstanceName}
+                      <span className='username'>({detailObat.factoryUserName})</span>
+                      </p>
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Factory Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.factoryAddr}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Instance</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.bpomInstanceNames}
+                        {
+                        detailObat.bpomUserName? (
+                          <span className='username'>({detailObat.bpomUserName})</span>) : <span></span>                        
+                        }
+                      </p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.bpomAddr}</p> 
+                    </li>
+                  </ul>
+
+                </div>
+
+                <div className="container-stepper">
+                  <div id="stepperOrder"></div>
+                </div>
+              </div>
+            
+            </div>
+          ),
+          width: '1020',
+          showCloseButton: true,
+          showConfirmButton: false,
+          showCancelButton: false,
+          didOpen: () => {
+            const stepperOrder = document.getElementById('stepperOrder');
+            const root = ReactDOM.createRoot(stepperOrder);
+            root.render( 
+              <NieStatusStepper nieStatus={parseInt(obatDetails.obatStatus)} timestamps={timestamps} />
+            );
+          }
+        })
+        
       }
 
 

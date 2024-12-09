@@ -243,7 +243,7 @@ function CheckObatIpfs() {
                     <li className="info-item">
                       <span className="label">BPOM Instance</span>
                       <span>{bpomUserName}</span>
-                      <span className='addr'>{bpomAddr}</span>
+                      <span className='addr'>({bpomAddr})</span>
                     </li>
                   </ul>
                 </div>

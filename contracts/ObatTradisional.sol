@@ -50,7 +50,8 @@ contract ObatTradisional {
     string kemasan; 
     string[] komposisi;
     en_tipeProduk tipeProduk;
-    en_nieStatus obatStatus;      
+    en_nieStatus obatStatus;   
+    uint256 productionTimestamp;
     uint256 nieRequestDate;       
     uint256 nieApprovalDate;        
     string nieNumber; 
@@ -83,7 +84,7 @@ contract ObatTradisional {
 
   event evt_obatCreated(string namaProduk, string factoryInstanceNames, string factoryUserNames, address factoryAddresses, string kemasan, en_tipeProduk en_tipeProduk);
   event evt_nieRequested(string obatId, uint timestampRequested, string namaProduk);
-  event evt_nieApproved(string nieNumber, string namaProduk);
+  event evt_nieApproved(string nieNumber, string namaProduk, uint timestampApproved);
   event evt_addObatQuantity(string namaProduk, uint8 quantity, string batchName);
 
   function getJenisSediaanAvail(string memory _factoryInstanceName)
@@ -117,12 +118,13 @@ contract ObatTradisional {
       kemasan: _kemasan,
       komposisi: _komposisi,
       tipeProduk: _tipeProduk,
-      // obatStatus: en_nieStatus.inLocalProduction,
-      obatStatus: en_nieStatus.ApprovedNIE,
+      obatStatus: en_nieStatus.inLocalProduction,
+      // obatStatus: en_nieStatus.ApprovedNIE,
+      productionTimestamp: block.timestamp,
       nieRequestDate: 0,
       nieApprovalDate: 0,  
-      // nieNumber: ""
-      nieNumber: "TETSDFSDF",
+      nieNumber: "", 
+      // nieNumber: "TETSDFSDF", 
       factoryInstanceName: _factoryInstanceName
     });
  
@@ -186,7 +188,7 @@ contract ObatTradisional {
       }
     } 
 
-    emit evt_nieApproved(_nieNumber, obatDetails.namaProduk);
+    emit evt_nieApproved(_nieNumber, obatDetails.namaProduk, block.timestamp);
   }
 
   function addObatQuantity (

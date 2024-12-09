@@ -10,9 +10,9 @@
     font-weight: bold;
   }
   
-  span.Mui-disabled{
+  span.Mui-disabled, span.css-12eb3rq-MuiStepLabel-label{
     font-family: "Instrument Sans", sans-serif;
-    color: $grey;
+    // color: $grey;
     font-weight: bold;
   }
 
@@ -37,7 +37,15 @@
 
 
 .customDescStepper{
-  
+  .css-14ek5zv-MuiCollapse-root-MuiStepContent-transition {
+    overflow: visible;
+    visibility: visible;
+    padding-bottom: 20px;
+  }
+
+  .css-scib18-MuiCollapse-root-MuiStepContent-transition {
+    margin-bottom: -20px;
+  }
   p{
     font-family: "Instrument Sans", sans-serif;
     font-size: 12px;

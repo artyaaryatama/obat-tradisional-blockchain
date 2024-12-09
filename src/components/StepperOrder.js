@@ -4,7 +4,6 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import StepContent from '@mui/material/StepContent';
-import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 
 import "./../styles/Mui-Override.scss";
@@ -14,17 +13,17 @@ export default function OrderStatusStepper({ orderStatus, timestamps }) {
   const steps = [
     {
       label: 'Order Placed',
-      description: timestamps.timestampOrder,
+      description: timestamps.timestampOrder ? timestamps.timestampOrder : '',
       isDisabled: timestamps.timestampOrder === 0
     },
     {
       label: 'Order Shipped',
-      description: timestamps.timestampShipped,
+      description: timestamps.timestampShipped ? timestamps.timestampShipped : '',
       isDisabled: timestamps.timestampShipped === 0
     },
     {
       label: 'Order Completed',
-      description: timestamps.timestampComplete,
+      description: timestamps.timestampComplete ? timestamps.timestampComplete : '',
       isDisabled: timestamps.timestampComplete === 0
     }
   ];
@@ -35,25 +34,24 @@ export default function OrderStatusStepper({ orderStatus, timestamps }) {
     <Box sx={{ maxWidth: 700 }}>
       <Stepper activeStep={activeStep} orientation="vertical">
         {steps.map((step, index) => (
-          <Step key={step.label} completed={activeStep > index} disabled={step.isDisabled}>
+          <Step key={step.label} completed={activeStep > index}>
             <StepLabel 
               className='customLabelStepper'
+              TransitionProps={{ unmountOnExit: false }}
             >
               {step.label}
             </StepLabel>
-            <StepContent className='customDescStepper'>
+            <StepContent 
+              className='customDescStepper'
+              TransitionProps={{ unmountOnExit: false }}
+            >
               <Typography>
-              {index === activeStep ? step.description : 'No timestamp available'}
+              {index === 0  || index === 1 ||index === activeStep ? step.description : ''}
               </Typography>
             </StepContent>
           </Step>
         ))}
       </Stepper>
-      {activeStep === steps.length && (
-        <Paper square elevation={0} sx={{ p: 3 }}>
-          <Typography>Order Complete. 😎</Typography>
-        </Paper>
-      )}
     </Box>
   );
 }

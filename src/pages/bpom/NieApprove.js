@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
+import ReactDOM from 'react-dom/client';
+
+import NieStatusStepper from '../../components/StepperNie'
 
 import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
@@ -13,12 +16,7 @@ const MySwal = withReactContent(Swal);
 
 function NieApprove() {
 
-  const navigate = useNavigate();
   const [contract, setContract] = useState();
-  const [loader, setLoader] = useState(false)
-  
-  const [isApproved, setIsApproved] = useState(false);
-  const [nieNumber, setNieNumber] = useState("");
   const [namaProduk, setNamaProduk] = useState("")
   const [dataObat, setDataObat] = useState([])
   
@@ -108,59 +106,68 @@ function NieApprove() {
   }, [contract])
 
   useEffect(() => {
-    if (!contract) {
-      console.error("Contract is undefined");
-      return;
-    }
-  
-    try {
-      console.log('TRIGERRED evt_nieApproved listener');
-      contract.on('evt_nieApproved',  (nieNumber, namaProduk) => {
-        setNieNumber(nieNumber); 
-        setNamaProduk(namaProduk);
-        setIsApproved(true);
+    if (contract) {
+
+      contract.on('evt_nieApproved',  (_nieNumber, _namaProduk, _timestampApprove) => {
+        const timestamp = new Date(Number(_timestampApprove) * 1000).toLocaleDateString('id-ID', options)
+    
+        MySwal.fire({
+          title: "Success Request NIE",
+          html: (
+            <div className='form-swal'>
+              <ul>
+                <li className="label">
+                  <p>NIE Number</p> 
+                </li>
+                <li className="input">
+                  <p>{_nieNumber}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Nama Obat</p> 
+                </li>
+                <li className="input">
+                  <p>{_namaProduk}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Timestamp Approve</p> 
+                </li>
+                <li className="input">
+                  <p>{timestamp}</p> 
+                </li>
+              </ul>
+            </div>
+          ),
+          icon: 'success',
+          width: '560',
+          showCancelButton: false,
+          confirmButtonText: 'Oke',
+          allowOutsideClick: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload()
+          }
+        });
       });
   
       return () => {
-        console.log("Removing evt_nieApproved listener");
         contract.removeAllListeners("evt_nieApproved");
       };
-    } catch (error) {
-      console.error(error);
-      errAlert(error);
     }
-  }, [contract]);
-
-  useEffect(() => {
-    if (isApproved && nieNumber) {
-      Swal.fire({
-        title: `NIE Approved!`,
-        text: `Success approve NIE (${nieNumber}) for produk ${namaProduk}`,
-        icon: 'success',
-        showCancelButton: false,
-        confirmButtonText: 'Ok',
-        allowOutsideClick: true
-      }).then((result) => {
-        if (result.isConfirmed) {
-          setNieNumber('')
-          setNamaProduk('')
-          setIsApproved(false)
-          window.location.reload();
-        }
-      });
-
-    }
-  }, [isApproved, nieNumber]);
   
+  }, [contract]);
   
   const getDetailObat = async (id) => {
     
     console.log(id); 
     
     try {
-      const tx = await contract.getListObatById(id);
+      const detailObatCt = await contract.getListObatById(id);
 
-      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = tx
+      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = detailObatCt
 
       console.log(obatDetails);
 
@@ -176,13 +183,20 @@ function NieApprove() {
         factoryUserName: factoryUserName,
         tipeProduk: tipeProdukMap[obatDetails.tipeProduk], 
         obatStatus: obatStatusMap[obatDetails.obatStatus], 
+        produtionTimestamp: obatDetails.productionTimestamp ? new Date(Number(obatDetails.productionTimestamp) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: obatDetails.nieRequestDate ? new Date(Number(obatDetails.nieRequestDate) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieApprovalDate: Number(obatDetails.nieApprovalDate) > 0 ? new Date(Number(obatDetails.nieApprovalDate) * 1000).toLocaleDateString('id-ID', options): "-",
         nieNumber: obatDetails.nieNumber ? obatDetails.nieNumber : "-",
         bpomAddr: bpomAddress === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddress,
-        bpomUserName:  bpomUserName ? bpomUserName : "-",
+        bpomUserName:  bpomUserName ? bpomUserName : "",
         bpomInstanceNames:  bpomInstanceName ?  bpomInstanceName : "-"
       };
+
+      const timestamps = {
+        timestampProduction : detailObat.produtionTimestamp ? detailObat.produtionTimestamp : 0,
+        timestampNieRequest : detailObat.nieRequestDate ? detailObat.nieRequestDate : 0,
+        timestampNieApprove : detailObat.nieApprovalDate ?  detailObat.nieApprovalDate : 0
+      }
 
       console.log(detailObat);
 
@@ -191,92 +205,9 @@ function NieApprove() {
           title: `Detail Obat ${detailObat.namaObat}`,
           html: (
             <div className='form-swal'>
-              <div className="row row--obat">
-                <div className="col col1">
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nomor NIE</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.nieNumber}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Pengajuan NIE</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.nieRequestDate}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Disertifikasi NIE</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.nieApprovalDate}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Di Produksi oleh</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryInstanceName}</p>
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Address Pengirim</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryAddr}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nama Pengirim</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryUserName}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Address BPOM</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.bpomAddr}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nama Penyutuju</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.bpomUserName}</p> 
-                    </li>
-                  </ul>
-                </div>
-  
+              <div className="row row--row">
+                
                 <div className="col col2">
-                  <ul>
-                    <li className="label">
-                      <p>Status Obat</p>
-                    </li>
-                    <li className="input">
-                      <p className={detailObat.obatStatus}>{detailObat.obatStatus}</p>
-                    </li>
-                  </ul>
-  
                   <ul>
                     <li className="label">
                       <p>Nama Obat</p>
@@ -331,105 +262,107 @@ function NieApprove() {
                   </ul>
   
                 </div>
+
+                <div className="col col1">
+                  <ul>
+                    <li className="label">
+                      <p>Nomor NIE</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.nieNumber}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Pengajuan NIE</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.nieRequestDate}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Disertifikasi NIE</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.nieApprovalDate}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Factory Instance</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.factoryInstanceName}
+                      <span className='username'>({detailObat.factoryUserName})</span>
+                      </p>
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Factory Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.factoryAddr}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Instance</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.bpomInstanceNames}
+                        {
+                        detailObat.bpomUserName? (
+                          <span className='username'>({detailObat.bpomUserName})</span>) : <span></span>                        
+                        }
+                      </p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.bpomAddr}</p> 
+                    </li>
+                  </ul>
+
+                </div>
+
+                <div className="container-stepper">
+                  <div id="stepperOrder"></div>
+                </div>
               </div>
             
             </div>
           ),
-          width: '820',
+          width: '1020',
+          showCloseButton: true,
+          showConfirmButton: false,
           showCancelButton: false,
-          confirmButtonText: 'Oke',
+          didOpen: () => {
+            const stepperOrder = document.getElementById('stepperOrder');
+            const root = ReactDOM.createRoot(stepperOrder);
+            root.render( 
+              <NieStatusStepper nieStatus={parseInt(obatDetails.obatStatus)} timestamps={timestamps} />
+            );
+          }
         })
       } else{
         MySwal.fire({
           title: `Detail Obat ${detailObat.namaObat}`,
           html: (
             <div className='form-swal'>
-              <div className="row row--obat">
-                <div className="col col1">
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nomor NIE</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.nieNumber}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Pengajuan NIE</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.nieRequestDate}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Disertifikasi NIE</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.nieApprovalDate}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Di Produksi oleh</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryInstanceName}</p>
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Address Pengirim</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryAddr}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nama Pengirim</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryUserName}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Address BPOM</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.bpomAddr}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nama Penyutuju</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.bpomUserName}</p> 
-                    </li>
-                  </ul>
-                </div>
-  
+              <div className="row row--row">
+                
                 <div className="col col2">
-                  <ul>
-                    <li className="label">
-                      <p>Status Obat</p>
-                    </li>
-                    <li className="input">
-                      <p className={detailObat.obatStatus}>{detailObat.obatStatus}</p>
-                    </li>
-                  </ul>
-  
                   <ul>
                     <li className="label">
                       <p>Nama Obat</p>
@@ -484,31 +417,116 @@ function NieApprove() {
                   </ul>
   
                 </div>
+
+                <div className="col col1">
+    
+                  <ul>
+                    <li className="label">
+                      <p>Nomor NIE</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.nieNumber}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Pengajuan NIE</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.nieRequestDate}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Disertifikasi NIE</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.nieApprovalDate}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Factory Instance</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.factoryInstanceName}
+                      <span className='username'>({detailObat.factoryUserName})</span>
+                      </p>
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Factory Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.factoryAddr}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Instance</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.bpomInstanceNames}
+                        {
+                        detailObat.bpomUserName? (
+                          <span className='username'>({detailObat.bpomUserName})</span>) : <span></span>                        
+                        }
+                      </p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.bpomAddr}</p> 
+                    </li>
+                  </ul>
+
+                </div>
+
+                <div className="container-stepper">
+                  <div id="stepperOrder"></div>
+                </div>
               </div>
             
             </div>
           ),
-          width: '820',
+          width: '1020',
           showCancelButton: true,
           confirmButtonText: 'Approve NIE',
+          didOpen: () => {
+            const stepperOrder = document.getElementById('stepperOrder');
+            const root = ReactDOM.createRoot(stepperOrder);
+            root.render( 
+              <NieStatusStepper nieStatus={parseInt(obatDetails.obatStatus)} timestamps={timestamps} />
+            );
+          }
         }).then((result) => {
-  
-          if(result.isConfirmed){
             const currentDate = new Date();
             const year = currentDate.getFullYear();
             const month = String(currentDate.getMonth() + 1).padStart(2, '0');
             const day = String(currentDate.getDate()).padStart(2, '0');
             const randomNumber = Math.floor(1000 + Math.random() * 9000); 
-  
+        
             const nieNum = `TR${year}${month}${day}${randomNumber}`;
-  
+    
+            if(result.isConfirmed){
+
             MySwal.fire({
               title: "Approve NIE",
               html: (
                 <div className='form-swal'>
-                  <div className="row row--obat">
-                    <div className="col col1">
-        
+                  <div className="row row--row">
+                    
+                    <div className="col col2">
                       <ul>
                         <li className="label">
                           <p>Nomor NIE</p>
@@ -517,81 +535,7 @@ function NieApprove() {
                           <p>{nieNum}</p> 
                         </li>
                       </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Tanggal Pengajuan NIE</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.nieRequestDate}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Tanggal Disertifikasi NIE</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.nieApprovalDate}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Di Produksi oleh</p>
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.factoryInstanceName}</p>
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Address Pengirim</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.factoryAddr}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Nama Pengirim</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.factoryUserName}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Address BPOM</p> 
-                        </li>
-                        <li className="input">
-                          <p>{userdata.address}</p> 
-                        </li>
-                      </ul>
-        
-                      <ul>
-                        <li className="label">
-                          <p>Nama Penyutuju</p> 
-                        </li>
-                        <li className="input">
-                          <p>{userdata.name}</p> 
-                        </li>
-                      </ul>
-                    </div>
-        
-                    <div className="col col2">
-                      <ul>
-                        <li className="label">
-                          <p>Status Obat</p>
-                        </li>
-                        <li className="input">
-                          <p className={detailObat.obatStatus}>{detailObat.obatStatus}</p>
-                        </li>
-                      </ul>
-        
+
                       <ul>
                         <li className="label">
                           <p>Nama Obat</p>
@@ -600,7 +544,7 @@ function NieApprove() {
                           <p>{detailObat.namaObat}</p> 
                         </li>
                       </ul>
-        
+      
                       <ul>
                         <li className="label">
                           <p>Tipe Produk</p>
@@ -609,7 +553,7 @@ function NieApprove() {
                           <p>{detailObat.tipeProduk}</p> 
                         </li>
                       </ul>
-        
+      
                       <ul>
                         <li className="label">
                           <p>Kemasan Obat</p>
@@ -618,66 +562,39 @@ function NieApprove() {
                           <p>{detailObat.kemasan}</p> 
                         </li>
                       </ul>
-        
+
                       <ul>
                         <li className="label">
-                          <p>Klaim Obat</p>
+                          <p>Factory Instance</p>
                         </li>
                         <li className="input">
-                          <ul className='numbered'>
-                            {detailObat.klaim.map((item, index) => (
-                              <li key={index}><p>{item}</p></li>
-                            ))}
-                          </ul>
+                          <p>{detailObat.factoryInstanceName}
+                          <span className='username'>({detailObat.factoryUserName})</span>
+                          </p>
                         </li>
                       </ul>
-  
+    
                       <ul>
                         <li className="label">
-                          <p>Komposisi Obat</p>
+                          <p>Factory Address</p> 
                         </li>
                         <li className="input">
-                          <ul className='numbered'>
-                            {detailObat.komposisi.map((item, index) => (
-                              <li key={index}><p>{item}</p></li>
-                            ))}
-                          </ul>
+                          <p>{detailObat.factoryAddr}</p> 
                         </li>
                       </ul>
-        
+      
                     </div>
                   </div>
                 
                 </div>
               ),
-              width: '820',
+              width: '520',
               showCancelButton: true,
               confirmButtonText: 'Yes, Approve!',
               allowOutsideClick: false,
-              preConfirm: async () => {
-                try {
-                  console.log(userdata.address);
-                  const tx =  await contract.approveNie(id, userdata.address, userdata.instanceName, userdata.name, nieNum)
-                  console.log(tx);
-                  console.log(id, nieNum, userdata.name);
-                  return tx;
-                } catch (error) {
-                  errAlert(error);
-                  return null;
-                }
-              }
             }).then((result) => {
               if(result.isConfirmed){
-                if (result.isConfirmed && result.value) {
-                  MySwal.fire({
-                    title:"Processing your request...",
-                    text:"Your request is on its way. This won't take long. 🚀",
-                    icon: 'info',
-                    showCancelButton: false,
-                    showConfirmButton: false,
-                    allowOutsideClick: false
-                  })
-                }
+                approveNie(id, nieNum)
               }
             })
           }
@@ -688,6 +605,27 @@ function NieApprove() {
 
     } catch (e) {
       errAlert(e, "Can't retrieve data")
+    }
+  }
+
+  const approveNie = async(id, nieNumber) => {
+    
+    MySwal.fire({
+      title:"Processing your request...",
+      text:"Your request is on its way. This won't take long. 🚀",
+      icon: 'info',
+      showCancelButton: false,
+      showConfirmButton: false,
+      allowOutsideClick: false
+    })
+
+    try {
+      console.log(userdata.address);
+      const approveNieCt =  await contract.approveNie(id, userdata.address, userdata.instanceName, userdata.name, nieNumber)
+      console.log(approveNieCt);
+
+    } catch (error) {
+      errAlert(error, "Can't Approve NIE");
     }
   }
 
