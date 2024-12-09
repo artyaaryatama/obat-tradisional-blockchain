@@ -126,7 +126,7 @@ function ManageOrderFactoryPbf() {
     };
   
     loadData();
-  }, [contracts, userData.instanceName]);
+  }, [contracts]);
 
   useEffect(() => {
     if (contracts) {
@@ -218,7 +218,7 @@ function ManageOrderFactoryPbf() {
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = listObatCt;
 
-      const [orderIdProduk, namaProduk, obatIdProduk, batchName, orderQuantity, senderInstanceName, targetInstanceName, statusOrder, timestampOrder, timestampShipped, timestampComplete, orderObatIpfsHash] = detailObatCt;
+      const [orderIdProduk, namaProduk, obatIdProduk, batchName, orderQuantity, senderInstanceName, senderAddress, targetInstanceName, targetAddress, statusOrder, timestampOrder, timestampShipped, timestampComplete, orderObatIpfsHash] = detailObatCt;
 
       const timestamps = {
         timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
@@ -252,8 +252,10 @@ function ManageOrderFactoryPbf() {
         batchName: batchName,
         orderQuantity: parseInt(orderQuantity),
         senderInstanceName: senderInstanceName,
+        senderAddress: senderAddress,
         statusOrder : statusOrder,
         targetInstanceName : targetInstanceName,
+        targetAddress: targetAddress,
         orderObatIpfsHash : orderObatIpfsHash,
         timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
         timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
@@ -540,7 +542,7 @@ function ManageOrderFactoryPbf() {
     })
 
     try {
-      const acceptOrderCt = await contracts.orderManagement.acceptOrderFactory(batchName, orderId, ipfsHashes)
+      const acceptOrderCt = await contracts.orderManagement.acceptOrderFactory(batchName, orderId, ipfsHashes, userData.address)
       console.log(acceptOrderCt);
       
     } catch (error) {
@@ -572,8 +574,6 @@ function ManageOrderFactoryPbf() {
     console.log(dataOrder);
     dataOrder.statusOrder = obatStatusMap[dataOrder.statusOrder]
 
-    console.log(batchName);
-
     for (let i = 0; i < dataOrder.orderQuantity; i++) {
       const obat = {
         batchName: batchName,
@@ -590,6 +590,7 @@ function ManageOrderFactoryPbf() {
           factoryUserName: dataObat.factoryUserName,
           tipeProduk: dataObat.tipeProduk,
           nieNumber: dataObat.nieNumber,
+          obatStatus: "NIE Approved",
           nieRequestDate: dataObat.nieRequestDate,
           nieApprovalDate: dataObat.nieApprovalDate,
           bpomAddr: dataObat.bpomAddr,
@@ -599,8 +600,10 @@ function ManageOrderFactoryPbf() {
         dataOrderPbf: {
           orderQuantity: dataOrder.orderQuantity,
           senderInstanceName: dataOrder.senderInstanceName,
+          senderAddress: dataOrder.senderAddress,
           statusOrder : dataOrder.statusOrder,
           targetInstanceName : dataOrder.targetInstanceName,
+          targetAddress: userData.address,
           timestampOrder: dataOrder.timestampOrder,
           timestampShipped: dataOrder.timestampShipped
         }

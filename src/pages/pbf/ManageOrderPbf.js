@@ -201,7 +201,7 @@ function ManageOrderPbf() {
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = detailObatCt;
 
-      const [orderIdProduk, namaProduk, obatIdProduk, batchName, orderQuantity, senderInstanceName, targetInstanceName, statusOrder, timestampOrder, timestampShipped, timestampComplete, orderObatIpfsHash] = detailOrderCt;
+      const [orderIdProduk, namaProduk, obatIdProduk, batchName, orderQuantity, senderInstanceName, senderAddr, targetInstanceName, targetAddr, statusOrder, timestampOrder, timestampShipped, timestampComplete, orderObatIpfsHash] = detailOrderCt;
       
       const timestamps = {
         timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
@@ -236,8 +236,10 @@ function ManageOrderPbf() {
         batchName: batchName,
         orderQuantity: parseInt(orderQuantity),
         senderInstanceName: senderInstanceName,
+        senderAddress: senderAddr,
         statusOrder : statusOrder,
         targetInstanceName : targetInstanceName,
+        targetAddress: targetAddr,
         orderObatIpfsHash : orderObatIpfsHash,
         timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
         timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
@@ -601,7 +603,9 @@ function ManageOrderPbf() {
         dataOrderPbf: {
           orderQuantity: dataOrder.orderQuantity,
           senderInstanceName: dataOrder.senderInstanceName,
+          senderAddress: dataOrder.senderAddress,
           targetInstanceName : dataOrder.targetInstanceName,
+          targetAddress: dataOrder.targetAddress,
           timestampOrder: dataOrder.timestampOrder,
           timestampShipped: dataOrder.timestampShipped,
           timestampComplete: dataOrder.timestampComplete

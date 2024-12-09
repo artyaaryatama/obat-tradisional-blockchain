@@ -197,7 +197,6 @@ contract ObatTradisional {
     string[] memory _obatIpfsHash
   ) public onlyFactory
   {
-
     st_obatProduction memory newProduction = st_obatProduction({
       statusStok: en_obatAvailability.ready,
       batchName: _batchName,

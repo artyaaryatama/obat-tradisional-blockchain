@@ -143,7 +143,7 @@ export default function TableHash({ ipfsHashes = [] }) {
                 </TableCell>
                 <TableCell align="left" sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontWeight: 'normal', fontStyle: 'normal', fontSize: '12px' }}>
                   <a
-                    href={`http://localhost:8080/ipfs/${hash}`}
+                    href={`http://localhost:3000/public/obat/${hash}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{

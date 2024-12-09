@@ -20,13 +20,14 @@ import StockObatPbf from './pages/pbf/StockObatPbf';
 import ManageOrderPbfRetailer from './pages/pbf/ManageOrderPbfRetailer';
 import CreateOrderRetailer from './pages/retailer/CreateOrderRetailer';
 import ManageOrderRetailer from './pages/retailer/ManageOrderRetailer';
-import StockObatRetailer from './pages/retailer/stckObatRetailer';
+import StockObatRetailer from './pages/retailer/StokObatRetailer';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LoginPage from './pages/auth/LoginUser';
 import RegisterPage from './pages/auth/RegisterUser';
 import UnauthorizedPage from './pages/error/Unauthorized';
 import ErrorPage from './pages/error/Error';
+import CheckObatIpfs from './pages/public/CheckObat';
 
 function App() {
   return (
@@ -37,12 +38,13 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/public/obat/:hash" element={<CheckObatIpfs />} />
           
           <Route 
             path="/error" 
             element={
               <>
-                <Navbar />
+              <Navbar />
                 <ErrorPage />
                 <Footer />
               </>

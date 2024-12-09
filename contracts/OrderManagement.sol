@@ -25,7 +25,9 @@ contract OrderManagement {
     string batchName;
     uint8 orderQuantity;
     string senderInstanceName;
+    address senderInstanceAddr;
     string targetInstanceName;
+    address targetInstanceAddr;
     en_orderStatus statusOrder; 
     uint timestampOrder;
     uint timestampShipped;
@@ -90,7 +92,9 @@ contract OrderManagement {
         batchName: "",
         orderQuantity: _orderQuantity,
         senderInstanceName: _senderInstanceName,
+        senderInstanceAddr: _senderInstanceAddr,
         targetInstanceName: _targetInstanceName,
+        targetInstanceAddr: address(0),
         statusOrder: en_orderStatus.OrderPlaced,
         timestampOrder: block.timestamp,
         timestampShipped: 0,
@@ -106,8 +110,10 @@ contract OrderManagement {
         batchName: obatPbfByIdProduk[_obatIdProduk].batchName,
         orderQuantity: _orderQuantity,
         senderInstanceName: _senderInstanceName,
+        senderInstanceAddr: _senderInstanceAddr,
         targetInstanceName: _targetInstanceName,
         statusOrder: en_orderStatus.OrderPlaced,
+        targetInstanceAddr: address(0),
         timestampOrder: block.timestamp,
         timestampShipped: 0,
         timestampComplete: 0,
@@ -128,7 +134,8 @@ contract OrderManagement {
   function acceptOrderFactory(
     string memory _batchName, 
     string memory _orderId,
-    string[] memory _obatIpfsHash
+    string[] memory _obatIpfsHash,
+    address _instanceAddr
   ) public {
     require(abi.encodePacked(orderObatById[_orderId].obatIdProduk).length > 0, "No data found with this ID.");
 
@@ -138,6 +145,7 @@ contract OrderManagement {
     obatOrdered.batchName = _batchName;
     obatOrdered.statusOrder = en_orderStatus.OrderShipped;
     obatOrdered.timestampShipped = block.timestamp;
+    obatOrdered.targetInstanceAddr = _instanceAddr;
 
     // untuk detail history order buat ipfs
     orderHistoryPbfByBatchName[_batchName] = _orderId;
@@ -147,6 +155,7 @@ contract OrderManagement {
         allOrderedObat[i].orderObatIpfsHash = _obatIpfsHash;
         allOrderedObat[i].batchName = _batchName;
         allOrderedObat[i].statusOrder = en_orderStatus.OrderShipped;
+        allOrderedObat[i].targetInstanceAddr = _instanceAddr;
         allOrderedObat[i].timestampShipped = block.timestamp;
 
         break;
@@ -163,7 +172,8 @@ contract OrderManagement {
     string memory _batchName, 
     string memory _orderId,
     string memory _obatId,
-    string[] memory _obatIpfsHash
+    string[] memory _obatIpfsHash,
+    address _instanceAddr
   ) public {
     require(abi.encodePacked(obatPbfByIdProduk[_obatId].obatIdProduk).length > 0, "No data found with this ID.");
 
@@ -174,6 +184,7 @@ contract OrderManagement {
     obatOrdered.batchName = _batchName;
     obatOrdered.statusOrder = en_orderStatus.OrderShipped;
     obatOrdered.timestampShipped = block.timestamp;
+    obatOrdered.targetInstanceAddr = _instanceAddr;
 
     obatPbf.obatIpfsHash = _obatIpfsHash;
     obatPbf.statusStok = en_obatAvailability.sold;
@@ -186,6 +197,7 @@ contract OrderManagement {
         allOrderedObat[i].batchName = _batchName;
         allOrderedObat[i].statusOrder = en_orderStatus.OrderShipped;
         allOrderedObat[i].timestampShipped = block.timestamp;
+        allOrderedObat[i].targetInstanceAddr = _instanceAddr;
 
         break;
       }
@@ -355,9 +367,9 @@ contract OrderManagement {
     public
     view
     returns(
-      st_orderObat memory 
+      st_orderObat memory
   ){
-    require(abi.encodePacked(orderObatById[_orderId].orderId).length > 0, "No data found with this ID.");
+    require(abi.encodePacked(orderObatById[_orderId].orderId).length > 0, "No data found with this ID."); 
 
     return orderObatById[_orderId];
   }   
@@ -547,6 +559,8 @@ contract OrderManagement {
       uint orderQuantity,
       string memory senderInstanceName,
       string memory targetInstanceName,
+      address senderAddr,
+      address targetAddr,
       uint timestampOrder,
       uint timestampShipped,
       uint timestampComplete
@@ -561,6 +575,8 @@ contract OrderManagement {
       timestampOrder = orderObatById[orderIdPbf].timestampOrder;
       timestampShipped = orderObatById[orderIdPbf].timestampShipped;
       timestampComplete = orderObatById[orderIdPbf].timestampComplete;
+      senderAddr = orderObatById[orderIdPbf].senderInstanceAddr;
+      targetAddr = orderObatById[orderIdPbf].targetInstanceAddr;
 
   }
   

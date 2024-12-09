@@ -221,7 +221,7 @@ function ManageOrderPbfRetailer() {
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = listObatCt;
 
-      const [orderIdProduk, namaProduk, obatIdProduk, batchName, orderQuantity, senderInstanceName, targetInstanceName, statusOrder, timestampOrder, timestampShipped, timestampComplete, orderObatIpfsHash] = detailObatCt;
+      const [orderIdProduk, namaProduk, obatIdProduk, batchName, orderQuantity, senderInstanceName, senderAddress, targetInstanceName, targetAddress, statusOrder, timestampOrder, timestampShipped, timestampComplete, orderObatIpfsHash] = detailObatCt;
 
       const timestamps = {
         timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
@@ -248,20 +248,20 @@ function ManageOrderPbfRetailer() {
         bpomInstanceName:  bpomInstanceName ?  bpomInstanceName : "-"
       };
 
-      console.log(detailObatCt);
-
       const detailOrder = {
         orderId: orderIdProduk,
         batchName: batchName,
         orderQuantity: parseInt(orderQuantity),
         senderInstanceName: senderInstanceName,
+        senderAddress: senderAddress,
         statusOrder : obatStatusMap[statusOrder],
         targetInstanceName : targetInstanceName,
-        orderObatIpfsHash : orderObatIpfsHash,
+        targetAdddress : targetAddress,
         timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
         timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
         timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
       }
+      console.log(detailOrder);
 
       if(statusOrder === 0n){
         MySwal.fire({
@@ -540,7 +540,7 @@ function ManageOrderPbfRetailer() {
     })
     console.log(orderId)
     try {
-      const acceptOrderCt = await contracts.orderManagement.acceptOrderPbf(batchName, orderId, obatId, ipfsHashes)
+      const acceptOrderCt = await contracts.orderManagement.acceptOrderPbf(batchName, orderId, obatId, ipfsHashes, userData.address)
       console.log(acceptOrderCt);
       
     } catch (error) {
@@ -577,7 +577,7 @@ function ManageOrderPbfRetailer() {
       const detailOrderPbf = await contracts.orderManagement.getHistoryOrderObatPbf(batchName)
 
       console.log(detailOrderPbf);
-      const [orderQuantity, senderInstanceName, targetInstanceName, timestampOrder, timestampShipped, timestampComplete] = detailOrderPbf
+      const [orderQuantity, senderInstanceName, targetInstanceName, senderAddr, targetAddr, timestampOrder, timestampShipped, timestampComplete] = detailOrderPbf
 
       const timestampOrderPbf= timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0;
       const timestampShippedPbf= timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0;
@@ -607,10 +607,12 @@ function ManageOrderPbfRetailer() {
             bpomInstanceName: dataObat.bpomInstanceName,
             bpomUserName: dataObat.bpomUserName
           },
-          datOrderPbf: {
+          dataOrderPbf: {
             orderQuantity: orderQuantityPbf,
             senderInstanceName: senderInstanceName,
+            senderAddress : senderAddr,
             targetInstanceName : targetInstanceName,
+            targetAddress : targetAddr,
             timestampOrder: timestampOrderPbf,
             timestampShipped: timestampShippedPbf,
             timestampComplete: timestampCompletePbf 
@@ -618,8 +620,10 @@ function ManageOrderPbfRetailer() {
           dataOrderRetailer: {
             orderQuantity: dataOrder.orderQuantity,
             senderInstanceName: dataOrder.senderInstanceName,
+            senderAddress: dataOrder.senderAddress,
             statusOrder : dataOrder.statusOrder,
             targetInstanceName : dataOrder.targetInstanceName,
+            targetAddress: userData.address,
             timestampOrder: dataOrder.timestampOrder,
             timestampShipped: dataOrder.timestampShipped
           }
@@ -640,6 +644,10 @@ function ManageOrderPbfRetailer() {
       }
   
       console.log("Generated IPFS Hashes:", newIpfsHashes);
+
+      console.log('ini data obat', dataObat);
+      console.log('ini data dataOrder', dataOrder);
+      console.log('ini data data order pbf', detailOrderPbf);
   
       if(newIpfsHashes.length !== 0){
         MySwal.fire({

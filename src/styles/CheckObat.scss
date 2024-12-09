@@ -1,0 +1,101 @@
+@import './main.scss';
+@import 'mixin';
+
+#publicObat{
+  .title-menu{
+    h2{
+      font-size: 26px;
+      display: flex;
+
+      span{
+        margin-left: 20px;
+        font-size: 14px;
+        color: $white;
+        background-color: $purple;
+        padding: 6px 12px;
+        width: fit-content;
+        border-radius: 10px;
+      }
+    }
+  } 
+
+  .container{
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+
+    .data-obat{
+      flex: 2;
+
+      .section{
+       background-color: #f2f2f36a; 
+       padding: 10px;
+       margin-bottom: 20px;
+
+       .title{
+         padding: 8px 0;
+         margin-bottom: 12px;
+         border-bottom: solid 2px $grey-secondary;
+   
+         h5{
+          font-size: 20px;
+         }
+       }
+   
+       .content{
+         display: flex;
+         
+         .list-detail{
+
+           ul{
+             @include list();
+             flex-direction: column;
+   
+             li{
+               margin-bottom: 16px;
+   
+               span.label{
+                 display: inline-block;
+                 font-weight: bold;
+                 width: 200px;
+               }
+
+               span.addr{
+                margin-left: 23px;
+               }
+ 
+               &.list-item{
+                 display: flex;
+ 
+                 span.label{
+                   width: 200px;
+                 }
+ 
+                 ol{
+                   padding-inline-start: 16px;
+                   
+                   li::marker{
+                     padding-right: 10px;
+                   }
+                   li{
+                     margin-bottom: 10px;
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+
+      }
+      
+    }
+
+    .data-timestamp{
+      background-color: aqua;
+      flex: 1;
+    }
+
+  }
+  
+}

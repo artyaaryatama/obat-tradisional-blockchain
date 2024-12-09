@@ -201,7 +201,7 @@ function ManageOrderRetailer() {
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = detailObatCt;
 
-      const [orderIdProduk, namaProduk, obatIdProduk, batchName, orderQuantity, senderInstanceName, targetInstanceName, statusOrder, timestampOrder, timestampShipped, timestampComplete, orderObatIpfsHash] = detailOrderCt;
+      const [orderIdProduk, namaProduk, obatIdProduk, batchName, orderQuantity, senderInstanceName, senderAddress, targetInstanceName, targetAddress, statusOrder, timestampOrder, timestampShipped, timestampComplete, orderObatIpfsHash] = detailOrderCt;
       
       const timestamps = {
         timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
@@ -236,8 +236,10 @@ function ManageOrderRetailer() {
         batchName: batchName,
         orderQuantity: parseInt(orderQuantity),
         senderInstanceName: senderInstanceName,
+        senderAdddress: senderAddress,
         statusOrder : statusOrder,
         targetInstanceName : targetInstanceName,
+        targetAddress: targetAddress,
         orderObatIpfsHash : orderObatIpfsHash,
         timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
         timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
@@ -574,7 +576,7 @@ function ManageOrderRetailer() {
       const detailOrderPbf = await contracts.orderManagement.getHistoryOrderObatPbf(batchName)
 
       console.log(detailOrderPbf);
-      const [orderQuantity, senderInstanceName, targetInstanceName, timestampOrder, timestampShipped, timestampComplete] = detailOrderPbf
+      const [orderQuantity, senderInstanceName, targetInstanceName, senderAddress, targetAdddress, timestampOrder, timestampShipped, timestampComplete] = detailOrderPbf
 
       const timestampOrderPbf= timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0;
       const timestampShippedPbf= timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0;
@@ -604,10 +606,12 @@ function ManageOrderRetailer() {
             bpomInstanceName: dataObat.bpomInstanceName,
             bpomUserName: dataObat.bpomUserName
           },
-          datOrderPbf: {
+          dataOrderPbf: {
             orderQuantity: orderQuantityPbf,
             senderInstanceName: senderInstanceName,
+            senderAddress: senderAddress,
             targetInstanceName : targetInstanceName,
+            targetAddress: targetAdddress,
             timestampOrder: timestampOrderPbf,
             timestampShipped: timestampShippedPbf,
             timestampComplete: timestampCompletePbf 
@@ -615,6 +619,8 @@ function ManageOrderRetailer() {
           dataOrderRetailer: {
             orderQuantity: dataOrder.orderQuantity,
             senderInstanceName: dataOrder.senderInstanceName,
+            senderAddress : dataOrder.senderAddress,
+            targetAddress : dataOrder.targetAddress,
             targetInstanceName : dataOrder.targetInstanceName,
             timestampOrder: dataOrder.timestampOrder,
             timestampShipped: dataOrder.timestampShipped,

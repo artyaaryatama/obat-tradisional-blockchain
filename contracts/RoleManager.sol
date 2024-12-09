@@ -10,24 +10,24 @@ contract RoleManager {
     event RoleAssigned(address indexed user, en_roles role);
 
     // Assign or update a user's role
-    function assignRole(address user, en_roles role) external {
-        userRoles[user] = role;
-        isRegistered[user] = true;
-        emit RoleAssigned(user, role);
-    }
+    function assignRole(address _userAddr, en_roles _role) external {
+        userRoles[_userAddr] = _role;
+        isRegistered[_userAddr] = true;  
+        emit RoleAssigned(_userAddr, _role);
+    } 
 
     // Fetch a user's role
-    function getRole(address user) external view returns (en_roles) {
-        require(isRegistered[user], "User is not registered");
-        return userRoles[user];
+    function getRole(address _userAddr) external view returns (en_roles) {
+        require(isRegistered[_userAddr], "User is not registered");
+        return userRoles[_userAddr];
     }
 
-    function checkRegistration(address user) external view returns (bool) {
-        return isRegistered[user];
+    function checkRegistration(address _userAddr) external view returns (bool) {
+        return isRegistered[_userAddr]; 
     }
 
     // Check if a user has a specific role
-    function hasRole(address user, en_roles role) external view returns (bool) {
-        return isRegistered[user] && userRoles[user] == role;
+    function hasRole(address _userAddr, en_roles _role) external view returns (bool) {
+        return isRegistered[_userAddr] && userRoles[_userAddr] == _role;
     }
 }

@@ -395,7 +395,7 @@ function AddQuantityObat() {
                   required
                 >
                   <option value="" disabled>Pilih Quantity Obat</option>
-                  <option value="2">2 Obat</option>
+                  <option value="5">5 Obat</option>
                   <option value="50">50 Obat</option>
                   <option value="100">100 Obat</option>
                   <option value="150">150 Obat</option>

@@ -177,8 +177,6 @@ function CreateOrderRetailer() {
 
   const orderDetail = async (id) => {
 
-    
-
     try {
       const listDetailObatCt = await contracts.obatTradisional.getListObatById(id);
       const detailObatPbfCt = await contracts.orderManagement.getDetailPbfObat(id, userData.instanceName)

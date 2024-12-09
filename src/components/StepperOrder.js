@@ -9,8 +9,6 @@ import Typography from '@mui/material/Typography';
 
 import "./../styles/Mui-Override.scss";
 
-
-
 export default function OrderStatusStepper({ orderStatus, timestamps }) {
 
   const steps = [
