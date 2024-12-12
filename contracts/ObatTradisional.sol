@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 import "./RoleManager.sol";
 import "./MainSupplyChain.sol";
+import "./EnumsLibrary.sol";
  
 contract ObatTradisional {
 
@@ -15,32 +16,39 @@ contract ObatTradisional {
     mainSupplyChain = MainSupplyChain(_mainSupplyChainAddr);
   }
 
+  using EnumsLibrary for EnumsLibrary.NieStatus;
+  using EnumsLibrary for EnumsLibrary.OrderStatus;
+  using EnumsLibrary for EnumsLibrary.ObatAvailability;
+  using EnumsLibrary for EnumsLibrary.Roles;
+  using EnumsLibrary for EnumsLibrary.TipeProduk;
+  using EnumsLibrary for EnumsLibrary.TipePermohonanCpotb;
+
+  // EnumsLibrary.NieStatus public nieStatus;
+  // EnumsLibrary.OrderStatus public orderStatus;
+  // EnumsLibrary.ObatAvailability public obatAvailability;
+  // EnumsLibrary.Roles public roles;
+  // EnumsLibrary.TipeProduk public tipeProduk;
+  // EnumsLibrary.TipePermohonanCpotb public jenisSediaan;
+
   modifier onlyFactory() { 
-    require(roleManager.hasRole(msg.sender, RoleManager.en_roles.Factory), "Access restricted to Factory role");
+    require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.Factory), "Access restricted to Factory role");
     _;
   } 
 
   modifier onlyPBF() {
-    require(roleManager.hasRole(msg.sender, RoleManager.en_roles.PBF), "Access restricted to PBF role");
+    require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.PBF), "Access restricted to PBF role");
     _;
   }
 
   modifier onlyRetailer() {
-    require(roleManager.hasRole(msg.sender, RoleManager.en_roles.Retailer), "Access restricted to Retailer role");
+    require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.Retailer), "Access restricted to Retailer role");
     _;
   }
 
   modifier onlyBPOM() {
-    require(roleManager.hasRole(msg.sender, RoleManager.en_roles.BPOM), "Access restricted to BPOM role");
+    require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.BPOM), "Access restricted to BPOM role");
     _;
   }
-
-  enum en_nieStatus { inLocalProduction, RequestedNIE, ApprovedNIE }
-  enum en_orderStatus { OrderPlaced , OrderShipped , OrderDelivered  }
-  enum en_obatAvailability { ready, sold }
-  enum en_roles { Factory, PBF, BPOM, Retailer }
-  enum en_tipeProduk {obatTradisional, suplemenKesehatan}
-  enum en_jenisSediaan { Tablet, Kapsul, KapsulLunak, SerbukOral, CairanOral, CairanObatDalam, CairanObatLuar, FilmStrip, Pil}
 
   struct st_obatDetails {
     string obatId;
@@ -49,8 +57,8 @@ contract ObatTradisional {
     string[] klaim;
     string kemasan; 
     string[] komposisi;
-    en_tipeProduk tipeProduk;
-    en_nieStatus obatStatus;   
+    EnumsLibrary.TipeProduk tipeProduk;
+    EnumsLibrary.NieStatus obatStatus;   
     uint256 productionTimestamp;
     uint256 nieRequestDate;       
     uint256 nieApprovalDate;        
@@ -59,7 +67,7 @@ contract ObatTradisional {
   }
 
   struct st_obatProduction {
-    en_obatAvailability statusStok;
+    EnumsLibrary.ObatAvailability statusStok;
     string batchName;
     string obatId; // untuk collect data Factory, sm detail obat kyk nie, klaim dst
     string namaProduk;
@@ -77,12 +85,12 @@ contract ObatTradisional {
   mapping(string => address) public factoryAddresses;
   mapping(string => string) public factoryUserNames;
 
-  mapping (address => en_roles) public userRoles;
+  mapping (address => EnumsLibrary.Roles) public userRoles;
   mapping (string => st_obatDetails) public obatDetailsById;
   mapping (string => st_obatDetails) public obatDetailsByNameProduct;
   mapping (string => st_obatProduction) public obatProductionDetailsByBatchName;
 
-  event evt_obatCreated(string namaProduk, string factoryInstanceNames, string factoryUserNames, address factoryAddresses, string kemasan, en_tipeProduk en_tipeProduk);
+  event evt_obatCreated(string namaProduk, string factoryInstanceNames, string factoryUserNames, address factoryAddresses, string kemasan, EnumsLibrary.TipeProduk tipeProduk);
   event evt_nieRequested(string obatId, uint timestampRequested, string namaProduk);
   event evt_nieApproved(string nieNumber, string namaProduk, uint timestampApproved);
   event evt_addObatQuantity(string namaProduk, uint8 quantity, string batchName);
@@ -93,7 +101,7 @@ contract ObatTradisional {
     returns(
       uint8[] memory
   ) {
-     uint8[] memory approvedJenisSediaan = mainSupplyChain.hasApprovedCpotb(_factoryInstanceName); 
+     uint8[] memory approvedJenisSediaan = mainSupplyChain.approvedTipePermohonan(_factoryInstanceName); 
 
      return approvedJenisSediaan;
   } 
@@ -108,7 +116,7 @@ contract ObatTradisional {
     address _factoryAddr,
     string memory _factoryInstanceName,
     string memory _factoryUserName,
-    en_tipeProduk _tipeProduk
+    EnumsLibrary.TipeProduk _tipeProduk
   ) public onlyFactory {
     st_obatDetails memory newObatDetails = st_obatDetails({
       obatId: _obatId,
@@ -118,8 +126,8 @@ contract ObatTradisional {
       kemasan: _kemasan,
       komposisi: _komposisi,
       tipeProduk: _tipeProduk,
-      obatStatus: en_nieStatus.inLocalProduction,
-      // obatStatus: en_nieStatus.ApprovedNIE,
+      obatStatus: EnumsLibrary.NieStatus.inLocalProduction,
+      // obatStatus: EnumsLibrary.NieStatus.ApprovedNIE,
       productionTimestamp: block.timestamp,
       nieRequestDate: 0,
       nieApprovalDate: 0,  
@@ -136,21 +144,21 @@ contract ObatTradisional {
     factoryAddresses[_obatId] = _factoryAddr;
     factoryUserNames[_obatId] = _factoryUserName;
 
-    emit evt_obatCreated(_namaProduk, _factoryInstanceName, _factoryUserName, _factoryAddr, _kemasan, en_tipeProduk(_tipeProduk));
+    emit evt_obatCreated(_namaProduk, _factoryInstanceName, _factoryUserName, _factoryAddr, _kemasan, EnumsLibrary.TipeProduk(_tipeProduk));
   }
  
   function requestNie(string memory _obatId) 
     public onlyFactory {
-    st_obatDetails storage obatDetails = obatDetailsById[_obatId];
-    require(obatDetails.obatStatus == en_nieStatus.inLocalProduction, "Obat Tradisional status must be in local production!");
+    st_obatDetails memory obatDetails = obatDetailsById[_obatId];
+    require(obatDetails.obatStatus == EnumsLibrary.NieStatus.inLocalProduction, "Obat Tradisional status must be in local production!");
 
     obatDetails.nieRequestDate = block.timestamp;
-    obatDetails.obatStatus = en_nieStatus.RequestedNIE;
+    obatDetails.obatStatus = EnumsLibrary.NieStatus.RequestedNIE;
 
     for(uint i=0; i<allObatData.length; i++){
       if (keccak256(abi.encodePacked(allObatData[i].obatId)) == keccak256(abi.encodePacked(_obatId))) {
         allObatData[i].nieRequestDate = block.timestamp;
-        allObatData[i].obatStatus = en_nieStatus.RequestedNIE;
+        allObatData[i].obatStatus = EnumsLibrary.NieStatus.RequestedNIE;
 
         break;
       }
@@ -166,11 +174,11 @@ contract ObatTradisional {
     string memory _bpomUserName,
     string memory _nieNumber
   ) public onlyBPOM{
-    st_obatDetails storage obatDetails = obatDetailsById[_obatId];
-    require(obatDetails.obatStatus == en_nieStatus.RequestedNIE, "Obat Tradisional status must be RequestedNIE!");
+    st_obatDetails memory obatDetails = obatDetailsById[_obatId];
+    require(obatDetails.obatStatus == EnumsLibrary.NieStatus.RequestedNIE, "Obat Tradisional status must be RequestedNIE!");
 
     obatDetails.nieApprovalDate = block.timestamp;
-    obatDetails.obatStatus = en_nieStatus.ApprovedNIE;
+    obatDetails.obatStatus = EnumsLibrary.NieStatus.ApprovedNIE;
     obatDetails.nieNumber = _nieNumber;
 
     // Save BPOM details
@@ -181,7 +189,7 @@ contract ObatTradisional {
     for(uint i=0; i<allObatData.length; i++){
       if (keccak256(abi.encodePacked(allObatData[i].obatId)) == keccak256(abi.encodePacked(_obatId))) {
         allObatData[i].nieApprovalDate = block.timestamp;
-        allObatData[i].obatStatus = en_nieStatus.ApprovedNIE;
+        allObatData[i].obatStatus = EnumsLibrary.NieStatus.ApprovedNIE;
         allObatData[i].nieNumber = _nieNumber;
 
         break;  
@@ -200,7 +208,7 @@ contract ObatTradisional {
   ) public onlyFactory
   {
     st_obatProduction memory newProduction = st_obatProduction({
-      statusStok: en_obatAvailability.ready,
+      statusStok: EnumsLibrary.ObatAvailability.ready,
       batchName: _batchName,
       obatId: _obatId, 
       namaProduk: obatDetailsById[_obatId].namaProduk, 
@@ -229,7 +237,7 @@ contract ObatTradisional {
   {
     uint count = 0;
     for (uint i=0; i < allObatData.length; i++) {
-      if (allObatData[i].obatStatus != en_nieStatus.inLocalProduction) {
+      if (allObatData[i].obatStatus != EnumsLibrary.NieStatus.inLocalProduction) {
         count++;
       }
     }
@@ -242,7 +250,7 @@ contract ObatTradisional {
 
     uint index = 0;
     for (uint i= 0; i < allObatData.length; i++) {
-      if (allObatData[i].obatStatus != en_nieStatus.inLocalProduction) {
+      if (allObatData[i].obatStatus != EnumsLibrary.NieStatus.inLocalProduction) {
         obatIdArray[index] = allObatData[i].obatId;
         namaProdukArray[index] = allObatData[i].namaProduk;
         factoryInstanceArray[index] = allObatData[i].factoryInstanceName;
@@ -353,7 +361,7 @@ contract ObatTradisional {
       uint count = 0;
       for (uint i=0; i < allObatData.length; i++) {
         if (keccak256(abi.encodePacked(allObatData[i].factoryInstanceName)) == keccak256(abi.encodePacked(_factoryInstanceName))) {
-          if (allObatData[i].obatStatus == en_nieStatus.ApprovedNIE) {
+          if (allObatData[i].obatStatus == EnumsLibrary.NieStatus.ApprovedNIE) {
             count++;
           }
 
@@ -366,7 +374,7 @@ contract ObatTradisional {
       uint index = 0;
       for (uint i= 0; i < allObatData.length; i++) {
         if (keccak256(abi.encodePacked(allObatData[i].factoryInstanceName)) == keccak256(abi.encodePacked(_factoryInstanceName))) {
-          if (allObatData[i].obatStatus == en_nieStatus.ApprovedNIE) {
+          if (allObatData[i].obatStatus == EnumsLibrary.NieStatus.ApprovedNIE) {
             obatIdArray[index] = allObatData[i].obatId;
             namaProdukArray[index] = allObatData[i].namaProduk;
 
@@ -404,7 +412,7 @@ contract ObatTradisional {
           
       } else {
           st_obatProduction memory newProduction = st_obatProduction({
-            statusStok: en_obatAvailability.ready, 
+            statusStok: EnumsLibrary.ObatAvailability.ready, 
             batchName: _batchName,
             obatId: _obatId,
             namaProduk: _namaProduk,
@@ -469,12 +477,12 @@ contract ObatTradisional {
       st_obatProduction[] memory
   ) {
 
-    if (roleManager.hasRole(msg.sender, RoleManager.en_roles.PBF)) {
+    if (roleManager.hasRole(msg.sender, EnumsLibrary.Roles.PBF)) {
       st_obatProduction[] memory obatProductionClean;
       uint count = 0;
 
       for (uint256 i = 0; i < allProducedObat.length; i++) {
-        if (allProducedObat[i].statusStok == en_obatAvailability.ready) {
+        if (allProducedObat[i].statusStok == EnumsLibrary.ObatAvailability.ready) {
           count++;
         }
       }
@@ -483,7 +491,7 @@ contract ObatTradisional {
       uint index = 0;
 
       for (uint256 i = 0; i < allProducedObat.length; i++) {
-        if (allProducedObat[i].statusStok == en_obatAvailability.ready) {
+        if (allProducedObat[i].statusStok == EnumsLibrary.ObatAvailability.ready) {
           obatProductionClean[index] = st_obatProduction({
             statusStok: allProducedObat[i].statusStok,
             batchName: allProducedObat[i].batchName,
@@ -498,7 +506,7 @@ contract ObatTradisional {
       }
       return obatProductionClean;
 
-    } else if (roleManager.hasRole(msg.sender, RoleManager.en_roles.Factory)) {
+    } else if (roleManager.hasRole(msg.sender, EnumsLibrary.Roles.Factory)) {
         return allProducedObat;
 
     } else {
@@ -520,23 +528,23 @@ contract ObatTradisional {
     obatQuantity = obatProductionDetailsByBatchName[_batchName].obatQuantity;
     statusStok = uint8(obatProductionDetailsByBatchName[_batchName].statusStok);
     
-    if (roleManager.hasRole(msg.sender, RoleManager.en_roles.PBF)) {
+    if (roleManager.hasRole(msg.sender, EnumsLibrary.Roles.PBF)) {
       obatIpfsHash = new string[](0);
 
-    } else if (roleManager.hasRole(msg.sender, RoleManager.en_roles.Factory)) {
+    } else if (roleManager.hasRole(msg.sender, EnumsLibrary.Roles.Factory)) {
       obatIpfsHash = obatProductionDetailsByBatchName[_batchName].obatIpfsHash;
     }
   }
 
   function updateObatProductionDetails(string memory _batchName, string[] memory _obatIpfsHash) 
     public {
-    obatProductionDetailsByBatchName[_batchName].statusStok = ObatTradisional.en_obatAvailability.sold;
+    obatProductionDetailsByBatchName[_batchName].statusStok = EnumsLibrary.ObatAvailability.sold;
     obatProductionDetailsByBatchName[_batchName].obatIpfsHash = _obatIpfsHash;
 
     for(uint i=0; i < allProducedObat.length; i++){
       if(keccak256(abi.encodePacked(allProducedObat[i].batchName)) == keccak256(abi.encodePacked(_batchName))){
         allProducedObat[i].obatIpfsHash = _obatIpfsHash;
-        allProducedObat[i].statusStok = ObatTradisional.en_obatAvailability.sold;
+        allProducedObat[i].statusStok = EnumsLibrary.ObatAvailability.sold;
 
         break;
       }

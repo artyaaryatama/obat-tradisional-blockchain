@@ -1,33 +1,62 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "./EnumsLibrary.sol";
+
 contract RoleManager {
-    enum en_roles { Factory, PBF, BPOM, Retailer }
- 
-    mapping(address => en_roles) private userRoles;
+    using EnumsLibrary for EnumsLibrary.Roles;
+
+    struct User {
+        string name;
+        string instanceName;
+        address userAddr;
+        EnumsLibrary.Roles role;
+    }
+
+    mapping(address => User) private users;
     mapping(address => bool) private isRegistered;
 
-    event RoleAssigned(address indexed user, en_roles role);
+    event RoleAssigned(address indexed user, EnumsLibrary.Roles role);
+    event UserRegistered(address indexed userAddr, string name, string instanceName, EnumsLibrary.Roles role);
 
-    // Assign or update a user's role
-    function assignRole(address _userAddr, en_roles _role) external {
-        userRoles[_userAddr] = _role;
-        isRegistered[_userAddr] = true;  
+    // Register a user and assign a role
+    function registerUser(
+        string memory _name,
+        string memory _instanceName,
+        address _userAddr,
+        EnumsLibrary.Roles _role
+    ) external {
+        require(!isRegistered[_userAddr], "User already registered");
+
+        users[_userAddr] = User({
+            name: _name,
+            instanceName: _instanceName,
+            userAddr: _userAddr,
+            role: _role
+        });
+
+        isRegistered[_userAddr] = true;
+
+        emit UserRegistered(_userAddr, _name, _instanceName, _role);
         emit RoleAssigned(_userAddr, _role);
-    } 
+    }
 
-    // Fetch a user's role
-    function getRole(address _userAddr) external view returns (en_roles) {
+    function getRegisteredUser(address _userAddr)
+        external
+        view
+        returns (string memory, string memory, address, EnumsLibrary.Roles)
+    {
         require(isRegistered[_userAddr], "User is not registered");
-        return userRoles[_userAddr];
+        User memory user = users[_userAddr];
+        return (user.name, user.instanceName, user.userAddr, user.role);
     }
 
     function checkRegistration(address _userAddr) external view returns (bool) {
-        return isRegistered[_userAddr]; 
+        return isRegistered[_userAddr];
     }
 
-    // Check if a user has a specific role
-    function hasRole(address _userAddr, en_roles _role) external view returns (bool) {
-        return isRegistered[_userAddr] && userRoles[_userAddr] == _role;
+
+    function hasRole(address _userAddr, EnumsLibrary.Roles _role) external view returns (bool) {
+        return isRegistered[_userAddr] && users[_userAddr].role == _role;
     }
 }

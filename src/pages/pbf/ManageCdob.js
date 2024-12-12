@@ -68,29 +68,20 @@ function ManageCdob() {
     const loadData = async () => {
       if (contract && userData.instanceName) {
         try {
-          const tx = await contract.getListCdobByPbf(userData.instanceName);
-          console.log(tx);
-          const [tipePermohonanArray, statusArray, latestTimestampArray, idArray] = tx;
-          console.log(tx[1]);
+          const listAllCt = await contract.getListAllCertificateByInstance(userData.instanceName);
+          console.log(listAllCt);
+          const reconstructedData = listAllCt.map((item, index) => {
+            const cdobNumber = item[1] ? item[1] : '-'
 
-          const reconstructedData = tipePermohonanArray.map((tipePermohonan, index) => {
-            const readableTipePermohonan = tipePermohonanMap[tipePermohonan];
-            const readableStatus = statusMap[statusArray[index]];
-
-            const timestampDate = new Date(Number(latestTimestampArray[index]) * 1000);;
-            const formattedTimestamp = timestampDate.toLocaleDateString('id-ID', options);
-  
             return {
-              tipePermohonan: readableTipePermohonan,
-              status: readableStatus,
-              latestTimestamp: formattedTimestamp,
-              idCdob: idArray[index]
+              cdobId: item[0], 
+              cdobNumber: cdobNumber,
+              pbfName: item[2],
+              tipePermohonan: tipePermohonanMap[item[4]],
+              status: statusMap[item[5]],
             };
-          });
-  
-          // Log the transformed data
-          console.log("Reconstructed Data:", reconstructedData);
-  
+          })
+
           setDataCdob(reconstructedData);
   
         } catch (error) {
@@ -107,31 +98,38 @@ function ManageCdob() {
     console.log(id);
 
     try {
-      const tx = await contract.getListCdobById(id);
+      const detailCdobCt = await contract.detailCdob(id);
+
+      const [cdobId, cdobNumber, cdobDetail, tipePermohonan] = detailCdobCt
+
+      const [status, timestampRequest, timestampApprove, sender, bpom] = cdobDetail
 
       const detailCdob = {
-        cpotbId: tx.cdobId,
-        senderName: tx.senderName,
-        pbfAddr: tx.pbfAddr,
-        pbfName: tx.pbfName,
-        tipePermohonan: tipePermohonanMap[tx.tipePermohonan], 
-        status: statusMap[tx.status], 
-        timestampRequest: new Date(Number(tx.timestampRequest) * 1000).toLocaleDateString('id-ID', options), 
-        timestampApprove: Number(tx.timestampApprove) > 0 ? new Date(Number(tx.timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
-        cdobNumber: tx.cdobNumber ? tx.cdobNumber : "-",
-        bpomAddr: tx.bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : tx.bpomAddr,
-        receiverName: tx.receiverName ? tx.receiverName : "-"
+        cdobId: cdobId,
+        cdobNumber: cdobNumber ? cdobNumber : "-",
+        pbfUserName: sender[0],
+        pbfAddr: sender[1],
+        pbfName: sender[2],
+        tipePermohonan: tipePermohonanMap[tipePermohonan], 
+        status: statusMap[status], 
+        timestampRequest: new Date(Number(timestampRequest) * 1000).toLocaleDateString('id-ID', options),
+        timestampApprove: Number(timestampApprove) > 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        bpomName : bpom[0] ? bpom[0] : "-",
+        bpomInstance: bpom[2] ? bpom[2] : "-",
+        bpomAddr: bpom[1] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
       };
-      
+
+      console.log(detailCdob.timestampApprove);
+
       MySwal.fire({
-        title: "Sertifikat CPOTB",
+        title: "Detail Sertifikat CDOB",
         html: (
           <div className='form-swal'>
             <div className="row">
               <div className="col">
                 <ul>
                   <li className="label">
-                    <p>Diajukan oleh</p>
+                    <p>PBF Instance</p>
                   </li>
                   <li className="input">
                     <p>{detailCdob.pbfName}</p>
@@ -140,7 +138,7 @@ function ManageCdob() {
 
                 <ul>
                   <li className="label">
-                    <p>Address Pengirim</p> 
+                    <p>PBF Address</p> 
                   </li>
                   <li className="input">
                     <p>{detailCdob.pbfAddr}</p> 
@@ -149,28 +147,19 @@ function ManageCdob() {
 
                 <ul>
                   <li className="label">
-                    <p>Nama Pengirim</p> 
+                    <p>BPOM Instance</p> 
                   </li>
                   <li className="input">
-                    <p>{detailCdob.senderName}</p> 
+                    <p>{detailCdob.bpomInstance}</p> 
                   </li>
                 </ul>
 
                 <ul>
                   <li className="label">
-                    <p>Address BPOM</p> 
+                    <p>BPOM Address</p> 
                   </li>
                   <li className="input">
                     <p>{detailCdob.bpomAddr}</p> 
-                  </li>
-                </ul>
-
-                <ul>
-                  <li className="label">
-                    <p>Nama Penyutuju</p> 
-                  </li>
-                  <li className="input">
-                    <p>{detailCdob.receiverName}</p> 
                   </li>
                 </ul>
               </div>
@@ -198,7 +187,7 @@ function ManageCdob() {
 
                 <ul>
                   <li className="label">
-                    <p>Jenis Sediaan</p>
+                    <p>Tipe Permohonan</p>
                   </li>
                   <li className="input">
                     <p>{detailCdob.tipePermohonan}</p> 
@@ -227,13 +216,10 @@ function ManageCdob() {
           
           </div>
         ),
-        width: '720',
+        width: '620',
         showCancelButton: false,
-        confirmButtonText: 'Oke',
+        confirmButtonText: 'Ok',
       })
-
-      console.log(detailCdob);
-
     } catch (e) {
       errAlert(e, "Can't retrieve data")
     }
@@ -260,8 +246,8 @@ function ManageCdob() {
               <ul>
                 {dataCdob.map((item, index) => ( 
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailCdob(item.idCdob)}>{item.tipePermohonan}</button>
-                    <p>Tanggal Pengajuan: {item.latestTimestamp}</p>
+                    <button className='title' onClick={() => getDetailCdob(item.cdobId)}>{item.tipePermohonan}</button>
+                    <p>CDOB Number: {item.cdobNumber}</p>
                     <button className={`statusPengajuan ${item.status}`}>
                       {item.status}
                     </button>

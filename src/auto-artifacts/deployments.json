@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+    "address": "0xc5a5C42992dECbae36851359345FE25997F5C42d",
     "abi": [
       {
         "inputs": [
@@ -49,21 +49,21 @@
         "inputs": [
           {
             "indexed": false,
+            "internalType": "string",
+            "name": "bpomInstance",
+            "type": "string"
+          },
+          {
+            "indexed": false,
             "internalType": "address",
             "name": "bpomAddr",
             "type": "address"
           },
           {
             "indexed": false,
-            "internalType": "string",
-            "name": "receiverName",
-            "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "pbfName",
-            "type": "string"
+            "internalType": "enum EnumsLibrary.TipePermohonanCdob",
+            "name": "",
+            "type": "uint8"
           },
           {
             "indexed": false,
@@ -74,11 +74,11 @@
           {
             "indexed": false,
             "internalType": "uint256",
-            "name": "timestampApprove",
+            "name": "timestampApproved",
             "type": "uint256"
           }
         ],
-        "name": "evt_cdobApptoved",
+        "name": "evt_cdobApproved",
         "type": "event"
       },
       {
@@ -87,7 +87,7 @@
           {
             "indexed": false,
             "internalType": "string",
-            "name": "senderName",
+            "name": "pbfInstance",
             "type": "string"
           },
           {
@@ -98,21 +98,9 @@
           },
           {
             "indexed": false,
-            "internalType": "string",
-            "name": "pbfName",
-            "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "enum MainSupplyChain.en_tipePermohonan",
+            "internalType": "enum EnumsLibrary.TipePermohonanCdob",
             "name": "tipePermohonan",
             "type": "uint8"
-          },
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "cdobId",
-            "type": "string"
           },
           {
             "indexed": false,
@@ -129,32 +117,32 @@
         "inputs": [
           {
             "indexed": false,
+            "internalType": "string",
+            "name": "bpomInstance",
+            "type": "string"
+          },
+          {
+            "indexed": false,
             "internalType": "address",
             "name": "bpomAddr",
             "type": "address"
           },
           {
             "indexed": false,
-            "internalType": "string",
-            "name": "receiverName",
-            "type": "string"
+            "internalType": "enum EnumsLibrary.TipePermohonanCpotb",
+            "name": "",
+            "type": "uint8"
           },
           {
             "indexed": false,
             "internalType": "string",
-            "name": "factoryName",
-            "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "cpotbNumber",
+            "name": "cpotbId",
             "type": "string"
           },
           {
             "indexed": false,
             "internalType": "uint256",
-            "name": "timestampApprove",
+            "name": "timestampApproved",
             "type": "uint256"
           }
         ],
@@ -167,7 +155,7 @@
           {
             "indexed": false,
             "internalType": "string",
-            "name": "senderName",
+            "name": "factoryInstance",
             "type": "string"
           },
           {
@@ -178,21 +166,9 @@
           },
           {
             "indexed": false,
-            "internalType": "string",
-            "name": "factoryName",
-            "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "enum MainSupplyChain.en_jenisSediaan",
-            "name": "jenisSediaan",
+            "internalType": "enum EnumsLibrary.TipePermohonanCpotb",
+            "name": "",
             "type": "uint8"
-          },
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "cpotbId",
-            "type": "string"
           },
           {
             "indexed": false,
@@ -212,62 +188,37 @@
             "type": "uint256"
           }
         ],
-        "name": "allCdobData",
+        "name": "allCertificateData",
         "outputs": [
           {
             "internalType": "string",
-            "name": "cdobId",
+            "name": "certId",
             "type": "string"
           },
           {
             "internalType": "string",
-            "name": "senderName",
+            "name": "certNumber",
             "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "pbfAddr",
-            "type": "address"
           },
           {
             "internalType": "string",
-            "name": "pbfName",
+            "name": "instanceName",
             "type": "string"
           },
           {
-            "internalType": "enum MainSupplyChain.en_tipePermohonan",
+            "internalType": "string",
+            "name": "certificateType",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
             "name": "tipePermohonan",
             "type": "uint8"
           },
           {
-            "internalType": "enum MainSupplyChain.en_statusCert",
+            "internalType": "enum EnumsLibrary.StatusCertificate",
             "name": "status",
             "type": "uint8"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampRequest",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampApprove",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "cdobNumber",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "bpomAddr",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "receiverName",
-            "type": "string"
           }
         ],
         "stateMutability": "view",
@@ -276,88 +227,36 @@
       {
         "inputs": [
           {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "name": "allCpotbData",
-        "outputs": [
-          {
-            "internalType": "string",
-            "name": "cpotbId",
-            "type": "string"
+            "components": [
+              {
+                "internalType": "string",
+                "name": "certNumber",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "certId",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "bpomName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "bpomInstance",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct MainSupplyChain.st_certificateApproval",
+            "name": "approvalData",
+            "type": "tuple"
           },
           {
-            "internalType": "string",
-            "name": "senderName",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "factoryAddr",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "factoryName",
-            "type": "string"
-          },
-          {
-            "internalType": "enum MainSupplyChain.en_jenisSediaan",
-            "name": "jenisSediaan",
+            "internalType": "uint8",
+            "name": "_tipePermohonanCdob",
             "type": "uint8"
-          },
-          {
-            "internalType": "enum MainSupplyChain.en_statusCert",
-            "name": "status",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampRequest",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampApprove",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "cpotbNumber",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "bpomAddr",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "receiverName",
-            "type": "string"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_cdobId",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_cdobNumber",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_receiverName",
-            "type": "string"
           }
         ],
         "name": "approveCdob",
@@ -368,24 +267,179 @@
       {
         "inputs": [
           {
-            "internalType": "string",
-            "name": "_cpotbId",
-            "type": "string"
+            "components": [
+              {
+                "internalType": "string",
+                "name": "certNumber",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "certId",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "bpomName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "bpomInstance",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct MainSupplyChain.st_certificateApproval",
+            "name": "approvalData",
+            "type": "tuple"
           },
           {
-            "internalType": "string",
-            "name": "_cpotbNumber",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_receiverName",
-            "type": "string"
+            "internalType": "uint8",
+            "name": "_tipePermohonanCpotb",
+            "type": "uint8"
           }
         ],
         "name": "approveCpotb",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_factoryName",
+            "type": "string"
+          }
+        ],
+        "name": "approvedTipePermohonan",
+        "outputs": [
+          {
+            "internalType": "uint8[]",
+            "name": "",
+            "type": "uint8[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "approvedTipePermohonanByFactory",
+        "outputs": [
+          {
+            "internalType": "uint8",
+            "name": "",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "name": "cdobDataById",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "cdobId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "cdobNumber",
+            "type": "string"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum EnumsLibrary.StatusCertificate",
+                "name": "status",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint256",
+                "name": "timestampRequest",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "timestampApprove",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "string",
+                    "name": "userName",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "userAddr",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "userInstanceName",
+                    "type": "string"
+                  }
+                ],
+                "internalType": "struct MainSupplyChain.st_userCertificate",
+                "name": "sender",
+                "type": "tuple"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "string",
+                    "name": "userName",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "userAddr",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "userInstanceName",
+                    "type": "string"
+                  }
+                ],
+                "internalType": "struct MainSupplyChain.st_userCertificate",
+                "name": "bpom",
+                "type": "tuple"
+              }
+            ],
+            "internalType": "struct MainSupplyChain.st_certificateDetails",
+            "name": "details",
+            "type": "tuple"
+          },
+          {
+            "internalType": "enum EnumsLibrary.TipePermohonanCdob",
+            "name": "tipePermohonan",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -405,71 +459,78 @@
           },
           {
             "internalType": "string",
-            "name": "senderName",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "factoryAddr",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "factoryName",
-            "type": "string"
-          },
-          {
-            "internalType": "enum MainSupplyChain.en_jenisSediaan",
-            "name": "jenisSediaan",
-            "type": "uint8"
-          },
-          {
-            "internalType": "enum MainSupplyChain.en_statusCert",
-            "name": "status",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampRequest",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestampApprove",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
             "name": "cpotbNumber",
             "type": "string"
           },
           {
-            "internalType": "address",
-            "name": "bpomAddr",
-            "type": "address"
+            "components": [
+              {
+                "internalType": "enum EnumsLibrary.StatusCertificate",
+                "name": "status",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint256",
+                "name": "timestampRequest",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "timestampApprove",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "string",
+                    "name": "userName",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "userAddr",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "userInstanceName",
+                    "type": "string"
+                  }
+                ],
+                "internalType": "struct MainSupplyChain.st_userCertificate",
+                "name": "sender",
+                "type": "tuple"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "string",
+                    "name": "userName",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "userAddr",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "userInstanceName",
+                    "type": "string"
+                  }
+                ],
+                "internalType": "struct MainSupplyChain.st_userCertificate",
+                "name": "bpom",
+                "type": "tuple"
+              }
+            ],
+            "internalType": "struct MainSupplyChain.st_certificateDetails",
+            "name": "details",
+            "type": "tuple"
           },
           {
-            "internalType": "string",
-            "name": "receiverName",
-            "type": "string"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "",
-            "type": "string"
-          }
-        ],
-        "name": "cpotbJenisSediaan",
-        "outputs": [
-          {
-            "internalType": "enum MainSupplyChain.en_jenisSediaan",
-            "name": "",
+            "internalType": "enum EnumsLibrary.TipePermohonanCpotb",
+            "name": "tipePermohonan",
             "type": "uint8"
           }
         ],
@@ -477,80 +538,14 @@
         "type": "function"
       },
       {
-        "inputs": [],
-        "name": "getListAllCdob",
-        "outputs": [
-          {
-            "internalType": "uint8[]",
-            "name": "",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "",
-            "type": "string[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "",
-            "type": "string[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "getListAllCpotb",
-        "outputs": [
-          {
-            "internalType": "uint8[]",
-            "name": "",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "",
-            "type": "string[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "",
-            "type": "string[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
         "inputs": [
           {
             "internalType": "string",
-            "name": "_cdobId",
+            "name": "_certId",
             "type": "string"
           }
         ],
-        "name": "getListCdobById",
+        "name": "detailCdob",
         "outputs": [
           {
             "components": [
@@ -561,56 +556,82 @@
               },
               {
                 "internalType": "string",
-                "name": "senderName",
-                "type": "string"
-              },
-              {
-                "internalType": "address",
-                "name": "pbfAddr",
-                "type": "address"
-              },
-              {
-                "internalType": "string",
-                "name": "pbfName",
-                "type": "string"
-              },
-              {
-                "internalType": "enum MainSupplyChain.en_tipePermohonan",
-                "name": "tipePermohonan",
-                "type": "uint8"
-              },
-              {
-                "internalType": "enum MainSupplyChain.en_statusCert",
-                "name": "status",
-                "type": "uint8"
-              },
-              {
-                "internalType": "uint256",
-                "name": "timestampRequest",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "timestampApprove",
-                "type": "uint256"
-              },
-              {
-                "internalType": "string",
                 "name": "cdobNumber",
                 "type": "string"
               },
               {
-                "internalType": "address",
-                "name": "bpomAddr",
-                "type": "address"
+                "components": [
+                  {
+                    "internalType": "enum EnumsLibrary.StatusCertificate",
+                    "name": "status",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "timestampRequest",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "timestampApprove",
+                    "type": "uint256"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "string",
+                        "name": "userName",
+                        "type": "string"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "userAddr",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "string",
+                        "name": "userInstanceName",
+                        "type": "string"
+                      }
+                    ],
+                    "internalType": "struct MainSupplyChain.st_userCertificate",
+                    "name": "sender",
+                    "type": "tuple"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "string",
+                        "name": "userName",
+                        "type": "string"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "userAddr",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "string",
+                        "name": "userInstanceName",
+                        "type": "string"
+                      }
+                    ],
+                    "internalType": "struct MainSupplyChain.st_userCertificate",
+                    "name": "bpom",
+                    "type": "tuple"
+                  }
+                ],
+                "internalType": "struct MainSupplyChain.st_certificateDetails",
+                "name": "details",
+                "type": "tuple"
               },
               {
-                "internalType": "string",
-                "name": "receiverName",
-                "type": "string"
+                "internalType": "enum EnumsLibrary.TipePermohonanCdob",
+                "name": "tipePermohonan",
+                "type": "uint8"
               }
             ],
-            "internalType": "struct MainSupplyChain.st_cdobData",
+            "internalType": "struct MainSupplyChain.st_cdob",
             "name": "",
             "type": "tuple"
           }
@@ -622,79 +643,11 @@
         "inputs": [
           {
             "internalType": "string",
-            "name": "_instanceName",
+            "name": "_certId",
             "type": "string"
           }
         ],
-        "name": "getListCdobByPbf",
-        "outputs": [
-          {
-            "internalType": "uint8[]",
-            "name": "",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "",
-            "type": "string[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_instanceName",
-            "type": "string"
-          }
-        ],
-        "name": "getListCpotbByFactory",
-        "outputs": [
-          {
-            "internalType": "uint8[]",
-            "name": "",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "",
-            "type": "string[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_cpotbId",
-            "type": "string"
-          }
-        ],
-        "name": "getListCpotbById",
+        "name": "detailCpotb",
         "outputs": [
           {
             "components": [
@@ -705,58 +658,225 @@
               },
               {
                 "internalType": "string",
-                "name": "senderName",
-                "type": "string"
-              },
-              {
-                "internalType": "address",
-                "name": "factoryAddr",
-                "type": "address"
-              },
-              {
-                "internalType": "string",
-                "name": "factoryName",
-                "type": "string"
-              },
-              {
-                "internalType": "enum MainSupplyChain.en_jenisSediaan",
-                "name": "jenisSediaan",
-                "type": "uint8"
-              },
-              {
-                "internalType": "enum MainSupplyChain.en_statusCert",
-                "name": "status",
-                "type": "uint8"
-              },
-              {
-                "internalType": "uint256",
-                "name": "timestampRequest",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "timestampApprove",
-                "type": "uint256"
-              },
-              {
-                "internalType": "string",
                 "name": "cpotbNumber",
                 "type": "string"
               },
               {
-                "internalType": "address",
-                "name": "bpomAddr",
-                "type": "address"
+                "components": [
+                  {
+                    "internalType": "enum EnumsLibrary.StatusCertificate",
+                    "name": "status",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "timestampRequest",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "timestampApprove",
+                    "type": "uint256"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "string",
+                        "name": "userName",
+                        "type": "string"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "userAddr",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "string",
+                        "name": "userInstanceName",
+                        "type": "string"
+                      }
+                    ],
+                    "internalType": "struct MainSupplyChain.st_userCertificate",
+                    "name": "sender",
+                    "type": "tuple"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "string",
+                        "name": "userName",
+                        "type": "string"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "userAddr",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "string",
+                        "name": "userInstanceName",
+                        "type": "string"
+                      }
+                    ],
+                    "internalType": "struct MainSupplyChain.st_userCertificate",
+                    "name": "bpom",
+                    "type": "tuple"
+                  }
+                ],
+                "internalType": "struct MainSupplyChain.st_certificateDetails",
+                "name": "details",
+                "type": "tuple"
+              },
+              {
+                "internalType": "enum EnumsLibrary.TipePermohonanCpotb",
+                "name": "tipePermohonan",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct MainSupplyChain.st_cpotb",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "getListAllCdob",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "certId",
+                "type": "string"
               },
               {
                 "internalType": "string",
-                "name": "receiverName",
+                "name": "certNumber",
                 "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "instanceName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "certificateType",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "tipePermohonan",
+                "type": "uint8"
+              },
+              {
+                "internalType": "enum EnumsLibrary.StatusCertificate",
+                "name": "status",
+                "type": "uint8"
               }
             ],
-            "internalType": "struct MainSupplyChain.st_cpotbData",
+            "internalType": "struct MainSupplyChain.st_certificateList[]",
             "name": "",
-            "type": "tuple"
+            "type": "tuple[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_instanceName",
+            "type": "string"
+          }
+        ],
+        "name": "getListAllCertificateByInstance",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "certId",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "certNumber",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "instanceName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "certificateType",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "tipePermohonan",
+                "type": "uint8"
+              },
+              {
+                "internalType": "enum EnumsLibrary.StatusCertificate",
+                "name": "status",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct MainSupplyChain.st_certificateList[]",
+            "name": "",
+            "type": "tuple[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "getListAllCpotb",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "certId",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "certNumber",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "instanceName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "certificateType",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "tipePermohonan",
+                "type": "uint8"
+              },
+              {
+                "internalType": "enum EnumsLibrary.StatusCertificate",
+                "name": "status",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct MainSupplyChain.st_certificateList[]",
+            "name": "",
+            "type": "tuple[]"
           }
         ],
         "stateMutability": "view",
@@ -800,25 +920,6 @@
         "inputs": [
           {
             "internalType": "string",
-            "name": "_factoryName",
-            "type": "string"
-          }
-        ],
-        "name": "hasApprovedCpotb",
-        "outputs": [
-          {
-            "internalType": "uint8[]",
-            "name": "",
-            "type": "uint8[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
             "name": "_name",
             "type": "string"
           },
@@ -846,23 +947,30 @@
       {
         "inputs": [
           {
-            "internalType": "string",
-            "name": "_instanceName",
-            "type": "string"
+            "components": [
+              {
+                "internalType": "string",
+                "name": "certId",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "senderName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "senderInstance",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct MainSupplyChain.st_certificateRequest",
+            "name": "requestData",
+            "type": "tuple"
           },
           {
-            "internalType": "string",
-            "name": "_cdobId",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_senderName",
-            "type": "string"
-          },
-          {
-            "internalType": "enum MainSupplyChain.en_tipePermohonan",
-            "name": "_tipePermohonan",
+            "internalType": "uint8",
+            "name": "_tipePermohonanCdob",
             "type": "uint8"
           }
         ],
@@ -874,23 +982,30 @@
       {
         "inputs": [
           {
-            "internalType": "string",
-            "name": "_instanceName",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_cpotbId",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_senderName",
-            "type": "string"
+            "components": [
+              {
+                "internalType": "string",
+                "name": "certId",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "senderName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "senderInstance",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct MainSupplyChain.st_certificateRequest",
+            "name": "requestData",
+            "type": "tuple"
           },
           {
             "internalType": "uint8",
-            "name": "_jenisSediaan",
+            "name": "_tipePermohonanCpotb",
             "type": "uint8"
           }
         ],
@@ -902,7 +1017,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+    "address": "0x67d269191c92Caf3cD7723F116c85e6E9bf55933",
     "abi": [
       {
         "inputs": [
@@ -1030,8 +1145,8 @@
           },
           {
             "indexed": false,
-            "internalType": "enum ObatTradisional.en_tipeProduk",
-            "name": "en_tipeProduk",
+            "internalType": "enum EnumsLibrary.TipeProduk",
+            "name": "tipeProduk",
             "type": "uint8"
           }
         ],
@@ -1102,12 +1217,12 @@
             "type": "string"
           },
           {
-            "internalType": "enum ObatTradisional.en_tipeProduk",
+            "internalType": "enum EnumsLibrary.TipeProduk",
             "name": "tipeProduk",
             "type": "uint8"
           },
           {
-            "internalType": "enum ObatTradisional.en_nieStatus",
+            "internalType": "enum EnumsLibrary.NieStatus",
             "name": "obatStatus",
             "type": "uint8"
           },
@@ -1151,7 +1266,7 @@
         "name": "allProducedObat",
         "outputs": [
           {
-            "internalType": "enum ObatTradisional.en_obatAvailability",
+            "internalType": "enum EnumsLibrary.ObatAvailability",
             "name": "statusStok",
             "type": "uint8"
           },
@@ -1322,7 +1437,7 @@
             "type": "string"
           },
           {
-            "internalType": "enum ObatTradisional.en_tipeProduk",
+            "internalType": "enum EnumsLibrary.TipeProduk",
             "name": "_tipeProduk",
             "type": "uint8"
           }
@@ -1377,7 +1492,7 @@
           {
             "components": [
               {
-                "internalType": "enum ObatTradisional.en_obatAvailability",
+                "internalType": "enum EnumsLibrary.ObatAvailability",
                 "name": "statusStok",
                 "type": "uint8"
               },
@@ -1636,12 +1751,12 @@
                 "type": "string[]"
               },
               {
-                "internalType": "enum ObatTradisional.en_tipeProduk",
+                "internalType": "enum EnumsLibrary.TipeProduk",
                 "name": "tipeProduk",
                 "type": "uint8"
               },
               {
-                "internalType": "enum ObatTradisional.en_nieStatus",
+                "internalType": "enum EnumsLibrary.NieStatus",
                 "name": "obatStatus",
                 "type": "uint8"
               },
@@ -1752,12 +1867,12 @@
                 "type": "string[]"
               },
               {
-                "internalType": "enum ObatTradisional.en_tipeProduk",
+                "internalType": "enum EnumsLibrary.TipeProduk",
                 "name": "tipeProduk",
                 "type": "uint8"
               },
               {
-                "internalType": "enum ObatTradisional.en_nieStatus",
+                "internalType": "enum EnumsLibrary.NieStatus",
                 "name": "obatStatus",
                 "type": "uint8"
               },
@@ -1902,12 +2017,12 @@
             "type": "string"
           },
           {
-            "internalType": "enum ObatTradisional.en_tipeProduk",
+            "internalType": "enum EnumsLibrary.TipeProduk",
             "name": "tipeProduk",
             "type": "uint8"
           },
           {
-            "internalType": "enum ObatTradisional.en_nieStatus",
+            "internalType": "enum EnumsLibrary.NieStatus",
             "name": "obatStatus",
             "type": "uint8"
           },
@@ -1971,12 +2086,12 @@
             "type": "string"
           },
           {
-            "internalType": "enum ObatTradisional.en_tipeProduk",
+            "internalType": "enum EnumsLibrary.TipeProduk",
             "name": "tipeProduk",
             "type": "uint8"
           },
           {
-            "internalType": "enum ObatTradisional.en_nieStatus",
+            "internalType": "enum EnumsLibrary.NieStatus",
             "name": "obatStatus",
             "type": "uint8"
           },
@@ -2020,7 +2135,7 @@
         "name": "obatProductionDetailsByBatchName",
         "outputs": [
           {
-            "internalType": "enum ObatTradisional.en_obatAvailability",
+            "internalType": "enum EnumsLibrary.ObatAvailability",
             "name": "statusStok",
             "type": "uint8"
           },
@@ -2108,7 +2223,7 @@
         "name": "userRoles",
         "outputs": [
           {
-            "internalType": "enum ObatTradisional.en_roles",
+            "internalType": "enum EnumsLibrary.Roles",
             "name": "",
             "type": "uint8"
           }
@@ -2119,7 +2234,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+    "address": "0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E",
     "abi": [
       {
         "inputs": [
@@ -2315,7 +2430,7 @@
             "type": "string"
           },
           {
-            "internalType": "enum OrderManagement.en_obatAvailability",
+            "internalType": "enum EnumsLibrary.ObatAvailability",
             "name": "statusStok",
             "type": "uint8"
           },
@@ -2364,7 +2479,7 @@
             "type": "string"
           },
           {
-            "internalType": "enum OrderManagement.en_obatAvailability",
+            "internalType": "enum EnumsLibrary.ObatAvailability",
             "name": "statusStok",
             "type": "uint8"
           },
@@ -2438,7 +2553,7 @@
             "type": "address"
           },
           {
-            "internalType": "enum OrderManagement.en_orderStatus",
+            "internalType": "enum EnumsLibrary.OrderStatus",
             "name": "statusOrder",
             "type": "uint8"
           },
@@ -2580,7 +2695,7 @@
                 "type": "address"
               },
               {
-                "internalType": "enum OrderManagement.en_orderStatus",
+                "internalType": "enum EnumsLibrary.OrderStatus",
                 "name": "statusOrder",
                 "type": "uint8"
               },
@@ -2651,7 +2766,7 @@
                 "type": "string"
               },
               {
-                "internalType": "enum OrderManagement.en_obatAvailability",
+                "internalType": "enum EnumsLibrary.ObatAvailability",
                 "name": "statusStok",
                 "type": "uint8"
               },
@@ -2717,7 +2832,7 @@
                 "type": "string"
               },
               {
-                "internalType": "enum OrderManagement.en_obatAvailability",
+                "internalType": "enum EnumsLibrary.ObatAvailability",
                 "name": "statusStok",
                 "type": "uint8"
               },
@@ -2986,7 +3101,7 @@
             "type": "string"
           },
           {
-            "internalType": "enum OrderManagement.en_obatAvailability",
+            "internalType": "enum EnumsLibrary.ObatAvailability",
             "name": "statusStok",
             "type": "uint8"
           },
@@ -3035,7 +3150,7 @@
             "type": "string"
           },
           {
-            "internalType": "enum OrderManagement.en_obatAvailability",
+            "internalType": "enum EnumsLibrary.ObatAvailability",
             "name": "statusStok",
             "type": "uint8"
           },
@@ -3141,7 +3256,7 @@
             "type": "address"
           },
           {
-            "internalType": "enum OrderManagement.en_orderStatus",
+            "internalType": "enum EnumsLibrary.OrderStatus",
             "name": "statusOrder",
             "type": "uint8"
           },

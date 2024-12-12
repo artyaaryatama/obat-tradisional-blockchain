@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 import "./RoleManager.sol";
 import "./ObatTradisional.sol";
+import "./EnumsLibrary.sol";
  
 contract OrderManagement {
 
@@ -15,8 +16,9 @@ contract OrderManagement {
     obatTradisional = ObatTradisional(_obatTradisionalAddr);
   }
 
-  enum en_orderStatus { OrderPlaced , OrderShipped , OrderCompleted  }
-  enum en_obatAvailability { ready, sold }
+  using EnumsLibrary for EnumsLibrary.Roles;
+  using EnumsLibrary for EnumsLibrary.OrderStatus;
+  using EnumsLibrary for EnumsLibrary.ObatAvailability;
 
   struct st_orderObat {
     string orderId;
@@ -28,7 +30,7 @@ contract OrderManagement {
     address senderInstanceAddr;
     string targetInstanceName;
     address targetInstanceAddr;
-    en_orderStatus statusOrder; 
+    EnumsLibrary.OrderStatus statusOrder; 
     uint timestampOrder;
     uint timestampShipped;
     uint timestampComplete;
@@ -40,7 +42,7 @@ contract OrderManagement {
     string batchName;
     string obatIdProduk;
     string namaProduk;
-    en_obatAvailability statusStok;
+    EnumsLibrary.ObatAvailability statusStok;
     uint8 obatQuantity;
     string[] obatIpfsHash;
     string ownerInstanceName;
@@ -51,7 +53,7 @@ contract OrderManagement {
     string batchName;
     string obatIdProduk;
     string namaProduk;
-    en_obatAvailability statusStok;
+    EnumsLibrary.ObatAvailability statusStok;
     uint8 obatQuantity;
     string[] obatIpfsHash;
     string ownerInstanceName;
@@ -84,7 +86,7 @@ contract OrderManagement {
   ) public {
 
     st_orderObat memory newOrder;
-    if (roleManager.hasRole(msg.sender, RoleManager.en_roles.PBF)){
+    if (roleManager.hasRole(msg.sender,EnumsLibrary.Roles.PBF)){
       newOrder = st_orderObat({
         orderId: _orderId, 
         namaProduk: _namaProduk,
@@ -95,14 +97,14 @@ contract OrderManagement {
         senderInstanceAddr: _senderInstanceAddr,
         targetInstanceName: _targetInstanceName,
         targetInstanceAddr: address(0),
-        statusOrder: en_orderStatus.OrderPlaced,
+        statusOrder: EnumsLibrary.OrderStatus.OrderPlaced,
         timestampOrder: block.timestamp,
         timestampShipped: 0,
         timestampComplete: 0,
         orderObatIpfsHash: new string[](0)  
       });
       
-    } else if (roleManager.hasRole(msg.sender, RoleManager.en_roles.Retailer)){
+    } else if (roleManager.hasRole(msg.sender,EnumsLibrary.Roles.Retailer)){
       newOrder = st_orderObat({
         orderId: _orderId, 
         namaProduk: _namaProduk,
@@ -112,7 +114,7 @@ contract OrderManagement {
         senderInstanceName: _senderInstanceName,
         senderInstanceAddr: _senderInstanceAddr,
         targetInstanceName: _targetInstanceName,
-        statusOrder: en_orderStatus.OrderPlaced,
+        statusOrder: EnumsLibrary.OrderStatus.OrderPlaced,
         targetInstanceAddr: address(0),
         timestampOrder: block.timestamp,
         timestampShipped: 0,
@@ -139,11 +141,11 @@ contract OrderManagement {
   ) public {
     require(abi.encodePacked(orderObatById[_orderId].obatIdProduk).length > 0, "No data found with this ID.");
 
-    st_orderObat storage obatOrdered = orderObatById[_orderId];
+    st_orderObat memory obatOrdered = orderObatById[_orderId];
 
     obatOrdered.orderObatIpfsHash = _obatIpfsHash;
     obatOrdered.batchName = _batchName;
-    obatOrdered.statusOrder = en_orderStatus.OrderShipped;
+    obatOrdered.statusOrder = EnumsLibrary.OrderStatus.OrderShipped;
     obatOrdered.timestampShipped = block.timestamp;
     obatOrdered.targetInstanceAddr = _instanceAddr;
 
@@ -154,7 +156,7 @@ contract OrderManagement {
       if(keccak256(abi.encodePacked(allOrderedObat[i].orderId)) == keccak256(abi.encodePacked(_orderId))){
         allOrderedObat[i].orderObatIpfsHash = _obatIpfsHash;
         allOrderedObat[i].batchName = _batchName;
-        allOrderedObat[i].statusOrder = en_orderStatus.OrderShipped;
+        allOrderedObat[i].statusOrder = EnumsLibrary.OrderStatus.OrderShipped;
         allOrderedObat[i].targetInstanceAddr = _instanceAddr;
         allOrderedObat[i].timestampShipped = block.timestamp;
 
@@ -178,16 +180,16 @@ contract OrderManagement {
     require(abi.encodePacked(obatPbfByIdProduk[_obatId].obatIdProduk).length > 0, "No data found with this ID.");
 
     st_obatPbf memory obatPbf = obatPbfByIdProduk[_orderId];
-    st_orderObat storage obatOrdered = orderObatById[_orderId];
+    st_orderObat memory obatOrdered = orderObatById[_orderId];
 
     obatOrdered.orderObatIpfsHash = _obatIpfsHash;
     obatOrdered.batchName = _batchName;
-    obatOrdered.statusOrder = en_orderStatus.OrderShipped;
+    obatOrdered.statusOrder = EnumsLibrary.OrderStatus.OrderShipped;
     obatOrdered.timestampShipped = block.timestamp;
     obatOrdered.targetInstanceAddr = _instanceAddr;
 
     obatPbf.obatIpfsHash = _obatIpfsHash;
-    obatPbf.statusStok = en_obatAvailability.sold;
+    obatPbf.statusStok = EnumsLibrary.ObatAvailability.sold;
 
     obatTradisional.updateObatProductionDetails(_batchName, _obatIpfsHash);
 
@@ -195,7 +197,7 @@ contract OrderManagement {
       if(keccak256(abi.encodePacked(allOrderedObat[i].orderId)) == keccak256(abi.encodePacked(_orderId))){
         allOrderedObat[i].orderObatIpfsHash = obatPbf.obatIpfsHash;
         allOrderedObat[i].batchName = _batchName;
-        allOrderedObat[i].statusOrder = en_orderStatus.OrderShipped;
+        allOrderedObat[i].statusOrder = EnumsLibrary.OrderStatus.OrderShipped;
         allOrderedObat[i].timestampShipped = block.timestamp;
         allOrderedObat[i].targetInstanceAddr = _instanceAddr;
 
@@ -206,7 +208,7 @@ contract OrderManagement {
     for(uint i=0; i < allObatPbf.length; i++){
       if(keccak256(abi.encodePacked(allObatPbf[i].batchName)) == keccak256(abi.encodePacked(_batchName))){
         allObatPbf[i].obatIpfsHash = _obatIpfsHash;
-        allObatPbf[i].statusStok = en_obatAvailability.sold;
+        allObatPbf[i].statusStok = EnumsLibrary.ObatAvailability.sold;
 
         break;
       }
@@ -222,9 +224,9 @@ contract OrderManagement {
   ) public {
 
     require(abi.encodePacked(orderObatById[_orderId].orderId).length > 0, "No data found with this ID."); 
-    st_orderObat storage obatOrdered = orderObatById[_orderId];
+    st_orderObat memory obatOrdered = orderObatById[_orderId];
 
-    obatOrdered.statusOrder = en_orderStatus.OrderCompleted;
+    obatOrdered.statusOrder = EnumsLibrary.OrderStatus.OrderCompleted;
     obatOrdered.timestampComplete = block.timestamp;
     obatOrdered.orderObatIpfsHash = _obatIpfsHash;
 
@@ -232,20 +234,20 @@ contract OrderManagement {
 
     for(uint i=0; i < allOrderedObat.length; i++){
       if(keccak256(abi.encodePacked(allOrderedObat[i].orderId)) == keccak256(abi.encodePacked(_orderId))){
-        allOrderedObat[i].statusOrder = en_orderStatus.OrderCompleted;
+        allOrderedObat[i].statusOrder = EnumsLibrary.OrderStatus.OrderCompleted;
         allOrderedObat[i].timestampComplete = block.timestamp;
         allOrderedObat[i].orderObatIpfsHash = _obatIpfsHash;
         break;
       }
     }
 
-    if (roleManager.hasRole(msg.sender, RoleManager.en_roles.PBF)){
+    if (roleManager.hasRole(msg.sender,EnumsLibrary.Roles.PBF)){
       st_obatPbf memory obatPbf = st_obatPbf({
         orderId: _orderId,
         batchName: obatOrdered.batchName,
         obatIdProduk: obatOrdered.obatIdProduk,
         namaProduk: obatOrdered.namaProduk,
-        statusStok: en_obatAvailability.ready,
+        statusStok: EnumsLibrary.ObatAvailability.ready,
         obatQuantity: obatOrdered.orderQuantity,
         obatIpfsHash: _obatIpfsHash,
         ownerInstanceName: obatOrdered.senderInstanceName
@@ -254,13 +256,13 @@ contract OrderManagement {
       obatPbfByIdProduk[obatPbf.obatIdProduk] = obatPbf;
       allObatPbf.push(obatPbf);
       
-    } else if (roleManager.hasRole(msg.sender, RoleManager.en_roles.Retailer)){
+    } else if (roleManager.hasRole(msg.sender,EnumsLibrary.Roles.Retailer)){
       st_obatRetailer memory obatRetailer = st_obatRetailer({
         orderId: _orderId,
         batchName: obatOrdered.batchName,
         obatIdProduk: obatOrdered.obatIdProduk,
         namaProduk: obatOrdered.namaProduk,
-        statusStok: en_obatAvailability.ready,
+        statusStok: EnumsLibrary.ObatAvailability.ready,
         obatQuantity: obatOrdered.orderQuantity,
         obatIpfsHash: _obatIpfsHash,
         ownerInstanceName: obatOrdered.senderInstanceName
@@ -389,15 +391,15 @@ contract OrderManagement {
     for (uint256 i = 0; i < allObatPbf.length; i++) {
       bool isValid = false;
 
-      if (roleManager.hasRole(msg.sender, RoleManager.en_roles.PBF)) {
+      if (roleManager.hasRole(msg.sender,EnumsLibrary.Roles.PBF)) {
         // If the role is PBF, check instance name and status
         if (keccak256(abi.encodePacked(allObatPbf[i].ownerInstanceName)) == keccak256(abi.encodePacked(_instanceName)) 
-          && allObatPbf[i].statusStok == en_obatAvailability.ready) {
+          && allObatPbf[i].statusStok == EnumsLibrary.ObatAvailability.ready) {
             isValid = true;
         }
       } else {
         // If not PBF, only check the ready status
-        if (allObatPbf[i].statusStok == en_obatAvailability.ready) {
+        if (allObatPbf[i].statusStok == EnumsLibrary.ObatAvailability.ready) {
           isValid = true;
         }
       }
@@ -418,13 +420,13 @@ contract OrderManagement {
     for (uint256 i = 0; i < allObatPbf.length; i++) {
       bool isValid = false;
 
-      if (roleManager.hasRole(msg.sender, RoleManager.en_roles.PBF)) {
+      if (roleManager.hasRole(msg.sender,EnumsLibrary.Roles.PBF)) {
         if (keccak256(abi.encodePacked(allObatPbf[i].ownerInstanceName)) == keccak256(abi.encodePacked(_instanceName)) 
-          && allObatPbf[i].statusStok == en_obatAvailability.ready) {
+          && allObatPbf[i].statusStok == EnumsLibrary.ObatAvailability.ready) {
             isValid = true;
         }
       } else {
-        if (allObatPbf[i].statusStok == en_obatAvailability.ready) {
+        if (allObatPbf[i].statusStok == EnumsLibrary.ObatAvailability.ready) {
           isValid = true;
         }
       }
@@ -454,15 +456,15 @@ contract OrderManagement {
     for (uint256 i = 0; i < allObatRetailer.length; i++) {
       bool isValid = false;
 
-      if (roleManager.hasRole(msg.sender, RoleManager.en_roles.Retailer)) {
+      if (roleManager.hasRole(msg.sender,EnumsLibrary.Roles.Retailer)) {
         // If the role is PBF, check instance name and status
         if (keccak256(abi.encodePacked(allObatRetailer[i].ownerInstanceName)) == keccak256(abi.encodePacked(_instanceName)) 
-          && allObatRetailer[i].statusStok == en_obatAvailability.ready) {
+          && allObatRetailer[i].statusStok == EnumsLibrary.ObatAvailability.ready) {
             isValid = true;
         }
       } else {
         // If not PBF, only check the ready status
-        if (allObatRetailer[i].statusStok == en_obatAvailability.ready) {
+        if (allObatRetailer[i].statusStok == EnumsLibrary.ObatAvailability.ready) {
           isValid = true;
         }
       }
@@ -483,13 +485,13 @@ contract OrderManagement {
     for (uint256 i = 0; i < allObatRetailer.length; i++) {
       bool isValid = false;
 
-      if (roleManager.hasRole(msg.sender, RoleManager.en_roles.Retailer)) {
+      if (roleManager.hasRole(msg.sender,EnumsLibrary.Roles.Retailer)) {
         if (keccak256(abi.encodePacked(allObatRetailer[i].ownerInstanceName)) == keccak256(abi.encodePacked(_instanceName)) 
-          && allObatRetailer[i].statusStok == en_obatAvailability.ready) {
+          && allObatRetailer[i].statusStok == EnumsLibrary.ObatAvailability.ready) {
             isValid = true;
         }
       } else {
-        if (allObatRetailer[i].statusStok == en_obatAvailability.ready) {
+        if (allObatRetailer[i].statusStok == EnumsLibrary.ObatAvailability.ready) {
           isValid = true;
         }
       }

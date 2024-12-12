@@ -55,17 +55,9 @@ function CdobRequest() {
     if (contract) {
       console.log("Setting up listener for evt_cdobRequested on contract", contract);
       
-      contract.on("evt_cdobRequested", (_name, _userAddr, _instanceName, _tipePermohonan, _cdobId, _timestampRequest) => {
+      contract.on("evt_cdobRequested", (_instanceName, _userAddr, _tipePermohonan, _timestampRequest) => {
 
-        const timestampDate = new Date(Number(_timestampRequest) * 1000);
-        const formattedTimestamp = timestampDate.toLocaleDateString('id-ID', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          timeZoneName: 'short'
-        });
+        const formattedTimestamp = new Date(Number(_timestampRequest) * 1000).toLocaleDateString('id-ID', options)
 
         const tp = {
           0: "Obat Lain",
@@ -78,7 +70,7 @@ function CdobRequest() {
             <div className='form-swal'>
               <ul>
                 <li className="label">
-                  <p>Diajukan oleh</p> 
+                  <p>PBF Instance</p> 
                 </li>
                 <li className="input">
                   <p>{_instanceName}</p> 
@@ -86,23 +78,7 @@ function CdobRequest() {
               </ul>
               <ul>
                 <li className="label">
-                  <p>Nama Pengirim</p> 
-                </li>
-                <li className="input">
-                  <p>{_name}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Tanggal Pengajuan</p> 
-                </li>
-                <li className="input">
-                  <p>{formattedTimestamp}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Alamat Instance</p> 
+                  <p>PBF Address</p> 
                 </li>
                 <li className="input">
                   <p>{_userAddr}</p> 
@@ -114,6 +90,14 @@ function CdobRequest() {
                 </li>
                 <li className="input">
                   <p>{tp[_tipePermohonan]}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Tanggal Pengajuan</p> 
+                </li>
+                <li className="input">
+                  <p>{formattedTimestamp}</p> 
                 </li>
               </ul>
             </div>
@@ -130,9 +114,6 @@ function CdobRequest() {
         });
 
         setLoader(false)
-        
-        console.log("Request CPOTB Event Triggered: ", { _name, _userAddr, _instanceName, tipePermohonan: tp[_tipePermohonan], _cdobId, _timestampRequest });
-        
       });
   
       return () => {
@@ -168,16 +149,21 @@ function CdobRequest() {
       "CCP": 1n
     };
 
-    const id = Math.random().toString(36).slice(2, 9);
-    console.log('ini req id:', id);
-    console.log(userdata);
+    const id = `cdob-${Math.random().toString(36).slice(2, 9)}`;
 
     console.log(userdata.instanceName, id, userdata.name, tp[tipePermohonan]);
 
     try {
-      const tx = await contract.requestCdob(userdata.instanceName, id, userdata.name, tp[tipePermohonan]);
-      await tx.wait();
-      console.log('Receipt:', tx);
+      const tipePermohonanInt = tp[tipePermohonan]
+      const requestCdobCt = await contract.requestCdob([id, userdata.name, userdata.instanceName], tipePermohonanInt);
+      console.log('Receipt:', requestCdobCt);
+
+      if(requestCdobCt){
+        MySwal.update({
+          title: "Processing your transaction...",
+          text: "This may take a moment. Hang tight! ⛓️"
+        });
+      }
 
     } catch (err) {
       setLoader(false)

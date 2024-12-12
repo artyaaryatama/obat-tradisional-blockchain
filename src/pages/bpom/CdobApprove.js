@@ -7,7 +7,6 @@ import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
-import { Result } from 'ethers';
 
 const MySwal = withReactContent(Swal);
 
@@ -74,25 +73,20 @@ function CdobApprove() {
     const getAllCdob = async () => {
       if(contract){
         try {
-          const [tipePermohonanArray, pbfNameArray, statusArray, latestTimestampArray, cdobIdArray] = await contract.getListAllCdob()
+          const listAllCdob = await contract.getListAllCdob()
+          console.log(listAllCdob);
 
-          const reconstructedData = tipePermohonanArray.map((tipePermohonan, index) => {
-            const readableTipePermohonan = tipePermohonanMap[tipePermohonan];
-            const readableStatus = statusMap[statusArray[index]];
+          const reconstructedData = listAllCdob.map((item) => {
+            const cdobNumber = item[1] ? item[1] : '-'
 
-            const timestampDate = new Date(Number(latestTimestampArray[index]) * 1000);;
-            const formattedTimestamp = timestampDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric',});
-  
             return {
-              tipePermohonan: readableTipePermohonan,
-              pbfName: pbfNameArray[index],
-              status: readableStatus,
-              latestTimestamp: formattedTimestamp,
-              idCdob: cdobIdArray[index]
+              cdobId: item[0],  
+              cdobNumber: cdobNumber,
+              pbfName: item[2], 
+              tipePermohonan: tipePermohonanMap[item[4]],
+              status: statusMap[item[5]],
             };
-          });
-
-          console.log("Reconstructed Data:", reconstructedData);
+          })
   
           setDataCdob(reconstructedData);
         } catch (e) {
@@ -105,84 +99,116 @@ function CdobApprove() {
   }, [contract])
 
   useEffect(() => {
-    if (!contract) {
-      console.error("Contract is undefined");
-      return;
-    }
-  
-    try {
+    if (contract) {
       console.log('TRIGERRED evt_cpotbApproved listener');
-      contract.on('evt_cpotbApproved',  (bpomAddr, receiverName, pbfName, cdobNumber, timestampApprove) => {
-        console.log('ini inside contract',{bpomAddr, receiverName, pbfName, cdobNumber, timestampApprove});
-        setNumberCdob(cdobNumber); // Store cdobNumber in state
-        setIsApproved(true);         // Trigger isApproved to show the alert
+      contract.on('evt_cdobApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
+        
+        const formattedTimestamp = new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options)
+
+        MySwal.fire({
+          title: "Success Approve CPOTB",
+          html: (
+            <div className='form-swal'>
+              <ul>
+                <li className="label">
+                  <p>CDOB Number</p> 
+                </li>
+                <li className="input">
+                  <p>{cdobNumber}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>BPOM Instance</p> 
+                </li>
+                <li className="input">
+                  <p>{bpomInstance}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>BPOM Address</p> 
+                </li>
+                <li className="input">
+                  <p>{bpomAddr}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Tanggal Penyetujuan</p> 
+                </li>
+                <li className="input">
+                  <p>{formattedTimestamp}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Tipe Permohonan</p> 
+                </li>
+                <li className="input">
+                  <p>{tipePermohonanMap[tipePermohonan]}</p> 
+                </li>
+              </ul>
+            </div>
+          ),
+          icon: 'success',
+          width: '560',
+          showCancelButton: false,
+          confirmButtonText: 'Oke',
+          allowOutsideClick: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload();
+          }
+        });
       });
-  
+
       return () => {
-        console.log("Removing evt_cpotbApproved listener");
-        contract.removeAllListeners("evt_cpotbApproved");
+        console.log("Removing evt_cpotbRequested listener");
+        contract.removeAllListeners("evt_cdobApproved");
       };
-    } catch (error) {
-      console.error(error);
-      errAlert(error);
+
     }
   }, [contract]);
 
-  useEffect(() => {
-    if (isApproved && numberCdob) {
-      Swal.fire({
-        title: `CDOB Approved!`,
-        text: `Success approve CDOB (${numberCdob})`,
-        icon: 'success',
-        showCancelButton: false,
-        confirmButtonText: 'Ok',
-        allowOutsideClick: true
-      }).then((result) => {
-        if (result.isConfirmed) {
-          setNumberCdob('')
-          setIsApproved(false)
-          window.location.reload();
-        }
-      });
-
-    }
-  }, [isApproved, numberCdob]);
-  
-  
   const getDetailCdob = async (id) => {
     
     console.log(id); 
     
     try {
-      const tx = await contract.getListCdobById(id);
-      console.log(tx);
+      const detailCdobCt = await contract.detailCdob(id);
+
+      const [cdobId, cdobNumber, cdobDetail, tipePermohonan] = detailCdobCt
+
+      const [status, timestampRequest, timestampApprove, sender, bpom] = cdobDetail
 
       const detailCdob = {
-        cdobId: tx.cdobId,
-        senderName: tx.senderName,
-        pbfAddr: tx.pbfAddr,
-        pbfName: tx.pbfName,
-        tipePermohonan: tipePermohonanMap[tx.tipePermohonan], 
-        status: statusMap[tx.status], 
-        timestampRequest: new Date(Number(tx.timestampRequest) * 1000).toLocaleDateString('id-ID', options),
-        timestampApprove: Number(tx.timestampApprove) > 0 ? new Date(Number(tx.timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
-        cdobNumber: tx.cdobNumber ? tx.cdobNumber : "-",
-        bpomAddr: tx.bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : tx.bpomAddr,
-        receiverName: tx.receiverName ? tx.receiverName : "-"
+        cdobId: cdobId,
+        cdobNumber: cdobNumber ? cdobNumber : "-",
+        pbfUserName: sender[0],
+        pbfAddr: sender[1],
+        pbfName: sender[2],
+        tipePermohonan: tipePermohonanMap[tipePermohonan], 
+        status: statusMap[status], 
+        timestampRequest: new Date(Number(timestampRequest) * 1000).toLocaleDateString('id-ID', options),
+        timestampApprove: Number(timestampApprove) > 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        bpomName : bpom[0] ? bpom[0] : "-",
+        bpomInstance: bpom[2] ? bpom[2] : "-",
+        bpomAddr: bpom[1] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
       };
 
       console.log(detailCdob.timestampApprove);
 
       if(detailCdob.status === 'Approved'){
         MySwal.fire({
-          title: "Approve Sertifikat CDOB",
+          title: "Detail Sertifikat CDOB",
           html: (
             <div className='form-swal'>
               <div className="row">
                 <div className="col">
                   <ul>
                     <li className="label">
-                      <p>Diajukan oleh</p>
+                      <p>PBF Instance</p>
                     </li>
                     <li className="input">
                       <p>{detailCdob.pbfName}</p>
@@ -191,7 +217,7 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>Address Pengirim</p> 
+                      <p>PBF Address</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.pbfAddr}</p> 
@@ -200,28 +226,19 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>Nama Pengirim</p> 
+                      <p>BPOM Instance</p> 
                     </li>
                     <li className="input">
-                      <p>{detailCdob.senderName}</p> 
+                      <p>{detailCdob.bpomInstance}</p> 
                     </li>
                   </ul>
   
                   <ul>
                     <li className="label">
-                      <p>Address BPOM</p> 
+                      <p>BPOM Address</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.bpomAddr}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nama Penyutuju</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCdob.receiverName}</p> 
                     </li>
                   </ul>
                 </div>
@@ -278,10 +295,9 @@ function CdobApprove() {
             
             </div>
           ),
-          width: '720',
+          width: '620',
           showCancelButton: false,
           confirmButtonText: 'Ok',
-          allowOutsideClick: true
         })
 
       } else{
@@ -293,7 +309,7 @@ function CdobApprove() {
                 <div className="col">
                   <ul>
                     <li className="label">
-                      <p>Diajukan oleh</p>
+                      <p>PBF Instance</p>
                     </li>
                     <li className="input">
                       <p>{detailCdob.pbfName}</p>
@@ -302,7 +318,7 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>Address Pengirim</p> 
+                      <p>PBF Address</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.pbfAddr}</p> 
@@ -311,37 +327,28 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>Nama Pengirim</p> 
+                      <p>BPOM Instance</p> 
                     </li>
                     <li className="input">
-                      <p>{detailCdob.senderName}</p> 
+                      <p>{detailCdob.bpomInstance}</p> 
                     </li>
                   </ul>
   
                   <ul>
                     <li className="label">
-                      <p>Address BPOM</p> 
+                      <p>BPOM Address</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.bpomAddr}</p> 
                     </li>
                   </ul>
   
-                  <ul>
-                    <li className="label">
-                      <p>Nama Penyutuju</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCdob.receiverName}</p> 
-                    </li>
-                  </ul>
                 </div>
   
                 <div className="col">
                   <ul>
                     <li className="label">
                       <p>Status Sertifikasi</p>
-                      <label htmlFor="statusCpotb"></label>
                     </li>
                     <li className="input">
                       <p className={detailCdob.status}>{detailCdob.status}</p>
@@ -351,7 +358,6 @@ function CdobApprove() {
                   <ul>
                     <li className="label">
                       <p>Nomor CDOB</p>
-                      <label htmlFor="nomorCpotb"></label>
                     </li>
                     <li className="input">
                       <p>{detailCdob.cdobNumber}</p> 
@@ -360,7 +366,7 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>Tipe Permohonan</p>
+                      <p>Tiper Permohonan</p>
                     </li>
                     <li className="input">
                       <p>{detailCdob.tipePermohonan}</p> 
@@ -389,11 +395,9 @@ function CdobApprove() {
             
             </div>
           ),
-          width: '720',
-          showCancelButton: true,
+          width: '620',
           confirmButtonText: 'Approve',
-          confirmButtonColor: '#4CBE53', 
-          allowOutsideClick: false
+          showCancelButton: true
         }).then((result) => {
   
           if(result.isConfirmed){
@@ -412,7 +416,7 @@ function CdobApprove() {
                     <div className="col">
                       <ul>
                         <li className="label">
-                          <label htmlFor="pbfName">Diajukan oleh</label>
+                          <label htmlFor="pbfName">PBF Instance</label>
                         </li>
                         <li className="input">
                           <input
@@ -426,7 +430,7 @@ function CdobApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="pbfAddr">Address Pengirim</label>
+                          <label htmlFor="pbfAddr">PBF Address</label>
                         </li>
                         <li className="input">
                           <input
@@ -440,13 +444,13 @@ function CdobApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="senderName">Nama Pengirim</label>
+                          <label htmlFor="bpomInstance">BPOM Instance</label>
                         </li>
                         <li className="input">
                           <input
                             type="text"
-                            id="senderName"
-                            value={detailCdob.senderName}
+                            id="bpomInstance"
+                            value={userdata.instanceName}
                             readOnly
                           />
                         </li>
@@ -454,7 +458,7 @@ function CdobApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="bpomAddr">Address BPOM</label>
+                          <label htmlFor="bpomAddr">BPOM Address</label>
                         </li>
                         <li className="input">
                           <input
@@ -465,26 +469,12 @@ function CdobApprove() {
                           />
                         </li>
                       </ul>
-              
-                      <ul>
-                        <li className="label">
-                          <label htmlFor="receiverName">Nama Penyutuju</label>
-                        </li>
-                        <li className="input">
-                          <input
-                            type="text"
-                            id="receiverName"
-                            value={userdata.name}
-                            readOnly
-                          />
-                        </li>
-                      </ul>
                     </div>
               
                     <div className="col">
                       <ul>
                         <li className="label">
-                          <label htmlFor="cdobNumber">Nomor CDOB</label>
+                          <label htmlFor="cdobNumber">CDOB Number</label>
                         </li>
                         <li className="input">
                           <input
@@ -513,28 +503,15 @@ function CdobApprove() {
                   </div>
                 </div>
               ),     
-              width: '720',       
+              width: '620',       
               icon: 'warning',
               showCancelButton: true,
               confirmButtonText: 'Yes, Approve!',
-              confirmButtonColor: '#4CBE53',
               cancelButtonText: 'Cancel',
               allowOutsideClick: false,
-              preConfirm: async () => {
-                try {
-                  console.log(userdata.address);
-                  const tx =  await contract.approveCdob(id, cdobNumber, userdata.name)
-                  console.log(id, cdobNumber, userdata.name);
-                  console.log(tx);
-                  return tx;
-                } catch (error) {
-                  errAlert(error);
-                  return null;
-                }
-              }
             }).then((result) => {
 
-              if (result.isConfirmed && result.value) {
+              if (result.isConfirmed) {
                 MySwal.fire({
                   title:"Processing your request...",
                   text:"Your request is on its way. This won't take long. 🚀",
@@ -543,21 +520,35 @@ function CdobApprove() {
                   showConfirmButton: false,
                   allowOutsideClick: false
                 })
-                // setIsApproved(true)
+
+                approveCdob(cdobNumber, cdobId, tipePermohonan)
               }
             })
           } 
         })
 
       }
-      
-
-      console.log(detailCdob);
 
     } catch (e) {
       errAlert(e, "Can't retrieve data")
     }
   }
+
+  const approveCdob = async(certNumber, certTd, tp) => {
+
+    try {
+      const approveCt = await contract.approveCdob([certNumber, certTd, userdata.name, userdata.instanceName], tp)
+
+      if(approveCt){
+        MySwal.update({
+          title: "Processing your transaction...",
+          text: "This may take a moment. Hang tight! ⏳"
+        });
+      }
+    } catch (error) {
+      errAlert(error, "Can't Approve CPOTB")
+    }
+  } 
 
   return (
     <>
@@ -577,8 +568,8 @@ function CdobApprove() {
               <ul>
                 {dataCdob.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailCdob(item.idCdob)}>{item.pbfName}: {item.tipePermohonan}</button>
-                    <p>Tanggal Pengajuan: {item.latestTimestamp}</p>
+                    <button className='title' onClick={() => getDetailCdob(item.cdobId)}>{item.pbfName}: {item.tipePermohonan}</button>
+                    <p>CDOB Number: {item.cdobNumber}</p>
                     <button className={`statusPengajuan ${item.status}`}>
                       {item.status}
                     </button>

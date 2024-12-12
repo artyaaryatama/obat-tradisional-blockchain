@@ -67,33 +67,17 @@ function CpotbRequest() {
     if (contract) {
       console.log("Setting up listener for evt_cpotbRequested on contract", contract);
       
-      contract.on("evt_cpotbRequested", (_name, _userAddr, _instanceName, _jenisSediaan, _cpotbId, _timestampRequest) => {
-
-        const timestampDate = new Date(Number(_timestampRequest) * 1000);
-        const formattedTimestamp = timestampDate.toLocaleDateString('id-ID', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit', 
-          timeZoneName: 'short'
-        });
+      contract.on("evt_cpotbRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
     
+        const formattedTimestamp = new Date(Number(_timestampRequest) * 1000).toLocaleDateString('id-ID', options)
+
         MySwal.fire({
-          title: "Pengajuan Sertifikat CPOTB Berhasil",
+          title: "Success Request CPOTB",
           html: (
             <div className='form-swal'>
               <ul>
                 <li className="label">
-                  <p>Diajukan oleh</p> 
-                </li>
-                <li className="input">
-                  <p>{_instanceName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Nama Pengirim</p> 
+                  <p>Factory Instance</p> 
                 </li>
                 <li className="input">
                   <p>{_name}</p> 
@@ -101,15 +85,7 @@ function CpotbRequest() {
               </ul>
               <ul>
                 <li className="label">
-                  <p>Tanggal Pengajuan</p> 
-                </li>
-                <li className="input">
-                  <p>{formattedTimestamp}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Alamat Instance</p> 
+                  <p>Factory Address</p> 
                 </li>
                 <li className="input">
                   <p>{_userAddr}</p> 
@@ -121,6 +97,14 @@ function CpotbRequest() {
                 </li>
                 <li className="input">
                   <p>{js[_jenisSediaan]}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Tanggal Pengajuan</p> 
+                </li>
+                <li className="input">
+                  <p>{formattedTimestamp}</p> 
                 </li>
               </ul>
             </div>
@@ -137,8 +121,6 @@ function CpotbRequest() {
         });
 
         setLoader(false)
-        
-        console.log("Request CPOTB Event Triggered: ", { _name, _userAddr, _instanceName, jenisSediaan: js[_jenisSediaan], _cpotbId, _timestampRequest });
         
       });
 
@@ -170,15 +152,20 @@ function CpotbRequest() {
       allowOutsideClick: false,
     })
 
-    
-    const id = Math.random().toString(36).slice(2, 9);
+    const id = `cpotb-${Math.random().toString(36).slice(2, 9)}`;
     console.log('ini req id:', id);
     console.log(userdata.instanceName, id, userdata.name, jenisSediaanInt);
 
     try {
-      const tx = await contract.requestCpotb(userdata.instanceName, id, userdata.name, jenisSediaanInt);
-      await tx.wait();
-      console.log('Receipt:', tx);
+      const requestCpotbCt = await contract.requestCpotb([id, userdata.name, userdata.instanceName], jenisSediaanInt);
+      console.log('Receipt:', requestCpotbCt);
+
+      if(requestCpotbCt){
+        MySwal.update({
+          title: "Processing your transaction...",
+          text: "This may take a moment. Hang tight! ⏳"
+        });
+      }
 
     } catch (err) {
       setLoader(false)

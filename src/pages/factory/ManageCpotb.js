@@ -74,31 +74,23 @@ function ManageCpotb() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (contract && userData.instanceName) {
+      if (contract) {
         try {
-          const tx = await contract.getListCpotbByFactory(userData.instanceName);
-          console.log(tx);
-          const [jenisSediaanArray, statusArray, latestTimestampArray, idArray] = tx;
-          console.log(tx[1]);
+          console.log(userData.instanceName);
+          const listAllCt = await contract.getListAllCertificateByInstance(userData.instanceName);
+          console.log(listAllCt);
+          const reconstructedData = listAllCt.map((item, index) => {
+            const cpotbNumber = item[1] ? item[1] : '-'
 
-          const reconstructedData = jenisSediaanArray.map((jenisSediaan, index) => {
-            const readableJenisSediaan = jenisSediaanMap[jenisSediaan];
-            const readableStatus = statusMap[statusArray[index]];
-
-            const timestampDate = new Date(Number(latestTimestampArray[index]) * 1000);;
-            const formattedTimestamp = timestampDate.toLocaleDateString('id-ID', options);
-  
             return {
-              jenisSediaan: readableJenisSediaan,
-              status: readableStatus,
-              latestTimestamp: formattedTimestamp,
-              idCpotb: idArray[index]
+              cpotbId: item[0], 
+              cpotbNumber: cpotbNumber,
+              factoryName: item[2],
+              jenisSediaan: jenisSediaanMap[item[4]],
+              status: statusMap[item[5]],
             };
-          });
-  
-          // Log the transformed data
-          console.log("Reconstructed Data:", reconstructedData);
-  
+          })
+
           setDataCpotb(reconstructedData);
   
         } catch (error) {
@@ -115,31 +107,37 @@ function ManageCpotb() {
     console.log(id);
 
     try {
-      const tx = await contract.getListCpotbById(id);
+      const detailCpotbCt = await contract.detailCpotb(id);
+      console.log(detailCpotbCt);
+
+      const [cpotbId, cpotbNumber, cpotbDetail, jenisSediaan] = detailCpotbCt
+
+      const [status, timestampRequest, timestampApprove, sender, bpom] = cpotbDetail
 
       const detailCpotb = {
-        cpotbId: tx.cpotbId,
-        senderName: tx.senderName,
-        factoryAddr: tx.factoryAddr,
-        factoryName: tx.factoryName,
-        jenisSediaan: jenisSediaanMap[tx.jenisSediaan], 
-        status: statusMap[tx.status], 
-        timestampRequest: new Date(Number(tx.timestampRequest) * 1000).toLocaleDateString('id-ID', options), 
-        timestampApprove: Number(tx.timestampApprove) > 0 ? new Date(Number(tx.timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
-        cpotbNumber: tx.cpotbNumber ? tx.cpotbNumber : "-",
-        bpomAddr: tx.bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : tx.bpomAddr,
-        receiverName: tx.receiverName ? tx.receiverName : "-"
+        cpotbId: cpotbId,
+        cpotbNumber: cpotbNumber ? cpotbNumber : "-",
+        senderName: sender[0],
+        factoryAddr: sender[1],
+        factoryName: sender[2],
+        jenisSediaan: jenisSediaanMap[jenisSediaan], 
+        status: statusMap[status], 
+        timestampRequest: new Date(Number(timestampRequest) * 1000).toLocaleDateString('id-ID', options),
+        timestampApprove: Number(timestampApprove) > 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        bpomName : bpom[0] ? bpom[0] : "-",
+        bpomInstance: bpom[2] ? bpom[2] : "-",
+        bpomAddr: bpom[1] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
       };
       
       MySwal.fire({
-        title: "Sertifikat CPOTB",
+        title: "Detail Sertifikat CPOTB",
         html: (
           <div className='form-swal'>
             <div className="row">
               <div className="col">
                 <ul>
                   <li className="label">
-                    <p>Diajukan oleh</p>
+                    <p>Factory Instance</p>
                   </li>
                   <li className="input">
                     <p>{detailCpotb.factoryName}</p>
@@ -148,7 +146,7 @@ function ManageCpotb() {
 
                 <ul>
                   <li className="label">
-                    <p>Address Pengirim</p> 
+                    <p>Factory Address</p> 
                   </li>
                   <li className="input">
                     <p>{detailCpotb.factoryAddr}</p> 
@@ -157,28 +155,19 @@ function ManageCpotb() {
 
                 <ul>
                   <li className="label">
-                    <p>Nama Pengirim</p> 
+                    <p>BPOM Instance</p> 
                   </li>
                   <li className="input">
-                    <p>{detailCpotb.senderName}</p> 
+                    <p>{detailCpotb.bpomInstance}</p> 
                   </li>
                 </ul>
 
                 <ul>
                   <li className="label">
-                    <p>Address BPOM</p> 
+                    <p>BPOM Address</p> 
                   </li>
                   <li className="input">
                     <p>{detailCpotb.bpomAddr}</p> 
-                  </li>
-                </ul>
-
-                <ul>
-                  <li className="label">
-                    <p>Nama Penyutuju</p> 
-                  </li>
-                  <li className="input">
-                    <p>{detailCpotb.receiverName}</p> 
                   </li>
                 </ul>
               </div>
@@ -235,12 +224,11 @@ function ManageCpotb() {
           
           </div>
         ),
-        width: '720',
+        width: '620',
+        showCloseButton: true,
         showCancelButton: false,
-        confirmButtonText: 'Oke',
+        showConfirmButton: false
       })
-
-      console.log(detailCpotb);
 
     } catch (e) {
       errAlert(e, "Can't retrieve data")
@@ -274,8 +262,8 @@ function ManageCpotb() {
               <ul>
                 {dataCpotb.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailCpotb(item.idCpotb)}>{item.jenisSediaan}</button>
-                    <p>Tanggal Pengajuan: {item.latestTimestamp}</p>
+                    <button className='title' onClick={() => getDetailCpotb(item.cpotbId)}>{item.jenisSediaan}</button>
+                    <p>CPOTB Number: {item.cpotbNumber}</p>
                     <button className={`statusPengajuan ${item.status}`}>
                       {item.status}
                     </button>
