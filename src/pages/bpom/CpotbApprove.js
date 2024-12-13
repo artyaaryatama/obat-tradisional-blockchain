@@ -563,7 +563,7 @@ function CpotbApprove() {
         MySwal.update({
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
-        });;
+        });
       }
     } catch (error) {
       errAlert(error, "Can't Approve CPOTB")

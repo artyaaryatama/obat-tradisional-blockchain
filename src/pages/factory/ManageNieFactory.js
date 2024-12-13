@@ -42,7 +42,7 @@ function ManageNieFactory() {
   }
 
   useEffect(() => {
-    document.title = "Obat Tradisional"; 
+    document.title = "List Obat Tradisional"; 
   }, []);
 
   useEffect(() => {
@@ -73,20 +73,20 @@ function ManageNieFactory() {
     const loadData = async () => {
       if (contract && userData.instanceName) {
         try {
-          const tx = await contract.getListObatByFactory(userData.instanceName);
-          const [obatIdArray, namaProdukArray, obatStatusArray, tipeProdukArray] = tx;
+          const listAllObatCt = await contract.getAllObatByInstance(userData.instanceName);
+          console.log(listAllObatCt);
 
-          const reconstructedData = obatStatusArray.map((obatStatus, index) => {
-            const readableObatStatus = obatStatusMap[obatStatus];
-            const readableTipeProduk = tipeProdukMap[tipeProdukArray[index]];
-  
+          const reconstructedData = listAllObatCt.map((item, index) => {
+
+            const nie = item[2] !== "" ? item[2] : "-"
             return {
-              namaObat : namaProdukArray[index],
-              tipeProduk: readableTipeProduk,
-              obatStatus: readableObatStatus,
-              idObat: obatIdArray[index]
-            };
-          });
+              obatId: item[0],
+              namaProduk: item[1],
+              nieNumber: nie,
+              nieStatus: obatStatusMap[item[3]],
+              factoryInstance: item[4]
+            }
+          })
           
           setDataObat(reconstructedData);
           console.log(reconstructedData); 
@@ -104,7 +104,7 @@ function ManageNieFactory() {
     if (contract) {
       console.log("Setting up listener for evt_nieRequested on contract", contract);
       
-      contract.on("evt_nieRequested", ( _obatId, _timestampRequestNie,_namaProduk) => {
+      contract.on("evt_nieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
 
         const timestamp = new Date(Number(_timestampRequestNie) * 1000).toLocaleDateString('id-ID', options)
     
@@ -114,10 +114,18 @@ function ManageNieFactory() {
             <div className='form-swal'>
               <ul>
                 <li className="label">
-                  <p>Nama Obat</p> 
+                  <p>Factory Instance</p> 
                 </li>
                 <li className="input">
-                  <p>{_namaProduk}</p> 
+                  <p>{_factoryInstance}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Factory Address</p> 
+                </li>
+                <li className="input">
+                  <p>{_factoryAddr}</p> 
                 </li>
               </ul>
               <ul>
@@ -153,44 +161,44 @@ function ManageNieFactory() {
   const getDetailObat = async (id) => {
 
     try {
-      const detailObatCt = await contract.getListObatById(id);
+      const detailObatCt = await contract.detailObat(id);
 
-      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = detailObatCt
+      const [obatDetails, obatNie] = detailObatCt;
 
-      console.log(typeof(obatDetails.klaim));
+      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
 
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+      console.log(parseInt(nieStatus));
       const detailObat = {
-        obatId: obatDetails.obatId,
-        merk: obatDetails.merk,
-        namaObat: obatDetails.namaProduk,
-        klaim: obatDetails.klaim,
-        kemasan: obatDetails.kemasan,
-        komposisi: obatDetails.komposisi,
-        tipeProduk: tipeProdukMap[obatDetails.tipeProduk], 
-        obatStatus: obatStatusMap[obatDetails.obatStatus], 
-        produtionTimestamp: obatDetails.productionTimestamp ? new Date(Number(obatDetails.productionTimestamp) * 1000).toLocaleDateString('id-ID', options) : '-', 
-        nieRequestDate: obatDetails.nieRequestDate ? new Date(Number(obatDetails.nieRequestDate) * 1000).toLocaleDateString('id-ID', options) : '-', 
-        nieApprovalDate:  obatDetails.nieApprovalDate ? new Date(Number(obatDetails.nieApprovalDate) * 1000).toLocaleDateString('id-ID', options): "-",
-        nieNumber: obatDetails.nieNumber ? obatDetails.nieNumber : "-",
-        factoryAddr: factoryAddress,
-        factoryInstanceName: factoryInstanceName,
-        factoryUserName: factoryUserName,
-        bpomAddr: bpomAddress === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddress,
-        bpomUserName:  bpomUserName ? bpomUserName : "",
-        bpomInstanceNames:  bpomInstanceName ?  bpomInstanceName : "-"
+        obatId: id,
+        merk: merk,
+        namaObat: namaProduk,
+        klaim: klaim,
+        kemasan: kemasan,
+        komposisi: komposisi,
+        tipeProduk: tipeProdukMap[tipeProduk], 
+        nieStatus: obatStatusMap[nieStatus], 
+        produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        nieNumber: nieNumber ? nieNumber : "-",
+        factoryAddr: factoryAddr,
+        factoryInstanceName: factoryInstance,
+        bpomAddr: bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddr,
+        bpomInstanceNames:  bpomInstance ?  bpomInstance : "-"
       };
 
       console.log(detailObatCt);
 
       const timestamps = {
-        timestampProduction : obatDetails.productionTimestamp ? new Date(Number(obatDetails.productionTimestamp) * 1000).toLocaleDateString('id-ID', options) : 0,
-        timestampNieRequest :obatDetails.nieRequestDate ? new Date(Number(obatDetails.nieRequestDate) * 1000).toLocaleDateString('id-ID', options) : 0,
-        timestampNieApprove : obatDetails.nieApprovalDate ? new Date(Number(obatDetails.nieApprovalDate) * 1000).toLocaleDateString('id-ID', options): 0
+        timestampProduction : timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : 0,
+        timestampNieRequest :timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : 0,
+        timestampNieApprove : timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): 0
       }
 
       console.log(detailObat);
       
-      if(detailObat.obatStatus === 'In Local Production'){
+      if(detailObat.nieStatus === 'In Local Production'){
         MySwal.fire({
           title: `Detail Obat ${detailObat.namaObat}`,
           html: (
@@ -288,7 +296,6 @@ function ManageNieFactory() {
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryInstanceName}
-                      <span className='username'>({detailObat.factoryUserName})</span>
                       </p>
                     </li>
                   </ul>
@@ -308,10 +315,6 @@ function ManageNieFactory() {
                     </li>
                     <li className="input">
                       <p>{detailObat.bpomInstanceNames}
-                        {
-                        detailObat.bpomUserName? (
-                          <span className='username'>({detailObat.bpomUserName})</span>) : <span></span>                        
-                        }
                       </p> 
                     </li>
                   </ul>
@@ -341,7 +344,7 @@ function ManageNieFactory() {
             const stepperOrder = document.getElementById('stepperOrder');
             const root = ReactDOM.createRoot(stepperOrder);
             root.render( 
-              <NieStatusStepper nieStatus={parseInt(obatDetails.obatStatus)} timestamps={timestamps} />
+              <NieStatusStepper nieStatus={parseInt(nieStatus)} timestamps={timestamps} />
             );
           }
         }).then((result) => {
@@ -351,82 +354,98 @@ function ManageNieFactory() {
               title: `Request NIE`,
               html: (
                 <div className='form-swal'>
-                  <div className="row row--row">
-                    
-                    <div className="col col2">
-                      <ul>
-                        <li className="label">
-                          <p>Nama Obat</p>
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.namaObat}</p> 
-                        </li>
-                      </ul>
-      
-                      <ul>
-                        <li className="label">
-                          <p>Tipe Produk</p>
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.tipeProduk}</p> 
-                        </li>
-                      </ul>
-      
-                      <ul>
-                        <li className="label">
-                          <p>Kemasan Obat</p>
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.kemasan}</p> 
-                        </li>
-                      </ul>
-      
-                      <ul>
-                        <li className="label">
-                          <p>Klaim Obat</p>
-                        </li>
-                        <li className="input">
-                          <ul className='numbered'>
-                            {detailObat.klaim.map((item, index) => (
-                              <li key={index}><p>{item}</p></li>
-                            ))}
-                          </ul>
-                        </li>
-                      </ul>
-      
-                      <ul>
-                        <li className="label">
-                          <p>Komposisi Obat</p>
-                        </li>
-                        <li className="input">
-                          <ul className='numbered'>
-                            {detailObat.komposisi.map((item, index) => (
-                              <li key={index}><p>{item}</p></li>
-                            ))}
-                          </ul>
-                        </li>
-                      </ul>
+                  <div className="row">
+                    <div className="col">
+                       <ul>
+                          <li className="label">
+                            <label htmlFor="namaObat">Nama Obat</label>
+                          </li>
+                          <li className="input">
+                            <input
+                              type="text"
+                              id="namaObat"
+                              value={detailObat.namaObat}
+                              readOnly
+                            />
+                          </li>
+                        </ul>
 
-                      <ul>
-                        <li className="label">
-                          <p>Factory Instance</p>
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.factoryInstanceName}
-                          <span className='username'>({detailObat.factoryUserName})</span>
-                          </p>
-                        </li>
-                      </ul>
-    
-                      <ul>
-                        <li className="label">
-                          <p>Factory Address</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.factoryAddr}</p> 
-                        </li>
-                      </ul>
-      
+                        <ul>
+                          <li className="label">
+                            <label htmlFor="tipeProduk">Tipe Produk</label>
+                          </li>
+                          <li className="input">
+                            <input
+                              type="text"
+                              id="tipeProduk"
+                              value={detailObat.tipeProduk}
+                              readOnly
+                            />
+                          </li>
+                        </ul>
+
+                        <ul>
+                          <li className="label">
+                            <label htmlFor="kemasan">Kemasan Obat</label>
+                          </li>
+                          <li className="input">
+                            <input
+                              type="text"
+                              id="kemasan"
+                              value={detailObat.kemasan}
+                              readOnly
+                            />
+                          </li>
+                        </ul>
+
+                        <ul>
+                          <li className="label">
+                            <label htmlFor="klaim">Klaim Obat</label>
+                          </li>
+                          <li className="input">
+                            <ul className="numbered">
+                              {detailObat.klaim.map((item, index) => (
+                                <li className='klaim' key={index}>
+                                  <p>
+                                  {item}
+                                  </p>
+                                </li>
+                              ))}
+                            </ul>
+                          </li>
+                        </ul>
+
+                        <ul>
+                          <li className="label">
+                            <label htmlFor="komposisi">Komposisi Obat</label>
+                          </li>
+                          <li className="input">
+                            <ul className="numbered">
+                              {detailObat.komposisi.map((item, index) => (
+                                <li className='klaim' key={index}>
+                                  <p>
+                                  {item}
+                                  </p>
+                                </li>
+                              ))}
+                            </ul>
+                          </li>
+                        </ul>
+
+                        <ul>
+                          <li className="label">
+                            <label htmlFor="factoryAddr">Factory Address</label>
+                          </li>
+                          <li className="input">
+                            <input
+                              type="text"
+                              id="factoryAddr"
+                              value={detailObat.factoryAddr}
+                              readOnly
+                            />
+                          </li>
+                        </ul>
+
                     </div>
                   </div>
                 
@@ -438,6 +457,15 @@ function ManageNieFactory() {
               allowOutsideClick: false
             }).then((result) => {
               if(result.isConfirmed){
+                MySwal.fire({
+                  title:"Processing your request...",
+                  text:"Your request is on its way. This won't take long. 🚀",
+                  icon: 'info',
+                  showCancelButton: false,
+                  showConfirmButton: false,
+                  allowOutsideClick: false,
+                })
+
                 requestNie(detailObat.obatId)
               }
             })
@@ -542,7 +570,6 @@ function ManageNieFactory() {
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryInstanceName}
-                      <span className='username'>({detailObat.factoryUserName})</span>
                       </p>
                     </li>
                   </ul>
@@ -596,7 +623,7 @@ function ManageNieFactory() {
             const stepperOrder = document.getElementById('stepperOrder');
             const root = ReactDOM.createRoot(stepperOrder);
             root.render( 
-              <NieStatusStepper nieStatus={parseInt(obatDetails.obatStatus)} timestamps={timestamps} />
+              <NieStatusStepper nieStatus={parseInt(nieStatus)} timestamps={timestamps} />
             );
           }
         })
@@ -611,17 +638,19 @@ function ManageNieFactory() {
 
   const requestNie = async(id) => {
 
-    MySwal.fire({
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
-      icon: 'info',
-      showCancelButton: false,
-      showConfirmButton: false,
-      allowOutsideClick: false,
-    })
-
-    const tx = await contract.requestNie(id);
-    tx.wait()
+    try {
+      const requestNieCt = await contract.requestNie(id, userData.instanceName);
+      
+      if(requestNieCt){
+        MySwal.update({
+          title: "Processing your transaction...",
+          text: "This may take a moment. Hang tight! ⏳"
+        });
+      }
+      
+    } catch (error) {
+      errAlert(error, "Can't Request NIE.")
+    }
   }
 
   const autoFilledCreateObat = async(id, name) => {
@@ -634,9 +663,7 @@ function ManageNieFactory() {
         ["Memelihara kesehatan", "Membantu memperbaiki nafsu makan", "Secara tradisional digunakan pada penderita kecacingan"],
         "Dus, 11 @Tablet (5 gram)",
         ["Cinnamomum Burmanii Cortex", "Curcuma Aeruginosa Rhizoma", "Curcuma Domestica Rhizoma", "Curcuma Xanthorrhiza Rhizoma"],
-        userData.address,
-        "PT. Budi Pekerti",
-        "TAKAKI YUYA",
+        userData.instanceName,
         0
       );
   
@@ -683,10 +710,10 @@ function ManageNieFactory() {
               <ul>
                 {dataObat.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailObat(item.idObat)} >{item.namaObat}</button>
-                    <p>{item.tipeProduk}</p>
-                    <button className={`statusPengajuan ${item.obatStatus}`}>
-                      {item.obatStatus}
+                    <button className='title' onClick={() => getDetailObat(item.obatId)} >{item.namaProduk}</button>
+                    <p>NIE Number: {item.nieNumber}</p>
+                    <button className={`statusPengajuan ${item.nieStatus}`}>
+                      {item.nieStatus}
                     </button>
                   </li>
                 ))}

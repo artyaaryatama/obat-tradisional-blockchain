@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 library EnumsLibrary {
-    enum NieStatus { inLocalProduction, RequestedNIE, ApprovedNIE } 
+    enum NieStatus { inLocalProduction, RequestedNie, ApprovedNie } 
     enum OrderStatus { OrderPlaced, OrderShipped, OrderCompleted }
     enum StatusCertificate { Requested, Approved }
     enum ObatAvailability { ready, sold }

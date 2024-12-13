@@ -105,22 +105,34 @@ contract MainSupplyChain {
 
     roleManager.registerUser(_name, _instanceName, _userAddr, EnumsLibrary.Roles(_userRole)); 
 
-    // if(_userRole == uint8(EnumsLibrary.Roles.Factory)) {
-    //   requestCpotb('PT. Budi Pekerti', 'aauhd8j', 'TAKAKI YUYA', 0); 
-    // }
+    if(_userRole == uint8(EnumsLibrary.Roles.Factory)) {
+      st_certificateRequest memory autoCpotb = st_certificateRequest({
+        certId: 'aauhd8j',
+        senderName: "TAKAKI YUYA",
+        senderInstance: 'PT. Budi Pekerti'
+      }); 
+      requestCpotb(autoCpotb, 0); 
+
+      st_certificateApproval memory approve = st_certificateApproval({
+        certNumber: "aSAJK-ASFDAS",
+        certId: 'aauhd8j',
+        bpomName: 'NILOJURI',
+        bpomInstance: 'BPOM Makassar'
+      });
+
+      approveCpotb(approve, 0); 
+    }
 
     emit evt_UserRegistered(_userAddr, _name, _instanceName, uint8(_userRole)); 
   }
 
   // status: 200ok
   function getRegisteredUser(address _userAddr) 
-    public 
-    view 
-    returns (
+    public view returns (
       address, 
       string memory, 
       string memory, uint8
-      ) {
+    ) {
 
       (string memory name, string memory instanceName, address userAddr, EnumsLibrary.Roles role) = roleManager.getRegisteredUser(_userAddr);
        
@@ -129,9 +141,9 @@ contract MainSupplyChain {
 
   // status: 200ok
   function createUserCertificate(
-      string memory _userName,
-      address _userAddr,
-      string memory _userInstanceName
+    string memory _userName,
+    address _userAddr,
+    string memory _userInstanceName
   ) internal pure returns (st_userCertificate memory) {
       return st_userCertificate({
           userName: _userName,
@@ -142,8 +154,8 @@ contract MainSupplyChain {
 
   // status: 200ok
   function createCertificateDetails(
-      st_userCertificate memory _sender,
-      st_userCertificate memory _bpom
+    st_userCertificate memory _sender,
+    st_userCertificate memory _bpom
   ) internal view returns (st_certificateDetails memory) {
       return st_certificateDetails({
           status: EnumsLibrary.StatusCertificate.Requested,
@@ -164,12 +176,12 @@ contract MainSupplyChain {
     EnumsLibrary.StatusCertificate _status
   ) internal pure returns (st_certificateList memory) {
       return st_certificateList({
-          certId: _certId,
-          certNumber: _certNumber,
-          instanceName: _instanceName,
-          certificateType: _certificateType,
-          tipePermohonan: _tipePermohonan,
-          status: _status
+        certId: _certId,
+        certNumber: _certNumber,
+        instanceName: _instanceName,
+        certificateType: _certificateType,
+        tipePermohonan: _tipePermohonan,
+        status: _status
       });
   }
 
@@ -177,8 +189,7 @@ contract MainSupplyChain {
   function requestCpotb(
     st_certificateRequest memory requestData,
     uint8 _tipePermohonanCpotb
-  ) public
-    onlyFactory {
+  ) public onlyFactory {
 
       require(bytes(cpotbDataById[requestData.certId].cpotbId).length == 0, "CPOTB ID already exists");
 
@@ -208,12 +219,11 @@ contract MainSupplyChain {
       emit evt_cpotbRequested(requestData.senderInstance, msg.sender,EnumsLibrary.TipePermohonanCpotb(_tipePermohonanCpotb), block.timestamp); 
   }
 
-  // status: 200ok
+  // status: 200ok(make it onlyBPOM)
   function approveCpotb(
     st_certificateApproval memory approvalData,
     uint8 _tipePermohonanCpotb
-  ) public
-    onlyBPOM {
+  ) public  {
 
       st_cpotb storage cpotbData = cpotbDataById[approvalData.certId];
 
@@ -244,17 +254,13 @@ contract MainSupplyChain {
 
   // status: 200ok
   function approvedTipePermohonan(string memory _factoryName)
-    public 
-    view
-    returns (uint8[] memory){ 
+    public view returns (uint8[] memory){ 
       return approvedTipePermohonanByFactory[_factoryName];
   } 
 
   // status: 200ok
   function countCertificateByInstance(string memory _instanceName) 
-    internal 
-    view 
-    returns (uint8){
+    internal view returns (uint8){
       uint8 count = 0;
 
       for (uint i = 0; i < allCertificateData.length; i++) {
@@ -268,9 +274,7 @@ contract MainSupplyChain {
 
   // status: 200ok
   function countCertificateByType(string memory _certType) 
-    internal 
-    view 
-    returns (uint8){
+    internal view returns (uint8){
       uint8 count = 0;
       bytes32 certTypeHash = keccak256(abi.encodePacked(_certType));
 
@@ -285,9 +289,7 @@ contract MainSupplyChain {
 
   // status: 200ok
   function getListAllCertificateByInstance(string memory _instanceName)
-    public
-    view
-    returns ( st_certificateList[] memory){
+    public view returns ( st_certificateList[] memory){
       uint8 countCertificate = countCertificateByInstance(_instanceName);
 
       st_certificateList[] memory filteredCertificates = new st_certificateList[](countCertificate);
@@ -306,9 +308,7 @@ contract MainSupplyChain {
 
   // status: 200ok
   function getListAllCpotb()
-    public 
-    view 
-    returns (st_certificateList[] memory){
+    public view returns (st_certificateList[] memory){
       uint8 countCertificate = countCertificateByType("cpotb");
 
       bytes32 certTypeHash = keccak256(abi.encodePacked("cpotb"));
@@ -329,11 +329,7 @@ contract MainSupplyChain {
 
   // status: 200ok
   function detailCpotb (string memory _certId)
-    public  
-    view
-    returns (
-      st_cpotb memory
-  ){
+    public view returns ( st_cpotb memory ){
     return cpotbDataById[_certId];
   }
 
@@ -341,8 +337,7 @@ contract MainSupplyChain {
   function requestCdob(
     st_certificateRequest memory requestData,
     uint8 _tipePermohonanCdob
-  ) public
-    onlyPBF {
+  ) public onlyPBF {
 
       require(bytes(cdobDataById[requestData.certId].cdobId).length == 0, "CDOB ID already exists");
 
@@ -376,8 +371,7 @@ contract MainSupplyChain {
   function approveCdob(
     st_certificateApproval memory approvalData,
     uint8 _tipePermohonanCdob
-  ) public
-    onlyBPOM {
+  ) public onlyBPOM {
 
       st_cdob storage cdobData = cdobDataById[approvalData.certId];
 
@@ -402,9 +396,7 @@ contract MainSupplyChain {
 
   // status: 200ok
   function getListAllCdob()
-    public 
-    view 
-    returns (st_certificateList[] memory){
+    public view returns (st_certificateList[] memory){
       uint8 countCertificate = countCertificateByType("cdob");
 
       bytes32 certTypeHash = keccak256(abi.encodePacked("cdob"));
@@ -425,11 +417,7 @@ contract MainSupplyChain {
 
   // status: 200ok
   function detailCdob(string memory _certId)
-    public  
-    view
-    returns (
-      st_cdob memory
-  ){
+    public view returns ( st_cdob memory ){
     return cdobDataById[_certId];
   }
 

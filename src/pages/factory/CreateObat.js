@@ -77,22 +77,22 @@ function CreateObat() {
     const loadJenisSediaan = async () => {
       if(contract) {
         try {
-          const tx = await contract.getJenisSediaanAvail(userdata.instanceName);
-          console.log("ini jenis sediaan yg ada", tx);
+          const ListJenisSediaanCt = await contract.getJenisSediaanAvail(userdata.instanceName);
+          console.log("ini jenis sediaan yg ada", ListJenisSediaanCt);
   
-          if (tx.length > 0) {
-            const dynamicOptions = Object.entries(tx).reduce((acc, [key, value]) => {
-              acc[value] = js[value]; // Map BigInt value to the description
+          if (ListJenisSediaanCt.length > 0) {
+            const dynamicOptions = Object.entries(ListJenisSediaanCt).reduce((acc, [key, value]) => {
+              acc[value] = js[value]; 
               return acc;
             }, {});
             
             setOptions(dynamicOptions)
           } else {
-            console.log("No approved jenis sediaan found.");
+            errAlert(0, "No approved CPOTB records available.");
           }
 
         } catch (error) {
-          errAlert(error, "Can't access Jenis Sediaan CPOTB")
+          errAlert(error, "Can't access CPOTB data.")
         }
       }
 
@@ -104,7 +104,7 @@ function CreateObat() {
   useEffect(() => {
     if (contract) {
       
-      contract.on("evt_obatCreated", (_namaProduk, _factoryInstanceName, _factoryUserName, _factoryAddr, _kemasan, _tipeProduk) => {
+      contract.on("evt_obatCreated", (_namaProduk, _factoryInstanceName, _factoryAddr) => {
 
         const tp = {
           0n : "Obat Tradisional",
@@ -112,12 +112,20 @@ function CreateObat() {
         };
     
         MySwal.fire({
-          title: "Pembuatan Obat Tradisonal",
+          title: "Success Create Obat Tradisonal",
           html: (
             <div className='form-swal'>
               <ul>
                 <li className="label">
-                  <p>Di produksi oleh</p> 
+                  <p>Nama Produk</p> 
+                </li>
+                <li className="input">
+                  <p>{_namaProduk}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Factory Instance</p> 
                 </li>
                 <li className="input">
                   <p>{_factoryInstanceName}</p> 
@@ -125,26 +133,10 @@ function CreateObat() {
               </ul>
               <ul>
                 <li className="label">
-                  <p>Nama Pengirim</p> 
-                </li>
-                <li className="input">
-                  <p>{_factoryUserName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Alamat Instance</p> 
+                  <p>Factoty Address</p> 
                 </li>
                 <li className="input">
                   <p>{_factoryAddr}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Tipe Produk</p> 
-                </li>
-                <li className="input">
-                  <p>{tp[_tipeProduk]}</p> 
                 </li>
               </ul>
             </div>
@@ -181,28 +173,33 @@ function CreateObat() {
       allowOutsideClick: false,
     })
 
-    const tp = {
+    const tipeProdukMap = {
       "obatTradisional": 0n,
       "suplemenKesehatan": 1n
     };
 
     const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
-  
-    console.log(kemasanPrim);
+    console.log(kemasanSet);
+    
     const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
     const randomTwoLetters = String.fromCharCode(
       65 + Math.floor(Math.random() * 26),
       65 + Math.floor(Math.random() * 26)
     );
     const id = `ot-${randomFourDigit}${randomTwoLetters}`;
-    console.log(userdata);
 
     try {
-      const tx = await contract.createObat(
-        id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.address, userdata.instanceName, userdata.name, tp[tipeProduk], 
-      );
-      await tx.wait();
-      console.log('Receipt:', tx);
+      const createObatCt = await contract.createObat(
+      id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeProdukMap[tipeProduk]);
+      
+      console.log('Receipt:', createObatCt);
+        
+      if(createObatCt){
+        MySwal.update({
+          title: "Processing your transaction...",
+          text: "This may take a moment. Hang tight! ⏳"
+        });
+      }
 
     } catch (err) {
       setLoader(false)

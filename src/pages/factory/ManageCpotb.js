@@ -29,7 +29,6 @@ function ManageCpotb() {
     8n: "Pil"
   };
 
-
   const statusMap = {
     0: "Pending",
     1: "Approved"

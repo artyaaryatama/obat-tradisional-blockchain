@@ -27,15 +27,15 @@ export default function NieStatusStepper({ nieStatus, timestamps }) {
       isDisabled: timestamps.timestampNieApprove === 0
     }
   ];
-  console.log(steps);
-
+  
   const currentActiveStep = parseInt(nieStatus);
+  console.log(currentActiveStep);
 
   return (
     <Box sx={{ maxWidth: 700 }}>
       <Stepper activeStep={currentActiveStep} orientation="vertical">
         {steps.map((step, index) => (
-          <Step key={step.label} completed={currentActiveStep > index}>
+          <Step key={step.label}>
             <StepLabel className='customLabelStepper' TransitionProps={{ unmountOnExit: false }}>
               {step.label}
             </StepLabel>
@@ -44,7 +44,7 @@ export default function NieStatusStepper({ nieStatus, timestamps }) {
               TransitionProps={{ unmountOnExit: false }}
             >
               <Typography>
-                {index === 0  || index === 1 || index === currentActiveStep ? step.description : ''}
+                {index === 0  || index === 1 || index === 2 ? step.description : ''}
               </Typography>
             </StepContent>
           </Step>

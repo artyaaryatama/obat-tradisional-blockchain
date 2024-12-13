@@ -74,27 +74,25 @@ function NieApprove() {
     const loadData = async () => {
       if (contract) {
         try {
-          const tx = await contract.getListAllObatNie();
-          const [obatIdArray, namaProdukArray, factoryInstanceNameArray, latestTimestampArray, obatStatusArray] = tx;
-
-          const reconstructedData = obatStatusArray.map((obatStatus, index) => {
-            const readableObatStatus = obatStatusMap[obatStatus];
-  
-            const timestampDate = new Date(Number(latestTimestampArray[index]) * 1000);;
-            const formattedTimestamp = timestampDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric',});
-  
+          const listObatCt = await contract.getAllObat();
+          console.log(listObatCt);
+          const reconstructedData = listObatCt.map((item, index) => {
+            if (item[0] === "") {
+              return null; 
+            }
+            const nie = item[2] !== "" ? item[2] : "-"
 
             return {
-              namaObat : namaProdukArray[index],
-              factoryInstanceName: factoryInstanceNameArray[index],
-              latestTimestamp: formattedTimestamp,
-              obatStatus: readableObatStatus,
-              idObat: obatIdArray[index]
+              obatId: item[0],
+              namaProduk: item[1],
+              nieNumber: nie,
+              nieStatus: obatStatusMap[item[3]],
+              factoryInstance: item[4]
             };
-          });
-  
+          }).filter(item => item !== null);
+
+          console.log(reconstructedData);
           setDataObat(reconstructedData);
-          console.log(dataObat);
   
         } catch (error) {
           console.error("Error loading data: ", error);
@@ -108,7 +106,8 @@ function NieApprove() {
   useEffect(() => {
     if (contract) {
 
-      contract.on('evt_nieApproved',  (_nieNumber, _namaProduk, _timestampApprove) => {
+      contract.on('evt_nieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
+
         const timestamp = new Date(Number(_timestampApprove) * 1000).toLocaleDateString('id-ID', options)
     
         MySwal.fire({
@@ -125,10 +124,18 @@ function NieApprove() {
               </ul>
               <ul>
                 <li className="label">
-                  <p>Nama Obat</p> 
+                  <p>BPOM Instance</p> 
                 </li>
                 <li className="input">
-                  <p>{_namaProduk}</p> 
+                  <p>{_instanceName}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>BPOM Address</p> 
+                </li>
+                <li className="input">
+                  <p>{_instanceAddr}</p> 
                 </li>
               </ul>
               <ul>
@@ -165,37 +172,39 @@ function NieApprove() {
     console.log(id); 
     
     try {
-      const detailObatCt = await contract.getListObatById(id);
+      const detailObatCt = await contract.detailObat(id);
 
-      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = detailObatCt
+      const [obatDetails, obatNie] = detailObatCt;
 
-      console.log(obatDetails);
+      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
 
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+      console.log(parseInt(nieStatus));
       const detailObat = {
-        obatId: obatDetails.obatId,
-        merk: obatDetails.merk,
-        namaObat: obatDetails.namaProduk,
-        klaim: obatDetails.klaim,
-        kemasan: obatDetails.kemasan,
-        komposisi: obatDetails.komposisi,
-        factoryAddr: factoryAddress,
-        factoryInstanceName: factoryInstanceName,
-        factoryUserName: factoryUserName,
-        tipeProduk: tipeProdukMap[obatDetails.tipeProduk], 
-        obatStatus: obatStatusMap[obatDetails.obatStatus], 
-        produtionTimestamp: obatDetails.productionTimestamp ? new Date(Number(obatDetails.productionTimestamp) * 1000).toLocaleDateString('id-ID', options) : '-', 
-        nieRequestDate: obatDetails.nieRequestDate ? new Date(Number(obatDetails.nieRequestDate) * 1000).toLocaleDateString('id-ID', options) : '-', 
-        nieApprovalDate: Number(obatDetails.nieApprovalDate) > 0 ? new Date(Number(obatDetails.nieApprovalDate) * 1000).toLocaleDateString('id-ID', options): "-",
-        nieNumber: obatDetails.nieNumber ? obatDetails.nieNumber : "-",
-        bpomAddr: bpomAddress === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddress,
-        bpomUserName:  bpomUserName ? bpomUserName : "",
-        bpomInstanceNames:  bpomInstanceName ?  bpomInstanceName : "-"
+        obatId: id,
+        merk: merk,
+        namaObat: namaProduk,
+        klaim: klaim,
+        kemasan: kemasan,
+        komposisi: komposisi,
+        tipeProduk: tipeProdukMap[tipeProduk], 
+        nieStatus: obatStatusMap[nieStatus], 
+        produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        nieNumber: nieNumber ? nieNumber : "-",
+        factoryAddr: factoryAddr,
+        factoryInstanceName: factoryInstance,
+        bpomAddr: bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddr,
+        bpomInstanceNames:  bpomInstance ?  bpomInstance : "-"
       };
 
+      console.log(detailObatCt);
+
       const timestamps = {
-        timestampProduction : detailObat.produtionTimestamp ? detailObat.produtionTimestamp : 0,
-        timestampNieRequest : detailObat.nieRequestDate ? detailObat.nieRequestDate : 0,
-        timestampNieApprove : detailObat.nieApprovalDate ?  detailObat.nieApprovalDate : 0
+        timestampProduction : timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : 0,
+        timestampNieRequest :timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : 0,
+        timestampNieApprove : timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): 0
       }
 
       console.log(detailObat);
@@ -297,7 +306,6 @@ function NieApprove() {
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryInstanceName}
-                      <span className='username'>({detailObat.factoryUserName})</span>
                       </p>
                     </li>
                   </ul>
@@ -351,8 +359,8 @@ function NieApprove() {
             const stepperOrder = document.getElementById('stepperOrder');
             const root = ReactDOM.createRoot(stepperOrder);
             root.render( 
-              <NieStatusStepper nieStatus={parseInt(obatDetails.obatStatus)} timestamps={timestamps} />
-            );
+              <NieStatusStepper nieStatus={parseInt(nieStatus)} timestamps={timestamps} />
+            )
           }
         })
       } else{
@@ -453,7 +461,6 @@ function NieApprove() {
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryInstanceName}
-                      <span className='username'>({detailObat.factoryUserName})</span>
                       </p>
                     </li>
                   </ul>
@@ -506,7 +513,7 @@ function NieApprove() {
             const stepperOrder = document.getElementById('stepperOrder');
             const root = ReactDOM.createRoot(stepperOrder);
             root.render( 
-              <NieStatusStepper nieStatus={parseInt(obatDetails.obatStatus)} timestamps={timestamps} />
+              <NieStatusStepper nieStatus={parseInt(nieStatus)} timestamps={timestamps} />
             );
           }
         }).then((result) => {
@@ -523,69 +530,80 @@ function NieApprove() {
             MySwal.fire({
               title: "Approve NIE",
               html: (
-                <div className='form-swal'>
-                  <div className="row row--row">
-                    
-                    <div className="col col2">
+                <div className='form-swal form'>
+                  <div className="row">
+                    <div className="col">
                       <ul>
                         <li className="label">
-                          <p>Nomor NIE</p>
+                          <label htmlFor="factoryInstanceName">NIE Number</label>
                         </li>
                         <li className="input">
-                          <p>{nieNum}</p> 
+                          <input
+                            type="text"
+                            id="factoryInstanceName"
+                            value={nieNum}
+                            readOnly
+                          />
                         </li>
                       </ul>
 
                       <ul>
                         <li className="label">
-                          <p>Nama Obat</p>
+                          <label htmlFor="factoryInstanceName">Nama Produk</label>
                         </li>
                         <li className="input">
-                          <p>{detailObat.namaObat}</p> 
+                          <input
+                            type="text"
+                            id="factoryInstanceName"
+                            value={namaProduk}
+                            readOnly
+                          />
                         </li>
                       </ul>
-      
+              
                       <ul>
                         <li className="label">
-                          <p>Tipe Produk</p>
+                          <label htmlFor="factoryInstanceName">Tipe Produk</label>
                         </li>
                         <li className="input">
-                          <p>{detailObat.tipeProduk}</p> 
+                          <input
+                            type="text"
+                            id="factoryInstanceName"
+                            value={detailObat.tipeProduk}
+                            readOnly
+                          />
                         </li>
                       </ul>
-      
+              
                       <ul>
                         <li className="label">
-                          <p>Kemasan Obat</p>
+                          <label htmlFor="factoryInstanceName">Kemasan</label>
                         </li>
                         <li className="input">
-                          <p>{detailObat.kemasan}</p> 
+                          <input
+                            type="text"
+                            id="factoryInstanceName"
+                            value={kemasan}
+                            readOnly
+                          />
                         </li>
                       </ul>
-
+              
                       <ul>
                         <li className="label">
-                          <p>Factory Instance</p>
+                          <label htmlFor="factoryAddr">Factory Instance</label>
                         </li>
                         <li className="input">
-                          <p>{detailObat.factoryInstanceName}
-                          <span className='username'>({detailObat.factoryUserName})</span>
-                          </p>
+                          <input
+                            type="text"
+                            id="factoryAddr"
+                            value={detailObat.factoryInstanceName}
+                            readOnly
+                          />
                         </li>
                       </ul>
-    
-                      <ul>
-                        <li className="label">
-                          <p>Factory Address</p> 
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.factoryAddr}</p> 
-                        </li>
-                      </ul>
-      
                     </div>
                   </div>
-                
                 </div>
               ),
               width: '520',
@@ -594,6 +612,16 @@ function NieApprove() {
               allowOutsideClick: false,
             }).then((result) => {
               if(result.isConfirmed){
+
+                MySwal.fire({
+                  title:"Processing your request...",
+                  text:"Your request is on its way. This won't take long. 🚀",
+                  icon: 'info',
+                  showCancelButton: false,
+                  showConfirmButton: false,
+                  allowOutsideClick: false
+                })
+
                 approveNie(id, nieNum)
               }
             })
@@ -609,20 +637,17 @@ function NieApprove() {
   }
 
   const approveNie = async(id, nieNumber) => {
-    
-    MySwal.fire({
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
-      icon: 'info',
-      showCancelButton: false,
-      showConfirmButton: false,
-      allowOutsideClick: false
-    })
 
     try {
-      console.log(userdata.address);
-      const approveNieCt =  await contract.approveNie(id, userdata.address, userdata.instanceName, userdata.name, nieNumber)
+      const approveNieCt =  await contract.approveNie(id, nieNumber, userdata.instanceName)
       console.log(approveNieCt);
+
+      if(approveNieCt){
+        MySwal.update({
+          title: "Processing your transaction...",
+          text: "This may take a moment. Hang tight! ⏳"
+        });
+      }
 
     } catch (error) {
       errAlert(error, "Can't Approve NIE");
@@ -637,15 +662,15 @@ function NieApprove() {
         </div>
         <div className="container-data">
           <div className="data-list">
-            {dataObat.length > 0 ? (
+            {dataObat !== 0 ? (
               <ul>
                 {dataObat.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailObat(item.idObat)}>{item.namaObat}</button>
-                    <p>Diproduksi oleh : {item.factoryInstanceName}</p>
-                    <p>Tanggal Pengajuan: {item.latestTimestamp}</p>
-                    <button className={`statusPengajuan ${item.obatStatus}`}>
-                      {item.obatStatus}
+                    <button className='title' onClick={() => getDetailObat(item.obatId)}>{item.namaProduk}</button>
+                    <p>Diproduksi oleh : {item.factoryInstancee}</p>
+                    <p>NIE Number: {item.nieNumber}</p>
+                    <button className={`statusPengajuan ${item.nieStatus}`}>
+                      {item.nieStatus}
                     </button>
                   </li>
                 ))}

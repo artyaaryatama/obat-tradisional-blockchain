@@ -46,7 +46,7 @@ export default function OrderStatusStepper({ orderStatus, timestamps }) {
               TransitionProps={{ unmountOnExit: false }}
             >
               <Typography>
-              {index === 0  || index === 1 ||index === activeStep ? step.description : ''}
+                {index === 0  || index === 1 ||index === activeStep ? step.description : ''}
               </Typography>
             </StepContent>
           </Step>

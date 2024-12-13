@@ -161,7 +161,7 @@ function CdobRequest() {
       if(requestCdobCt){
         MySwal.update({
           title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⛓️"
+          text: "This may take a moment. Hang tight! ⏳"
         });
       }
 
