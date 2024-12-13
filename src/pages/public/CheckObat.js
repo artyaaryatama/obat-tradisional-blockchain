@@ -28,7 +28,7 @@ function CheckObatIpfs() {
   const [nieRequestDate, setNieRequestDate] = useState("");
   const [nieApprovalDate, setNieApprovalDate] = useState("");
   const [bpomAddr, setBpomAddr] = useState("");
-  const [bpomUserName, setBpomUserName] = useState("");
+  const [bpomInstanceName, setBpomInstanceName] = useState("");
 
   const obatStatusMap = {
     0: "In Local Production",
@@ -51,7 +51,7 @@ function CheckObatIpfs() {
     return hash;
   };
 
-  // const obatDataFull = {"batchName":"BN-8047-JIGV","obatIdPackage":"OT-02838OL","dataObat":{"obatIdProduk":"ot-3385CI","namaProduk":"Buyung Upik Instan Rasa Coklat","merk":"Buyung Upik Instan Rasa Coklat","klaim":["Memelihara kesehatan","Membantu memperbaiki nafsu makan","Secara tradisional digunakan pada penderita kecacingan"],"kemasan":"Dus, 11 @Tablet (5 gram)","komposisi":["Cinnamomum Burmanii Cortex","Curcuma Aeruginosa Rhizoma","Curcuma Domestica Rhizoma","Curcuma Xanthorrhiza Rhizoma"],"factoryAddr":"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266","factoryInstanceName":"PT. Budi Pekerti","factoryUserName":"TAKAKI YUYA","tipeProduk":"Obat Tradisional","nieNumber":"TETSDFSDF","nieRequestDate":"-","nieApprovalDate":"-","bpomAddr":"-","bpomUserName":"-"},"datOrderPbf":{"orderQuantity":2,"senderInstanceName":"PT. Mangga Arum","targetInstanceName":"PT. Budi Pekerti","timestampOrder":"9 Desember 2024 pukul 00.29 WITA","timestampShipped":"9 Desember 2024 pukul 00.29 WITA","timestampComplete":"9 Desember 2024 pukul 00.30 WITA"},"dataOrderRetailer":{"orderQuantity":2,"senderInstanceName":"Apotek Sejahtera","targetInstanceName":"PT. Mangga Arum","timestampOrder":"9 Desember 2024 pukul 00.32 WITA","timestampShipped":"9 Desember 2024 pukul 00.32 WITA","timestampComplete":"9 Desember 2024 pukul 00.33 WITA"}}
+  // const obatDataFull = {"batchName":"BN-8047-JIGV","obatIdPackage":"OT-02838OL","dataObat":{"obatIdProduk":"ot-3385CI","namaProduk":"Buyung Upik Instan Rasa Coklat","merk":"Buyung Upik Instan Rasa Coklat","klaim":["Memelihara kesehatan","Membantu memperbaiki nafsu makan","Secara tradisional digunakan pada penderita kecacingan"],"kemasan":"Dus, 11 @Tablet (5 gram)","komposisi":["Cinnamomum Burmanii Cortex","Curcuma Aeruginosa Rhizoma","Curcuma Domestica Rhizoma","Curcuma Xanthorrhiza Rhizoma"],"factoryAddr":"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266","factoryInstanceName":"PT. Budi Pekerti","factoryUserName":"TAKAKI YUYA","tipeProduk":"Obat Tradisional","nieNumber":"TETSDFSDF","nieRequestDate":"-","nieApprovalDate":"-","bpomAddr":"-","bpomInstanceName":"-"},"datOrderPbf":{"orderQuantity":2,"senderInstanceName":"PT. Mangga Arum","targetInstanceName":"PT. Budi Pekerti","timestampOrder":"9 Desember 2024 pukul 00.29 WITA","timestampShipped":"9 Desember 2024 pukul 00.29 WITA","timestampComplete":"9 Desember 2024 pukul 00.30 WITA"},"dataOrderRetailer":{"orderQuantity":2,"senderInstanceName":"Apotek Sejahtera","targetInstanceName":"PT. Mangga Arum","timestampOrder":"9 Desember 2024 pukul 00.32 WITA","timestampShipped":"9 Desember 2024 pukul 00.32 WITA","timestampComplete":"9 Desember 2024 pukul 00.33 WITA"}}
 
   
   useEffect(() => {
@@ -76,15 +76,13 @@ function CheckObatIpfs() {
         komposisi: obatData.dataObat.komposisi,
         factoryAddr: obatData.dataObat.factoryAddr,
         factoryInstanceName: obatData.dataObat.factoryInstanceName,
-        factoryUserName: obatData.dataObat.factoryUserName,
         tipeProduk: obatData.dataObat.tipeProduk, 
         obatStatus: obatData.dataObat.obatStatus ? obatStatusMap[obatData.dataObat.obatStatus] : '-' ,
         nieRequestDate: obatData.dataObat.nieRequestDate, 
         nieApprovalDate: obatData.dataObat.nieApprovalDate,
         nieNumber: obatData.dataObat.nieNumber,
         bpomAddr: obatData.dataObat.bpomAddr,
-        bpomUserName:  obatData.dataObat.bpomUserName,
-        bpomInstanceNames:  obatData.dataObat.bpomInstanceName
+        bpomInstanceName: obatData.dataObat.bpomInstanceName,
       };
 
       console.log(detailObat);
@@ -136,7 +134,7 @@ function CheckObatIpfs() {
       setNieRequestDate(detailObat.nieRequestDate);
       setNieApprovalDate(detailObat.nieApprovalDate);
       setBpomAddr(detailObat.bpomAddr);
-      setBpomUserName(detailObat.bpomUserName);
+      setBpomInstanceName(detailObat.bpomInstanceName);
 
     }
 
@@ -242,7 +240,7 @@ function CheckObatIpfs() {
                     </li>
                     <li className="info-item">
                       <span className="label">BPOM Instance</span>
-                      <span>{bpomUserName}</span>
+                      <span>{bpomInstanceName}</span>
                       <span className='addr'>({bpomAddr})</span>
                     </li>
                   </ul>

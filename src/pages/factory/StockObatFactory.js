@@ -83,22 +83,19 @@ function StockObatFactory() {
       if (contract && userData.instanceName) {
         try {
 
-          const listProducedObatCt = await contract.getListAllProducedObatByFactory(userData.instanceName);
+          const listProducedObatCt = await contract.getAllBatchProductionByInstance(userData.instanceName);
           
-          const [obatIdArray, namaProdukArray, obatQuantityArray, batchNameArray] = listProducedObatCt;
-
           console.log(listProducedObatCt);
-
-          // use map on obatIdArray, which iterates through each obatId
-          const reconstructedData = obatIdArray.map((obatId, index) => ({
-            namaObat: namaProdukArray[index],
-            idObat: obatIdArray[index],
-            obatQuantity: obatQuantityArray[index].toString(),
-            batchName: batchNameArray[index]
-          }));
-
-          
-          setNamaObatArray(namaProdukArray)
+          const reconstructedData = listProducedObatCt.map((item) => {
+            return {
+              obatId: item[0],
+              namaProduk: item[1],
+              batchName: item[2],
+              obatQuantity: parseInt(item[3]),
+              statusStok: stokStatusMap[item[4]],
+              factoryInstanceName: item[5]
+            }
+          })
           setDataObat(reconstructedData)
 
         } catch (error) {
@@ -110,89 +107,47 @@ function StockObatFactory() {
     loadData();
   }, [contract, userData.instanceName]);
 
-  // useEffect(() => {
-  //   if (contract) {
+  useEffect(() => {
+    if (contract) {
 
-  //     contract.on("evt_addObatQuantity", (_namaProduk, _obatQuantity, _batchName) => {
-  //       const quantity = _obatQuantity.toString()
-  //       MySwal.fire({
-  //         title: "Success Add New Stock",
-  //         html: (
-  //           <div className='form-swal'>
-  //             <ul>
-  //               <li className="label">
-  //                 <p>Nama Obat</p> 
-  //               </li>
-  //               <li className="input">
-  //                 <p>{_namaProduk}</p> 
-  //               </li>
-  //             </ul>
-  //             <ul>
-  //               <li className="label">
-  //                 <p>Batch Name</p> 
-  //               </li>
-  //               <li className="input">
-  //                 <p>{_batchName}</p> 
-  //               </li>
-  //             </ul>
-  //             <ul>
-  //               <li className="label">
-  //                 <p>Total Stok Baru</p> 
-  //               </li>
-  //               <li className="input">
-  //                 <p>{quantity} Obat</p> 
-  //               </li>
-  //             </ul>
-  //           </div>
-  //         ),
-  //         icon: 'success',
-  //         width: '560',
-  //         showCancelButton: false,
-  //         confirmButtonText: 'Oke',
-  //         allowOutsideClick: true,
-  //       }).then((result) => {
-  //         if (result.isConfirmed) {
-  //           window.location.reload()
-  //         }
-  //       });
-  //     })
-  
-  //     return () => {
-  //       contract.removeAllListeners("evt_addObatQuantity");
-  //     };
-  //   }
-  // }, [contract]);
+    }
+  }, [contract]);
 
   const getDetailObat = async (id, batchName) => {
 
     try {
-      const detailObatCt = await contract.getListObatById(id);
-      const detailProducedObat = await contract.getDetailProducedObat(batchName)
+      const detailObatCt = await contract.detailObat(id);
+      const detailBatchCt = await contract.detailBatchProduction(id, batchName);
 
-      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = detailObatCt;
+      const [obatDetails, obatNie] = detailObatCt;
 
-      const [obatQuantity, obatIpfsHash, statusStok] = detailProducedObat;
-      console.log(detailProducedObat);
+      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
+
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+
+      const [statusStok, namaProduct, batchNamee, obatQuantity, obatIpfs, factoryInstancee] = detailBatchCt
 
       const detailObat = {
-        obatId: obatDetails.obatId,
-        merk: obatDetails.merk,
-        namaObat: obatDetails.namaProduk,
-        klaim: obatDetails.klaim,
-        kemasan: obatDetails.kemasan,
-        komposisi: obatDetails.komposisi,
-        factoryAddr: factoryAddress,
-        factoryInstanceName: factoryInstanceName,
-        factoryUserName: factoryUserName,
-        tipeProduk: tipeProdukMap[obatDetails.tipeProduk], 
-        obatStatus: obatStatusMap[obatDetails.obatStatus], 
-        nieRequestDate: obatDetails.nieRequestDate ? new Date(Number(obatDetails.nieRequestDate) * 1000).toLocaleDateString('id-ID', options) : '-', 
-        nieApprovalDate: Number(obatDetails.nieApprovalDate) > 0 ? new Date(Number(obatDetails.nieApprovalDate) * 1000).toLocaleDateString('id-ID', options): "-",
-        nieNumber: obatDetails.nieNumber ? obatDetails.nieNumber : "-",
-        bpomAddr: bpomAddress === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddress,
-        bpomUserName:  bpomUserName ? bpomUserName : "-",
-        bpomInstanceNames:  bpomInstanceName ?  bpomInstanceName : "-"
+        obatId: id,
+        merk: merk,
+        namaObat: namaProduk,
+        klaim: klaim,
+        kemasan: kemasan,
+        komposisi: komposisi,
+        tipeProduk: tipeProdukMap[tipeProduk], 
+        nieStatus: obatStatusMap[nieStatus], 
+        produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        nieNumber: nieNumber ? nieNumber : "-",
+        factoryAddr: factoryAddr,
+        factoryInstanceName: factoryInstance,
+        bpomAddr: bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddr,
+        bpomInstanceNames:  bpomInstance ?  bpomInstance : "-"
       };
+
+      console.log(detailObatCt);
+
 
       MySwal.fire({
         title: `Produksi Obat ${detailObat.namaObat}`,
@@ -253,7 +208,7 @@ function StockObatFactory() {
                   </div>
 
                 </div>
-                <DataIpfsHash ipfsHashes={obatIpfsHash} />
+                <DataIpfsHash ipfsHashes={obatIpfs} />
               </div>
               <div className="row row--obat">
                 <div className="col column">
@@ -311,86 +266,7 @@ function StockObatFactory() {
         ),
         width: '1220',
         showCancelButton: true,
-        // confirmButtonText: 'Tambah Stok Obat',
         showConfirmButton: false,
-      }).then((result) => {
-
-        if(result.isConfirmed){
-         
-          MySwal.fire({
-            title: "Tambah Stok Obat",
-            html: (
-              <div className='form-swal'>
-                <div className="row row--obat">
-                  <div className="col">
-      
-                    <ul>
-                      <li className="label">
-                        <p>Nama Produk</p>
-                      </li>
-                      <li className="input">
-                        <p>{detailObat.namaObat}</p> 
-                      </li>
-                    </ul>
-      
-                    <ul>
-                      <li className="label">
-                        <p>Nama Factory</p> 
-                      </li>
-                      <li className="input">
-                        <p>{detailObat.factoryInstanceName}</p> 
-                      </li>
-                    </ul>
-      
-                    <ul>
-                      <li className="label">
-                        <p>Jumlah Stok</p> 
-                      </li>
-                      <li className="input">
-                        <input type="number" name="stok" id="stok" />
-                      </li>
-                    </ul>
-      
-                    <ul>
-                      <li className="label">
-                        <button id='addQuantity'  className='addQuantity' >
-                          <i className="fa-solid fa-arrows-rotate"></i>
-                          Generate Data Obat
-                          </button>
-                      </li>
-                      <li className="input">
-                        <DataIpfsHash ipfsHashes={[]} />
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              
-              </div>
-            ),
-            width: '820',
-            showCancelButton: true,
-            confirmButtonText: 'Request',
-            allowOutsideClick: false,
-            didOpen: () => {
-              const generateIpfsHash = document.getElementById('addQuantity')
-              const stokInput = document.getElementById('stok');
-              
-              const handleGenerate = async () => {
-                const quantity = parseInt(stokInput.value, 10);
-                if (quantity <= 0) {
-                  MySwal.showValidationMessage('Jumlah stok harus lebih dari 0');
-                  return;
-                }
-              };
-            
-              generateIpfsHash.addEventListener('click', handleGenerate);
-            
-              return () => {
-                generateIpfsHash.removeEventListener('click', handleGenerate);
-              };
-            }
-          })
-        }
       })
       
     } catch (e) {
@@ -426,9 +302,11 @@ function StockObatFactory() {
               <ul>
                 {dataObat.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailObat(item.idObat, item.batchName)} > [{item.batchName}] {item.namaObat}</button>
-                    <p>Batch: {item.batchName}</p>
+                    <button className='title' onClick={() => getDetailObat(item.obatId, item.batchName)} > [ {item.batchName} ] {item.namaProduk}</button>
                     <p>Stok tersedia: {item.obatQuantity} Obat</p>
+                    <button className={`statusOrder ${item.statusStok}`}>
+                      {item.statusStok}
+                    </button>
                   </li>
                 ))}
               </ul>

@@ -182,8 +182,13 @@
               background-color: $green;
               color: $white;
             }
+
+            &.Available{
+              background-color: $blue;
+              color: $white;
+            }
             
-            &.In, &.Placed{
+            &.In, &.Placed, &.Empty{
               background-color: $grey;
               color: $white;
             }

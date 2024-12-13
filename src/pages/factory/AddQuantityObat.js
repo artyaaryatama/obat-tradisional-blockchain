@@ -75,17 +75,18 @@ function AddQuantityObat() {
     const loadObatDataAvailable = async () => {
       if(contract) {
         try {
-          console.log(userdata);
-          const listObat = await contract.getListAllApprovedObatNie(userdata.instanceName);
-          console.log(listObat);
+          const listObatNameCt = await contract.getAllObatNameApprovedNie(userdata.instanceName);
 
-          const formattedOutput = listObat[0].map((idobat, index) => ({
-            idobat: idobat,  
-            namaProduk: listObat[1][index]  
-          }));
+          console.log(listObatNameCt);
 
-          setDataObatAvail(formattedOutput)
-          console.log(formattedOutput);
+          const reconstructedData = listObatNameCt.map((item) => {
+            return {
+              obatId: item[0],
+              namaProduk: item[1]
+            }
+          })
+
+          setDataObatAvail(reconstructedData)
 
           const timestamp = Date.now(); 
           const digits = String(timestamp).slice(-4);
@@ -108,16 +109,15 @@ function AddQuantityObat() {
 
   useEffect(() => {
     if (contract) {
-      
-      contract.on("evt_addObatQuantity", (_namaProduk, _quantity, _batchName) => {
-
+      contract.on('evt_addBatchProduction',  (_batchName, _obatQuantity, _namaProduk, _factoryInstance) => {
+    
         MySwal.fire({
-          title: "Success Add Quantity",
+          title: `Success Add Batch Production`,
           html: (
             <div className='form-swal'>
               <ul>
                 <li className="label">
-                  <p>Nama Produk Obat</p> 
+                  <p>Nama Produk</p> 
                 </li>
                 <li className="input">
                   <p>{_namaProduk}</p> 
@@ -133,13 +133,20 @@ function AddQuantityObat() {
               </ul>
               <ul>
                 <li className="label">
-                  <p>Total Quantity</p> 
+                  <p>Obat Quantity</p> 
                 </li>
                 <li className="input">
-                  <p>{_quantity.toString()} Obat</p> 
+                  <p>{_obatQuantity.toString()}</p> 
                 </li>
               </ul>
-              
+              <ul>
+                <li className="label">
+                  <p>Factory Instance</p> 
+                </li>
+                <li className="input">
+                  <p>{_factoryInstance}</p> 
+                </li>
+              </ul>
             </div>
           ),
           icon: 'success',
@@ -149,15 +156,13 @@ function AddQuantityObat() {
           allowOutsideClick: true,
         }).then((result) => {
           if (result.isConfirmed) {
-            navigate('/obat-available-factory');
+            window.location.reload()
           }
         });
-
-        setLoader(false)
       });
   
-      return () => {;
-        contract.removeAllListeners("evt_addObatQuantity");
+      return () => {
+        contract.removeAllListeners("evt_addBatchProduction");
       };
     }
   }, [contract]);
@@ -176,44 +181,52 @@ function AddQuantityObat() {
 
     const selectedObat = dataObatAvail.filter(item => item.namaProduk === namaProduk)
 
-    const listObatCt = await contract.getListObatById(selectedObat[0].idobat);
+    const id = selectedObat[0].obatId;
 
-    const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = listObatCt;
+    const detailObatCt = await contract.detailObat(id);
 
+    const [obatDetails, obatNie] = detailObatCt;
+
+    const [merk, namaProduct, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
+
+    const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+    console.log(obatNie);
     const detailObat = {
-      obatId: obatDetails.obatId,
-      merk: obatDetails.merk,
-      namaObat: obatDetails.namaProduk,
-      klaim: obatDetails.klaim,
-      kemasan: obatDetails.kemasan,
-      komposisi: obatDetails.komposisi,
-      factoryAddr: factoryAddress,
-      factoryInstanceName: factoryInstanceName,
-      factoryUserName: factoryUserName,
-      tipeProduk: tipeProdukMap[obatDetails.tipeProduk], 
-      nieRequestDate: obatDetails.nieRequestDate ? new Date(Number(obatDetails.nieRequestDate) * 1000).toLocaleDateString('id-ID', options) : '-', 
-      nieApprovalDate: Number(obatDetails.nieApprovalDate) > 0 ? new Date(Number(obatDetails.nieApprovalDate) * 1000).toLocaleDateString('id-ID', options): "-",
-      nieNumber: obatDetails.nieNumber ? obatDetails.nieNumber : "-",
-      bpomAddr: bpomAddress === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddress,
-      bpomUserName:  bpomUserName ? bpomUserName : "-",
-      bpomInstanceName:  bpomInstanceName ?  bpomInstanceName : "-"
+      obatId: id,
+      merk: merk,
+      namaObat: namaProduct,
+      klaim: klaim,
+      kemasan: kemasan,
+      komposisi: komposisi,
+      tipeProduk: tipeProdukMap[tipeProduk], 
+      produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
+      nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
+      nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+      nieNumber: nieNumber ? nieNumber : "-",
+      factoryAddr: factoryAddr,
+      factoryInstanceName: factoryInstance,
+      bpomAddr: bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddr,
+      bpomInstanceName:  bpomInstance ?  bpomInstance : "-"
     };
 
+    console.log(detailObat);
     generateIpfsHash(detailObat, parseInt(quantityObat), batchName)
   };
 
-  const generateIpfsHash = async(dataObat, quantityObat, batchNameObat) => {
+  const generateIpfsHash = async(dataObat, quantity, batchNameObat) => {
     let newIpfsHashes = [];
-    const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
+    const randomSixDigits = Math.floor(100000 + Math.random() * 900000);
     const randomTwoLetters = String.fromCharCode(
+      65 + Math.floor(Math.random() * 26),
+      65 + Math.floor(Math.random() * 26),
       65 + Math.floor(Math.random() * 26),
       65 + Math.floor(Math.random() * 26)
     );
 
-    for (let i = 0; i < quantityObat; i++) {
+    for (let i = 0; i < quantity; i++) {
       const obat = {
         batchName: batchNameObat,
-        obatIdPackage: `OT-${i * 23}${randomFourDigit}${randomTwoLetters}`,
+        obatIdPackage: `OT-${i * 23}${randomSixDigits}-${randomTwoLetters}`,
         dataObat:  {
           obatIdProduk: dataObat.obatId,
           namaProduk: dataObat.namaObat,
@@ -223,14 +236,12 @@ function AddQuantityObat() {
           komposisi: dataObat.komposisi,
           factoryAddr: dataObat.factoryAddr,
           factoryInstanceName: dataObat.factoryInstanceName,
-          factoryUserName: dataObat.factoryUserName,
           tipeProduk: dataObat.tipeProduk,
           nieNumber: dataObat.nieNumber,
           nieRequestDate: dataObat.nieRequestDate,
           nieApprovalDate: dataObat.nieApprovalDate,
           bpomAddr: dataObat.bpomAddr,
           bpomInstanceName: dataObat.bpomInstanceName,
-          bpomUserName: dataObat.bpomUserName
         }
       };
       
@@ -318,11 +329,18 @@ function AddQuantityObat() {
       allowOutsideClick: false,
     })
 
-    console.log(dataObat, batchNameObat, quantityObat, newIpfsHashes);
     
     try {
-      const addObatQuantityCt = await contract.addObatQuantity(dataObat.obatId, batchNameObat, dataObat.factoryInstanceName, quantityObat, newIpfsHashes);
-      console.log('Receipt:', addObatQuantityCt);
+      const quantity = parseInt(quantityObat)
+      console.log(dataObat.obatId, dataObat.namaProduk, batchNameObat, quantity, newIpfsHashes,  dataObat.factoryInstanceName);
+      const addBatchCt = await contract.addBatchProduction(dataObat.obatId, dataObat.namaObat, batchNameObat, quantity, newIpfsHashes,  dataObat.factoryInstanceName);
+
+      if(addBatchCt){
+        MySwal.update({
+          title: "Processing your transaction...",
+          text: "This may take a moment. Hang tight! ⏳"
+        });
+      }
   
     } catch (err) {
       setLoader(false)
