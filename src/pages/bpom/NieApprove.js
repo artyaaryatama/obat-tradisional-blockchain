@@ -531,8 +531,43 @@ function NieApprove() {
               title: "Approve NIE",
               html: (
                 <div className='form-swal form'>
-                  <div className="row">
-                    <div className="col">
+                  <div className="row row--obat">
+                  <div className="col col3">
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="klaim">Klaim Obat</label>
+                        </li>
+                        <li className="input">
+                          <ul className="numbered">
+                            {detailObat.klaim.map((item, index) => (
+                              <li className='klaim' key={index}>
+                                <p>
+                                {item}
+                                </p>
+                              </li>
+                            ))}
+                          </ul>
+                        </li>
+                      </ul>
+
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="komposisi">Komposisi Obat</label>
+                        </li>
+                        <li className="input">
+                          <ul className="numbered">
+                            {detailObat.komposisi.map((item, index) => (
+                              <li className='klaim' key={index}>
+                                <p>
+                                {item}
+                                </p>
+                              </li>
+                            ))}
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="col col3">
                       <ul>
                         <li className="label">
                           <label htmlFor="factoryInstanceName">NIE Number</label>
@@ -588,7 +623,7 @@ function NieApprove() {
                           />
                         </li>
                       </ul>
-              
+
                       <ul>
                         <li className="label">
                           <label htmlFor="factoryAddr">Factory Instance</label>
@@ -602,11 +637,25 @@ function NieApprove() {
                           />
                         </li>
                       </ul>
+
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="factoryAddr">Factory Address</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="factoryAddr"
+                            value={detailObat.factoryAddr}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 </div>
               ),
-              width: '520',
+              width: '820',
               showCancelButton: true,
               confirmButtonText: 'Yes, Approve!',
               allowOutsideClick: false,
@@ -667,7 +716,7 @@ function NieApprove() {
                 {dataObat.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.obatId)}>{item.namaProduk}</button>
-                    <p>Diproduksi oleh : {item.factoryInstancee}</p>
+                    <p>Factory Instance: {item.factoryInstance}</p>
                     <p>NIE Number: {item.nieNumber}</p>
                     <button className={`statusPengajuan ${item.nieStatus}`}>
                       {item.nieStatus}

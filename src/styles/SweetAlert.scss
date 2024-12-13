@@ -173,6 +173,23 @@
           flex-direction: column;
         }
       }
+
+      &.col3{
+        width: 44%;
+        ul{
+          display: flex;
+          flex-direction: column;
+
+          li.label{
+            width: 100%;
+            margin-bottom: 6px;
+          }
+    
+          li.input{
+            width: 100%;
+          }
+        }
+      }
     }
   }
   
