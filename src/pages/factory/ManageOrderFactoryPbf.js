@@ -28,6 +28,12 @@ function ManageOrderFactoryPbf() {
   const [ipfsHashes, setIpfsHashes] = useState([])
 
   const obatStatusMap = {
+    0: "In Local Production",
+    1: "Requested NIE",
+    2: "Approved NIE"
+  };
+
+  const statusOrderMap = {
     0: "Order Placed",
     1: "Order Shipped",
     2: "Order Completed"
@@ -91,33 +97,22 @@ function ManageOrderFactoryPbf() {
 
         try {
 
-          const listOrderedObatCt = await contracts.orderManagement.getListAllOrderedObatFromTarget(userData.instanceName);
-          const listProducedObatCt = await contracts.obatTradisional.getListAllProducedObatByFactory(userData.instanceName);
-          
-          const [orderIdArray, namaProdukArray, statusOrderArray, orderQuantityArray, obatIdProdukArray, batchNameArr] = listOrderedObatCt;
-          const [obatIdArray, namaProdukArr, obatQuantityArray, batchNameArray] = listProducedObatCt;
+          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromSeller(userData.instanceName);
+          console.log(listOrderedObatCt);
 
-          // use map on obatIdArray, which iterates through each obatId
-          const reconstructedDataorder = orderIdArray.map((orderId, index) => ({
-            namaObat: namaProdukArray[index],
-            orderId: orderIdArray[index],
-            statusOrder: obatStatusMap[statusOrderArray[index]],
-            obatQuantity: orderQuantityArray[index].toString(),
-            obatId: obatIdProdukArray[index],
-            batchName: batchNameArr[index]
+          const reconstructedDataorder = listOrderedObatCt.map((item, index) => ({
+            orderId: item[0],
+            obatId: item[1],
+            namaObat: item[2],
+            batchName: item[3],
+            obatQuantity: item[4],
+            buyerUser: item[5],
+            sellerUser: item[6],
+            statusOrder: statusOrderMap[item[7]],
           }));
 
-          const reconstructedDataObat = obatIdArray.map((obatId, index) => ({
-            obatId: obatIdArray[index],
-            namaProduk: namaProdukArr[index],
-            obatQuantity: obatQuantityArray[index],
-            batchName: batchNameArray[index]
-          }))
-
           setDataOrder(reconstructedDataorder)
-          setDataObat(reconstructedDataObat)
           console.log(reconstructedDataorder);
-          console.log(reconstructedDataObat);
 
         } catch (error) {
           console.error("Error loading data: ", error);
@@ -212,57 +207,62 @@ function ManageOrderFactoryPbf() {
     console.log(id, orderId);
 
     try {
-      let ObatQuantityReady, obatIpfsHashReady, selectedBatchName;
-      const listObatCt = await contracts.obatTradisional.getListObatById(id);
-      const detailObatCt = await contracts.orderManagement.getDetailOrderedObat(orderId)
+      const detailObatCt = await contracts.obatTradisional.detailObat(id);
+      const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
 
-      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = listObatCt;
+      console.log(detailOrderCt);
 
-      const [orderIdProduk, namaProduk, obatIdProduk, batchName, orderQuantity, senderInstanceName, senderAddress, targetInstanceName, targetAddress, statusOrder, timestampOrder, timestampShipped, timestampComplete, orderObatIpfsHash] = detailObatCt;
+      const [obatDetails, obatNie] = detailObatCt;
 
+      const [orderData, timestampData, orderObatIpfs] = detailOrderCt
+
+      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
+
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+
+      const [orderIdd, obatId, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = orderData
+
+      const [timestampOrder, timestampShipped, timestampComplete] = timestampData
+
+      const detailObat = {
+        obatId: id,
+        merk: merk,
+        namaObat: namaProduk,
+        klaim: klaim,
+        kemasan: kemasan,
+        komposisi: komposisi,
+        tipeProduk: tipeProdukMap[tipeProduk], 
+        nieStatus: obatStatusMap[nieStatus], 
+        produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        nieNumber: nieNumber ? nieNumber : "-",
+        factoryAddr: factoryAddr,
+        factoryInstance: factoryInstance,
+        bpomAddr: bpomAddr ,
+        bpomInstance:  bpomInstance 
+      };
+
+      const detailOrder = {
+        orderId: orderId,
+        batchName: batchName,
+        orderQuantity: parseInt(orderQuantity),
+        buyerInstance: buyerUser[0],
+        buyerAddress: buyerUser[1],
+        sellerInstance: sellerUser[0],
+        sellerAddress: sellerUser[1],
+        statusOrder: statusOrderMap[statusOrder],
+        orderObatIpfs: orderObatIpfs
+      }
+
+      console.log(detailOrder);
+      
       const timestamps = {
         timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
         timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
         timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
       }
 
-      console.log(detailObatCt);
-  
-      const detailObat = {
-        obatId: obatDetails.obatId,
-        merk: obatDetails.merk,
-        namaObat: obatDetails.namaProduk,
-        klaim: obatDetails.klaim,
-        kemasan: obatDetails.kemasan,
-        komposisi: obatDetails.komposisi,
-        factoryAddr: factoryAddress,
-        factoryInstanceName: factoryInstanceName,
-        factoryUserName: factoryUserName,
-        tipeProduk: tipeProdukMap[obatDetails.tipeProduk], 
-        nieRequestDate: obatDetails.nieRequestDate ? new Date(Number(obatDetails.nieRequestDate) * 1000).toLocaleDateString('id-ID', options) : '-', 
-        nieApprovalDate: Number(obatDetails.nieApprovalDate) > 0 ? new Date(Number(obatDetails.nieApprovalDate) * 1000).toLocaleDateString('id-ID', options): "-",
-        nieNumber: obatDetails.nieNumber ? obatDetails.nieNumber : "-",
-        bpomAddr: bpomAddress === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddress,
-        bpomUserName:  bpomUserName ? bpomUserName : "-",
-        bpomInstanceName:  bpomInstanceName ?  bpomInstanceName : "-"
-      };
-
-      const detailOrder = {
-        orderId: orderIdProduk,
-        batchName: batchName,
-        orderQuantity: parseInt(orderQuantity),
-        senderInstanceName: senderInstanceName,
-        senderAddress: senderAddress,
-        statusOrder : statusOrder,
-        targetInstanceName : targetInstanceName,
-        targetAddress: targetAddress,
-        orderObatIpfsHash : orderObatIpfsHash,
-        timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
-        timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
-        timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
-      }
-
-      console.log(detailOrder);
       if(statusOrder === 0n){
         MySwal.fire({
           title: `Detail Order Obat ${detailObat.namaObat}`,
@@ -296,7 +296,7 @@ function ManageOrderFactoryPbf() {
                             <p>Di Order oleh</p>
                           </li>
                           <li className="input">
-                            <p>{senderInstanceName}</p>
+                            <p>{factoryInstance}</p>
                           </li>
                         </ul>
   
@@ -314,7 +314,7 @@ function ManageOrderFactoryPbf() {
                     </div>
   
                   </div>
-                  <DataIpfsHash ipfsHashes={orderObatIpfsHash} />
+                  <DataIpfsHash ipfsHashes={orderObatIpfs} />
                 </div>
                 <div className="row row--obat">
                   <div className="col column">
@@ -329,7 +329,7 @@ function ManageOrderFactoryPbf() {
                       </ul>
   
                       <ul>
-                        <li className="label">
+                        <li className="label label1">
                           <p>Kemasan Obat</p>
                         </li>
                         <li className="input">
@@ -351,7 +351,7 @@ function ManageOrderFactoryPbf() {
                       </ul>
   
                       <ul>
-                        <li className="label">
+                        <li className="label label1">
                           <p>Komposisi Obat</p>
                         </li>
                         <li className="input">
@@ -381,24 +381,11 @@ function ManageOrderFactoryPbf() {
             root.render( 
               <OrderStatusStepper orderStatus={statusOrder} timestamps={timestamps} />
             );
-
-            const dataObatSelected = dataObat.filter(item => item.namaProduk === detailObat.namaObat)
-  
-            if (dataObatSelected.length > 0) {
-              // krn tdk ada batch name dari getlist obat dan order, makanya harus manual dapetin batchname nya, di order ngga ada karena kan ordernya belum
-              selectedBatchName = dataObatSelected[0].batchName;
-              const detailProducedObat = await contracts.obatTradisional.getDetailProducedObat(selectedBatchName)
-    
-              console.log(detailProducedObat);
-    
-              ObatQuantityReady = detailProducedObat[0];
-              obatIpfsHashReady = [];
-            }
   
           }
         }).then((result) => {
           if (result.isConfirmed) {
-            generateIpfs(detailObat, detailOrder, orderId, selectedBatchName)
+            generateIpfs(detailObat, detailOrder, timestamps, orderId, batchName)
           }
         })
       } else {
@@ -434,7 +421,7 @@ function ManageOrderFactoryPbf() {
                             <p>Di Order oleh</p>
                           </li>
                           <li className="input">
-                            <p>{senderInstanceName}</p>
+                            <p>{factoryInstance}</p>
                           </li>
                         </ul>
   
@@ -452,7 +439,7 @@ function ManageOrderFactoryPbf() {
                     </div>
   
                   </div>
-                  <DataIpfsHash ipfsHashes={orderObatIpfsHash} />
+                  <DataIpfsHash ipfsHashes={orderObatIpfs} />
                 </div>
                 <div className="row row--obat">
                   <div className="col column">
@@ -467,7 +454,7 @@ function ManageOrderFactoryPbf() {
                       </ul>
   
                       <ul>
-                        <li className="label">
+                        <li className="label label1">
                           <p>Kemasan Obat</p>
                         </li>
                         <li className="input">
@@ -489,7 +476,7 @@ function ManageOrderFactoryPbf() {
                       </ul>
   
                       <ul>
-                        <li className="label">
+                        <li className="label label1">
                           <p>Komposisi Obat</p>
                         </li>
                         <li className="input">
@@ -530,7 +517,7 @@ function ManageOrderFactoryPbf() {
     }
   }
 
-  const acceptOrder = async (batchName, orderId, ipfsHashes) => {
+  const acceptOrder = async (orderId, batchName, ipfsHashes) => {
     
     MySwal.fire({
       title:"Processing your request...",
@@ -542,8 +529,15 @@ function ManageOrderFactoryPbf() {
     })
 
     try {
-      const acceptOrderCt = await contracts.orderManagement.acceptOrderFactory(batchName, orderId, ipfsHashes, userData.address)
+      const acceptOrderCt = await contracts.orderManagement.acceptOrder(orderId, batchName, ipfsHashes)
       console.log(acceptOrderCt);
+
+      if(acceptOrderCt){
+        MySwal.update({
+          title: "Processing your transaction...",
+          text: "This may take a moment. Hang tight! ⏳"
+        });
+      }
       
     } catch (error) {
       errAlert(error, "Can't Accept Order")
@@ -551,7 +545,7 @@ function ManageOrderFactoryPbf() {
 
   }
   
-  const generateIpfs = async(dataObat, dataOrder, orderId, batchName) => {
+  const generateIpfs = async(dataObat, dataOrder, timestamps, orderId, batchName) => {
     MySwal.fire({ 
       title:"Processing your request...",
       text:"Your request is on its way. This won't take long. 🚀",
@@ -570,9 +564,9 @@ function ManageOrderFactoryPbf() {
 
     const date = new Date();
     const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
-    dataOrder.timestampShipped = formattedDate;
+    timestamps.timestampShipped = formattedDate;
     console.log(dataOrder);
-    dataOrder.statusOrder = obatStatusMap[dataOrder.statusOrder]
+    dataOrder.statusOrder = statusOrderMap[dataOrder.statusOrder]
 
     for (let i = 0; i < dataOrder.orderQuantity; i++) {
       const obat = {
@@ -586,26 +580,24 @@ function ManageOrderFactoryPbf() {
           kemasan: dataObat.kemasan,
           komposisi: dataObat.komposisi,
           factoryAddr: dataObat.factoryAddr,
-          factoryInstanceName: dataObat.factoryInstanceName,
-          factoryUserName: dataObat.factoryUserName,
+          factoryInstanceName: dataObat.factoryInstance,
           tipeProduk: dataObat.tipeProduk,
           nieNumber: dataObat.nieNumber,
           obatStatus: "NIE Approved",
           nieRequestDate: dataObat.nieRequestDate,
           nieApprovalDate: dataObat.nieApprovalDate,
           bpomAddr: dataObat.bpomAddr,
-          bpomInstanceName: dataObat.bpomInstanceName,
-          bpomUserName: dataObat.bpomUserName
+          bpomInstanceName: dataObat.bpomInstance,
         },
         dataOrderPbf: {
           orderQuantity: dataOrder.orderQuantity,
-          senderInstanceName: dataOrder.senderInstanceName,
-          senderAddress: dataOrder.senderAddress,
+          senderInstanceName: dataOrder.buyerInstance,
+          senderAddress: dataOrder.buyerAddress,
           statusOrder : dataOrder.statusOrder,
-          targetInstanceName : dataOrder.targetInstanceName,
-          targetAddress: userData.address,
-          timestampOrder: dataOrder.timestampOrder,
-          timestampShipped: dataOrder.timestampShipped
+          targetInstanceName : dataOrder.sellerInstance,
+          targetAddress: dataOrder.sellerAddress,
+          timestampOrder: timestamps.timestampOrder,
+          timestampShipped: timestamps.timestampShipped
         }
       };
       
@@ -644,19 +636,19 @@ function ManageOrderFactoryPbf() {
   
                 <ul>
                   <li className="label label-1">
-                    <p>Nama Factory</p> 
+                    <p>Factory Instance</p> 
                   </li>
                   <li className="input input-1">
-                    <p>{dataOrder.targetInstanceName}</p> 
+                    <p>{dataOrder.sellerInstance}</p> 
                   </li>
                 </ul>
   
                 <ul>
                   <li className="label label-1">
-                    <p>Nama PBF</p> 
+                    <p>PBF Instance</p> 
                   </li>
                   <li className="input input-1">
-                    <p>{dataOrder.senderInstanceName}</p> 
+                    <p>{dataOrder.buyerInstance}</p> 
                   </li>
                 </ul>
   
@@ -686,7 +678,7 @@ function ManageOrderFactoryPbf() {
   
       }).then((result) => {
         if(result.isConfirmed){
-          acceptOrder(batchName, orderId, newIpfsHashes)
+          acceptOrder(orderId, batchName, newIpfsHashes)
         }
       })
     }
@@ -709,14 +701,16 @@ function ManageOrderFactoryPbf() {
         </div>
         <div className="container-data ">
           <div className="data-list">
-            {dataOrder.length > 0 ? (
+            {dataOrder ? (
               <ul>
                 {dataOrder.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.obatId, item.orderId)} >{item.namaObat}</button>
                     <p></p>
                     <p>
-                      {item.statusOrder !== 'Order Placed' ? `Total order: ${item.obatQuantity} Obat [${item.batchName}]` : `Total order: ${item.obatQuantity} Obat`}
+                      {item.statusOrder !== 'Order Placed' ? 
+                      `Total order: ${item.obatQuantity} Obat [${item.batchName}]` : 
+                      `Total order: ${item.obatQuantity} Obat`}
                     </p>
                     <button className={`statusOrder ${item.statusOrder}`}>
                       {item.statusOrder}
