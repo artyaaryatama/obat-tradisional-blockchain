@@ -75,21 +75,16 @@ function NieApprove() {
       if (contract) {
         try {
           const listObatCt = await contract.getAllObat();
-          console.log(listObatCt);
-          const reconstructedData = listObatCt.map((item, index) => {
-            if (item[0] === "") {
-              return null; 
-            }
-            const nie = item[2] !== "" ? item[2] : "-"
 
+          const reconstructedData = listObatCt.map((item, index) => {
             return {
               obatId: item[0],
               namaProduk: item[1],
-              nieNumber: nie,
+              nieNumber: item[2],
               nieStatus: obatStatusMap[item[3]],
               factoryInstance: item[4]
             };
-          }).filter(item => item !== null);
+          })
 
           console.log(reconstructedData);
           setDataObat(reconstructedData);
@@ -209,7 +204,7 @@ function NieApprove() {
 
       console.log(detailObat);
 
-      if(detailObat.obatStatus === 'Approved NIE'){
+      if(detailObat.nieStatus === 'Approved NIE'){
         MySwal.fire({
           title: `Detail Obat ${detailObat.namaObat}`,
           html: (
@@ -688,7 +683,7 @@ function NieApprove() {
   const approveNie = async(id, nieNumber) => {
 
     try {
-      const approveNieCt =  await contract.approveNie(id, nieNumber, userdata.instanceName)
+      const approveNieCt =  await contract.approveNie(id, nieNumber, userdata.instanceName, userdata.address)
       console.log(approveNieCt);
 
       if(approveNieCt){
@@ -711,7 +706,7 @@ function NieApprove() {
         </div>
         <div className="container-data">
           <div className="data-list">
-            {dataObat !== 0 ? (
+            {dataObat.length !== 0 ? (
               <ul>
                 {dataObat.map((item, index) => (
                   <li key={index}>

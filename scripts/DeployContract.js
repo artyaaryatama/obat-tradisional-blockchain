@@ -7,6 +7,12 @@ async function main() {
     const deployedRoleManager = await RoleManager.deploy();
     await deployedRoleManager.waitForDeployment();
     console.log("RoleManager deployed to:", deployedRoleManager.target);
+    
+    // Deploy ObatCreator
+    const ObatCreator = await hre.ethers.getContractFactory("ObatCreator");
+    const deployedObatCreator = await ObatCreator.deploy();
+    await deployedObatCreator.waitForDeployment();
+    console.log("ObatCreator deployed to:", deployedObatCreator.target);
 
     // Deploy MainSupplyChain
     const MainSupplyChain = await hre.ethers.getContractFactory("MainSupplyChain");
@@ -16,15 +22,15 @@ async function main() {
 
     // Deploy ObatTradisional
     const ObatTradisional = await hre.ethers.getContractFactory("ObatTradisional");
-    const deployedObatTradisional = await ObatTradisional.deploy(deployedRoleManager.target, deployedMainSupplyChain.target);
+    const deployedObatTradisional = await ObatTradisional.deploy(deployedRoleManager.target, deployedMainSupplyChain.target, deployedObatCreator.target);
     await deployedObatTradisional.waitForDeployment();
     console.log("ObatTradisional deployed to:", deployedObatTradisional.target);
 
     // Deploy OrderObatTradisional
-    // const OrderManagement = await hre.ethers.getContractFactory("OrderManagement");
-    // const deployedOrderManagement = await OrderManagement.deploy(deployedObatTradisional.target, deployedRoleManager.target);
-    // await deployedOrderManagement.waitForDeployment();
-    // console.log("OrderManagement deployed to:", deployedOrderManagement.target);
+    const OrderManagement = await hre.ethers.getContractFactory("OrderManagement");
+    const deployedOrderManagement = await OrderManagement.deploy(deployedObatTradisional.target, deployedRoleManager.target);
+    await deployedOrderManagement.waitForDeployment();
+    console.log("OrderManagement deployed to:", deployedOrderManagement.target);
 
     // Save all deployment data
     const deploymentData = {
@@ -36,10 +42,10 @@ async function main() {
             address: deployedObatTradisional.target,
             abi: (await hre.artifacts.readArtifact("ObatTradisional")).abi,
         },
-        // OrderManagement: {
-        //     address: deployedOrderManagement.target,
-        //     abi: (await hre.artifacts.readArtifact("OrderManagement")).abi,
-        // }
+        OrderManagement: {
+            address: deployedOrderManagement.target,
+            abi: (await hre.artifacts.readArtifact("OrderManagement")).abi,
+        }
     };
 
     fs.writeFileSync('./src/auto-artifacts/deployments.json', JSON.stringify(deploymentData, null, 2));

@@ -106,11 +106,6 @@ function CreateObat() {
       
       contract.on("evt_obatCreated", (_namaProduk, _factoryInstanceName, _factoryAddr) => {
 
-        const tp = {
-          0n : "Obat Tradisional",
-          1n : "Suplemen Kesehatan"
-        };
-    
         MySwal.fire({
           title: "Success Create Obat Tradisonal",
           html: (
@@ -148,7 +143,7 @@ function CreateObat() {
           allowOutsideClick: true,
         }).then((result) => {
           if (result.isConfirmed) {
-            navigate('/obat');
+            navigate('/obat-available-factory');
           }
         });
 
