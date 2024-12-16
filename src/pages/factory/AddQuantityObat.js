@@ -136,7 +136,7 @@ function AddQuantityObat() {
                   <p>Obat Quantity</p> 
                 </li>
                 <li className="input">
-                  <p>{_obatQuantity.toString()}</p> 
+                  <p>{_obatQuantity.toString()} Obat</p> 
                 </li>
               </ul>
               <ul>
@@ -156,7 +156,7 @@ function AddQuantityObat() {
           allowOutsideClick: true,
         }).then((result) => {
           if (result.isConfirmed) {
-            window.location.reload()
+            navigate('/obat-available-factory')
           }
         });
       });
@@ -238,6 +238,7 @@ function AddQuantityObat() {
           factoryInstanceName: dataObat.factoryInstanceName,
           tipeProduk: dataObat.tipeProduk,
           nieNumber: dataObat.nieNumber,
+          obatStatus: "NIE Approved",
           nieRequestDate: dataObat.nieRequestDate,
           nieApprovalDate: dataObat.nieApprovalDate,
           bpomAddr: dataObat.bpomAddr,
@@ -413,6 +414,7 @@ function AddQuantityObat() {
                   required
                 >
                   <option value="" disabled>Pilih Quantity Obat</option>
+                  <option value="1">1 Obat</option>
                   <option value="5">5 Obat</option>
                   <option value="50">50 Obat</option>
                   <option value="100">100 Obat</option>

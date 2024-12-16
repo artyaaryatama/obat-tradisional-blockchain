@@ -9,10 +9,10 @@ async function main() {
     console.log("RoleManager deployed to:", deployedRoleManager.target);
     
     // Deploy ObatCreator
-    const ObatCreator = await hre.ethers.getContractFactory("ObatCreator");
-    const deployedObatCreator = await ObatCreator.deploy();
-    await deployedObatCreator.waitForDeployment();
-    console.log("ObatCreator deployed to:", deployedObatCreator.target);
+    const ObatShared = await hre.ethers.getContractFactory("ObatShared");
+    const deployedObatShared = await ObatShared.deploy();
+    await deployedObatShared.waitForDeployment();
+    console.log("ObatCreator deployed to:", deployedObatShared.target);
 
     // Deploy MainSupplyChain
     const MainSupplyChain = await hre.ethers.getContractFactory("MainSupplyChain");
@@ -22,13 +22,13 @@ async function main() {
 
     // Deploy ObatTradisional
     const ObatTradisional = await hre.ethers.getContractFactory("ObatTradisional");
-    const deployedObatTradisional = await ObatTradisional.deploy(deployedRoleManager.target, deployedMainSupplyChain.target, deployedObatCreator.target);
+    const deployedObatTradisional = await ObatTradisional.deploy(deployedRoleManager.target, deployedMainSupplyChain.target, deployedObatShared.target);
     await deployedObatTradisional.waitForDeployment();
     console.log("ObatTradisional deployed to:", deployedObatTradisional.target);
 
     // Deploy OrderObatTradisional
     const OrderManagement = await hre.ethers.getContractFactory("OrderManagement");
-    const deployedOrderManagement = await OrderManagement.deploy(deployedObatTradisional.target, deployedRoleManager.target);
+    const deployedOrderManagement = await OrderManagement.deploy(deployedObatTradisional.target, deployedRoleManager.target, deployedObatShared.target);
     await deployedOrderManagement.waitForDeployment();
     console.log("OrderManagement deployed to:", deployedOrderManagement.target);
 

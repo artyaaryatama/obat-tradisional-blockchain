@@ -147,7 +147,7 @@ function CreateOrderPbf() {
                 </li>
               </ul>
               <ul>
-                <li className="label label1">
+                <li className="label">
                   <p>Timestamp Request Order</p> 
                 </li>
                 <li className="input">
@@ -163,7 +163,7 @@ function CreateOrderPbf() {
           allowOutsideClick: true,
         }).then((result) => {
           if (result.isConfirmed) {
-            window.location.reload()
+            navigate('/pbf-orders')
           }
         });
 
@@ -327,7 +327,7 @@ function CreateOrderPbf() {
             allowOutsideClick: false,
           })
 
-          orderObat(id, factoryInstance, namaProduk, obatQuantity)
+          orderObat(id, factoryInstance, namaProduk, obatQuantity, batchName)
         }
       })
       
@@ -336,7 +336,7 @@ function CreateOrderPbf() {
     }
   }
 
-  const orderObat = async (id, factoryInstance, namaProduk, orderQuantity) => {
+  const orderObat = async (id, factoryInstance, namaProduk, orderQuantity, batchName) => {
 
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
@@ -348,7 +348,7 @@ function CreateOrderPbf() {
   
     try {
       console.log(orderId, id, namaProduk, factoryInstance, userData.instanceName, orderQuantity);
-      const createOrderCt = await contracts.orderManagement.createOrder(orderId, id, namaProduk, userData.instanceName, factoryInstance, orderQuantity);
+      const createOrderCt = await contracts.orderManagement.createOrder(orderId, id, batchName, namaProduk, userData.instanceName, factoryInstance, orderQuantity);
 
       if(createOrderCt){
         MySwal.update({
@@ -384,6 +384,7 @@ function CreateOrderPbf() {
                   <li key={index} className='row'>
                     <div className="detail">
                       <h5>{item.namaProduk}</h5>
+                      <p>Batchname : {item.batchName}</p>
                       <p>Stok tersedia: {item.obatQuantity} Obat</p>
                       <p>{item.factoryInstanceName}</p>
 

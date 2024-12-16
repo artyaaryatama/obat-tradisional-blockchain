@@ -105,7 +105,7 @@ function ManageOrderFactoryPbf() {
             obatId: item[1],
             namaObat: item[2],
             batchName: item[3],
-            obatQuantity: item[4],
+            orderQuantity: item[4],
             buyerUser: item[5],
             sellerUser: item[6],
             statusOrder: statusOrderMap[item[7]],
@@ -126,17 +126,17 @@ function ManageOrderFactoryPbf() {
   useEffect(() => {
     if (contracts) {
 
-      contracts.orderManagement.on("evt_updateOrder", (_namaProduk, _batchName, _targetInstanceName, _senderInstanceName, _orderQuantity, _latestTimestamp) => {
+      contracts.orderManagement.on("evt_orderUpdate", (_namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
 
-        const timestamp = new Date(Number(_latestTimestamp) * 1000).toLocaleDateString('id-ID', options)
-
+        const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
+    
         MySwal.fire({
-          title:  `Success Accept Order Obat ${_namaProduk}`,
+          title: `Order Shipped Obat ${_namaProduk}`,
           html: (
             <div className='form-swal'>
               <ul>
                 <li className="label">
-                  <p>Nama Obat</p> 
+                  <p>Nama Produk</p> 
                 </li>
                 <li className="input">
                   <p>{_namaProduk}</p> 
@@ -144,31 +144,7 @@ function ManageOrderFactoryPbf() {
               </ul>
               <ul>
                 <li className="label">
-                  <p>Batch Name</p> 
-                </li>
-                <li className="input">
-                  <p>{_batchName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Di produksi oleh</p> 
-                </li>
-                <li className="input">
-                  <p>{_targetInstanceName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Di order oleh</p> 
-                </li>
-                <li className="input">
-                  <p>{_senderInstanceName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Total order</p> 
+                  <p>Total Order</p> 
                 </li>
                 <li className="input">
                   <p>{_orderQuantity.toString()} Obat</p> 
@@ -176,7 +152,23 @@ function ManageOrderFactoryPbf() {
               </ul>
               <ul>
                 <li className="label">
-                  <p>Tanggal pengiriman</p> 
+                  <p>PBF Instance</p> 
+                </li>
+                <li className="input">
+                  <p>{_buyerInstance}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Factory Instance</p> 
+                </li>
+                <li className="input">
+                  <p>{_sellerInstance}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Timestamp Order Shipped</p> 
                 </li>
                 <li className="input">
                   <p>{timestamp}</p> 
@@ -194,18 +186,20 @@ function ManageOrderFactoryPbf() {
             window.location.reload()
           }
         });
-      })
+
+      });
   
       return () => {
-        contracts.orderManagement.removeAllListeners("evt_updateOrder");
+        contracts.orderManagement.removeAllListeners("evt_orderUpdate");
       };
     }
   }, [contracts]);
   
 
-  const getDetailObat = async (id, orderId) => {
-    console.log(id, orderId);
+  const getDetailObat = async (id, orderId, selectedBatchName) => {
+    console.log(id, orderId, selectedBatchName);
 
+  
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
@@ -250,12 +244,12 @@ function ManageOrderFactoryPbf() {
         buyerInstance: buyerUser[0],
         buyerAddress: buyerUser[1],
         sellerInstance: sellerUser[0],
-        sellerAddress: sellerUser[1],
+        sellerAddress: userData.address,
         statusOrder: statusOrderMap[statusOrder],
         orderObatIpfs: orderObatIpfs
       }
 
-      console.log(detailOrder);
+      console.log(orderData);
       
       const timestamps = {
         timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
@@ -290,15 +284,6 @@ function ManageOrderFactoryPbf() {
                             <p>{detailObat.nieNumber}</p> 
                           </li>
                         </ul>
-                      
-                        <ul>
-                          <li className="label">
-                            <p>Di Order oleh</p>
-                          </li>
-                          <li className="input">
-                            <p>{factoryInstance}</p>
-                          </li>
-                        </ul>
   
                         <ul>
                           <li className="label">
@@ -307,6 +292,24 @@ function ManageOrderFactoryPbf() {
                           <li className="input">
                             <p>{orderQuantity.toString()} Obat</p>
                           
+                          </li>
+                        </ul>
+
+                        <ul>
+                          <li className="label">
+                            <p>PBF Instance</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailOrder.buyerInstance}</p>
+                          </li>
+                        </ul>
+
+                        <ul>
+                          <li className="label">
+                            <p>PBF Address</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailOrder.buyerAddress}</p>
                           </li>
                         </ul>
                         
@@ -385,7 +388,7 @@ function ManageOrderFactoryPbf() {
           }
         }).then((result) => {
           if (result.isConfirmed) {
-            generateIpfs(detailObat, detailOrder, timestamps, orderId, batchName)
+            generateIpfs(detailObat, detailOrder, timestamps, orderId, selectedBatchName)
           }
         })
       } else {
@@ -415,15 +418,6 @@ function ManageOrderFactoryPbf() {
                             <p>{detailObat.nieNumber}</p> 
                           </li>
                         </ul>
-                      
-                        <ul>
-                          <li className="label">
-                            <p>Di Order oleh</p>
-                          </li>
-                          <li className="input">
-                            <p>{factoryInstance}</p>
-                          </li>
-                        </ul>
   
                         <ul>
                           <li className="label">
@@ -435,6 +429,23 @@ function ManageOrderFactoryPbf() {
                           </li>
                         </ul>
                         
+                        <ul>
+                          <li className="label">
+                            <p>PBF Instance</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailOrder.buyerInstance}</p>
+                          </li>
+                        </ul>
+
+                        <ul>
+                          <li className="label">
+                            <p>PBF Address</p>
+                          </li>
+                          <li className="input">
+                            <p>{detailOrder.buyerAddress}</p>
+                          </li>
+                        </ul>
                       </div>
                     </div>
   
@@ -517,7 +528,7 @@ function ManageOrderFactoryPbf() {
     }
   }
 
-  const acceptOrder = async (orderId, batchName, ipfsHashes) => {
+  const acceptOrder = async (orderId, ipfsHashes) => {
     
     MySwal.fire({
       title:"Processing your request...",
@@ -528,8 +539,9 @@ function ManageOrderFactoryPbf() {
       allowOutsideClick: false,
     })
 
+    console.log(orderId, ipfsHashes);
     try {
-      const acceptOrderCt = await contracts.orderManagement.acceptOrder(orderId, batchName, ipfsHashes)
+      const acceptOrderCt = await contracts.orderManagement.acceptOrder(orderId, ipfsHashes)
       console.log(acceptOrderCt);
 
       if(acceptOrderCt){
@@ -565,8 +577,8 @@ function ManageOrderFactoryPbf() {
     const date = new Date();
     const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
     timestamps.timestampShipped = formattedDate;
+
     console.log(dataOrder);
-    dataOrder.statusOrder = statusOrderMap[dataOrder.statusOrder]
 
     for (let i = 0; i < dataOrder.orderQuantity; i++) {
       const obat = {
@@ -593,7 +605,7 @@ function ManageOrderFactoryPbf() {
           orderQuantity: dataOrder.orderQuantity,
           senderInstanceName: dataOrder.buyerInstance,
           senderAddress: dataOrder.buyerAddress,
-          statusOrder : dataOrder.statusOrder,
+          statusOrder : "Order Shipped",
           targetInstanceName : dataOrder.sellerInstance,
           targetAddress: dataOrder.sellerAddress,
           timestampOrder: timestamps.timestampOrder,
@@ -678,7 +690,7 @@ function ManageOrderFactoryPbf() {
   
       }).then((result) => {
         if(result.isConfirmed){
-          acceptOrder(orderId, batchName, newIpfsHashes)
+          acceptOrder(orderId, newIpfsHashes)
         }
       })
     }
@@ -701,17 +713,13 @@ function ManageOrderFactoryPbf() {
         </div>
         <div className="container-data ">
           <div className="data-list">
-            {dataOrder ? (
+            {dataOrder.length !== 0 ? (
               <ul>
                 {dataOrder.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailObat(item.obatId, item.orderId)} >{item.namaObat}</button>
-                    <p></p>
-                    <p>
-                      {item.statusOrder !== 'Order Placed' ? 
-                      `Total order: ${item.obatQuantity} Obat [${item.batchName}]` : 
-                      `Total order: ${item.obatQuantity} Obat`}
-                    </p>
+                    <button className='title' onClick={() => getDetailObat(item.obatId, item.orderId, item.batchName)} >{item.namaObat}</button>
+                    <p>Batchname : {item.batchName}</p>
+                    <p>Order Quantity : {item.orderQuantity.toString()} Obat</p>
                     <button className={`statusOrder ${item.statusOrder}`}>
                       {item.statusOrder}
                     </button>

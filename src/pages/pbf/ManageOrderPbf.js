@@ -31,7 +31,7 @@ function ManageOrderPbf() {
     2: "Approved NIE"
   };
 
-  const statusOrderMap = {
+  const orderStatusMap = {
     0n: "Order Placed",
     1n: "Order Shipped",
     2n: "Order Completed"
@@ -104,7 +104,7 @@ function ManageOrderPbf() {
             orderQuantity: item[4],
             buyerUser: item[5],
             sellerUser: item[6],
-            statusOrder: statusOrderMap[item[7]],
+            statusOrder: orderStatusMap[item[7]],
           }));
 
           setDataOrder(reconstructedDataorder)
@@ -127,7 +127,7 @@ function ManageOrderPbf() {
         const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
     
         MySwal.fire({
-          title: "Success Accept Order Obat Tradisional",
+          title:  `Order Completed Obat ${_namaProduk}`,
           html: (
             <div className='form-swal'>
               <ul>
@@ -232,6 +232,18 @@ function ManageOrderPbf() {
         bpomInstance:  bpomInstance 
       };
       
+      const detailOrder = {
+        orderId: orderId,
+        batchName: batchName,
+        orderQuantity: parseInt(orderQuantity),
+        buyerInstance: buyerUser[0],
+        buyerAddress: buyerUser[1],
+        sellerInstance: sellerUser[0],
+        sellerAddress: sellerUser[1],
+        statusOrder: orderStatusMap[statusOrder],
+        orderObatIpfs: orderObatIpfs
+      }
+
       const timestamps = {
         timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
         timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
@@ -262,7 +274,7 @@ function ManageOrderPbf() {
                             <p>Status Order</p>
                           </li>
                           <li className="input">
-                            <p>{statusOrderMap[statusOrder]}</p> 
+                            <p>{orderStatusMap[statusOrder]}</p> 
                           </li>
                         </ul>
   
@@ -277,7 +289,7 @@ function ManageOrderPbf() {
   
                         <ul>
                           <li className="label">
-                            <p>Total Pemesanan</p>
+                            <p>Total Order</p>
                           </li>
                           <li className="input">
                             <p> {orderQuantity.toString()} Obat</p>
@@ -385,7 +397,7 @@ function ManageOrderPbf() {
           }
         }).then((result) => {
           if (result.isConfirmed) {
-            generateIpfs(detailObat, detailObat, orderId, batchName)
+            generateIpfs(detailObat, detailOrder, timestamps, orderId, batchName)
           }
         })
 
@@ -413,7 +425,7 @@ function ManageOrderPbf() {
                             <p>Status Order</p>
                           </li>
                           <li className="input">
-                            <p>{statusOrderMap[statusOrder]}</p> 
+                            <p>{orderStatusMap[statusOrder]}</p> 
                           </li>
                         </ul>
   
@@ -428,7 +440,7 @@ function ManageOrderPbf() {
   
                         <ul>
                           <li className="label">
-                            <p>Total Pemesanan</p>
+                            <p>Total Order</p>
                           </li>
                           <li className="input">
                             <p> {orderQuantity.toString()} Obat</p>
@@ -556,12 +568,22 @@ function ManageOrderPbf() {
       allowOutsideClick: false,
     })
 
-    const completeOrderCt = await contracts.orderManagement.completeOrder(orderId, ipfsHashes)
+    try {
+      const completeOrderCt = await contracts.orderManagement.completeOrder(orderId, ipfsHashes)
 
-    console.log(completeOrderCt);
+      if(completeOrderCt){
+        MySwal.update({
+          title: "Processing your transaction...",
+          text: "This may take a moment. Hang tight! ⏳"
+        });
+      }
+
+    } catch (error) {
+      errAlert(error, "Can't Complete Order");
+    }
   }
   
-  const generateIpfs = async(dataObat, dataOrder, orderId, batchName) => {
+  const generateIpfs = async(dataObat, dataOrder, timestamps, orderId, batchName) => {
     MySwal.fire({
       title:"Preparing your data",
       text:"Your request is on its way. This won't take long. 🚀",
@@ -570,6 +592,8 @@ function ManageOrderPbf() {
       showConfirmButton: false,
       allowOutsideClick: false,
     })
+
+    console.log(dataOrder);
     
     let newIpfsHashes = [];
     const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
@@ -580,11 +604,7 @@ function ManageOrderPbf() {
 
     const date = new Date();
     const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
-    dataOrder.timestampComplete = formattedDate;
-    console.log(dataOrder);
-    dataOrder.statusOrder = statusOrderMap[dataOrder.statusOrder]
-
-    console.log(batchName);
+    timestamps.timestampComplete = formattedDate;
 
     for (let i = 0; i < dataOrder.orderQuantity; i++) {
       const obat = {
@@ -598,25 +618,25 @@ function ManageOrderPbf() {
           kemasan: dataObat.kemasan,
           komposisi: dataObat.komposisi,
           factoryAddr: dataObat.factoryAddr,
-          factoryInstanceName: dataObat.factoryInstanceName,
-          factoryUserName: dataObat.factoryUserName,
+          factoryInstanceName: dataObat.factoryInstance,
           tipeProduk: dataObat.tipeProduk,
           nieNumber: dataObat.nieNumber,
+          obatStatus: "NIE Approved",
           nieRequestDate: dataObat.nieRequestDate,
           nieApprovalDate: dataObat.nieApprovalDate,
           bpomAddr: dataObat.bpomAddr,
-          bpomInstanceName: dataObat.bpomInstanceName,
-          bpomUserName: dataObat.bpomUserName
+          bpomInstanceName: dataObat.bpomInstance,
         },
         dataOrderPbf: {
           orderQuantity: dataOrder.orderQuantity,
-          senderInstanceName: dataOrder.senderInstanceName,
-          senderAddress: dataOrder.senderAddress,
-          targetInstanceName : dataOrder.targetInstanceName,
-          targetAddress: dataOrder.targetAddress,
-          timestampOrder: dataOrder.timestampOrder,
-          timestampShipped: dataOrder.timestampShipped,
-          timestampComplete: dataOrder.timestampComplete
+          senderInstanceName: dataOrder.buyerInstance,
+          senderAddress: dataOrder.buyerAddress,
+          statusOrder : "Order Completed",
+          targetInstanceName : dataOrder.sellerInstance,
+          targetAddress: dataOrder.sellerAddress,
+          timestampOrder: timestamps.timestampOrder,
+          timestampShipped: timestamps.timestampShipped,
+          timestampComplete: timestamps.timestampComplete
         }
       };
       
@@ -655,19 +675,19 @@ function ManageOrderPbf() {
   
                 <ul>
                   <li className="label label-1">
-                    <p>Nama Factory</p> 
+                    <p>Factory Instance</p> 
                   </li>
                   <li className="input input-1">
-                    <p>{dataOrder.targetInstanceName}</p> 
+                    <p>{dataOrder.sellerInstance}</p> 
                   </li>
                 </ul>
   
                 <ul>
                   <li className="label label-1">
-                    <p>Nama PBF</p> 
+                    <p>PBF Instance</p> 
                   </li>
                   <li className="input input-1">
-                    <p>{dataOrder.senderInstanceName}</p> 
+                    <p>{dataOrder.buyerInstance}</p> 
                   </li>
                 </ul>
   
@@ -724,7 +744,8 @@ function ManageOrderPbf() {
                 {dataOrder.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.obatId, item.orderId)} >{item.namaObat}</button>
-                    <p> Total Order: {item.orderQuantity.toString()}
+                    <p>Batchname : {item.batchName}</p>
+                    <p> Total Order: {item.orderQuantity.toString()} Obat
                     </p>
                     <button className={`statusOrder ${item.statusOrder}`}>
                       {item.statusOrder}

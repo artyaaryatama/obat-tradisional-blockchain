@@ -7,15 +7,15 @@
       font-size: 26px;
       display: flex;
 
-      span{
-        margin-left: 20px;
-        font-size: 14px;
-        color: $white;
-        background-color: $purple;
-        padding: 6px 12px;
-        width: fit-content;
-        border-radius: 10px;
-      }
+    }
+    span{
+      margin-left: 20px;
+      font-size: 14px;
+      color: $white;
+      background-color: $purple;
+      padding: 6px 12px;
+      width: fit-content;
+      border-radius: 10px;
     }
   } 
 
@@ -36,10 +36,22 @@
          padding: 8px 0;
          margin-bottom: 12px;
          border-bottom: solid 2px $grey-secondary;
+         display: flex;
+         align-items: center;
    
-         h5{
+        h5{
           font-size: 20px;
-         }
+        }
+        span{
+          margin-left: 20px;
+          font-size: 12px;
+          font-weight: 600;
+          color: $white;
+          background-color: $blue;
+          padding: 6px 12px;
+          width: fit-content;
+          border-radius: 10px;
+        }
        }
    
        .content{
@@ -89,11 +101,6 @@
 
       }
       
-    }
-
-    .data-timestamp{
-      background-color: aqua;
-      flex: 1;
     }
 
   }

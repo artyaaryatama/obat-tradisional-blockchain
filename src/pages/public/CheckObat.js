@@ -29,17 +29,9 @@ function CheckObatIpfs() {
   const [nieApprovalDate, setNieApprovalDate] = useState("");
   const [bpomAddr, setBpomAddr] = useState("");
   const [bpomInstanceName, setBpomInstanceName] = useState("");
-
-  const obatStatusMap = {
-    0: "In Local Production",
-    1: "Requested NIE",
-    2: "Approved NIE"
-  };
-
-  const tipeProdukMap = {
-    0: "Obat Tradisional",
-    1: "Suplemen Kesehatan"
-  };
+  const [statusNie, setStatusNie] = useState("");
+  const [statusOrderPbf, setStatusOrderPbf] = useState("");
+  const [statusOrderRetailer, setStatusOrderRetailer] = useState("");
 
   useEffect(() => {
     document.title = "Check Obat Tradisional"; 
@@ -77,7 +69,7 @@ function CheckObatIpfs() {
         factoryAddr: obatData.dataObat.factoryAddr,
         factoryInstanceName: obatData.dataObat.factoryInstanceName,
         tipeProduk: obatData.dataObat.tipeProduk, 
-        obatStatus: obatData.dataObat.obatStatus ? obatStatusMap[obatData.dataObat.obatStatus] : '-' ,
+        nieStatus: obatData.dataObat.obatStatus,
         nieRequestDate: obatData.dataObat.nieRequestDate, 
         nieApprovalDate: obatData.dataObat.nieApprovalDate,
         nieNumber: obatData.dataObat.nieNumber,
@@ -85,22 +77,20 @@ function CheckObatIpfs() {
         bpomInstanceName: obatData.dataObat.bpomInstanceName,
       };
 
-      console.log(detailObat);
-
       if(obatData.dataOrderPbf && Object.keys(obatData.dataOrderPbf).length > 0) {
         setDataOrderPbf(true)
         const detailOrderPbf = {
           orderQuantity: obatData.dataOrderPbf.orderQuantity,
           senderInstanceName: obatData.dataOrderPbf.senderInstanceName,
           targetInstanceName : obatData.dataOrderPbf.targetInstanceName,
-          statusOrder : obatData.dataOrderPbf.statusOrder ? obatData.dataOrderPbf.statusOrder : '-',
+          statusOrder : obatData.dataOrderPbf.statusOrder ,
           timestampOrder: obatData.dataOrderPbf.timestampOrder,
-          senderAddress : obatData.dataOrderPbf.senderAddress,
+          senderAddress : obatData.dataOrderPbf.senderAddress === '0x0000000000000000000000000000000000000000' ? "-" : obatData.dataOrderPbf.senderAddress,
           targetAddress : obatData.dataOrderPbf.targetAddress,
           timestampShipped: obatData.dataOrderPbf.timestampShipped,
           timestampComplete: obatData.dataOrderPbf.timestampComplete ? obatData.dataOrderPbf.timestampComplete  : "-"
         }
-  
+        console.log(detailOrderPbf);
         setDetailOrderPbf(detailOrderPbf)
       }
       
@@ -109,9 +99,10 @@ function CheckObatIpfs() {
         const detailOrderRetailer = {
           orderQuantity: obatData.dataOrderRetailer.orderQuantity,
           senderInstanceName: obatData.dataOrderRetailer.senderInstanceName,
-          statusOrder : obatData.dataOrderRetailer.statusOrder ? obatData.dataOrderRetailer.statusOrder : '-',
+          statusOrder : obatData.dataOrderRetailer.statusOrder ? obatData.dataOrderRetailer.statusOrder : 0,
           targetInstanceName : obatData.dataOrderRetailer.targetInstanceName,
-          senderAddress : obatData.dataOrderRetailer.senderAddress,
+          statusOrder : obatData.dataOrderRetailer.statusOrder ,
+          senderAddress : obatData.dataOrderRetailer.senderAddress === '0x0000000000000000000000000000000000000000' ? "-" : obatData.dataOrderRetailer.senderAddress,
           targetAddress : obatData.dataOrderRetailer.targetAddress,
           timestampOrder: obatData.dataOrderRetailer.timestampOrder,
           timestampShipped: obatData.dataOrderRetailer.timestampShipped,
@@ -135,7 +126,7 @@ function CheckObatIpfs() {
       setNieApprovalDate(detailObat.nieApprovalDate);
       setBpomAddr(detailObat.bpomAddr);
       setBpomInstanceName(detailObat.bpomInstanceName);
-
+      setStatusNie(detailObat.nieStatus)
     }
 
     getDetailData();
@@ -222,6 +213,7 @@ function CheckObatIpfs() {
             <div className="section">
               <div className="title">
                 <h5>Data NIE</h5>
+                <span>{statusNie}</span>
               </div>
               <div className="content">
                 <div className="list-detail">
@@ -253,6 +245,7 @@ function CheckObatIpfs() {
                 <div className="section">
                   <div className="title">
                     <h5>Data Order PBF</h5>
+                    <span>{detailOrderPbf.statusOrder}</span>
                   </div>
                   <div className="content">
                     <div className="list-detail">
