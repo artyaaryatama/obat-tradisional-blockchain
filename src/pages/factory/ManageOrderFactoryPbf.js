@@ -199,7 +199,6 @@ function ManageOrderFactoryPbf() {
   const getDetailObat = async (id, orderId, selectedBatchName) => {
     console.log(id, orderId, selectedBatchName);
 
-  
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
@@ -729,7 +728,7 @@ function ManageOrderFactoryPbf() {
             ) : (
               <h2 className='small'>No Records Found</h2>
             )}
-        </div>
+          </div>
         </div>
       </div>
     </>

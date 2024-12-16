@@ -53,11 +53,11 @@ contract ObatShared {
     string obatId;
   }
 
-  string[] private allObatIdPbf;
+  string[] private allObatPbfBatchName;
 
   mapping(string => st_obatDetails) public obatDetailsById;
   mapping (string => st_obatProduction[]) public obatProductionById;
-  mapping (string => st_obatPbf[]) public obatPbfById;
+  mapping (string => st_obatPbf) public ObatPbfBatchName;
 
 
   function setObatDetail(
@@ -159,92 +159,45 @@ contract ObatShared {
       pbfInstance: _pbfInstance
     });  
 
-    allObatIdPbf.push(_obatId);
-    obatPbfById[_obatId].push(newObatPbf);
+    allObatPbfBatchName.push(_batchName);
+    ObatPbfBatchName[_batchName] = newObatPbf;
   } 
-
-  function getAllObatPbf()
-    external view returns (st_obatPbf[] memory) {
-
-      // st_obatPbf[] memory listObatPbf = new st_obatPbf[](allObatIdPbf.length);
-
-      // uint256 index = 0;
-      // for (uint i = 0; i < allObatIdPbf.length; i++) {
-      //   string memory obatId = allObatIdPbf[i];
-      //   st_obatPbf[] memory obatPbfBatchPerId = obatPbfById[obatId];
-
-      //   for (uint256 j = 0; j < obatPbfBatchPerId.length; j++) {
-      //     listObatPbf[index] = obatPbfBatchPerId[j];
-      //     index++;
-      //   }
-      // }
-
-      // return listObatPbf;
-
-
-      uint256 totalLength = 0;
-
-      for (uint256 i = 0; i < allObatIdPbf.length; i++) {
-        totalLength += obatPbfById[allObatIdPbf[i]].length;
-      }
-
-      // Create a single array to hold all st_obatPbf entries
-      st_obatPbf[] memory allObatPbf = new st_obatPbf[](totalLength);
-
-      // Populate the array with data
-      uint256 currentIndex = 0;
-      for (uint256 i = 0; i < allObatIdPbf.length; i++) {
-
-        st_obatPbf[] memory currObatPbf = obatPbfById[allObatIdPbf[i]];
-        for (uint256 j = 0; j < currObatPbf.length; j++) {
-          allObatPbf[currentIndex] = currObatPbf[j];
-          currentIndex++;
-        } 
-      }
-
-      return allObatPbf;
-  }
 
   function getAllObatPbfReadyStock()
     external view returns (st_obatOutputStock[] memory) {
-      uint256 totalLength = 0;
+      uint256 count = 0;
 
-      for (uint256 i = 0; i < allObatIdPbf.length; i++) {
-        st_obatPbf[] memory obatPbf = obatPbfById[allObatIdPbf[i]];
-
-        for (uint256 j = 0; j < obatPbf.length; j++) {
-
-          if (obatPbf[j].statusStok == EnumsLibrary.ObatAvailability.Ready) {
-            totalLength++;
-          }
-        }
-      }
-
-      st_obatOutputStock[] memory allObatPbf = new st_obatOutputStock[](totalLength);
-
-      uint256 currentIndex = 0;
-
-      for (uint256 i = 0; i < allObatIdPbf.length; i++) {
-
-        st_obatPbf[] memory currObatPbfs = obatPbfById[allObatIdPbf[i]];
-
-        string memory obatId = allObatIdPbf[i];
-        
-        for (uint256 j = 0; j < currObatPbfs.length; j++) {
-          if (currObatPbfs[j].statusStok == EnumsLibrary.ObatAvailability.Ready ) {
-            allObatPbf[currentIndex] = st_obatOutputStock({
-              obatId: obatId,
-              namaProduk: currObatPbfs[i].namaProduk,
-              batchName: currObatPbfs[i].batchName,
-              obatQuantity: currObatPbfs[i].obatQuantity,
-              statusStok: currObatPbfs[i].statusStok,
-              ownerInstance: currObatPbfs[i].pbfInstance
-            });
-            currentIndex++;
-          }
+      for (uint i = 0; i < allObatPbfBatchName.length; i++) {
+        if (ObatPbfBatchName[allObatPbfBatchName[i]].statusStok == EnumsLibrary.ObatAvailability.Ready) {
+          count++;
         } 
       }
 
-      return allObatPbf;
-    }
+      st_obatOutputStock[] memory obatReady = new st_obatOutputStock[](count);
+
+      uint256 count1 = 0;
+
+      for (uint i = 0; i <  allObatPbfBatchName.length; i++) {
+
+          if (ObatPbfBatchName[allObatPbfBatchName[i]].statusStok == EnumsLibrary.ObatAvailability.Ready) {
+
+          st_obatPbf memory currentObatPbf = ObatPbfBatchName[allObatPbfBatchName[i]];
+
+          obatReady[count1] = st_obatOutputStock({
+              obatId: currentObatPbf.obatId,
+              namaProduk: currentObatPbf.namaProduk,
+              batchName: currentObatPbf.batchName,
+              obatQuantity: currentObatPbf.obatQuantity,
+              statusStok: currentObatPbf.statusStok,
+              ownerInstance: currentObatPbf.pbfInstance
+            });
+
+          count1++; 
+        } 
+      }
+
+    return obatReady;
+  }
+
+
 }

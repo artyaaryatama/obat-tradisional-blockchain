@@ -386,7 +386,7 @@ function CreateOrderPbf() {
                       <h5>{item.namaProduk}</h5>
                       <p>Batchname : {item.batchName}</p>
                       <p>Stok tersedia: {item.obatQuantity} Obat</p>
-                      <p>{item.factoryInstanceName}</p>
+                      <p>Factory Instance: {item.factoryInstanceName}</p>
 
                     </div>
                     <div className="order">

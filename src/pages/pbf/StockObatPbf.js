@@ -20,11 +20,15 @@ function StockObatPbf() {
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObatReady, setDataObatReady] = useState([]);
   
-
   const obatStatusMap = {
     0: "Order Placed",
     1: "Order Shipped",
     2: "Order Completed"
+  };
+
+  const stokStatusMap = {
+    0: "Stok Available",
+    1: "Stok Empty",
   };
 
   const tipeProdukMap = {
@@ -84,14 +88,16 @@ function StockObatPbf() {
       if (contracts) {
         try {
 
-          const tx = await contracts.orderManagement.getListAllReadyObatPbf(userData.instanceName);
-          const [obatIdArray, namaProdukArray, obatQuantityArray, batchNameArray] = tx
+          const allPbfReadyObat = await contracts.orderManagement.getAllObatPbfReadyStock();
+          console.log(allPbfReadyObat);
+          // const [obatIdArray, namaProdukArray, obatQuantityArray, batchNameArray] = tx
 
-          const reconstructedData = obatIdArray.map((obatId, index) => ({
-            namaObat: namaProdukArray[index],
-            obatQuantity: obatQuantityArray[index].toString(),
-            obatId: obatIdArray[index],
-            batchName: batchNameArray[index]
+          const reconstructedData = allPbfReadyObat.map((item, index) => ({
+            obatId: item[0],
+            namaProduk: item[1],
+            batchName: item[2],
+            obatQuantity: item[3],
+            statusStok: stokStatusMap[item[4]],
           }));
 
           setDataObatReady(reconstructedData)
@@ -109,79 +115,79 @@ function StockObatPbf() {
   useEffect(() => {
     if (contracts) {
 
-      contracts.orderManagement.on("evt_updateOrder", (_namaProduk, _batchName, _targetInstanceName, _senderInstanceName, _orderQuantity, _latestTimestamp) => {
+      // contracts.orderManagement.on("evt_updateOrder", (_namaProduk, _batchName, _targetInstanceName, _senderInstanceName, _orderQuantity, _latestTimestamp) => {
 
-        const timestamp = new Date(Number(_latestTimestamp) * 1000).toLocaleDateString('id-ID', options)
+      //   const timestamp = new Date(Number(_latestTimestamp) * 1000).toLocaleDateString('id-ID', options)
 
-        MySwal.fire({
-          title:  `Success Accept Order Delivery Obat ${_namaProduk}`,
-          html: (
-            <div className='form-swal'>
-              <ul>
-                <li className="label">
-                  <p>Nama Obat</p> 
-                </li>
-                <li className="input">
-                  <p>{_namaProduk}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Batch Name</p> 
-                </li>
-                <li className="input">
-                  <p>{_batchName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Di produksi oleh</p> 
-                </li>
-                <li className="input">
-                  <p>{_targetInstanceName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Di order oleh</p> 
-                </li>
-                <li className="input">
-                  <p>{_senderInstanceName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Total order</p> 
-                </li>
-                <li className="input">
-                  <p>{_orderQuantity.toString()} Obat</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Tanggal pengiriman</p> 
-                </li>
-                <li className="input">
-                  <p>{timestamp}</p> 
-                </li>
-              </ul>
-            </div>
-          ),
-          icon: 'success',
-          width: '560',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-          allowOutsideClick: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.reload()
-          }
-        });
-      })
+      //   MySwal.fire({
+      //     title:  `Success Accept Order Delivery Obat ${_namaProduk}`,
+      //     html: (
+      //       <div className='form-swal'>
+      //         <ul>
+      //           <li className="label">
+      //             <p>Nama Obat</p> 
+      //           </li>
+      //           <li className="input">
+      //             <p>{_namaProduk}</p> 
+      //           </li>
+      //         </ul>
+      //         <ul>
+      //           <li className="label">
+      //             <p>Batch Name</p> 
+      //           </li>
+      //           <li className="input">
+      //             <p>{_batchName}</p> 
+      //           </li>
+      //         </ul>
+      //         <ul>
+      //           <li className="label">
+      //             <p>Di produksi oleh</p> 
+      //           </li>
+      //           <li className="input">
+      //             <p>{_targetInstanceName}</p> 
+      //           </li>
+      //         </ul>
+      //         <ul>
+      //           <li className="label">
+      //             <p>Di order oleh</p> 
+      //           </li>
+      //           <li className="input">
+      //             <p>{_senderInstanceName}</p> 
+      //           </li>
+      //         </ul>
+      //         <ul>
+      //           <li className="label">
+      //             <p>Total order</p> 
+      //           </li>
+      //           <li className="input">
+      //             <p>{_orderQuantity.toString()} Obat</p> 
+      //           </li>
+      //         </ul>
+      //         <ul>
+      //           <li className="label">
+      //             <p>Tanggal pengiriman</p> 
+      //           </li>
+      //           <li className="input">
+      //             <p>{timestamp}</p> 
+      //           </li>
+      //         </ul>
+      //       </div>
+      //     ),
+      //     icon: 'success',
+      //     width: '560',
+      //     showCancelButton: false,
+      //     confirmButtonText: 'Oke',
+      //     allowOutsideClick: true,
+      //   }).then((result) => {
+      //     if (result.isConfirmed) {
+      //       window.location.reload()
+      //     }
+      //   });
+      // })
   
-      return () => {
-        contracts.orderManagement.removeAllListeners("evt_updateOrder");
-      };
+      // return () => {
+      //   contracts.orderManagement.removeAllListeners("evt_updateOrder");
+      // };
     }
   }, [contracts]);
   
@@ -200,7 +206,7 @@ function StockObatPbf() {
       const detailObat = {
         obatId: obatDetails.obatId,
         merk: obatDetails.merk,
-        namaObat: obatDetails.namaProduk,
+        namaProduk: obatDetails.namaProduk,
         klaim: obatDetails.klaim,
         kemasan: obatDetails.kemasan,
         komposisi: obatDetails.komposisi,
@@ -218,7 +224,7 @@ function StockObatPbf() {
       };
 
       MySwal.fire({
-        title: `Produksi Obat ${detailObat.namaObat}`,
+        title: `Produksi Obat ${detailObat.namaProduk}`,
         html: (
           <div className='form-swal'>
             <div className="row1">
@@ -231,7 +237,7 @@ function StockObatPbf() {
                           <p>Nama Obat</p>
                         </li>
                         <li className="input">
-                          <p>{detailObat.namaObat}</p> 
+                          <p>{detailObat.namaProduk}</p> 
                         </li>
                       </ul>
 
@@ -370,10 +376,13 @@ function StockObatPbf() {
               <ul>
                 {dataObatReady.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailObat(item.obatId)} >[{item.batchName}] {item.namaObat}</button>
+                    <button className='title' onClick={() => getDetailObat(item.obatId)} >[{item.batchName}] {item.namaProduk}</button>
                     <p>
-                      Total Stok: {item.obatQuantity} Obat
+                      Total Stok: {item.obatQuantity.toString()} Obat
                     </p>
+                    <button className={`statusOrder ${item.statusStok}`}>
+                      {item.statusStok}
+                    </button>
                   </li>
                 ))}
               </ul>
