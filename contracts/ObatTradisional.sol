@@ -456,11 +456,15 @@ contract ObatTradisional {
   function detailBatchProduction(
     string memory _obatId,
     string memory _batchName
-  ) public view returns (ObatShared.st_obatProduction memory){
+  ) public view returns (
+      ObatShared.st_obatProduction memory,
+      string[] memory
+    ){
 
     ObatShared.st_obatProduction[] memory obatBatches = obatShared.getObatProduction(_obatId); 
 
     ObatShared.st_obatProduction memory obatBatchDetail;
+    string[] memory obatIpfs = obatShared.getObatIpfsByBatchName(_batchName);
 
     bytes32 batchHash = keccak256(abi.encodePacked(_batchName));
 
@@ -471,10 +475,10 @@ contract ObatTradisional {
     }
 
     if ((roleManager.hasRole(msg.sender, EnumsLibrary.Roles.PBF))) {
-      obatBatchDetail.obatIpfs = new string[](0);
+      obatIpfs = new string[](0);
     }
 
-    return obatBatchDetail;
+    return (obatBatchDetail, obatIpfs);
   }
 
 }

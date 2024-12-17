@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
-import { useNavigate } from 'react-router-dom';
+import { data, useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
 
 import DataIpfsHash from '../../components/TableHash';
@@ -26,8 +26,8 @@ function StockObatFactory() {
   
 
   const stokStatusMap = {
-    0: "Stok Available",
-    1: "Stok Empty",
+    0: "Stock Available",
+    1: "Stock Empty",
   };
 
   const obatStatusMap = {
@@ -125,7 +125,9 @@ function StockObatFactory() {
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
-      const [statusStok, namaProduct, batchNamee, obatQuantity, obatIpfs, factoryInstancee] = detailBatchCt
+      const [dataObat, obatIpfs] = detailBatchCt
+
+      const [statusStok, namaProduct, batchNamee, obatQuantity, factoryInstancee] = dataObat
 
       const detailObat = {
         obatId: id,
@@ -303,7 +305,7 @@ function StockObatFactory() {
                 {dataObat.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.obatId, item.batchName)} > [ {item.batchName} ] {item.namaProduk}</button>
-                    {item.statusStok === "Stok Available" ? 
+                    {item.statusStok === "Stock Available" ? 
                       <p>Stok tersedia: {item.obatQuantity} Obat</p>  :
                       <p>Terjual: {item.obatQuantity} Obat</p>
                     }

@@ -106,7 +106,7 @@ function CreateOrderPbf() {
   useEffect(() => {
     if (contracts) {
       
-      contracts.orderManagement.on("evt_orderUpdate", (_namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.orderManagement.on("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
 
         const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
     
@@ -120,6 +120,14 @@ function CreateOrderPbf() {
                 </li>
                 <li className="input">
                   <p>{_namaProduk}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Batchname</p> 
+                </li>
+                <li className="input">
+                  <p>{_batchName}</p> 
                 </li>
               </ul>
               <ul>
@@ -187,7 +195,9 @@ function CreateOrderPbf() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [statusStok, namaProdukk, batchNamee, obatQuantity, obatIpfs, factoryInstancee] = detailBatchCt;
+      const [dataObat, obatIpfs] = detailBatchCt
+
+      const [statusStok, namaProduct, batchNamee, obatQuantity, factoryInstancee] = dataObat
 
       const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
 
@@ -233,6 +243,15 @@ function CreateOrderPbf() {
                     </li>
                     <li className="input">
                       <p>{detailObat.namaObat}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Batchname</p>
+                    </li>
+                    <li className="input">
+                      <p>{batchName}</p> 
                     </li>
                   </ul>
 
@@ -344,7 +363,7 @@ function CreateOrderPbf() {
     const year = today.getFullYear();
     const randomNumber = Math.floor(100000 + Math.random() * 900000); 
 
-    const orderId = `ORDER-${day}${month}${year}-${randomNumber}` 
+    const orderId = `ORDER-PBF-${day}${month}${year}-${randomNumber}` 
   
     try {
       console.log(orderId, id, namaProduk, factoryInstance, userData.instanceName, orderQuantity);

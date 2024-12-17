@@ -99,9 +99,8 @@ function CheckObatIpfs() {
         const detailOrderRetailer = {
           orderQuantity: obatData.dataOrderRetailer.orderQuantity,
           senderInstanceName: obatData.dataOrderRetailer.senderInstanceName,
-          statusOrder : obatData.dataOrderRetailer.statusOrder ? obatData.dataOrderRetailer.statusOrder : 0,
+          statusOrder : obatData.dataOrderRetailer.statusOrder,
           targetInstanceName : obatData.dataOrderRetailer.targetInstanceName,
-          statusOrder : obatData.dataOrderRetailer.statusOrder ,
           senderAddress : obatData.dataOrderRetailer.senderAddress === '0x0000000000000000000000000000000000000000' ? "-" : obatData.dataOrderRetailer.senderAddress,
           targetAddress : obatData.dataOrderRetailer.targetAddress,
           timestampOrder: obatData.dataOrderRetailer.timestampOrder,
@@ -286,17 +285,19 @@ function CheckObatIpfs() {
                 <div className="section">
                   <div className="title">
                     <h5>Data Order Retailer</h5>
+                    <span>{detailOrderRetailer.statusOrder}</span>
+
                   </div>
                   <div className="content">
                     <div className="list-detail">
                       <ul className="info-list">
                         <li className="info-item">
-                          <span className="label">Instance PBF</span>
+                          <span className="label">Instance Retailer</span>
                           <span>{detailOrderRetailer.senderInstanceName}</span>
                           <span className='addr'>({detailOrderRetailer.senderAddress})</span>
                         </li>
                         <li className="info-item">
-                          <span className="label">instance Factory</span>
+                          <span className="label">instance PBF</span>
                           <span>{detailOrderRetailer.targetInstanceName}</span>
                           <span className='addr'>({detailOrderRetailer.targetAddress})</span>
                         </li>

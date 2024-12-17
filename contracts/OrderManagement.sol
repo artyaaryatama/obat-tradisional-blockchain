@@ -83,7 +83,7 @@ contract OrderManagement {
   mapping (string => string[]) orderIdbyInstanceBuyer;
   mapping (string => string[]) orderIdbyInstanceSeller;
 
-  event evt_orderUpdate (string namaProduk, string buyerInstanceName, string sellerInstanceName, uint8 orderQuantity, uint256 timestamp);
+  event evt_orderUpdate (string batchName, string namaProduk, string buyerInstanceName, string sellerInstanceName, uint8 orderQuantity, uint256 timestamp);
 
   // status: 200ok
   function getAvailableObatFromFactory ()
@@ -116,6 +116,7 @@ contract OrderManagement {
     orderTimestampByOrderId[_orderId] = newTimestamp;
   }
 
+  // status: 200ok
   function createOrderPbf (
     string memory _orderId,
     string memory _obatId,
@@ -148,6 +149,7 @@ contract OrderManagement {
       emitOrderPbfUpdate(_orderId);
   }
 
+  // status: 200ok
   function createOrderRetailer (
     string memory _prevOrderIdPbf,
     string memory _orderId,
@@ -183,11 +185,13 @@ contract OrderManagement {
     emitOrderRetailerUpdate(_orderId);
   }
 
+  // status: 200ok
   function emitOrderPbfUpdate(string memory _orderId)
     internal {
       st_obatOrder memory order = orderPbfByOrderId[_orderId];
 
       emit evt_orderUpdate(
+        order.batchName,
         order.namaProduk, 
         order.buyerUser.instanceName, 
         order.sellerUser.instanceName,
@@ -196,11 +200,13 @@ contract OrderManagement {
       );
   }
 
+  // status: 200ok
   function emitOrderRetailerUpdate(string memory _orderId)
     internal {
       st_obatOrderRetailer memory order = orderRetailerById[_orderId];
 
       emit evt_orderUpdate(
+        order.batchName,
         order.namaProduk, 
         order.buyerUser.instanceName, 
         order.sellerUser.instanceName,
@@ -231,6 +237,7 @@ contract OrderManagement {
 
   }
   
+  // status: 200ok
   function acceptOrderRetailer(
     string memory _orderId,
     string[] memory _orderObatIpfs
@@ -239,15 +246,22 @@ contract OrderManagement {
       orderRetailerById[_orderId].sellerUser.instanceAddr = msg.sender;
       orderRetailerById[_orderId].statusOrder = EnumsLibrary.OrderStatus.OrderShipped;
       orderTimestampByOrderId[_orderId].timestampShipped = block.timestamp;
+      string memory orderIdPrevPbf = orderRetailerById[_orderId].prevOrderIdPbf;
 
       for (uint256 i = 0; i < _orderObatIpfs.length; i++) {
         orderRetailerObatIpfsByOrderId[_orderId].push(_orderObatIpfs[i]);
-
-        obatShared.updateObatPbf(orderPbfByOrderId[_orderId].batchName, _orderObatIpfs);
       } 
+
+      for (uint256 i = 0; i < _orderObatIpfs.length; i++) {
+        orderPbfObatIpfsByOrderId[orderIdPrevPbf].push(_orderObatIpfs[i]);
+      }  
+      
+      obatShared.updateObatPbf(orderRetailerById[_orderId].batchName, _orderObatIpfs);
+
       emitOrderRetailerUpdate(_orderId);
   }
 
+  // status: 200ok
   function completeOrderPbf(
     string memory _orderId,
     string[] memory _orderObatIpfs
@@ -270,6 +284,7 @@ contract OrderManagement {
     emitOrderPbfUpdate(_orderId);
   }
 
+  // status: 200ok
   function completeOrderRetailer(
     string memory _orderId,
     string[] memory _orderObatIpfs
@@ -277,13 +292,22 @@ contract OrderManagement {
 
       st_obatOrderRetailer memory obatOrder = orderRetailerById[_orderId]; 
 
+      orderRetailerById[_orderId].statusOrder = EnumsLibrary.OrderStatus.OrderCompleted;
+      orderTimestampByOrderId[_orderId].timestampComplete = block.timestamp;
+
+      string memory orderIdPrevPbf = orderRetailerById[_orderId].prevOrderIdPbf;
+
       delete orderRetailerObatIpfsByOrderId[_orderId];
+      delete orderPbfObatIpfsByOrderId[orderIdPrevPbf];
 
       for (uint256 i = 0; i < _orderObatIpfs.length; i++) {
         orderRetailerObatIpfsByOrderId[_orderId].push(_orderObatIpfs[i]); 
+        orderPbfObatIpfsByOrderId[orderIdPrevPbf].push(_orderObatIpfs[i]);
       } 
 
       obatShared.updateBatchProduction(obatOrder.obatId, obatOrder.batchName, _orderObatIpfs);
+
+      obatShared.updateObatPbf(obatOrder.batchName, _orderObatIpfs); 
 
       obatShared.addObatRetailer(obatOrder.obatId, _orderId, obatOrder.namaProduk, obatOrder.batchName, obatOrder.orderQuantity, _orderObatIpfs, obatOrder.buyerUser.instanceName);
 
@@ -306,6 +330,7 @@ contract OrderManagement {
       return orders;
   }
 
+  // status: 200ok
   function getAllOrderFromBuyerRetailer(string memory _buyerInstance)
     public view returns(st_obatOrderRetailer[] memory) {
       uint256 count = orderIdbyInstanceBuyer[_buyerInstance].length;
@@ -367,6 +392,7 @@ contract OrderManagement {
       ); 
   }
  
+  // status: 200ok
   function detailOrderRetailer(string memory _orderId)
     public view returns(
       st_obatOrderRetailer memory,
@@ -380,18 +406,21 @@ contract OrderManagement {
       ); 
   }
 
+  // status: 200ok
   function getAllObatPbfReadyStock()
     public view returns (ObatShared.st_obatOutputStock[] memory){
 
       return obatShared.getAllObatPbfReadyStock();
   }
 
+  // status: 200ok
   function getAllObatPbfByInstance(string memory _instanceName)
     public view returns (ObatShared.st_obatOutputStock[] memory){
 
       return obatShared.getAllObatPbfByInstance(_instanceName);
   }
 
+  // status: 200ok
   function getAllObatRetailerByInstance(string memory _instanceName)
     public view returns (ObatShared.st_obatOutputStock[] memory){
 

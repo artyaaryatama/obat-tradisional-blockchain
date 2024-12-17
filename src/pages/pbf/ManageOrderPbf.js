@@ -122,7 +122,7 @@ function ManageOrderPbf() {
   useEffect(() => {
     if (contracts) {
 
-      contracts.orderManagement.on("evt_orderUpdate", (_namaProduk,  _pbfInstanceName, _buyerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.orderManagement.on("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
 
         const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
     
@@ -140,6 +140,14 @@ function ManageOrderPbf() {
               </ul>
               <ul>
                 <li className="label">
+                  <p>Batchname</p> 
+                </li>
+                <li className="input">
+                  <p>{_batchName}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
                   <p>Total Order</p> 
                 </li>
                 <li className="input">
@@ -151,7 +159,7 @@ function ManageOrderPbf() {
                   <p>PBF Instance</p> 
                 </li>
                 <li className="input">
-                  <p>{_pbfInstanceName}</p> 
+                  <p>{_buyerInstance}</p> 
                 </li>
               </ul>
               <ul>
@@ -159,7 +167,7 @@ function ManageOrderPbf() {
                   <p>Factory Instance</p> 
                 </li>
                 <li className="input">
-                  <p>{_buyerInstance}</p> 
+                  <p>{_sellerInstance}</p> 
                 </li>
               </ul>
               <ul>

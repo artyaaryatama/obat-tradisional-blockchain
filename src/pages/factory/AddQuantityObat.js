@@ -194,7 +194,7 @@ function AddQuantityObat() {
     const detailObat = {
       obatId: id,
       merk: merk,
-      namaObat: namaProduct,
+      namaProduk: namaProduct,
       klaim: klaim,
       kemasan: kemasan,
       komposisi: komposisi,
@@ -229,7 +229,7 @@ function AddQuantityObat() {
         obatIdPackage: `OT-${i * 23}${randomSixDigits}-${randomTwoLetters}`,
         dataObat:  {
           obatIdProduk: dataObat.obatId,
-          namaProduk: dataObat.namaObat,
+          namaProduk: dataObat.namaProduk,
           merk: dataObat.merk,
           klaim: dataObat.klaim,
           kemasan: dataObat.kemasan,
@@ -262,7 +262,7 @@ function AddQuantityObat() {
 
     if(newIpfsHashes.length !== 0){
       MySwal.fire({
-        title: `Data Obat ${dataObat.namaObat}`,
+        title: `Data Obat ${dataObat.namaProduk}`,
         html: (
           <div className='form-swal'>
             <div className="row row--obat">
@@ -273,7 +273,7 @@ function AddQuantityObat() {
                     <p>Nama Produk</p>
                   </li>
                   <li className="input input-1">
-                    <p>{dataObat.namaObat}</p> 
+                    <p>{dataObat.namaProduk}</p> 
                   </li>
                 </ul>
   
@@ -334,7 +334,7 @@ function AddQuantityObat() {
     try {
       const quantity = parseInt(quantityObat)
       console.log(dataObat.obatId, dataObat.namaProduk, batchNameObat, quantity, newIpfsHashes,  dataObat.factoryInstanceName);
-      const addBatchCt = await contract.addBatchProduction(dataObat.obatId, dataObat.namaObat, batchNameObat, quantity, newIpfsHashes,  dataObat.factoryInstanceName);
+      const addBatchCt = await contract.addBatchProduction(dataObat.obatId, dataObat.namaProduk, batchNameObat, quantity, newIpfsHashes,  dataObat.factoryInstanceName);
 
       if(addBatchCt){
         MySwal.update({
@@ -415,12 +415,12 @@ function AddQuantityObat() {
                 >
                   <option value="" disabled>Pilih Quantity Obat</option>
                   <option value="1">1 Obat</option>
-                  <option value="5">5 Obat</option>
+                  <option value="3">3 Obat</option>
                   <option value="50">50 Obat</option>
                   <option value="100">100 Obat</option>
                   <option value="150">150 Obat</option>
                   <option value="200">200 Obat</option>
-                  <option value="1000">1000 Obat</option>
+                  <option value="400">400 Obat</option>
                 </select>
               </div>
             </li>

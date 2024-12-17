@@ -126,7 +126,7 @@ function ManageOrderFactoryPbf() {
   useEffect(() => {
     if (contracts) {
 
-      contracts.orderManagement.on("evt_orderUpdate", (_namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.orderManagement.on("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
 
         const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
     
@@ -140,6 +140,14 @@ function ManageOrderFactoryPbf() {
                 </li>
                 <li className="input">
                   <p>{_namaProduk}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Batchname</p> 
+                </li>
+                <li className="input">
+                  <p>{_batchName}</p> 
                 </li>
               </ul>
               <ul>
@@ -208,6 +216,7 @@ function ManageOrderFactoryPbf() {
       const [obatDetails, obatNie] = detailObatCt;
 
       const [orderData, timestampData, orderObatIpfs] = detailOrderCt
+      console.log(orderObatIpfs);
 
       const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
 
@@ -606,7 +615,7 @@ function ManageOrderFactoryPbf() {
           senderAddress: dataOrder.buyerAddress,
           statusOrder : "Order Shipped",
           targetInstanceName : dataOrder.sellerInstance,
-          targetAddress: dataOrder.sellerAddress,
+          targetAddress: userData.address,
           timestampOrder: timestamps.timestampOrder,
           timestampShipped: timestamps.timestampShipped
         }

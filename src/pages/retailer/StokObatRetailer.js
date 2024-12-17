@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom/client';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
@@ -19,12 +20,10 @@ function StockObatRetailer() {
 
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObatReady, setDataObatReady] = useState([]);
-  
 
-  const obatStatusMap = {
-    0: "Order Placed",
-    1: "Order Shipped",
-    2: "Order Completed"
+  const stokStatusMap = {
+    0: "Stock Available",
+    1: "Stock Empty",
   };
 
   const tipeProdukMap = {
@@ -63,7 +62,6 @@ function StockObatRetailer() {
             signer
           );
 
-          // Update state with both contracts
           setContracts({
             orderManagement: orderManagementContract,
             obatTradisional: obatTradisionalContract
@@ -83,18 +81,20 @@ function StockObatRetailer() {
     const loadData = async () => {
       if (contracts) {
         try {
+          const allRetailerReadyObat = await contracts.orderManagement.getAllObatRetailerByInstance(userData.instanceName);
+          console.log(allRetailerReadyObat);
 
-          const listReadyObatCt = await contracts.orderManagement.getListAllReadyObatRetailer(userData.instanceName);
-          const [obatIdArray, namaProdukArray, obatQuantityArray, batchNameArray] = listReadyObatCt
-
-          const reconstructedData = obatIdArray.map((obatId, index) => ({
-            namaObat: namaProdukArray[index],
-            obatQuantity: obatQuantityArray[index].toString(),
-            obatId: obatIdArray[index],
-            batchName: batchNameArray[index]
+          const reconstructedData = allRetailerReadyObat.map((item, index) => ({
+            orderId: item[0],
+            obatId: item[1],
+            namaProduk: item[2],
+            batchName: item[3],
+            obatQuantity: item[4],
+            statusStok: stokStatusMap[item[5]],
+            pbfInstance: item[6]
           }));
 
-          setDataObatReady(reconstructedData);
+          setDataObatReady(reconstructedData)
           console.log(reconstructedData);
 
         } catch (error) {
@@ -106,109 +106,146 @@ function StockObatRetailer() {
     loadData();
   }, [contracts, userData.instanceName]);
   
-
-  const getDetailObat = async (id) => {
+  const getDetailObat = async (id, orderId) => {
 
     try {
-      const listObatCt = await contracts.obatTradisional.getListObatById(id);
-      const detailObatPbf = await contracts.orderManagement.getDetailRetailerObat(id, userData.instanceName)
-      console.log(detailObatPbf);
+      const detailObatCt = await contracts.obatTradisional.detailObat(id);
+      const detailOrderCt = await contracts.orderManagement.detailOrderRetailer(orderId);
 
-      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = listObatCt;
+      const [obatDetails, obatNie] = detailObatCt;
 
-      const [orderId, batchName, obatIdProduk, namaProduk, statusStok, obatQuantity, obatIpfsHash, ownerInstanceName] = detailObatPbf;
+      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
+
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+
+      const [dataOrder, timestampData, orderObatIpfs] = detailOrderCt;
+
+      const [prevOrderId, orderIdProduk, obatIdProduk, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = dataOrder;
+
+      const [timestampOrder, timestampShipped, timestampComplete] = timestampData
 
       const detailObat = {
-        obatId: obatDetails.obatId,
-        merk: obatDetails.merk,
-        namaObat: obatDetails.namaProduk,
-        klaim: obatDetails.klaim,
-        kemasan: obatDetails.kemasan,
-        komposisi: obatDetails.komposisi,
-        factoryAddr: factoryAddress,
-        factoryInstanceName: factoryInstanceName,
-        factoryUserName: factoryUserName,
-        tipeProduk: tipeProdukMap[obatDetails.tipeProduk], 
-        obatStatus: obatStatusMap[obatDetails.obatStatus], 
-        nieRequestDate: obatDetails.nieRequestDate ? new Date(Number(obatDetails.nieRequestDate) * 1000).toLocaleDateString('id-ID', options) : '-', 
-        nieApprovalDate: Number(obatDetails.nieApprovalDate) > 0 ? new Date(Number(obatDetails.nieApprovalDate) * 1000).toLocaleDateString('id-ID', options): "-",
-        nieNumber: obatDetails.nieNumber ? obatDetails.nieNumber : "-",
-        bpomAddr: bpomAddress === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddress,
-        bpomUserName:  bpomUserName ? bpomUserName : "-",
-        bpomInstanceNames:  bpomInstanceName ?  bpomInstanceName : "-"
+        obatId: id,
+        merk: merk,
+        namaProduk: namaProduk,
+        klaim: klaim,
+        kemasan: kemasan,
+        komposisi: komposisi,
+        tipeProduk: tipeProdukMap[tipeProduk], 
+        nieStatus: 'NIE Approved', 
+        produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        nieNumber: nieNumber ? nieNumber : "-",
+        factoryAddr: factoryAddr,
+        factoryInstance: factoryInstance,
+        bpomAddr: bpomAddr ,
+        bpomInstance:  bpomInstance 
       };
 
+      const timestamps = {
+        timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
+        timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
+        timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
+      }
+
       MySwal.fire({
-        title: `Produksi Obat ${detailObat.namaObat}`,
+        title: `Detail Order Obat ${detailObat.namaProduk}`,
         html: (
-          <div className='form-swal'>
+          <div className='form-swal order'>
             <div className="row1">
               <div className="produce-obat">
                 <div className="detailObat">
                   <div className="row row--obat">
                     <div className="col">
                       <ul>
-                        <li className="label-sm">
+                        <li className="label">
+                          <p>ID ORDER</p>
+                        </li>
+                        <li className="input">
+                          <p>{orderId}</p> 
+                        </li>
+                      </ul>
+
+                      <ul>
+                        <li className="label">
+                          <p>Status Order</p>
+                        </li>
+                        <li className="input">
+                          <p>Order Completed</p> 
+                        </li>
+                      </ul>
+
+                      <ul>
+                        <li className="label">
                           <p>Nama Obat</p>
                         </li>
                         <li className="input">
-                          <p>{detailObat.namaObat}</p> 
+                          <p>{detailObat.namaProduk}</p> 
                         </li>
                       </ul>
-
                       <ul>
-                        <li className="label-sm">
-                          <p>Nomor NIE</p>
+                        <li className="label">
+                          <p>Factory Instance</p>
                         </li>
                         <li className="input">
-                          <p>{detailObat.nieNumber}</p> 
+                          <p>{factoryInstance}</p>
                         </li>
                       </ul>
                     
                       <ul>
-                        <li className="label-sm">
-                          <p>Batch</p>
+                        <li className="label">
+                          <p>Factory Address</p>
                         </li>
                         <li className="input">
-                          <p>{batchName}</p>
-                        </li>
-                      </ul>
-
-                      <ul>
-                        <li className="label-sm">
-                          <p>Di Produksi oleh</p>
-                        </li>
-                        <li className="input">
-                          <p>{detailObat.factoryInstanceName}</p>
+                          <p>{factoryAddr}</p>
                         </li>
                       </ul>
                     
                       <ul>
-                        <li className="label-sm">
-                          <p>Di Distribusikan oleh</p>
+                        <li className="label">
+                          <p>Retailer Instance</p>
                         </li>
                         <li className="input">
-                          <p>{ownerInstanceName}</p>
+                          <p>{buyerUser[0]}</p>
+                        </li>
+                      </ul>
+                    
+                      <ul>
+                        <li className="label">
+                          <p>Retailer Instance</p>
+                        </li>
+                        <li className="input">
+                          <p>{buyerUser[1]}</p>
                         </li>
                       </ul>
 
                       <ul>
-                        <li className="label-sm">
-                          <p>Stok Tersedia</p>
+                        <li className="label">
+                          <p>Total Pemesanan</p>
                         </li>
                         <li className="input">
-                          <p>{obatQuantity.toString()} Obat</p>
+                          <p> {orderQuantity.toString()} Obat</p>
                         </li>
                       </ul>
-                    </div>
                       
+                    </div>
                   </div>
 
                 </div>
-                <DataIpfsHash ipfsHashes={obatIpfsHash} />
+                <DataIpfsHash ipfsHashes={orderObatIpfs} />
               </div>
               <div className="row row--obat">
                 <div className="col column">
+
+                    <ul>
+                      <li className="label-sm">
+                        <p>Nomor NIE</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailObat.nieNumber}</p> 
+                      </li>
+                    </ul>
 
                     <ul>
                       <li className="label">
@@ -258,13 +295,22 @@ function StockObatRetailer() {
               </div>
 
             </div>
-          
+            <div className="container-stepper">
+              <div id="stepperOrder"></div>
+            </div>
           </div>
         ),
         width: '1220',
-        showCloseButton: true,
         showCancelButton: false,
-        showConfirmButton: false
+        showCloseButton: true,
+        showConfirmButton: false,
+        didOpen: () => {
+          const stepperOrder = document.getElementById('stepperOrder');
+          const root = ReactDOM.createRoot(stepperOrder);
+          root.render( 
+            <OrderStatusStepper orderStatus={statusOrder} timestamps={timestamps} />
+          );
+        }
       })
       
     } catch (e) {
@@ -292,9 +338,9 @@ function StockObatRetailer() {
               <ul>
                 {dataObatReady.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailObat(item.obatId)} >[{item.batchName}] {item.namaObat}</button>
+                    <button className='title' onClick={() => getDetailObat(item.obatId, item.orderId)} >[{item.batchName}] {item.namaProduk}</button>
                     <p>
-                      Total Stok: {item.obatQuantity} Obat
+                      Total Stok: {item.obatQuantity.toString()} Obat
                     </p>
                   </li>
                 ))}

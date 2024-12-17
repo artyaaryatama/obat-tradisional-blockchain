@@ -89,7 +89,7 @@ function CreateOrderRetailer() {
           console.log(allPbfReadyObat);
 
           const reconstructedData = allPbfReadyObat.map((item, index) => ({
-            orderId: item[0],
+            prevOrderId: item[0],
             obatId: item[1],
             namaProduk: item[2],
             batchName: item[3],
@@ -103,7 +103,7 @@ function CreateOrderRetailer() {
         } catch (error) {
           errAlert(error, "Can't retrieve obat produced data.")
         }
-      }
+    }
     };
   
     loadData();
@@ -112,7 +112,7 @@ function CreateOrderRetailer() {
   useEffect(() => {
     if (contracts) {
 
-      contracts.orderManagement.on("evt_orderUpdate", (_namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.orderManagement.on("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
 
         const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
     
@@ -126,6 +126,14 @@ function CreateOrderRetailer() {
                 </li>
                 <li className="input">
                   <p>{_namaProduk}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Batchname</p> 
+                </li>
+                <li className="input">
+                  <p>{_batchName}</p> 
                 </li>
               </ul>
               <ul>
@@ -181,16 +189,18 @@ function CreateOrderRetailer() {
     }
   }, [contracts]);
 
-  const orderDetail = async (id, orderId, batchName) => {
-    console.log(id, batchName);
+  const orderDetail = async (id, prevOrderId, batchName) => {
+    console.log(id, prevOrderId, batchName);
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailBatchCt = await contracts.obatTradisional.detailBatchProduction(id, batchName);
-      const detailPastOrderCt = await contracts.orderManagement.detailPastOrderPbf(orderId);
+      const detailPastOrderCt = await contracts.orderManagement.detailOrder(prevOrderId);
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [statusStok, namaProdukk, batchNamee, obatQuantity, obatIpfs, factoryInstancee] = detailBatchCt;
+      const [dataObat, obatIpfs] = detailBatchCt
+
+      const [statusStok, namaProduct, batchNamee, obatQuantity, factoryInstancee] = dataObat
 
       const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
 
@@ -242,6 +252,15 @@ function CreateOrderRetailer() {
                     </li>
                     <li className="input">
                       <p>{detailObat.namaObat}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Batchname</p>
+                    </li>
+                    <li className="input">
+                      <p>{batchName}</p> 
                     </li>
                   </ul>
 
@@ -371,7 +390,7 @@ function CreateOrderRetailer() {
     const year = today.getFullYear();
     const randomNumber = Math.floor(100000 + Math.random() * 900000); 
 
-    const orderId = `ORDER-${day}${month}${year}-${randomNumber}` 
+    const orderId = `ORDER-RET-${day}${month}${year}-${randomNumber}` 
   
     try {
       console.log(prevOrderIdPbf, orderId, id, batchName, namaProduk, userData.instanceName, pbfInstance, orderQuantity);
@@ -416,7 +435,7 @@ function CreateOrderRetailer() {
                       <p>Stok tersedia: {item.obatQuantity.toString()} Obat</p>
                     </div>
                     <div className="order">
-                      <button className='order' onClick={() => orderDetail(item.obatId, item.orderId, item.batchName)} >
+                      <button className='order' onClick={() => orderDetail(item.obatId, item.prevOrderId, item.batchName)} >
                         <i className="fa-solid fa-cart-shopping"></i>
                         Order Obat
                       </button>

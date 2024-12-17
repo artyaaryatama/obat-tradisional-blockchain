@@ -20,7 +20,6 @@ contract ObatShared {
     string namaProduk;
     string batchName;
     uint8 obatQuantity;
-    string[] obatIpfs;
     string factoryInstance; 
   }
 
@@ -41,7 +40,6 @@ contract ObatShared {
     string namaProduk;
     string batchName;
     uint8 obatQuantity;
-    string[] obatIpfs;
     string pbfInstance;
   } 
 
@@ -52,7 +50,6 @@ contract ObatShared {
     string namaProduk;
     string batchName;
     uint8 obatQuantity;
-    string[] obatIpfs;
     string retailerInstance; 
   }
 
@@ -63,7 +60,9 @@ contract ObatShared {
   mapping (string => st_obatProduction[]) public obatProductionById;
   mapping (string => st_obatPbf) public obatPbfBatchName;
   mapping (string => st_obatRetailer) public obatRetailerBatchName;
+  mapping (string => string[]) public obatIpfsbyBatchName;
 
+  // status: 200ok
   function setObatDetail(
     string memory _obatId,
     string memory _merk,
@@ -90,6 +89,7 @@ contract ObatShared {
       });
   }
 
+  // status: 200ok
   function getObatDetail(string memory _obatId)
     external
     view
@@ -98,12 +98,13 @@ contract ObatShared {
       return obatDetailsById[_obatId];
   }
 
+  // status: 200ok
   function addBatchProduction(
     string memory _obatId,
     string memory _namaProduk,
     string memory _batchName,
     uint8 _obatQuantity,
-    string[] memory _obatIpfsHash, 
+    string[] memory _obatIpfs, 
     string memory _factoryInstance
   ) external {
 
@@ -112,19 +113,30 @@ contract ObatShared {
       namaProduk: _namaProduk,
       batchName: _batchName,
       obatQuantity: _obatQuantity,
-      obatIpfs: _obatIpfsHash,
       factoryInstance: _factoryInstance
     });
 
-    obatProductionById[_obatId].push(newBatch);
+    for (uint i = 0; i < _obatIpfs.length; i++) {
+      obatIpfsbyBatchName[_batchName].push(_obatIpfs[i]);  
+    }
+
+    obatProductionById[_obatId].push(newBatch); 
   }
 
+  // status: 200ok
   function getObatProduction(string memory _obatId)
     external
     view
-    returns (st_obatProduction[] memory) {
+    returns (
+      st_obatProduction[] memory
+    ) {
       require(bytes(_obatId).length > 0, "Invalid ID");
       return obatProductionById[_obatId];
+  }
+
+  function getObatIpfsByBatchName (string memory _batchName)
+    external view returns (string[] memory) {
+      return obatIpfsbyBatchName[_batchName];
   }
 
   function updateBatchProduction(
@@ -133,24 +145,31 @@ contract ObatShared {
     string[] memory _obatIpfs
   ) external {
     st_obatProduction[] storage obatBatches = obatProductionById[_obatId];
+
+    delete obatIpfsbyBatchName[_batchName];
+
+    for (uint i = 0; i < _obatIpfs.length; i++) {
+      obatIpfsbyBatchName[_batchName].push(_obatIpfs[i]); 
+    }
  
     bytes32 batchHash = keccak256(abi.encodePacked(_batchName));
 
     for (uint256 i = 0; i < obatBatches.length; i++){
       if (keccak256(abi.encodePacked(obatBatches[i].batchName)) == batchHash) {
         obatBatches[i].statusStok = EnumsLibrary.ObatAvailability.Sold;
-        obatBatches[i].obatIpfs = _obatIpfs;
+        break;
       } 
     }
   }
 
+  // status: 200ok
   function addObatPbf (
     string memory _obatId,
     string memory _orderId,
     string memory _namaProduk,
     string memory _batchName,
     uint8 _obatQuantity,
-    string[] memory _obatIpfsHash, 
+    string[] memory _obatIpfs, 
     string memory _pbfInstance
   ) external {
 
@@ -161,14 +180,20 @@ contract ObatShared {
       namaProduk: _namaProduk,
       batchName: _batchName,
       obatQuantity: _obatQuantity,
-      obatIpfs: _obatIpfsHash,
       pbfInstance: _pbfInstance
     });  
+
+    delete obatIpfsbyBatchName[_batchName];
+
+    for (uint i = 0; i < _obatIpfs.length; i++) {
+      obatIpfsbyBatchName[_batchName].push(_obatIpfs[i]); 
+    }
 
     allObatPbfBatchName.push(_batchName);
     obatPbfBatchName[_batchName] = newObatPbf;
   } 
 
+  // status: 200ok
   function getAllObatPbfByInstance(string memory _pbfInstance)
     external view returns (st_obatOutputStock[] memory) {
       uint256 count = 0;
@@ -211,6 +236,7 @@ contract ObatShared {
     return obatInstance;
   }
 
+  // status: 200ok
   function getAllObatPbfReadyStock()
     external view returns (st_obatOutputStock[] memory) {
       uint256 count = 0;
@@ -248,21 +274,28 @@ contract ObatShared {
     return obatReady;
   }
 
+  // status: 200ok
   function updateObatPbf(
     string memory _batchName,
     string[] memory _obatIpfs
   ) external {
     obatPbfBatchName[_batchName].statusStok = EnumsLibrary.ObatAvailability.Sold;
-    obatPbfBatchName[_batchName].obatIpfs = _obatIpfs;
+
+    delete obatIpfsbyBatchName[_batchName];
+
+    for (uint i = 0; i < _obatIpfs.length; i++) {
+      obatIpfsbyBatchName[_batchName].push(_obatIpfs[i]); 
+    }
   }
 
+  // status: 200ok
   function addObatRetailer (
     string memory _obatId,
     string memory _orderId,
     string memory _namaProduk,
     string memory _batchName,
     uint8 _obatQuantity,
-    string[] memory _obatIpfsHash, 
+    string[] memory _obatIpfs, 
     string memory _retailerInstance
   ) external {
 
@@ -272,15 +305,21 @@ contract ObatShared {
       statusStok: EnumsLibrary.ObatAvailability.Ready,
       namaProduk: _namaProduk,
       batchName: _batchName,
-      obatQuantity: _obatQuantity,
-      obatIpfs: _obatIpfsHash,
+      obatQuantity: _obatQuantity, 
       retailerInstance: _retailerInstance
     });  
+
+    delete obatIpfsbyBatchName[_batchName];
+
+    for (uint i = 0; i < _obatIpfs.length; i++) {
+      obatIpfsbyBatchName[_batchName].push(_obatIpfs[i]); 
+    }
 
     allObatRetailerBatchName.push(_batchName);
     obatRetailerBatchName[_batchName] = newObatRetailer;
   } 
 
+  // status: 200ok
   function getAllObatRetailerByInstance(string memory _retailerInstance)
     external view returns (st_obatOutputStock[] memory) {
       uint256 count = 0;
@@ -299,12 +338,12 @@ contract ObatShared {
 
       uint256 count1 = 0;
 
-      for (uint i = 0; i <  allObatPbfBatchName.length; i++) {
+      for (uint i = 0; i <  allObatRetailerBatchName.length; i++) {
         bytes32 batchNameHash = keccak256(abi.encodePacked(obatRetailerBatchName[allObatRetailerBatchName[i]].retailerInstance));
 
         if (batchNameHash== ownerInstance) {
 
-          st_obatRetailer memory currentObatRetailer = obatRetailerBatchName[allObatPbfBatchName[i]];
+          st_obatRetailer memory currentObatRetailer = obatRetailerBatchName[allObatRetailerBatchName[i]];
 
           obatInstance[count1] = st_obatOutputStock({
             orderId: currentObatRetailer.orderId,
