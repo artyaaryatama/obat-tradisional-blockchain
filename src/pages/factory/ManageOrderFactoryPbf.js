@@ -540,7 +540,7 @@ function ManageOrderFactoryPbf() {
 
     console.log(orderId, ipfsHashes);
     try {
-      const acceptOrderCt = await contracts.orderManagement.acceptOrder(orderId, ipfsHashes)
+      const acceptOrderCt = await contracts.orderManagement.acceptOrderPbf(orderId, ipfsHashes)
       console.log(acceptOrderCt);
 
       if(acceptOrderCt){

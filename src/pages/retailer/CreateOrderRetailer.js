@@ -85,17 +85,16 @@ function CreateOrderRetailer() {
       if (contracts) {
         try {
 
-          const tx = await contracts.orderManagement.getListAllReadyObatPbf(userData.instanceName);
-          console.log(tx);
+          const allPbfReadyObat = await contracts.orderManagement.getAllObatPbfReadyStock();
+          console.log(allPbfReadyObat);
 
-          const [obatIdArray, namaProdukArray, obatQuantityArray, batchNameArray] = tx
-
-          // use map on obatIdArray, which iterates through each obatId
-          const reconstructedData = obatIdArray.map((obatId, index) => ({
-            idObat: obatIdArray[index],
-            namaObat: namaProdukArray[index],
-            obatQuantity: obatQuantityArray[index].toString(),
-            batchName: batchNameArray[index]
+          const reconstructedData = allPbfReadyObat.map((item, index) => ({
+            orderId: item[0],
+            obatId: item[1],
+            namaProduk: item[2],
+            batchName: item[3],
+            obatQuantity: item[4],
+            pbfInstance: item[5],
           }));
 
           setDataObat(reconstructedData)
@@ -112,18 +111,18 @@ function CreateOrderRetailer() {
 
   useEffect(() => {
     if (contracts) {
-      
-      contracts.orderManagement.on("evt_obatOrdered", (_namaProduk, _orderQuantity, _orderId, _pbfInstanceName, _targetInstanceName, _timestampOrder) => {
+
+      contracts.orderManagement.on("evt_orderUpdate", (_namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
 
         const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
     
         MySwal.fire({
-          title: "Success Order Obat Tradisional",
+          title: `Success Create Order Obat ${_namaProduk}`,
           html: (
             <div className='form-swal'>
               <ul>
                 <li className="label">
-                  <p>Nama Obat</p> 
+                  <p>Nama Produk</p> 
                 </li>
                 <li className="input">
                   <p>{_namaProduk}</p> 
@@ -139,15 +138,23 @@ function CreateOrderRetailer() {
               </ul>
               <ul>
                 <li className="label">
-                  <p>Dari PBF</p> 
+                  <p>Retailer Instance</p> 
                 </li>
                 <li className="input">
-                  <p>{_targetInstanceName}</p> 
+                  <p>{_buyerInstance}</p> 
                 </li>
               </ul>
               <ul>
                 <li className="label">
-                  <p>Tanggal </p> 
+                  <p>PBF Instance</p> 
+                </li>
+                <li className="input">
+                  <p>{_sellerInstance}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label">
+                  <p>Timestamp Order</p> 
                 </li>
                 <li className="input">
                   <p>{timestamp}</p> 
@@ -162,47 +169,56 @@ function CreateOrderRetailer() {
           allowOutsideClick: true,
         }).then((result) => {
           if (result.isConfirmed) {
-            window.location.reload()
+            navigate('/retailer-orders')
           }
         });
 
       });
-
   
       return () => {
-        contracts.orderManagement.removeAllListeners("evt_obatOrdered");
+        contracts.orderManagement.removeAllListeners("evt_orderUpdate");
       };
     }
   }, [contracts]);
 
-  const orderDetail = async (id) => {
-
+  const orderDetail = async (id, orderId, batchName) => {
+    console.log(id, batchName);
     try {
-      const listDetailObatCt = await contracts.obatTradisional.getListObatById(id);
-      const detailObatPbfCt = await contracts.orderManagement.getDetailPbfObat(id, userData.instanceName)
-      
-      const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = listDetailObatCt;
-      
-      const [orderId, batchName, obatIdProduk, namaProduk, statusStok, obatQuantity, obatIpfsHash, ownerInstanceName] = detailObatPbfCt;
+      const detailObatCt = await contracts.obatTradisional.detailObat(id);
+      const detailBatchCt = await contracts.obatTradisional.detailBatchProduction(id, batchName);
+      const detailPastOrderCt = await contracts.orderManagement.detailPastOrderPbf(orderId);
+
+      const [obatDetails, obatNie] = detailObatCt;
+
+      const [statusStok, namaProdukk, batchNamee, obatQuantity, obatIpfs, factoryInstancee] = detailBatchCt;
+
+      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
+
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+
+      const [prevOrderDetail, preTimestamps] = detailPastOrderCt;
+
+      const [pbfInstance, pbfAddr] = prevOrderDetail[5]
+
+      console.log(prevOrderDetail);
 
       const detailObat = {
-        obatId: obatDetails.obatId,
-        merk: obatDetails.merk,
-        namaObat: obatDetails.namaProduk,
-        klaim: obatDetails.klaim,
-        kemasan: obatDetails.kemasan,
-        komposisi: obatDetails.komposisi,
-        factoryAddr: factoryAddress,
-        factoryInstanceName: factoryInstanceName,
-        factoryUserName: factoryUserName,
-        tipeProduk: tipeProdukMap[obatDetails.tipeProduk], 
-        obatStatus: obatStatusMap[obatDetails.obatStatus], 
-        nieRequestDate: obatDetails.nieRequestDate ? new Date(Number(obatDetails.nieRequestDate) * 1000).toLocaleDateString('id-ID', options) : '-', 
-        nieApprovalDate: Number(obatDetails.nieApprovalDate) > 0 ? new Date(Number(obatDetails.nieApprovalDate) * 1000).toLocaleDateString('id-ID', options): "-",
-        nieNumber: obatDetails.nieNumber ? obatDetails.nieNumber : "-",
-        bpomAddr: bpomAddress === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddress,
-        bpomUserName:  bpomUserName ? bpomUserName : "-",
-        bpomInstanceNames:  bpomInstanceName ?  bpomInstanceName : "-"
+        obatId: id,
+        merk: merk,
+        namaObat: namaProduk,
+        klaim: klaim,
+        kemasan: kemasan,
+        komposisi: komposisi,
+        tipeProduk: tipeProdukMap[tipeProduk], 
+        nieStatus: obatStatusMap[nieStatus], 
+        produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        nieNumber: nieNumber ? nieNumber : "-",
+        factoryAddr: factoryAddr,
+        factoryInstanceName: factoryInstance,
+        bpomAddr: bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddr,
+        bpomInstanceNames:  bpomInstance ?  bpomInstance : "-"
       };
 
       MySwal.fire({
@@ -210,41 +226,22 @@ function CreateOrderRetailer() {
         html: (
           <div className='form-swal'>
               <div className="row row--obat">
-                <div className="col column">
-                  <ul>
-                    <li className="label">
-                      <p>Nama Obat</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.namaObat}</p> 
-                    </li>
-                  </ul>
-
-                  <ul>
-                    <li className="label">
-                      <p>Di Produksi oleh</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryInstanceName}</p>
-                    </li>
-                  </ul>
-
-                  <ul>
-                    <li className="label">
-                      <p>Di Distribusikan oleh</p>
-                    </li>
-                    <li className="input">
-                      <p>{ownerInstanceName}</p>
-                    </li>
-                  </ul>
-
+                <div className="col">
                   <ul>
                     <li className="label">
                       <p>Stok Tersedia</p>
                     </li>
                     <li className="input">
                       <p>{obatQuantity.toString()} Obat</p>
-                    
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Nama Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.namaObat}</p> 
                     </li>
                   </ul>
 
@@ -280,7 +277,7 @@ function CreateOrderRetailer() {
                         <p>Klaim Obat</p>
                       </li>
                       <li className="input">
-                        <ul className='numbered'>
+                        <ul className='numbered1'>
                           {detailObat.klaim.map((item, index) => (
                             <li key={index}><p>{item}</p></li>
                           ))}
@@ -293,7 +290,7 @@ function CreateOrderRetailer() {
                         <p>Komposisi Obat</p>
                       </li>
                       <li className="input">
-                        <ul className='numbered'>
+                        <ul className='numbered1'>
                           {detailObat.komposisi.map((item, index) => (
                             <li key={index}><p>{item}</p></li>
                           ))}
@@ -301,18 +298,63 @@ function CreateOrderRetailer() {
                       </li>
                     </ul>
 
+                    <ul>
+                      <li className="label">
+                        <p>Factory Instance</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailObat.factoryInstanceName}</p>
+                      </li>
+                    </ul>
+
+                    <ul>
+                      <li className="label">
+                        <p>Factory Address</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailObat.factoryAddr}</p>
+                      </li>
+                    </ul>
+
+                    <ul>
+                      <li className="label">
+                        <p>PBF Instance</p>
+                      </li>
+                      <li className="input">
+                        <p>{pbfInstance}</p>
+                      </li>
+                    </ul>
+
+                    <ul>
+                      <li className="label">
+                        <p>PBF Address</p>
+                      </li>
+                      <li className="input">
+                        <p>{pbfAddr}</p>
+                      </li>
+                    </ul>
+
                 </div>
               </div>
-          
           </div>
         ),
-        width: '820',
+        width: '620',
         showCancelButton: true,
         confirmButtonText: 'Order Obat',
       }).then((result) => {
 
         if(result.isConfirmed){
-          orderObat(id, namaProduk, parseInt(obatQuantity), userData.instanceName, userData.address, ownerInstanceName)
+
+          MySwal.fire({
+            title:"Processing your request...",
+            text:"Your request is on its way. This won't take long. 🚀",
+            icon: 'info',
+            showCancelButton: false,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          })
+
+          orderObat(prevOrderDetail[0], id, pbfInstance, namaProduk, obatQuantity, batchName)
         }
       })
       
@@ -321,193 +363,32 @@ function CreateOrderRetailer() {
     }
   }
 
-  const orderObat = async (idProduk, namaProduk, orderQuantity, retailerInstanceName, retailerAddr ,ownerInstanceName) => {
+  const orderObat = async (prevOrderIdPbf, id, pbfInstance, namaProduk, orderQuantity, batchName) => {
 
-    MySwal.fire({
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
-      icon: 'info',
-      showCancelButton: false,
-      showConfirmButton: false,
-      allowOutsideClick: false,
-    })
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0'); 
+    const year = today.getFullYear();
+    const randomNumber = Math.floor(100000 + Math.random() * 900000); 
+
+    const orderId = `ORDER-${day}${month}${year}-${randomNumber}` 
   
     try {
-      const randomNumber = Math.floor(100000 + Math.random() * 900000); 
-      const idOrder =  `ORDER-${randomNumber}`; 
+      console.log(prevOrderIdPbf, orderId, id, batchName, namaProduk, userData.instanceName, pbfInstance, orderQuantity);
+      const createOrderCt = await contracts.orderManagement.createOrderRetailer(prevOrderIdPbf, orderId, id, batchName, namaProduk, userData.instanceName, pbfInstance, orderQuantity);
 
-      console.log(idProduk, idOrder, namaProduk, orderQuantity, retailerInstanceName, retailerAddr, ownerInstanceName);
-
-      const createOrderCt = await contracts.orderManagement.createOrder(idProduk, idOrder, namaProduk, orderQuantity, retailerInstanceName, retailerAddr, ownerInstanceName);
-
-      console.log(createOrderCt);
+      if(createOrderCt){
+        MySwal.update({
+          title: "Processing your transaction...",
+          text: "This may take a moment. Hang tight! ⏳"
+        });
+      }
 
     } catch (error) {
       errAlert(error, "Can't make an obat order.")
     }
 
   }
-
-  // const generateIpfs = async(dataObat, orderId, batchName) => {
-  //   MySwal.fire({
-  //     title:"Processing your request...",
-  //     text:"Your request is on its way. This won't take long. 🚀",
-  //     icon: 'info',
-  //     showCancelButton: false,
-  //     showConfirmButton: false,
-  //     allowOutsideClick: false,
-  //   })
-
-  //   try {
-  //     const detailOrderPbfCt = await contracts.orderManagement.getHistoryOrderObatPbf(batchName)
-  //     const [orderIdPbf, namaProdukPbf, obatIdProdukPbf, batchNamePbf, obatQuantityPbf, senderPbf, targetPbf, statusOrderPbf, timestampOrderPbf, timestampShippedPbf, timestampCompletePbf] = detailOrderPbfCt
-
-  //     const detailOrderPbf = {
-  //       orderId: orderIdPbf,
-  //       batchName: batchNamePbf,
-  //       orderQuantity: parseInt(obatQuantityPbf),
-  //       senderInstanceName: senderPbf,
-  //       statusOrder : obatStatusMap[statusStok],
-  //       targetInstanceName : targetPbf,
-  //       timestampOrder: timestampOrderPbf ? new Date(Number(timestampOrderPbf) * 1000).toLocaleDateString('id-ID', options) : 0, 
-  //       timestampShipped: timestampOrderPbf ? new Date(Number(timestampOrderPbf) * 1000).toLocaleDateString('id-ID', options) : 0,
-  //       timestampComplete: timestampCompletePbf ?  new Date(Number(timestampCompletePbf) * 1000).toLocaleDateString('id-ID', options) : 0
-  //     };
-
-  //     let newIpfsHashes = [];
-  //     const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
-  //     const randomTwoLetters = String.fromCharCode(
-  //       65 + Math.floor(Math.random() * 26),
-  //       65 + Math.floor(Math.random() * 26)
-  //     );
-      
-  //     for (let i = 0; i < dataOrder.orderQuantity; i++) {
-  //       const obat = {
-  //         batchName: batchName,
-  //         obatIdPackage: `OT-${i * 23}${randomFourDigit}${randomTwoLetters}`,
-  //         dataObat:  {
-  //           obatIdProduk: dataObat.obatId,
-  //           namaProduk: dataObat.namaObat,
-  //           merk: dataObat.merk,
-  //           klaim: dataObat.klaim,
-  //           kemasan: dataObat.kemasan,
-  //           komposisi: dataObat.komposisi,
-  //           factoryAddr: dataObat.factoryAddr,
-  //           factoryInstanceName: dataObat.factoryInstanceName,
-  //           factoryUserName: dataObat.factoryUserName,
-  //           tipeProduk: dataObat.tipeProduk,
-  //           nieNumber: dataObat.nieNumber,
-  //           nieRequestDate: dataObat.nieRequestDate,
-  //           nieApprovalDate: dataObat.nieApprovalDate,
-  //           bpomAddr: dataObat.bpomAddr,
-  //           bpomInstanceName: dataObat.bpomInstanceName,
-  //           bpomUserName: dataObat.bpomUserName
-  //         },
-  //         datOrderPbf: {
-  //           orderQuantity: ,
-  //           senderInstanceName: ,
-  //           statusOrder : ,
-  //           targetInstanceName : ,
-  //           timestampOrder: ,
-  //           timestampShipped: 
-  //         },
-  //         dataOrderRetailer: {
-  //           orderQuantity: dataOrder.orderQuantity,
-  //           senderInstanceName: dataOrder.senderInstanceName,
-  //           statusOrder : dataOrder.statusOrder,
-  //           targetInstanceName : dataOrder.targetInstanceName,
-  //           timestampOrder: dataOrder.timestampOrder,
-  //           timestampShipped: dataOrder.timestampShipped
-  //         }
-  //       };
-        
-  //       try {
-  //         console.log(obat);
-  //         const result = await client.add(JSON.stringify(obat), 
-  //           { progress: (bytes) => 
-  //             console.log(`Uploading ${i+1}/${dataOrder.orderQuantity}: ${bytes} bytes uploaded`) }
-  //         );
-  
-  //         newIpfsHashes.push(result.path); 
-  //       } catch (error) {
-  //         errAlert(error, "Can't upload Data Obat to IPFS."); 
-  //         break;
-  //       }
-  //     }
-  
-  //     console.log("Generated IPFS Hashes:", newIpfsHashes);
-  
-  //     if(newIpfsHashes.length !== 0){
-  //       MySwal.fire({
-  //         title: `Order Obat ${dataObat.namaObat}`,
-  //         html: (
-  //           <div className='form-swal'>
-  //             <div className="row row--obat">
-  //               <div className="col">
-    
-  //                 <ul>
-  //                   <li className="label label-1">
-  //                     <p>Nama Produk</p>
-  //                   </li>
-  //                   <li className="input input-1">
-  //                     <p>{dataObat.namaObat}</p> 
-  //                   </li>
-  //                 </ul>
-    
-  //                 <ul>
-  //                   <li className="label label-1">
-  //                     <p>Nama PBF</p> 
-  //                   </li>
-  //                   <li className="input input-1">
-  //                     <p>{dataOrder.targetInstanceName}</p> 
-  //                   </li>
-  //                 </ul>
-    
-  //                 <ul>
-  //                   <li className="label label-1">
-  //                     <p>Nama Retailer</p> 
-  //                   </li>
-  //                   <li className="input input-1">
-  //                     <p>{dataOrder.senderInstanceName}</p> 
-  //                   </li>
-  //                 </ul>
-    
-  //                 <ul>
-  //                   <li className="label label-1">
-  //                     <p>Total Order</p> 
-  //                   </li>
-  //                   <li className="input input-1">
-  //                     <p>{dataOrder.orderQuantity} Obat</p>
-  //                   </li>
-  //                 </ul>
-    
-  //                 <ul>
-  //                   <li className="input full-width-table">
-  //                     <DataIpfsHash ipfsHashes={newIpfsHashes} />
-  //                   </li>
-  //                 </ul>
-  //               </div>
-  //             </div>
-            
-  //           </div>
-  //         ),
-  //         width: '820',
-  //         showCancelButton: true,
-  //         confirmButtonText: 'Send Obat',
-  //         allowOutsideClick: false,
-    
-  //       }).then((result) => {
-  //         if(result.isConfirmed){
-  //           acceptOrder(batchName, orderId, dataObat.obatId, newIpfsHashes)
-  //         }
-  //       })
-  //     }
-
-  //   } catch (error) {
-  //     errAlert(error, "Can't find data history order PBF.")
-  //   }
-
-  // }
 
   return (
     <>
@@ -530,11 +411,12 @@ function CreateOrderRetailer() {
                 {dataObat.map((item, index) => (
                   <li key={index} className='row'>
                     <div className="detail">
-                      <h5>{item.namaObat}</h5>
-                      <p>Stok tersedia: {item.obatQuantity} Obat</p>
+                      <h5>{item.namaProduk}</h5>
+                      <p>Batchname: {item.batchName}</p>
+                      <p>Stok tersedia: {item.obatQuantity.toString()} Obat</p>
                     </div>
                     <div className="order">
-                      <button className='order' onClick={() => orderDetail(item.idObat)} >
+                      <button className='order' onClick={() => orderDetail(item.obatId, item.orderId, item.batchName)} >
                         <i className="fa-solid fa-cart-shopping"></i>
                         Order Obat
                       </button>

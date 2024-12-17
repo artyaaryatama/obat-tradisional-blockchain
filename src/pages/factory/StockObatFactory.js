@@ -303,7 +303,10 @@ function StockObatFactory() {
                 {dataObat.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.obatId, item.batchName)} > [ {item.batchName} ] {item.namaProduk}</button>
-                    <p>Stok tersedia: {item.obatQuantity} Obat</p>
+                    {item.statusStok === "Stok Available" ? 
+                      <p>Stok tersedia: {item.obatQuantity} Obat</p>  :
+                      <p>Terjual: {item.obatQuantity} Obat</p>
+                    }
                     <button className={`statusOrder ${item.statusStok}`}>
                       {item.statusStok}
                     </button>

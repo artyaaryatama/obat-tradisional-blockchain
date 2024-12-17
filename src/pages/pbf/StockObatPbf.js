@@ -93,11 +93,13 @@ function StockObatPbf() {
           // const [obatIdArray, namaProdukArray, obatQuantityArray, batchNameArray] = tx
 
           const reconstructedData = allPbfReadyObat.map((item, index) => ({
-            obatId: item[0],
-            namaProduk: item[1],
-            batchName: item[2],
-            obatQuantity: item[3],
-            statusStok: stokStatusMap[item[4]],
+            orderId: item[0],
+            obatId: item[1],
+            namaProduk: item[2],
+            batchName: item[3],
+            obatQuantity: item[4],
+            statusStok: stokStatusMap[item[5]],
+            pbfInstance: item[6]
           }));
 
           setDataObatReady(reconstructedData)

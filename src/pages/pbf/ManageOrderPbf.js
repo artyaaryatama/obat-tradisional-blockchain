@@ -569,7 +569,7 @@ function ManageOrderPbf() {
     })
 
     try {
-      const completeOrderCt = await contracts.orderManagement.completeOrder(orderId, ipfsHashes)
+      const completeOrderCt = await contracts.orderManagement.completeOrderPbf(orderId, ipfsHashes)
 
       if(completeOrderCt){
         MySwal.update({

@@ -24,9 +24,8 @@ function ManageOrderRetailer() {
 
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObatOrder, setDataObatOrder] = useState([]);
-  
 
-  const obatStatusMap = {
+  const statusOrderMap = {
     0: "Order Placed",
     1: "Order Shipped",
     2: "Order Completed"
@@ -68,7 +67,6 @@ function ManageOrderRetailer() {
             signer
           );
 
-          // Update state with both contracts
           setContracts({
             orderManagement: orderManagementContract,
             obatTradisional: obatTradisionalContract
@@ -89,20 +87,26 @@ function ManageOrderRetailer() {
       if (contracts) {
         try {
 
-          const tx = await contracts.orderManagement.getListAllOrderedObatFromSender(userData.instanceName);
-          const [orderIdArray, namaProdukArray, statusOrderArray, obatQuantityArray, obatIdArray, batchNameArray] = tx
+          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromBuyerRetailer(userData.instanceName);
+  
+          const reconstructedDataorder = listOrderedObatCt.map((item) => {
 
-          const reconstructedData = orderIdArray.map((obatId, index) => ({
-            namaObat: namaProdukArray[index],
-            orderId: orderIdArray[index],
-            obatQuantity: obatQuantityArray[index].toString(),
-            statusOrder: obatStatusMap[statusOrderArray[index]],
-            obatId: obatIdArray[index],
-            batchName: batchNameArray[index]
-          }));
+            const [orderId, obatId, namaProduk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = item[0]; 
+          
+            return {
+              prevOrderId: item[1], 
+              orderId: orderId,
+              obatId: obatId, 
+              namaObat: namaProduk,
+              batchName: batchName, 
+              orderQuantity: orderQuantity,
+              buyerUser: buyerUser,
+              sellerUser: sellerUser, 
+              statusOrder: statusOrderMap[statusOrder],
+            };
+          });
 
-          setDataObatOrder(reconstructedData)
-          console.log(reconstructedData);
+          setDataObatOrder(reconstructedDataorder)
 
         } catch (error) {
           errAlert(error, "Can't access order data.");
@@ -113,100 +117,102 @@ function ManageOrderRetailer() {
     loadData();
   }, [contracts, userData.instanceName]);
 
-  useEffect(() => {
-    if (contracts) {
+  // useEffect(() => {
+  //   if (contracts) {
 
-      contracts.orderManagement.on("evt_updateOrder", (_namaProduk, _batchName, _targetInstanceName, _senderInstanceName, _orderQuantity, _latestTimestamp) => {
+  //     contracts.orderManagement.on("evt_updateOrder", (_namaProduk, _batchName, _targetInstanceName, _senderInstanceName, _orderQuantity, _latestTimestamp) => {
 
-        const timestamp = new Date(Number(_latestTimestamp) * 1000).toLocaleDateString('id-ID', options)
+  //       const timestamp = new Date(Number(_latestTimestamp) * 1000).toLocaleDateString('id-ID', options)
 
-        MySwal.fire({
-          title:  `Success Accept Order Delivery Obat ${_namaProduk}`,
-          html: (
-            <div className='form-swal'>
-              <ul>
-                <li className="label">
-                  <p>Nama Obat</p> 
-                </li>
-                <li className="input">
-                  <p>{_namaProduk}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Batch Name</p> 
-                </li>
-                <li className="input">
-                  <p>{_batchName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Di produksi oleh</p> 
-                </li>
-                <li className="input">
-                  <p>{_targetInstanceName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Di order oleh</p> 
-                </li>
-                <li className="input">
-                  <p>{_senderInstanceName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Total order</p> 
-                </li>
-                <li className="input">
-                  <p>{_orderQuantity.toString()} Obat</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Tanggal pengiriman</p> 
-                </li>
-                <li className="input">
-                  <p>{timestamp}</p> 
-                </li>
-              </ul>
-            </div>
-          ),
-          icon: 'success',
-          width: '560',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-          allowOutsideClick: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.reload()
-          }
-        });
-      })
+  //       MySwal.fire({
+  //         title:  `Success Accept Order Delivery Obat ${_namaProduk}`,
+  //         html: (
+  //           <div className='form-swal'>
+  //             <ul>
+  //               <li className="label">
+  //                 <p>Nama Obat</p> 
+  //               </li>
+  //               <li className="input">
+  //                 <p>{_namaProduk}</p> 
+  //               </li>
+  //             </ul>
+  //             <ul>
+  //               <li className="label">
+  //                 <p>Batch Name</p> 
+  //               </li>
+  //               <li className="input">
+  //                 <p>{_batchName}</p> 
+  //               </li>
+  //             </ul>
+  //             <ul>
+  //               <li className="label">
+  //                 <p>Di produksi oleh</p> 
+  //               </li>
+  //               <li className="input">
+  //                 <p>{_targetInstanceName}</p> 
+  //               </li>
+  //             </ul>
+  //             <ul>
+  //               <li className="label">
+  //                 <p>Di order oleh</p> 
+  //               </li>
+  //               <li className="input">
+  //                 <p>{_senderInstanceName}</p> 
+  //               </li>
+  //             </ul>
+  //             <ul>
+  //               <li className="label">
+  //                 <p>Total order</p> 
+  //               </li>
+  //               <li className="input">
+  //                 <p>{_orderQuantity.toString()} Obat</p> 
+  //               </li>
+  //             </ul>
+  //             <ul>
+  //               <li className="label">
+  //                 <p>Tanggal pengiriman</p> 
+  //               </li>
+  //               <li className="input">
+  //                 <p>{timestamp}</p> 
+  //               </li>
+  //             </ul>
+  //           </div>
+  //         ),
+  //         icon: 'success',
+  //         width: '560',
+  //         showCancelButton: false,
+  //         confirmButtonText: 'Oke',
+  //         allowOutsideClick: true,
+  //       }).then((result) => {
+  //         if (result.isConfirmed) {
+  //           window.location.reload()
+  //         }
+  //       });
+  //     })
   
-      return () => {
-        contracts.orderManagement.removeAllListeners("evt_updateOrder");
-      };
-    }
-  }, [contracts]);
+  //     return () => {
+  //       contracts.orderManagement.removeAllListeners("evt_updateOrder");
+  //     };
+  //   }
+  // }, [contracts]);
   
 
   const getDetailObat = async (id, orderId) => {
 
     try {
-      const detailObatCt = await contracts.obatTradisional.getListObatById(id);
-      const detailOrderCt = await contracts.orderManagement.getDetailOrderedObat(orderId)
+      const detailObatCt = await contracts.obatTradisional.detailObat(id);
+      const detailOrderCt = await contracts.orderManagement.detailOrderRetailer(orderId)
 
       const [obatDetails, factoryAddress, factoryInstanceName, factoryUserName, bpomAddress, bpomInstanceName, bpomUserName] = detailObatCt;
 
-      const [orderIdProduk, namaProduk, obatIdProduk, batchName, orderQuantity, senderInstanceName, senderAddress, targetInstanceName, targetAddress, statusOrder, timestampOrder, timestampShipped, timestampComplete, orderObatIpfsHash] = detailOrderCt;
+      const [dataOrder, timestamp, orderObatIpfsHash] = detailOrderCt;
+
+      const [orderIdProduk, obatIdProduk, namaProduk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = dataOrder;
       
       const timestamps = {
-        timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
-        timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
-        timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
+        timestampOrder: timestamp[0] ? new Date(Number(timestamp[0]) * 1000).toLocaleDateString('id-ID', options) : 0, 
+        timestampShipped: timestamp[1] ? new Date(Number(timestamp[1]) * 1000).toLocaleDateString('id-ID', options) : 0,
+        timestampComplete: timestamp[2] ?  new Date(Number(timestamp[2]) * 1000).toLocaleDateString('id-ID', options) : 0
       }
 
       console.log(timestamps);
@@ -222,7 +228,7 @@ function ManageOrderRetailer() {
         factoryInstanceName: factoryInstanceName,
         factoryUserName: factoryUserName,
         tipeProduk: tipeProdukMap[obatDetails.tipeProduk], 
-        obatStatus: obatStatusMap[obatDetails.obatStatus], 
+        obatStatus: statusOrderMap[obatDetails.obatStatus], 
         nieRequestDate: obatDetails.nieRequestDate ? new Date(Number(obatDetails.nieRequestDate) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieApprovalDate: Number(obatDetails.nieApprovalDate) > 0 ? new Date(Number(obatDetails.nieApprovalDate) * 1000).toLocaleDateString('id-ID', options): "-",
         nieNumber: obatDetails.nieNumber ? obatDetails.nieNumber : "-",
@@ -235,15 +241,15 @@ function ManageOrderRetailer() {
         orderId: orderIdProduk,
         batchName: batchName,
         orderQuantity: parseInt(orderQuantity),
-        senderInstanceName: senderInstanceName,
-        senderAdddress: senderAddress,
-        statusOrder : statusOrder,
-        targetInstanceName : targetInstanceName,
-        targetAddress: targetAddress,
+        senderInstanceName: buyerUser[0],
+        senderAdddress: buyerUser[1],
+        statusOrder : statusOrderMap[statusOrder],
+        targetInstanceName : sellerUser[0],
+        targetAddress: sellerUser[1],
         orderObatIpfsHash : orderObatIpfsHash,
-        timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
-        timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
-        timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
+        timestampOrder: timestamp[0] ? new Date(Number(timestamp[0]) * 1000).toLocaleDateString('id-ID', options) : 0, 
+        timestampShipped: timestamp[1] ? new Date(Number(timestamp[1]) * 1000).toLocaleDateString('id-ID', options) : 0,
+        timestampComplete: timestamp[2] ?  new Date(Number(timestamp[2]) * 1000).toLocaleDateString('id-ID', options) : 0
       }
 
       if(statusOrder === 1n) {
@@ -270,7 +276,7 @@ function ManageOrderRetailer() {
                             <p>Status Order</p>
                           </li>
                           <li className="input">
-                            <p>{obatStatusMap[statusOrder]}</p> 
+                            <p>{statusOrderMap[statusOrder]}</p> 
                           </li>
                         </ul>
   
@@ -285,10 +291,37 @@ function ManageOrderRetailer() {
                       
                         <ul>
                           <li className="label">
-                            <p>Di Produksi oleh</p>
+                            <p>Factory Instance</p>
                           </li>
                           <li className="input">
-                            <p>{targetInstanceName}</p>
+                            <p>{factoryInstanceName}</p>
+                          </li>
+                        </ul>
+                      
+                        <ul>
+                          <li className="label">
+                            <p>Factory Address</p>
+                          </li>
+                          <li className="input">
+                            <p>{factoryAddress}</p>
+                          </li>
+                        </ul>
+                      
+                        <ul>
+                          <li className="label">
+                            <p>Retailer Instance</p>
+                          </li>
+                          <li className="input">
+                            <p>{buyerUser[0]}</p>
+                          </li>
+                        </ul>
+                      
+                        <ul>
+                          <li className="label">
+                            <p>Retailer Instance</p>
+                          </li>
+                          <li className="input">
+                            <p>{buyerUser[1]}</p>
                           </li>
                         </ul>
   
@@ -412,7 +445,7 @@ function ManageOrderRetailer() {
                             <p>Status Order</p>
                           </li>
                           <li className="input">
-                            <p>{obatStatusMap[statusOrder]}</p> 
+                            <p>{statusOrderMap[statusOrder]}</p> 
                           </li>
                         </ul>
   
@@ -424,13 +457,39 @@ function ManageOrderRetailer() {
                             <p>{detailObat.namaObat}</p> 
                           </li>
                         </ul>
+                        <ul>
+                          <li className="label">
+                            <p>Factory Instance</p>
+                          </li>
+                          <li className="input">
+                            <p>{factoryInstanceName}</p>
+                          </li>
+                        </ul>
                       
                         <ul>
                           <li className="label">
-                            <p>Di Produksi oleh</p>
+                            <p>Factory Address</p>
                           </li>
                           <li className="input">
-                            <p>{targetInstanceName}</p>
+                            <p>{factoryAddress}</p>
+                          </li>
+                        </ul>
+                      
+                        <ul>
+                          <li className="label">
+                            <p>Retailer Instance</p>
+                          </li>
+                          <li className="input">
+                            <p>{buyerUser[0]}</p>
+                          </li>
+                        </ul>
+                      
+                        <ul>
+                          <li className="label">
+                            <p>Retailer Instance</p>
+                          </li>
+                          <li className="input">
+                            <p>{buyerUser[1]}</p>
                           </li>
                         </ul>
   
@@ -544,7 +603,7 @@ function ManageOrderRetailer() {
       allowOutsideClick: false,
     })
 
-    const completeOrderCt = await contracts.orderManagement.completeOrder(orderId, ipfsHash)
+    const completeOrderCt = await contracts.orderManagement.completeOrderRetailer(orderId, ipfsHash)
 
     console.log(completeOrderCt);
   }
@@ -570,7 +629,7 @@ function ManageOrderRetailer() {
     const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
     dataOrder.timestampComplete = formattedDate;
     console.log(dataOrder);
-    dataOrder.statusOrder = obatStatusMap[dataOrder.statusOrder]
+    dataOrder.statusOrder = statusOrderMap[dataOrder.statusOrder]
 
     try {
       const detailOrderPbf = await contracts.orderManagement.getHistoryOrderObatPbf(batchName)

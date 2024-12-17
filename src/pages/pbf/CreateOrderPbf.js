@@ -348,7 +348,7 @@ function CreateOrderPbf() {
   
     try {
       console.log(orderId, id, namaProduk, factoryInstance, userData.instanceName, orderQuantity);
-      const createOrderCt = await contracts.orderManagement.createOrder(orderId, id, batchName, namaProduk, userData.instanceName, factoryInstance, orderQuantity);
+      const createOrderCt = await contracts.orderManagement.createOrderPbf(orderId, id, batchName, namaProduk, userData.instanceName, factoryInstance, orderQuantity);
 
       if(createOrderCt){
         MySwal.update({
