@@ -46,11 +46,16 @@
           margin-left: 20px;
           font-size: 12px;
           font-weight: 600;
-          color: $white;
-          background-color: $blue;
+          color: $black;
           padding: 6px 12px;
           width: fit-content;
           border-radius: 10px;
+          background-color: $yellow;
+          
+          &.Completed, &.Approved {
+            background-color: $green;
+            color: $white;
+          }
         }
        }
    

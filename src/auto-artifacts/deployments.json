@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0xc5a5C42992dECbae36851359345FE25997F5C42d",
+    "address": "0x4EE6eCAD1c2Dae9f525404De8555724e3c35d07B",
     "abi": [
       {
         "inputs": [
@@ -1017,7 +1017,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0x67d269191c92Caf3cD7723F116c85e6E9bf55933",
+    "address": "0xBEc49fA140aCaA83533fB00A2BB19bDdd0290f25",
     "abi": [
       {
         "inputs": [
@@ -1814,7 +1814,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E",
+    "address": "0xD84379CEae14AA33C123Af12424A37803F885889",
     "abi": [
       {
         "inputs": [
@@ -1975,49 +1975,6 @@
         "inputs": [
           {
             "internalType": "string",
-            "name": "_orderId",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_obatId",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_batchName",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_namaProduk",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_buyerInstance",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_sellerInstance",
-            "type": "string"
-          },
-          {
-            "internalType": "uint8",
-            "name": "_orderQuantity",
-            "type": "uint8"
-          }
-        ],
-        "name": "createOrderPbf",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
             "name": "_prevOrderIdPbf",
             "type": "string"
           },
@@ -2057,7 +2014,7 @@
             "type": "uint8"
           }
         ],
-        "name": "createOrderRetailer",
+        "name": "createOrder",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -2137,155 +2094,16 @@
                 "internalType": "enum EnumsLibrary.OrderStatus",
                 "name": "statusOrder",
                 "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "prevOrderIdPbf",
+                "type": "string"
               }
             ],
             "internalType": "struct OrderManagement.st_obatOrder",
             "name": "",
             "type": "tuple"
-          },
-          {
-            "components": [
-              {
-                "internalType": "uint256",
-                "name": "timestampOrder",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "timestampShipped",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "timestampComplete",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct OrderManagement.st_orderTimestamp",
-            "name": "",
-            "type": "tuple"
-          },
-          {
-            "internalType": "string[]",
-            "name": "",
-            "type": "string[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_orderId",
-            "type": "string"
-          }
-        ],
-        "name": "detailOrderRetailer",
-        "outputs": [
-          {
-            "components": [
-              {
-                "internalType": "string",
-                "name": "prevOrderIdPbf",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "orderId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "obatId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "namaProduk",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "batchName",
-                "type": "string"
-              },
-              {
-                "internalType": "uint8",
-                "name": "orderQuantity",
-                "type": "uint8"
-              },
-              {
-                "components": [
-                  {
-                    "internalType": "string",
-                    "name": "instanceName",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "address",
-                    "name": "instanceAddr",
-                    "type": "address"
-                  }
-                ],
-                "internalType": "struct OrderManagement.st_orderUser",
-                "name": "buyerUser",
-                "type": "tuple"
-              },
-              {
-                "components": [
-                  {
-                    "internalType": "string",
-                    "name": "instanceName",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "address",
-                    "name": "instanceAddr",
-                    "type": "address"
-                  }
-                ],
-                "internalType": "struct OrderManagement.st_orderUser",
-                "name": "sellerUser",
-                "type": "tuple"
-              },
-              {
-                "internalType": "enum EnumsLibrary.OrderStatus",
-                "name": "statusOrder",
-                "type": "uint8"
-              }
-            ],
-            "internalType": "struct OrderManagement.st_obatOrderRetailer",
-            "name": "",
-            "type": "tuple"
-          },
-          {
-            "components": [
-              {
-                "internalType": "uint256",
-                "name": "timestampOrder",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "timestampShipped",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "timestampComplete",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct OrderManagement.st_orderTimestamp",
-            "name": "",
-            "type": "tuple"
-          },
-          {
-            "internalType": "string[]",
-            "name": "",
-            "type": "string[]"
           }
         ],
         "stateMutability": "view",
@@ -2528,99 +2346,14 @@
                 "internalType": "enum EnumsLibrary.OrderStatus",
                 "name": "statusOrder",
                 "type": "uint8"
-              }
-            ],
-            "internalType": "struct OrderManagement.st_obatOrder[]",
-            "name": "",
-            "type": "tuple[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_buyerInstance",
-            "type": "string"
-          }
-        ],
-        "name": "getAllOrderFromBuyerRetailer",
-        "outputs": [
-          {
-            "components": [
+              },
               {
                 "internalType": "string",
                 "name": "prevOrderIdPbf",
                 "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "orderId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "obatId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "namaProduk",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "batchName",
-                "type": "string"
-              },
-              {
-                "internalType": "uint8",
-                "name": "orderQuantity",
-                "type": "uint8"
-              },
-              {
-                "components": [
-                  {
-                    "internalType": "string",
-                    "name": "instanceName",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "address",
-                    "name": "instanceAddr",
-                    "type": "address"
-                  }
-                ],
-                "internalType": "struct OrderManagement.st_orderUser",
-                "name": "buyerUser",
-                "type": "tuple"
-              },
-              {
-                "components": [
-                  {
-                    "internalType": "string",
-                    "name": "instanceName",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "address",
-                    "name": "instanceAddr",
-                    "type": "address"
-                  }
-                ],
-                "internalType": "struct OrderManagement.st_orderUser",
-                "name": "sellerUser",
-                "type": "tuple"
-              },
-              {
-                "internalType": "enum EnumsLibrary.OrderStatus",
-                "name": "statusOrder",
-                "type": "uint8"
               }
             ],
-            "internalType": "struct OrderManagement.st_obatOrderRetailer[]",
+            "internalType": "struct OrderManagement.st_obatOrder[]",
             "name": "",
             "type": "tuple[]"
           }
@@ -2703,99 +2436,14 @@
                 "internalType": "enum EnumsLibrary.OrderStatus",
                 "name": "statusOrder",
                 "type": "uint8"
-              }
-            ],
-            "internalType": "struct OrderManagement.st_obatOrder[]",
-            "name": "",
-            "type": "tuple[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_sellerInstance",
-            "type": "string"
-          }
-        ],
-        "name": "getAllOrderFromSellerRetailer",
-        "outputs": [
-          {
-            "components": [
+              },
               {
                 "internalType": "string",
                 "name": "prevOrderIdPbf",
                 "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "orderId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "obatId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "namaProduk",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "batchName",
-                "type": "string"
-              },
-              {
-                "internalType": "uint8",
-                "name": "orderQuantity",
-                "type": "uint8"
-              },
-              {
-                "components": [
-                  {
-                    "internalType": "string",
-                    "name": "instanceName",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "address",
-                    "name": "instanceAddr",
-                    "type": "address"
-                  }
-                ],
-                "internalType": "struct OrderManagement.st_orderUser",
-                "name": "buyerUser",
-                "type": "tuple"
-              },
-              {
-                "components": [
-                  {
-                    "internalType": "string",
-                    "name": "instanceName",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "address",
-                    "name": "instanceAddr",
-                    "type": "address"
-                  }
-                ],
-                "internalType": "struct OrderManagement.st_orderUser",
-                "name": "sellerUser",
-                "type": "tuple"
-              },
-              {
-                "internalType": "enum EnumsLibrary.OrderStatus",
-                "name": "statusOrder",
-                "type": "uint8"
               }
             ],
-            "internalType": "struct OrderManagement.st_obatOrderRetailer[]",
+            "internalType": "struct OrderManagement.st_obatOrder[]",
             "name": "",
             "type": "tuple[]"
           }
@@ -2849,6 +2497,25 @@
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_orderId",
+            "type": "string"
+          }
+        ],
+        "name": "obatIpfs",
+        "outputs": [
+          {
+            "internalType": "string[]",
+            "name": "",
+            "type": "string[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "obatShared",
         "outputs": [
@@ -2869,6 +2536,42 @@
             "internalType": "contract ObatTradisional",
             "name": "",
             "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_orderId",
+            "type": "string"
+          }
+        ],
+        "name": "orderTimestamp",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "timestampOrder",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "timestampShipped",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "timestampComplete",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct OrderManagement.st_orderTimestamp",
+            "name": "",
+            "type": "tuple"
           }
         ],
         "stateMutability": "view",

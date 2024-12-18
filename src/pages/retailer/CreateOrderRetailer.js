@@ -206,11 +206,9 @@ function CreateOrderRetailer() {
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
-      const [prevOrderDetail, preTimestamps] = detailPastOrderCt;
+      const [pbfInstance, pbfAddr] = detailPastOrderCt[5]
 
-      const [pbfInstance, pbfAddr] = prevOrderDetail[5]
-
-      console.log(prevOrderDetail);
+      console.log(detailPastOrderCt);
 
       const detailObat = {
         obatId: id,
@@ -373,7 +371,7 @@ function CreateOrderRetailer() {
             allowOutsideClick: false,
           })
 
-          orderObat(prevOrderDetail[0], id, pbfInstance, namaProduk, obatQuantity, batchName)
+          orderObat(detailPastOrderCt[0], id, pbfInstance, namaProduk, obatQuantity, batchName)
         }
       })
       
@@ -394,7 +392,7 @@ function CreateOrderRetailer() {
   
     try {
       console.log(prevOrderIdPbf, orderId, id, batchName, namaProduk, userData.instanceName, pbfInstance, orderQuantity);
-      const createOrderCt = await contracts.orderManagement.createOrderRetailer(prevOrderIdPbf, orderId, id, batchName, namaProduk, userData.instanceName, pbfInstance, orderQuantity);
+      const createOrderCt = await contracts.orderManagement.createOrder(prevOrderIdPbf, orderId, id, batchName, namaProduk, userData.instanceName, pbfInstance, orderQuantity);
 
       if(createOrderCt){
         MySwal.update({

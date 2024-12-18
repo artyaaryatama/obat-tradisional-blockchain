@@ -95,12 +95,12 @@ function ManageOrderPbfRetailer() {
       if (contracts && userData.instanceName) {
 
         try {
-          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromSellerRetailer(userData.instanceName);
+          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromSeller(userData.instanceName);
 
           const tempData = [];
 
           for (let index = 0; index < listOrderedObatCt.length; index++) {
-            const [prevOrderId, orderId, obatId, namaProduk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = listOrderedObatCt[index];
+            const [orderId, obatId, namaProduk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = listOrderedObatCt[index];
 
             const obj = {
               orderId: orderId,
@@ -214,7 +214,9 @@ function ManageOrderPbfRetailer() {
 
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
-      const detailOrderCt = await contracts.orderManagement.detailOrderRetailer(orderId);
+      const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
+      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
+      const orderObatIpfs = await contracts.orderManagement.obatIpfs(orderId);
 
       const [obatDetails, obatNie] = detailObatCt;
 
@@ -222,11 +224,9 @@ function ManageOrderPbfRetailer() {
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
-      const [dataOrder, timestampData, orderObatIpfs] = detailOrderCt;
+      const [orderIdProduk, obatIdProduk, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder, prevOrderId] = detailOrderCt;
 
-      const [prevOrderId, orderIdProduk, obatIdProduk, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = dataOrder;
-
-      const [timestampOrder, timestampShipped, timestampComplete] = timestampData;
+      const [timestampOrder, timestampShipped, timestampComplete] = orderTimestampCt;
 
       const detailObat = {
         obatId: id,
@@ -655,14 +655,12 @@ function ManageOrderPbfRetailer() {
 
     try {
       const prevOrderPbfCt = await contracts.orderManagement.detailOrder(prevOrderId)
+      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
 
-      const [dataOrderPbf, timestampOrder] = prevOrderPbfCt
-
-      const pbfTimestampOrder =  new Date(Number(timestampOrder[0]) * 1000).toLocaleDateString('id-ID', options)
-      const pbfTimestampShipped =  new Date(Number(timestampOrder[1]) * 1000).toLocaleDateString('id-ID', options)
-      const pbfTimestampCompleted =  new Date(Number(timestampOrder[2]) * 1000).toLocaleDateString('id-ID', options)
+      const pbfTimestampOrder =  new Date(Number(orderTimestampCt[0]) * 1000).toLocaleDateString('id-ID', options)
+      const pbfTimestampShipped = orderTimestampCt[1] !== 0n ? new Date(Number(orderTimestampCt[1]) * 1000).toLocaleDateString('id-ID', options) : "-"
+      const pbfTimestampCompleted = orderTimestampCt[2] !== 0n ? new Date(Number(orderTimestampCt[2]) * 1000).toLocaleDateString('id-ID', options) : "-"
       
-
       for (let i = 0; i < dataOrder.orderQuantity; i++) {
         const obat = {
           batchName: batchName,
@@ -685,12 +683,12 @@ function ManageOrderPbfRetailer() {
             bpomInstanceName: dataObat.bpomInstance,
           },
           dataOrderPbf: {
-            orderQuantity: parseInt(dataOrderPbf[4]),
-            senderInstanceName: dataOrderPbf[5][0],
-            senderAddress: dataOrderPbf[5][1],
+            orderQuantity: parseInt(prevOrderPbfCt[4]),
+            senderInstanceName: prevOrderPbfCt[5][0],
+            senderAddress: prevOrderPbfCt[5][1],
             statusOrder : "Order Completed",
-            targetInstanceName : dataOrderPbf[6][0] ,
-            targetAddress: dataOrderPbf[6][1],
+            targetInstanceName : prevOrderPbfCt[6][0] ,
+            targetAddress: prevOrderPbfCt[6][1],
             timestampOrder: pbfTimestampOrder,
             timestampShipped: pbfTimestampShipped,
             timestampComplete: pbfTimestampCompleted

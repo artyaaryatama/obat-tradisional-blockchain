@@ -8,11 +8,11 @@ async function main() {
     await deployedRoleManager.waitForDeployment();
     console.log("RoleManager deployed to:", deployedRoleManager.target);
     
-    // Deploy ObatCreator
+    // Deploy ObatShared
     const ObatShared = await hre.ethers.getContractFactory("ObatShared");
     const deployedObatShared = await ObatShared.deploy();
     await deployedObatShared.waitForDeployment();
-    console.log("ObatCreator deployed to:", deployedObatShared.target);
+    console.log("ObatShared deployed to:", deployedObatShared.target);
 
     // Deploy MainSupplyChain
     const MainSupplyChain = await hre.ethers.getContractFactory("MainSupplyChain");

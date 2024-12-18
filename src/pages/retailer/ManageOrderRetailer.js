@@ -93,14 +93,15 @@ function ManageOrderRetailer() {
       if (contracts) {
         try {
 
-          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromBuyerRetailer(userData.instanceName);
+          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromBuyer(userData.instanceName);
 
           const tempData = [];
 
           for (let index = 0; index < listOrderedObatCt.length; index++) {
-            const [prevOrderId, orderId, obatId, namaProduk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = listOrderedObatCt[index];
+            const [orderId, obatId, namaProduk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder, prevOrderId] = listOrderedObatCt[index];
 
             const obj = {
+              prevOrderId: prevOrderId,
               orderId: orderId,
               obatId: obatId, 
               namaProduk: namaProduk,
@@ -116,6 +117,7 @@ function ManageOrderRetailer() {
           }
 
           setDataObatOrder(tempData)
+          console.log(tempData);
 
         } catch (error) {
           errAlert(error, "Can't access order data.");
@@ -207,11 +209,14 @@ function ManageOrderRetailer() {
       }
     }, [contracts]);
 
-  const getDetailObat = async (id, orderId) => {
+  const getDetailObat = async (prevOrderId, id, orderId) => {
 
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
-      const detailOrderCt = await contracts.orderManagement.detailOrderRetailer(orderId);
+      const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
+      const detailOrderPrevCt = await contracts.orderManagement.detailOrder(prevOrderId);
+      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
+      const orderObatIpfs = await contracts.orderManagement.obatIpfs(orderId);
 
       const [obatDetails, obatNie] = detailObatCt;
 
@@ -219,11 +224,11 @@ function ManageOrderRetailer() {
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
-      const [dataOrder, timestampData, orderObatIpfs] = detailOrderCt;
+      const [orderIdProduk, obatIdProduk, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = detailOrderCt;
 
-      const [prevOrderId, orderIdProduk, obatIdProduk, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = dataOrder;
+      const [prevBuyerInstance, prevBuyerAddr] = detailOrderPrevCt[5]
 
-      const [timestampOrder, timestampShipped, timestampComplete] = timestampData
+      const [timestampOrder, timestampShipped, timestampComplete] = orderTimestampCt;
 
       const detailObat = {
         obatId: id,
@@ -257,10 +262,12 @@ function ManageOrderRetailer() {
         buyerInstance: buyerUser[0],
         buyerAddress: buyerUser[1],
         sellerInstance: sellerUser[0],
-        sellerAddress: sellerUser[1],
+        sellerAddress: prevBuyerAddr,
         statusOrder: orderStatusMap[statusOrder],
         orderObatIpfs: orderObatIpfs
       }
+
+      console.log(detailOrder);
 
       if(statusOrder === 1n) {
         MySwal.fire({
@@ -299,21 +306,33 @@ function ManageOrderRetailer() {
                           </li>
                         </ul>
                       
-                        <ul>
-                          <li className="label">
-                            <p>Factory Instance</p>
-                          </li>
-                          <li className="input">
-                            <p>{factoryInstance}</p>
-                          </li>
-                        </ul>
+                        <div className="group">
+                          <ul>
+                            <li className="label">
+                              <p>Factory Instance</p>
+                            </li>
+                            <li className="input">
+                              <p>{factoryInstance}</p>
+                            </li>
+                          </ul>
+                        
+                          <ul>
+                            <li className="label">
+                              <p>Factory Address</p>
+                            </li>
+                            <li className="input">
+                              <p>{factoryAddr}</p>
+                            </li>
+                          </ul>
+
+                        </div>
                       
                         <ul>
                           <li className="label">
-                            <p>Factory Address</p>
+                            <p>PBF Instance</p>
                           </li>
                           <li className="input">
-                            <p>{factoryAddr}</p>
+                            <p>{prevBuyerInstance}</p>
                           </li>
                         </ul>
                       
@@ -322,16 +341,7 @@ function ManageOrderRetailer() {
                             <p>PBF Instance</p>
                           </li>
                           <li className="input">
-                            <p>{sellerUser[0]}</p>
-                          </li>
-                        </ul>
-                      
-                        <ul>
-                          <li className="label">
-                            <p>PBF Instance</p>
-                          </li>
-                          <li className="input">
-                            <p>{sellerUser[1]}</p>
+                            <p>{prevBuyerAddr}</p>
                           </li>
                         </ul>
   
@@ -490,7 +500,7 @@ function ManageOrderRetailer() {
                             <p>PBF Instance</p>
                           </li>
                           <li className="input">
-                            <p>{sellerUser[0]}</p>
+                            <p>{prevBuyerInstance}</p>
                           </li>
                         </ul>
                       
@@ -499,7 +509,7 @@ function ManageOrderRetailer() {
                             <p>PBF Instance</p>
                           </li>
                           <li className="input">
-                            <p>{sellerUser[1]}</p>
+                            <p>{prevBuyerAddr}</p>
                           </li>
                         </ul>
   
@@ -643,12 +653,12 @@ function ManageOrderRetailer() {
 
     try {
       const prevOrderPbfCt = await contracts.orderManagement.detailOrder(prevOrderId)
+      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
 
-      const [dataOrderPbf, timestampOrder] = prevOrderPbfCt
-
-      const pbfTimestampOrder =  new Date(Number(timestampOrder[0]) * 1000).toLocaleDateString('id-ID', options)
-      const pbfTimestampShipped =  new Date(Number(timestampOrder[1]) * 1000).toLocaleDateString('id-ID', options)
-      const pbfTimestampCompleted =  new Date(Number(timestampOrder[2]) * 1000).toLocaleDateString('id-ID', options)
+      const pbfTimestampOrder =  new Date(Number(orderTimestampCt[0]) * 1000).toLocaleDateString('id-ID', options)
+      const pbfTimestampShipped = orderTimestampCt[1] !== 0n ? new Date(Number(orderTimestampCt[1]) * 1000).toLocaleDateString('id-ID', options) : "-"
+      const pbfTimestampCompleted = orderTimestampCt[2] !== 0n ? new Date(Number(orderTimestampCt[2]) * 1000).toLocaleDateString('id-ID', options) : "-"
+      
       
 
       for (let i = 0; i < dataOrder.orderQuantity; i++) {
@@ -673,12 +683,12 @@ function ManageOrderRetailer() {
             bpomInstanceName: dataObat.bpomInstance,
           },
           dataOrderPbf: {
-            orderQuantity: parseInt(dataOrderPbf[4]),
-            senderInstanceName: dataOrderPbf[5][0],
-            senderAddress: dataOrderPbf[5][1],
+            orderQuantity: parseInt(prevOrderPbfCt[4]),
+            senderInstanceName: prevOrderPbfCt[5][0],
+            senderAddress: prevOrderPbfCt[5][1],
             statusOrder : "Order Completed",
-            targetInstanceName : dataOrderPbf[6][0] ,
-            targetAddress: dataOrderPbf[6][1],
+            targetInstanceName : prevOrderPbfCt[6][0] ,
+            targetAddress: prevOrderPbfCt[6][1],
             timestampOrder: pbfTimestampOrder,
             timestampShipped: pbfTimestampShipped,
             timestampComplete: pbfTimestampCompleted
@@ -799,7 +809,7 @@ function ManageOrderRetailer() {
               <ul>
                 {dataObatOrder.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailObat(item.obatId, item.orderId)} >{item.namaProduk}</button>
+                    <button className='title' onClick={() => getDetailObat(item.prevOrderId, item.obatId, item.orderId)} >{item.namaProduk}</button>
                     <p>Batchname: {item.batchName}</p>
                     <p>
                     Total order: {item.orderQuantity.toString()} Obat

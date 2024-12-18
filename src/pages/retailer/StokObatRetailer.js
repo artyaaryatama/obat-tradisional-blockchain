@@ -110,7 +110,9 @@ function StockObatRetailer() {
 
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
-      const detailOrderCt = await contracts.orderManagement.detailOrderRetailer(orderId);
+      const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
+      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
+      const orderObatIpfs = await contracts.orderManagement.obatIpfs(orderId);
 
       const [obatDetails, obatNie] = detailObatCt;
 
@@ -118,11 +120,9 @@ function StockObatRetailer() {
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
-      const [dataOrder, timestampData, orderObatIpfs] = detailOrderCt;
+      const [orderIdProduk, obatIdProduk, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = detailOrderCt;
 
-      const [prevOrderId, orderIdProduk, obatIdProduk, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = dataOrder;
-
-      const [timestampOrder, timestampShipped, timestampComplete] = timestampData
+      const [timestampOrder, timestampShipped, timestampComplete] = orderTimestampCt;
 
       const detailObat = {
         obatId: id,

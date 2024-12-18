@@ -210,21 +210,22 @@ function ManageOrderFactoryPbf() {
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
+      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
+      const orderObatIpfs = await contracts.orderManagement.obatIpfs(orderId);
 
       console.log(detailOrderCt);
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [orderData, timestampData, orderObatIpfs] = detailOrderCt
       console.log(orderObatIpfs);
 
       const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
-      const [orderIdd, obatId, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = orderData
+      const [orderIdd, obatId, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = detailOrderCt
 
-      const [timestampOrder, timestampShipped, timestampComplete] = timestampData
+      const [timestampOrder, timestampShipped, timestampComplete] = orderTimestampCt
 
       const detailObat = {
         obatId: id,
@@ -256,8 +257,6 @@ function ManageOrderFactoryPbf() {
         statusOrder: statusOrderMap[statusOrder],
         orderObatIpfs: orderObatIpfs
       }
-
-      console.log(orderData);
       
       const timestamps = {
         timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
@@ -281,6 +280,15 @@ function ManageOrderFactoryPbf() {
                           </li>
                           <li className="input">
                             <p>{detailObat.namaObat}</p> 
+                          </li>
+                        </ul>
+
+                        <ul>
+                          <li className="label">
+                            <p>Batchname</p>
+                          </li>
+                          <li className="input">
+                            <p>{batchName}</p> 
                           </li>
                         </ul>
   
@@ -415,6 +423,15 @@ function ManageOrderFactoryPbf() {
                           </li>
                           <li className="input">
                             <p>{detailObat.namaObat}</p> 
+                          </li>
+                        </ul>
+
+                        <ul>
+                          <li className="label">
+                            <p>Batchname</p>
+                          </li>
+                          <li className="input">
+                            <p>{batchName}</p> 
                           </li>
                         </ul>
   

@@ -212,7 +212,7 @@ function CheckObatIpfs() {
             <div className="section">
               <div className="title">
                 <h5>Data NIE</h5>
-                <span>{statusNie}</span>
+                <span className={statusNie}>{statusNie}</span>
               </div>
               <div className="content">
                 <div className="list-detail">
@@ -244,7 +244,7 @@ function CheckObatIpfs() {
                 <div className="section">
                   <div className="title">
                     <h5>Data Order PBF</h5>
-                    <span>{detailOrderPbf.statusOrder}</span>
+                    <span className={detailOrderPbf.statusOrder}>{detailOrderPbf.statusOrder}</span>
                   </div>
                   <div className="content">
                     <div className="list-detail">
@@ -285,7 +285,7 @@ function CheckObatIpfs() {
                 <div className="section">
                   <div className="title">
                     <h5>Data Order Retailer</h5>
-                    <span>{detailOrderRetailer.statusOrder}</span>
+                    <span className={detailOrderRetailer.statusOrder}>{detailOrderRetailer.statusOrder}</span>
 
                   </div>
                   <div className="content">
