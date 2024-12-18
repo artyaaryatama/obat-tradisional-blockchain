@@ -74,8 +74,7 @@ contract ObatShared {
     string memory _factoryInstance,
     address _factoryAddr
   ) external {
-      require(bytes(_obatId).length > 0, "Invalid Obat ID");
-      require(bytes(_namaProduk).length > 0, "Invalid Obat Name");
+      require(bytes(_obatId).length > 0, "Invalid ID");
 
       obatDetailsById[_obatId] = st_obatDetails({
         merk: _merk,
@@ -107,20 +106,21 @@ contract ObatShared {
     string[] memory _obatIpfs, 
     string memory _factoryInstance
   ) external {
+      st_obatProduction memory newBatch = st_obatProduction({
+        statusStok: EnumsLibrary.ObatAvailability.Ready,
+        namaProduk: _namaProduk,
+        batchName: _batchName,
+        obatQuantity: _obatQuantity,
+        factoryInstance: _factoryInstance
+      });
 
-    st_obatProduction memory newBatch = st_obatProduction({
-      statusStok: EnumsLibrary.ObatAvailability.Ready,
-      namaProduk: _namaProduk,
-      batchName: _batchName,
-      obatQuantity: _obatQuantity,
-      factoryInstance: _factoryInstance
-    });
+      delete obatIpfsbyBatchName[_batchName];
 
-    for (uint i = 0; i < _obatIpfs.length; i++) {
-      obatIpfsbyBatchName[_batchName].push(_obatIpfs[i]);  
-    }
+      for (uint i = 0; i < _obatIpfs.length; i++) {
+        obatIpfsbyBatchName[_batchName].push(_obatIpfs[i]);  
+      }
 
-    obatProductionById[_obatId].push(newBatch); 
+      obatProductionById[_obatId].push(newBatch); 
   }
 
   // status: 200ok

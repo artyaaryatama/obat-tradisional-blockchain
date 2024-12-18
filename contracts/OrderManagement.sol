@@ -221,17 +221,19 @@ contract OrderManagement {
     string[] memory _orderObatIpfs
   ) public {
     
-      string memory obatId = orderPbfByOrderId[_orderId].obatId;
+      st_obatOrder memory obatOrder = orderPbfByOrderId[_orderId];
 
       orderPbfByOrderId[_orderId].sellerUser.instanceAddr = msg.sender;
       orderPbfByOrderId[_orderId].statusOrder = EnumsLibrary.OrderStatus.OrderShipped;
       orderTimestampByOrderId[_orderId].timestampShipped = block.timestamp;
 
+      delete orderPbfObatIpfsByOrderId[_orderId];
+
       for (uint256 i = 0; i < _orderObatIpfs.length; i++) {
         orderPbfObatIpfsByOrderId[_orderId].push(_orderObatIpfs[i]);
       }
 
-      obatShared.updateBatchProduction(obatId, orderPbfByOrderId[_orderId].batchName, _orderObatIpfs);
+      obatShared.updateBatchProduction(obatOrder.obatId, obatOrder.batchName, _orderObatIpfs);
 
       emitOrderPbfUpdate(_orderId);
 
@@ -243,20 +245,24 @@ contract OrderManagement {
     string[] memory _orderObatIpfs
   ) public {
 
+      string memory orderIdPrevPbf = orderRetailerById[_orderId].prevOrderIdPbf;
+      st_obatOrderRetailer memory obatOrder = orderRetailerById[_orderId]; 
+
       orderRetailerById[_orderId].sellerUser.instanceAddr = msg.sender;
       orderRetailerById[_orderId].statusOrder = EnumsLibrary.OrderStatus.OrderShipped;
       orderTimestampByOrderId[_orderId].timestampShipped = block.timestamp;
-      string memory orderIdPrevPbf = orderRetailerById[_orderId].prevOrderIdPbf;
+
+      delete orderRetailerObatIpfsByOrderId[_orderId];
+      delete orderPbfObatIpfsByOrderId[orderIdPrevPbf];
 
       for (uint256 i = 0; i < _orderObatIpfs.length; i++) {
         orderRetailerObatIpfsByOrderId[_orderId].push(_orderObatIpfs[i]);
+        orderPbfObatIpfsByOrderId[orderIdPrevPbf].push(_orderObatIpfs[i]);
       } 
 
-      for (uint256 i = 0; i < _orderObatIpfs.length; i++) {
-        orderPbfObatIpfsByOrderId[orderIdPrevPbf].push(_orderObatIpfs[i]);
-      }  
+      obatShared.updateBatchProduction(obatOrder.obatId, obatOrder.batchName, _orderObatIpfs);
       
-      obatShared.updateObatPbf(orderRetailerById[_orderId].batchName, _orderObatIpfs);
+      obatShared.updateObatPbf(obatOrder.batchName, _orderObatIpfs);
 
       emitOrderRetailerUpdate(_orderId);
   }
@@ -273,6 +279,7 @@ contract OrderManagement {
     orderTimestampByOrderId[_orderId].timestampComplete = block.timestamp;
 
     delete orderPbfObatIpfsByOrderId[_orderId];
+
     for (uint256 i = 0; i < _orderObatIpfs.length; i++) {
       orderPbfObatIpfsByOrderId[_orderId].push(_orderObatIpfs[i]);
     }
@@ -290,12 +297,12 @@ contract OrderManagement {
     string[] memory _orderObatIpfs
   ) public {
 
+
+      string memory orderIdPrevPbf = orderRetailerById[_orderId].prevOrderIdPbf;
       st_obatOrderRetailer memory obatOrder = orderRetailerById[_orderId]; 
 
       orderRetailerById[_orderId].statusOrder = EnumsLibrary.OrderStatus.OrderCompleted;
       orderTimestampByOrderId[_orderId].timestampComplete = block.timestamp;
-
-      string memory orderIdPrevPbf = orderRetailerById[_orderId].prevOrderIdPbf;
 
       delete orderRetailerObatIpfsByOrderId[_orderId];
       delete orderPbfObatIpfsByOrderId[orderIdPrevPbf];

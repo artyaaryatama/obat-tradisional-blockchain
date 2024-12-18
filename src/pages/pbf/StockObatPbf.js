@@ -330,8 +330,9 @@ function StockObatPbf() {
         </div>
         <div className="tab-menu">
           <ul>
-            <li><button className='active' onClick={() => navigate('/obat-available-pbf')}>Ready Stok</button></li>
-            <li><button onClick={() => navigate('/manage-orders-pbf')}>Order Obat</button></li>
+            <li><button onClick={() => navigate('/create-pbf-order')}>Pengajuan Order</button></li>
+            <li><button onClick={() => navigate('/pbf-orders')}>Order Obat Tradisional</button></li>
+            <li><button className='active' onClick={() => navigate('/obat-available-pbf')}>Obat Ready Stok</button></li>
           </ul>
         </div>
         <div className="container-data ">

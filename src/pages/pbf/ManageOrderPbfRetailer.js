@@ -799,7 +799,6 @@ function ManageOrderPbfRetailer() {
         </div>
         <div className="tab-menu">
           <ul>
-            <li><button onClick={() => navigate('/obat-available-pbf')}>Ready Stok</button></li>
             <li><button className='active'  onClick={() => navigate('/manage-orders-pbf')}>Order Obat</button></li>
           </ul>
         </div>

@@ -393,6 +393,7 @@ function CreateOrderPbf() {
           <ul>
             <li><button className='active' onClick={() => navigate('/create-pbf-order')}>Pengajuan Order</button></li>
             <li><button  onClick={() => navigate('/pbf-orders')}>Order Obat Tradisional</button></li>
+            <li><button onClick={() => navigate('/obat-available-pbf')}>Obat Ready Stok</button></li>
           </ul>
         </div>
         <div className="container-data ">

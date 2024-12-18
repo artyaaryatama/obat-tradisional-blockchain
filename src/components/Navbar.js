@@ -41,11 +41,11 @@ function Navbar() {
                     <li className={currentPath === '/cdob' || currentPath === '/request-cdob' ? 'active' : ''}>
                       <Link to="/cdob">CDOB</Link>
                     </li>
-                    <li className={currentPath === '/pbf-orders' || currentPath=== '/create-pbf-order'? 'active' : ''}>
+                    <li className={currentPath === '/pbf-orders' || currentPath=== '/create-pbf-order' || currentPath === '/obat-available-pbf' ? 'active' : ''}>
                       <Link to="/create-pbf-order">ORDER OBAT</Link>
                     </li>
-                    <li className={currentPath === '/obat-available-pbf' || currentPath === '/manage-orders-pbf' ? 'active' : ''}>
-                      <Link to="/obat-available-pbf">SELL OBAT</Link>
+                    <li className={currentPath === '/manage-orders-pbf' ? 'active' : ''}>
+                      <Link to="/manage-orders-pbf">SELL OBAT</Link>
                     </li>
                   </>
                 )}
