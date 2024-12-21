@@ -69,6 +69,19 @@ function ManageCpotb() {
       }
     }
     connectWallet();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
+  
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -113,6 +126,7 @@ function ManageCpotb() {
 
       const [status, timestampRequest, timestampApprove, sender, bpom] = cpotbDetail
 
+      console.log(status);
       const detailCpotb = {
         cpotbId: cpotbId,
         cpotbNumber: cpotbNumber ? cpotbNumber : "-",
@@ -127,7 +141,7 @@ function ManageCpotb() {
         bpomInstance: bpom[2] ? bpom[2] : "-",
         bpomAddr: bpom[1] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
       };
-      
+
       MySwal.fire({
         title: "Detail Sertifikat CPOTB",
         html: (
@@ -172,10 +186,9 @@ function ManageCpotb() {
               </div>
 
               <div className="col">
-                <ul>
+                <ul className='status'>
                   <li className="label">
                     <p>Status Sertifikasi</p>
-                    <label htmlFor="statusCpotb"></label>
                   </li>
                   <li className="input">
                     <p className={detailCpotb.status}>{detailCpotb.status}</p>
@@ -185,7 +198,6 @@ function ManageCpotb() {
                 <ul>
                   <li className="label">
                     <p>Nomor CPOTB</p>
-                    <label htmlFor="nomorCpotb"></label>
                   </li>
                   <li className="input">
                     <p>{detailCpotb.cpotbNumber}</p> 
@@ -241,12 +253,6 @@ function ManageCpotb() {
           <h1>Data Sertifikat CPOTB</h1>
           <p>Di ajukan oleh {userData.instanceName}</p>
         </div>
-        {/* <div className="tab-menu">
-          <ul>
-            <li><button className='active'>Pengajuan CPOTB</button></li>
-            <li><button>Add new request</button></li>
-          </ul>
-        </div> */}
         <div className="container-data">
           <div className="menu-data">
             <div className="btn">

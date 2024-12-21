@@ -68,6 +68,19 @@ function NieApprove() {
       }
     }
     connectWallet();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
+  
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -98,70 +111,74 @@ function NieApprove() {
     loadData();
   }, [contract])
 
-  useEffect(() => {
-    if (contract) {
+  const handleEventNieApproved = (_instanceName, _instanceAddr, _nieNumber, _timestampApprove, txHash) => {
 
-      contract.on('evt_nieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
+    const timestamp = new Date(Number(_timestampApprove) * 1000).toLocaleDateString('id-ID', options)
+  
+    MySwal.fire({
+      title: "Success Request NIE",
+      html: (
+        <div className='form-swal'>
+          <ul>
+            <li className="label">
+              <p>NIE Number</p> 
+            </li>
+            <li className="input">
+              <p>{_nieNumber}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>BPOM Instance</p> 
+            </li>
+            <li className="input">
+              <p>{_instanceName}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>BPOM Address</p> 
+            </li>
+            <li className="input">
+              <p>{_instanceAddr}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Timestamp Approve</p> 
+            </li>
+            <li className="input">
+              <p>{timestamp}</p> 
+            </li>
+          </ul>
+          <ul className="txHash">
+            <li className="label">
+              <p>Transaction Hash</p>
+            </li>
+            <li className="input">
+              <a
+                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View Transaction on Etherscan
+              </a>
+            </li>
+          </ul>
+        </div>
+      ),
+      icon: 'success',
+      width: '560',
+      showCancelButton: false,
+      confirmButtonText: 'Oke',
+      allowOutsideClick: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.reload()
+      }
+    });
+  }
 
-        const timestamp = new Date(Number(_timestampApprove) * 1000).toLocaleDateString('id-ID', options)
-    
-        MySwal.fire({
-          title: "Success Request NIE",
-          html: (
-            <div className='form-swal'>
-              <ul>
-                <li className="label">
-                  <p>NIE Number</p> 
-                </li>
-                <li className="input">
-                  <p>{_nieNumber}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>BPOM Instance</p> 
-                </li>
-                <li className="input">
-                  <p>{_instanceName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>BPOM Address</p> 
-                </li>
-                <li className="input">
-                  <p>{_instanceAddr}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Timestamp Approve</p> 
-                </li>
-                <li className="input">
-                  <p>{timestamp}</p> 
-                </li>
-              </ul>
-            </div>
-          ),
-          icon: 'success',
-          width: '560',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-          allowOutsideClick: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.reload()
-          }
-        });
-      });
-  
-      return () => {
-        contract.removeAllListeners("evt_nieApproved");
-      };
-    }
-  
-  }, [contract]);
-  
   const getDetailObat = async (id) => {
     
     console.log(id); 
@@ -692,6 +709,10 @@ function NieApprove() {
           text: "This may take a moment. Hang tight! ⏳"
         });
       }
+
+      contract.on('evt_nieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
+        handleEventNieApproved(_instanceName, _instanceAddr, _nieNumber, _timestampApprove, approveNieCt.hash)
+      });
 
     } catch (error) {
       errAlert(error, "Can't Approve NIE");

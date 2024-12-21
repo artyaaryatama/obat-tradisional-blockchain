@@ -61,75 +61,89 @@ function CpotbRequest() {
       }
     }
     connectWallet();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
+  
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
-  useEffect(() => {
-    if (contract) {
-      console.log("Setting up listener for evt_cpotbRequested on contract", contract);
-      
-      contract.on("evt_cpotbRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
-    
-        const formattedTimestamp = new Date(Number(_timestampRequest) * 1000).toLocaleDateString('id-ID', options)
+  const handleEventCpotbRequested = (_name, _userAddr, _jenisSediaan, _timestampRequest, txHash) => {
+    const formattedTimestamp = new Date(Number(_timestampRequest) * 1000).toLocaleDateString('id-ID', options)
 
-        MySwal.fire({
-          title: "Success Request CPOTB",
-          html: (
-            <div className='form-swal'>
-              <ul>
-                <li className="label">
-                  <p>Factory Instance</p> 
-                </li>
-                <li className="input">
-                  <p>{_name}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Factory Address</p> 
-                </li>
-                <li className="input">
-                  <p>{_userAddr}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Jenis Sediaan</p> 
-                </li>
-                <li className="input">
-                  <p>{js[_jenisSediaan]}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Tanggal Pengajuan</p> 
-                </li>
-                <li className="input">
-                  <p>{formattedTimestamp}</p> 
-                </li>
-              </ul>
-            </div>
-          ),
-          icon: 'success',
-          width: '560',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-          allowOutsideClick: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate('/cpotb');
-          }
-        });
+    MySwal.fire({
+      title: "Success Request CPOTB",
+      html: (
+        <div className='form-swal'>
+          <ul>
+            <li className="label">
+              <p>Factory Instance</p> 
+            </li>
+            <li className="input">
+              <p>{_name}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Factory Address</p> 
+            </li>
+            <li className="input">
+              <p>{_userAddr}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Jenis Sediaan</p> 
+            </li>
+            <li className="input">
+              <p>{js[_jenisSediaan]}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Tanggal Pengajuan</p> 
+            </li>
+            <li className="input">
+              <p>{formattedTimestamp}</p> 
+            </li>
+          </ul>
+          <ul className="txHash">
+            <li className="label">
+              <p>Transaction Hash</p>
+            </li>
+            <li className="input">
+              <a
+                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View Transaction on Etherscan
+              </a>
+            </li>
+          </ul>
+        </div>
+      ),
+      icon: 'success',
+      width: '560',
+      showCancelButton: false,
+      confirmButtonText: 'Oke',
+      allowOutsideClick: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate('/cpotb');
+      }
+    });
 
-        setLoader(false)
-        
-      });
-
-      return () => {
-        console.log("Removing evt_cpotbRequested listener");
-        contract.removeAllListeners("evt_cpotbRequested");
-      };
-    }
-  }, [contract]);
+    setLoader(false)
+  }
 
   const requestCpotb = async (e) => {
     e.preventDefault();
@@ -152,9 +166,13 @@ function CpotbRequest() {
       allowOutsideClick: false,
     })
 
-    const id = `cpotb-${Math.random().toString(36).slice(2, 9)}`;
-    console.log('ini req id:', id);
-    console.log(userdata.instanceName, id, userdata.name, jenisSediaanInt);
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0'); 
+    const year = today.getFullYear();
+    const randomNumber = Math.floor(100000 + Math.random() * 900000); 
+
+    const id = `CPOTB-${day}${month}${year}-${randomNumber}` 
 
     try {
       const requestCpotbCt = await contract.requestCpotb([id, userdata.name, userdata.instanceName], jenisSediaanInt);
@@ -166,6 +184,10 @@ function CpotbRequest() {
           text: "This may take a moment. Hang tight! ⏳"
         });
       }
+
+      contract.once("evt_cpotbRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
+        handleEventCpotbRequested(_name, _userAddr, _jenisSediaan, _timestampRequest, requestCpotbCt.hash);
+      });
 
     } catch (err) {
       setLoader(false)

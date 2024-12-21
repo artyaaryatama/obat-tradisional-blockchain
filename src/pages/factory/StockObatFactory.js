@@ -76,6 +76,19 @@ function StockObatFactory() {
       }
     }
     connectWallet();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
+  
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -106,12 +119,6 @@ function StockObatFactory() {
   
     loadData();
   }, [contract, userData.instanceName]);
-
-  useEffect(() => {
-    if (contract) {
-
-    }
-  }, [contract]);
 
   const getDetailObat = async (id, batchName) => {
 
@@ -149,7 +156,6 @@ function StockObatFactory() {
       };
 
       console.log(detailObatCt);
-
 
       MySwal.fire({
         title: `Produksi Obat ${detailObat.namaObat}`,

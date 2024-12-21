@@ -86,6 +86,19 @@ function ManageOrderRetailer() {
       }
     }
     connectWallet();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
+  
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -128,86 +141,89 @@ function ManageOrderRetailer() {
     loadData();
   }, [contracts, userData.instanceName]);
 
-    useEffect(() => {
-      if (contracts) {
+  const handleEventOrderUpdate = (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, txHash) => {
+
+    const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
   
-        contracts.orderManagement.on("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
-  
-          const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
-      
-          MySwal.fire({
-            title:  `Order Completed Obat ${_namaProduk}`,
-            html: (
-              <div className='form-swal'>
-                <ul>
-                  <li className="label">
-                    <p>Nama Produk</p> 
-                  </li>
-                  <li className="input">
-                    <p>{_namaProduk}</p> 
-                  </li>
-                </ul>
-                <ul>
-                <li className="label">
-                  <p>Batchname</p> 
-                </li>
-                <li className="input">
-                  <p>{_batchName}</p> 
-                </li>
-              </ul>
-                <ul>
-                  <li className="label">
-                    <p>Total Order</p> 
-                  </li>
-                  <li className="input">
-                    <p>{_orderQuantity.toString()} Obat</p> 
-                  </li>
-                </ul>
-                <ul>
-                  <li className="label">
-                    <p>Retailer Instance</p> 
-                  </li>
-                  <li className="input">
-                    <p>{_buyerInstance}</p> 
-                  </li>
-                </ul>
-                <ul>
-                  <li className="label">
-                    <p>PBF Instance</p> 
-                  </li>
-                  <li className="input">
-                    <p>{_sellerInstance}</p> 
-                  </li>
-                </ul>
-                <ul>
-                  <li className="label">
-                    <p>Timestamp Order Completed</p> 
-                  </li>
-                  <li className="input">
-                    <p>{timestamp}</p> 
-                  </li>
-                </ul>
-              </div>
-            ),
-            icon: 'success',
-            width: '560',
-            showCancelButton: false,
-            confirmButtonText: 'Oke',
-            allowOutsideClick: true,
-          }).then((result) => {
-            if (result.isConfirmed) {
-              window.location.reload()
-            }
-          });
-  
-        });
-  
-    
-        return () => {
-          contracts.orderManagement.removeAllListeners("evt_orderUpdate");
-        };
+    MySwal.fire({
+      title:  `Order Completed Obat ${_namaProduk}`,
+      html: (
+        <div className='form-swal'>
+          <ul>
+            <li className="label">
+              <p>Nama Produk</p> 
+            </li>
+            <li className="input">
+              <p>{_namaProduk}</p> 
+            </li>
+          </ul>
+          <ul>
+          <li className="label">
+            <p>Batchname</p> 
+          </li>
+          <li className="input">
+            <p>{_batchName}</p> 
+          </li>
+        </ul>
+          <ul>
+            <li className="label">
+              <p>Total Order</p> 
+            </li>
+            <li className="input">
+              <p>{_orderQuantity.toString()} Obat</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Retailer Instance</p> 
+            </li>
+            <li className="input">
+              <p>{_buyerInstance}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>PBF Instance</p> 
+            </li>
+            <li className="input">
+              <p>{_sellerInstance}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Timestamp Order Completed</p> 
+            </li>
+            <li className="input">
+              <p>{timestamp}</p> 
+            </li>
+          </ul>
+          <ul className="txHash">
+            <li className="label">
+              <p>Transaction Hash</p>
+            </li>
+            <li className="input">
+              <a
+                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View Transaction on Etherscan
+              </a>
+            </li>
+          </ul>
+        </div>
+      ),
+      icon: 'success',
+      width: '560',
+      showCancelButton: false,
+      confirmButtonText: 'Oke',
+      allowOutsideClick: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.reload()
       }
-    }, [contracts]);
+    });
+  }
 
   const getDetailObat = async (prevOrderId, id, orderId) => {
 
@@ -624,8 +640,20 @@ function ManageOrderRetailer() {
     })
 
     const completeOrderCt = await contracts.orderManagement.completeOrderRetailer(orderId, ipfsHash)
-
+    
     console.log(completeOrderCt);
+
+    if(completeOrderCt){
+      MySwal.update({
+        title: "Processing your transaction...",
+        text: "This may take a moment. Hang tight! ⏳"
+      });
+    }
+
+    contracts.orderManagement.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, completeOrderCt.hash);
+    });
+
   }
   
   const generateIpfs = async(prevOrderId, dataObat, dataOrder, timestamps, orderId, batchName) => {
@@ -659,8 +687,6 @@ function ManageOrderRetailer() {
       const pbfTimestampShipped = orderTimestampCt[1] !== 0n ? new Date(Number(orderTimestampCt[1]) * 1000).toLocaleDateString('id-ID', options) : "-"
       const pbfTimestampCompleted = orderTimestampCt[2] !== 0n ? new Date(Number(orderTimestampCt[2]) * 1000).toLocaleDateString('id-ID', options) : "-"
       
-      
-
       for (let i = 0; i < dataOrder.orderQuantity; i++) {
         const obat = {
           batchName: batchName,
@@ -706,7 +732,6 @@ function ManageOrderRetailer() {
           }
         };
         
-        console.log(obat);
         const result = await client.add(JSON.stringify(obat), 
           { progress: (bytes) => 
             console.log(`Uploading ${i+1}/${dataOrder.orderQuantity}: ${bytes} bytes uploaded`) }

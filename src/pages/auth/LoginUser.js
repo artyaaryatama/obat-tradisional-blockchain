@@ -48,19 +48,18 @@ function LoginPage() {
     }
     connectWallet();
 
-    // listener to change the user address automatically if the metamask active account change
-    // if (window.ethereum) {
-    //   window.ethereum.on("accountsChanged", () => {
-    //     connectWallet();
-    //     window.location.reload(); 
-    //   });
-    // }
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
   
-    // return () => {
-    //   if (window.ethereum) {
-    //     window.ethereum.removeListener("accountsChanged", connectWallet);
-    //   }
-    // };
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
   const loginUser = async (e) => {
@@ -70,8 +69,10 @@ function LoginPage() {
     if(userAddr && name){
       try {
         const nameUpperCase = name.toUpperCase()
-        console.log(nameUpperCase, userAddr);
-        const [address, userName, instanceName, role] = await contract.getRegisteredUser(userAddr);
+        const loginCt = await contract.getRegisteredUser(userAddr);
+        console.log('loginCt', loginCt);
+
+        const [address, userName, instanceName, role] = loginCt;
         
         if (userAddr === address || nameUpperCase === name) {
           console.log('role pas login',{role, address});
@@ -88,11 +89,9 @@ function LoginPage() {
 
           MySwal.fire({
             title: "Login Success",
-            html: (
-              <div>
-                  <p>Please wait a moment, we are redirecting you to the page <span>&#127939;</span></p>
-              </div>
-            ),
+            html: `<div>
+                    <p>Please wait a moment, we are redirecting you to the page <span>&#127939;</span></p>
+                  </div>`,
             timer: 2000,
             icon: 'success',
             timerProgressBar: true,
@@ -114,13 +113,11 @@ function LoginPage() {
             }
           });
           
-        } else {
-          console.error("Wrong input! Username and User Address not match.")
         }
         
       } catch (err) {
         setLoader(false)
-        errAlert(err, "User not registered!")
+        errAlert(err, "Failed to login!")
       }
     } else {
       console.log("Please filled all input!")
@@ -130,30 +127,25 @@ function LoginPage() {
   const autoFilled = async(event, role) => {
     event.preventDefault();
     if(role===0){
-      const tx = await contract.registerUser('TAKAKI YUYA', 'PT. Budi Pekerti', '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', 0n);
-      console.log(tx);
-      
-      setName('Takaki Yuya')
+      setName('Factory ABC')
       setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
-      
+      // setUserAddr("0x6142E74121ADE0de3BEC1641e0318dBcCFcDe06A")
+
     } else if(role===1){ 
-      const tx = await contract.registerUser('STIPEN JENSEN', 'PT. Mangga Arum', '0x90F79bf6EB2c4f870365E785982E1f101E93b906', 1n);
-      console.log(tx);
-
-      setName('STIPEN JENSEN') 
+      setName('PBF EDF') 
       setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
-    } else if(role===2){ 
-      const tx = await contract.registerUser('NILOJURI', 'BPOM Makassar', '0x70997970C51812dc3A010C7d01b50e0d17dc79C8', 2n);
-      console.log(tx);
-      
-      setName('NILOJURI') 
-      setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
-    } else if(role===3){
-      const tx = await contract.registerUser('かみき あさこ', 'Apotek Sejahtera', '0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65', 3n);
-      console.log(tx);
+      // setUserAddr("0x97CB6400E271e65150B2330ad27f213a4C9c31af")
 
-      setName('かみき あさこ') 
+    } else if(role===2){ 
+      setName('BPOM GHI') 
+      setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
+      // setUserAddr('0xcbcD762c3C27212937314C1D46072a214346F2F3')
+
+    } else if(role===3){
+      setName('Retailer JKL') 
       setUserAddr('0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65')
+      // setUserAddr('0xA3cE1983150Fade27518DF467a99a74FB4082dDa')
+      
     }
     
   }

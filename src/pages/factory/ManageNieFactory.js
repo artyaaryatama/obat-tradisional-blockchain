@@ -67,6 +67,19 @@ function ManageNieFactory() {
       }
     }
     connectWallet();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
+  
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -100,63 +113,65 @@ function ManageNieFactory() {
     loadData();
   }, [contract, userData.instanceName]);
 
-  useEffect(() => {
-    if (contract) {
-      console.log("Setting up listener for evt_nieRequested on contract", contract);
-      
-      contract.on("evt_nieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
+  const handleEventNieRequsted = ( _factoryInstance, _factoryAddr, _timestampRequestNie, txHash) =>{
 
-        const timestamp = new Date(Number(_timestampRequestNie) * 1000).toLocaleDateString('id-ID', options)
+    const timestamp = new Date(Number(_timestampRequestNie) * 1000).toLocaleDateString('id-ID', options)
     
-        MySwal.fire({
-          title: "Success Request NIE",
-          html: (
-            <div className='form-swal'>
-              <ul>
-                <li className="label">
-                  <p>Factory Instance</p> 
-                </li>
-                <li className="input">
-                  <p>{_factoryInstance}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Factory Address</p> 
-                </li>
-                <li className="input">
-                  <p>{_factoryAddr}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Timestamp Request</p> 
-                </li>
-                <li className="input">
-                  <p>{timestamp}</p> 
-                </li>
-              </ul>
-            </div>
-          ),
-          icon: 'success',
-          width: '560',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-          allowOutsideClick: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.reload()
-          }
-        });
-
-      });
-  
-      return () => {
-        console.log("Removing evt_nieRequested listener");
-        contract.removeAllListeners("evt_nieRequested");
-      };
-    }
-  }, [contract]);
+    MySwal.fire({
+      title: "Success Request NIE",
+      html: (
+        <div className='form-swal'>
+          <ul>
+            <li className="label">
+              <p>Factory Instance</p> 
+            </li>
+            <li className="input">
+              <p>{_factoryInstance}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Factory Address</p> 
+            </li>
+            <li className="input">
+              <p>{_factoryAddr}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Timestamp Request</p> 
+            </li>
+            <li className="input">
+              <p>{timestamp}</p> 
+            </li>
+          </ul>
+          <ul className="txHash">
+            <li className="label">
+              <p>Transaction Hash</p>
+            </li>
+            <li className="input">
+              <a
+                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View Transaction on Etherscan
+              </a>
+            </li>
+          </ul>
+        </div>
+      ),
+      icon: 'success',
+      width: '560',
+      showCancelButton: false,
+      confirmButtonText: 'Oke',
+      allowOutsideClick: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.reload()
+      }
+    });
+  }
 
   const getDetailObat = async (id) => {
 
@@ -431,21 +446,6 @@ function ManageNieFactory() {
                             </ul>
                           </li>
                         </ul>
-
-                        <ul>
-                          <li className="label">
-                            <label htmlFor="factoryAddr">Factory Address</label>
-                          </li>
-                          <li className="input">
-                            <input
-                              type="text"
-                              id="factoryAddr"
-                              value={detailObat.factoryAddr}
-                              readOnly
-                            />
-                          </li>
-                        </ul>
-
                     </div>
                   </div>
                 
@@ -647,6 +647,10 @@ function ManageNieFactory() {
           text: "This may take a moment. Hang tight! ⏳"
         });
       }
+
+      contract.once("evt_nieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
+        handleEventNieRequsted(_factoryInstance, _factoryAddr, _timestampRequestNie, requestNieCt.hash)
+      });
       
     } catch (error) {
       errAlert(error, "Can't Request NIE.")

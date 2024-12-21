@@ -49,79 +49,95 @@ function CdobRequest() {
       }
     }
     connectWallet();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
+  
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
-  useEffect(() => {
-    if (contract) {
-      console.log("Setting up listener for evt_cdobRequested on contract", contract);
-      
-      contract.on("evt_cdobRequested", (_instanceName, _userAddr, _tipePermohonan, _timestampRequest) => {
-
-        const formattedTimestamp = new Date(Number(_timestampRequest) * 1000).toLocaleDateString('id-ID', options)
-
-        const tp = {
-          0: "Obat Lain",
-          1: "CCP (Cold Chain Product)",
-        };
+  const handleEventCdobRequested =  (_instanceName, _userAddr, _tipePermohonan, _timestampRequest, txHash) => {
     
-        MySwal.fire({
-          title: "Pengajuan Sertifikat CDOB Berhasil",
-          html: (
-            <div className='form-swal'>
-              <ul>
-                <li className="label">
-                  <p>PBF Instance</p> 
-                </li>
-                <li className="input">
-                  <p>{_instanceName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>PBF Address</p> 
-                </li>
-                <li className="input">
-                  <p>{_userAddr}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Tipe Permohonan</p> 
-                </li>
-                <li className="input">
-                  <p>{tp[_tipePermohonan]}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Tanggal Pengajuan</p> 
-                </li>
-                <li className="input">
-                  <p>{formattedTimestamp}</p> 
-                </li>
-              </ul>
-            </div>
-          ),
-          icon: 'success',
-          width: '560',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-          allowOutsideClick: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate('/cdob');
-          }
-        });
-
-        setLoader(false)
-      });
+    const formattedTimestamp = new Date(Number(_timestampRequest) * 1000).toLocaleDateString('id-ID', options)
   
-      return () => {
-        console.log("Removing evt_cdobRequested listener");
-        contract.removeAllListeners("evt_cdobRequested");
-      };
-    }
-  }, [contract]);
+    const tp = {
+      0: "Obat Lain",
+      1: "CCP (Cold Chain Product)",
+    };
+  
+    MySwal.fire({
+      title: "Pengajuan Sertifikat CDOB Berhasil",
+      html: (
+        <div className='form-swal'>
+          <ul>
+            <li className="label">
+              <p>PBF Instance</p> 
+            </li>
+            <li className="input">
+              <p>{_instanceName}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>PBF Address</p> 
+            </li>
+            <li className="input">
+              <p>{_userAddr}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Tipe Permohonan</p> 
+            </li>
+            <li className="input">
+              <p>{tp[_tipePermohonan]}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Tanggal Pengajuan</p> 
+            </li>
+            <li className="input">
+              <p>{formattedTimestamp}</p> 
+            </li>
+          </ul>
+          <ul className="txHash">
+            <li className="label">
+              <p>Transaction Hash</p>
+            </li>
+            <li className="input">
+              <a
+                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View Transaction on Etherscan
+              </a>
+            </li>
+          </ul>
+        </div>
+      ),
+      icon: 'success',
+      width: '560',
+      showCancelButton: false,
+      confirmButtonText: 'Oke',
+      allowOutsideClick: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate('/cdob');
+      }
+    });
+  
+    setLoader(false)
+  }
 
   const requestCdob = async (e) => {
     e.preventDefault();
@@ -164,6 +180,10 @@ function CdobRequest() {
           text: "This may take a moment. Hang tight! ⏳"
         });
       }
+
+      contract.once("evt_cdobRequested", (_instanceName, _userAddr, _tipePermohonan, _timestampRequest) => {
+        handleEventCdobRequested(_instanceName, _userAddr, _tipePermohonan, _timestampRequest, requestCdobCt.hash);
+      });
 
     } catch (err) {
       setLoader(false)

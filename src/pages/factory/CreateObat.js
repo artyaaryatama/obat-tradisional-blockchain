@@ -70,6 +70,19 @@ function CreateObat() {
       }
     }
     connectWallet();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
+  
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -101,60 +114,65 @@ function CreateObat() {
     loadJenisSediaan()
   }, [contract])
 
-  useEffect(() => {
-    if (contract) {
-      
-      contract.on("evt_obatCreated", (_namaProduk, _factoryInstanceName, _factoryAddr) => {
-
-        MySwal.fire({
-          title: "Success Create Obat Tradisonal",
-          html: (
-            <div className='form-swal'>
-              <ul>
-                <li className="label">
-                  <p>Nama Produk</p> 
-                </li>
-                <li className="input">
-                  <p>{_namaProduk}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Factory Instance</p> 
-                </li>
-                <li className="input">
-                  <p>{_factoryInstanceName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Factoty Address</p> 
-                </li>
-                <li className="input">
-                  <p>{_factoryAddr}</p> 
-                </li>
-              </ul>
-            </div>
-          ),
-          icon: 'success',
-          width: '560',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-          allowOutsideClick: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate('/obat-available-factory');
-          }
-        });
-
-        setLoader(false)
-      });
+  const handleEventObatCreated = (_namaProduk, _factoryInstanceName, _factoryAddr, txHash) =>{
+    
+    MySwal.fire({
+      title: "Success Create Obat Tradisonal",
+      html: (
+        <div className='form-swal'>
+          <ul>
+            <li className="label">
+              <p>Nama Produk</p> 
+            </li>
+            <li className="input">
+              <p>{_namaProduk}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Factory Instance</p> 
+            </li>
+            <li className="input">
+              <p>{_factoryInstanceName}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Factory Address</p> 
+            </li>
+            <li className="input">
+              <p>{_factoryAddr}</p> 
+            </li>
+          </ul>
+          <ul className="txHash">
+            <li className="label">
+              <p>Transaction Hash</p>
+            </li>
+            <li className="input">
+              <a
+                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View Transaction on Etherscan
+              </a>
+            </li>
+          </ul>
+        </div>
+      ),
+      icon: 'success',
+      width: '560',
+      showCancelButton: false,
+      confirmButtonText: 'Oke',
+      allowOutsideClick: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate('/obat');
+      }
+    });
   
-      return () => {
-        contract.removeAllListeners("evt_obatCreated");
-      };
-    }
-  }, [contract]);
+    setLoader(false)
+  }
 
   const createObat = async (e) => {
     e.preventDefault();
@@ -195,6 +213,10 @@ function CreateObat() {
           text: "This may take a moment. Hang tight! ⏳"
         });
       }
+
+      contract.once("evt_obatCreated", (_namaProduk, _factoryInstanceName, _factoryAddr) => {
+        handleEventObatCreated(_namaProduk, _factoryInstanceName, _factoryAddr, createObatCt.hash);
+      });
 
     } catch (err) {
       setLoader(false)

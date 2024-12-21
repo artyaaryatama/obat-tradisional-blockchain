@@ -68,6 +68,19 @@ function AddQuantityObat() {
       }
     }
     connectWallet();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
+  
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -107,65 +120,72 @@ function AddQuantityObat() {
     loadObatDataAvailable()
   }, [contract])
 
-  useEffect(() => {
-    if (contract) {
-      contract.on('evt_addBatchProduction',  (_batchName, _obatQuantity, _namaProduk, _factoryInstance) => {
-    
-        MySwal.fire({
-          title: `Success Add Batch Production`,
-          html: (
-            <div className='form-swal'>
-              <ul>
-                <li className="label">
-                  <p>Nama Produk</p> 
-                </li>
-                <li className="input">
-                  <p>{_namaProduk}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Batch Name</p> 
-                </li>
-                <li className="input">
-                  <p>{_batchName}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Obat Quantity</p> 
-                </li>
-                <li className="input">
-                  <p>{_obatQuantity.toString()} Obat</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Factory Instance</p> 
-                </li>
-                <li className="input">
-                  <p>{_factoryInstance}</p> 
-                </li>
-              </ul>
-            </div>
-          ),
-          icon: 'success',
-          width: '560',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-          allowOutsideClick: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate('/obat-available-factory')
-          }
-        });
+
+  const handleEventAddBatchProduction = (_batchName, _obatQuantity, _namaProduk, _factoryInstance, txHash) => {
+      
+    MySwal.fire({
+        title: `Success Add Batch Production`,
+        html: (
+          <div className='form-swal'>
+            <ul>
+              <li className="label">
+                <p>Nama Produk</p> 
+              </li>
+              <li className="input">
+                <p>{_namaProduk}</p> 
+              </li>
+            </ul>
+            <ul>
+              <li className="label">
+                <p>Batch Name</p> 
+              </li>
+              <li className="input">
+                <p>{_batchName}</p> 
+              </li>
+            </ul>
+            <ul>
+              <li className="label">
+                <p>Obat Quantity</p> 
+              </li>
+              <li className="input">
+                <p>{_obatQuantity.toString()} Obat</p> 
+              </li>
+            </ul>
+            <ul>
+              <li className="label">
+                <p>Factory Instance</p> 
+              </li>
+              <li className="input">
+                <p>{_factoryInstance}</p> 
+              </li>
+            </ul>
+            <ul className="txHash">
+            <li className="label">
+              <p>Transaction Hash</p>
+            </li>
+            <li className="input">
+              <a
+                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View Transaction on Etherscan
+              </a>
+            </li>
+          </ul>
+          </div>
+        ),
+        icon: 'success',
+        width: '560',
+        showCancelButton: false,
+        confirmButtonText: 'Oke',
+        allowOutsideClick: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/obat-available-factory')
+        }
       });
-  
-      return () => {
-        contract.removeAllListeners("evt_addBatchProduction");
-      };
-    }
-  }, [contract]);
+  }
 
   const getData = async (e) => {
     e.preventDefault();
@@ -247,7 +267,6 @@ function AddQuantityObat() {
       };
       
       try {
-        console.log(obat);
         const result = await client.add(JSON.stringify(obat), 
           { progress: (bytes) => 
             console.log(`Uploading ${i+1}/${quantityObat}: ${bytes} bytes uploaded`) }
@@ -333,7 +352,9 @@ function AddQuantityObat() {
     
     try {
       const quantity = parseInt(quantityObat)
+      
       console.log(dataObat.obatId, dataObat.namaProduk, batchNameObat, quantity, newIpfsHashes,  dataObat.factoryInstanceName);
+
       const addBatchCt = await contract.addBatchProduction(dataObat.obatId, dataObat.namaProduk, batchNameObat, quantity, newIpfsHashes,  dataObat.factoryInstanceName);
 
       if(addBatchCt){
@@ -342,6 +363,10 @@ function AddQuantityObat() {
           text: "This may take a moment. Hang tight! ⏳"
         });
       }
+
+      contract.once('evt_addBatchProduction',  (_batchName, _obatQuantity, _namaProduk, _factoryInstance) => {
+        handleEventAddBatchProduction(_batchName, _obatQuantity, _namaProduk, _factoryInstance, addBatchCt.hash)
+      });
   
     } catch (err) {
       setLoader(false)

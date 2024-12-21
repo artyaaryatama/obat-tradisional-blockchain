@@ -66,6 +66,19 @@ function CdobApprove() {
       }
     }
     connectWallet();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
+  
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -98,78 +111,82 @@ function CdobApprove() {
     getAllCdob()
   }, [contract])
 
-  useEffect(() => {
-    if (contract) {
-      console.log('TRIGERRED evt_cpotbApproved listener');
-      contract.on('evt_cdobApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
-        
-        const formattedTimestamp = new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options)
+  const handleEventCdobApproved = (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, txHash) => {
 
-        MySwal.fire({
-          title: "Success Approve CPOTB",
-          html: (
-            <div className='form-swal'>
-              <ul>
-                <li className="label">
-                  <p>CDOB Number</p> 
-                </li>
-                <li className="input">
-                  <p>{cdobNumber}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>BPOM Instance</p> 
-                </li>
-                <li className="input">
-                  <p>{bpomInstance}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>BPOM Address</p> 
-                </li>
-                <li className="input">
-                  <p>{bpomAddr}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Tanggal Penyetujuan</p> 
-                </li>
-                <li className="input">
-                  <p>{formattedTimestamp}</p> 
-                </li>
-              </ul>
-              <ul>
-                <li className="label">
-                  <p>Tipe Permohonan</p> 
-                </li>
-                <li className="input">
-                  <p>{tipePermohonanMap[tipePermohonan]}</p> 
-                </li>
-              </ul>
-            </div>
-          ),
-          icon: 'success',
-          width: '560',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-          allowOutsideClick: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.reload();
-          }
-        });
-      });
+    const formattedTimestamp = new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options)
+  
+    MySwal.fire({
+      title: "Success Approve CPOTB",
+      html: (
+        <div className='form-swal'>
+          <ul>
+            <li className="label">
+              <p>CDOB Number</p> 
+            </li>
+            <li className="input">
+              <p>{cdobNumber}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>BPOM Instance</p> 
+            </li>
+            <li className="input">
+              <p>{bpomInstance}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>BPOM Address</p> 
+            </li>
+            <li className="input">
+              <p>{bpomAddr}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Tanggal Penyetujuan</p> 
+            </li>
+            <li className="input">
+              <p>{formattedTimestamp}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Tipe Permohonan</p> 
+            </li>
+            <li className="input">
+              <p>{tipePermohonanMap[tipePermohonan]}</p> 
+            </li>
+          </ul>
+          <ul className="txHash">
+            <li className="label">
+              <p>Transaction Hash</p>
+            </li>
+            <li className="input">
+              <a
+                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View Transaction on Etherscan
+              </a>
+            </li>
+          </ul>
+        </div>
+      ),
+      icon: 'success',
+      width: '560',
+      showCancelButton: false,
+      confirmButtonText: 'Oke',
+      allowOutsideClick: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.reload();
+      }
+    });
 
-      return () => {
-        console.log("Removing evt_cpotbRequested listener");
-        contract.removeAllListeners("evt_cdobApproved");
-      };
-
-    }
-  }, [contract]);
+  }
 
   const getDetailCdob = async (id) => {
     
@@ -545,6 +562,10 @@ function CdobApprove() {
           text: "This may take a moment. Hang tight! ⏳"
         });
       }
+
+      contract.once('evt_cdobApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
+        handleEventCdobApproved(bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, approveCt.hash);
+      });
     } catch (error) {
       errAlert(error, "Can't Approve CPOTB")
     }

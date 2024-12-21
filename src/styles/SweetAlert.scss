@@ -125,6 +125,22 @@
         padding-bottom: 4px;
         flex-direction: row;
 
+        // &.status{
+        //   height: 44px;
+        //   align-items: center;
+
+        //   li.input p{
+        //     padding: 10px 12px;
+        //     border-radius: 6px;
+        //     font-weight: bold;
+            
+        //     &.Pending{
+        //       background-color: $yellow;
+        //       color: $black;
+        //     }
+        //   }
+        // }
+
         &.numbered1{
           flex-direction: column;
           width: 100%;
@@ -140,7 +156,9 @@
         &.numbered{
           flex-direction: column;
           width: 100%;
-          padding: 6px 10px;
+          // padding: 6px 10px;
+          // list-style: none;
+          // padding-left: -12px;
           
           li.klaim{
             padding: 6px 4px;
@@ -211,6 +229,13 @@
     align-items: center;
     width: 100%;
     margin-bottom: 12px;
+
+    &.txHash{
+      a{
+        color: $blue;
+        text-decoration: underline;
+      }
+    }
 
     li{
       p{
