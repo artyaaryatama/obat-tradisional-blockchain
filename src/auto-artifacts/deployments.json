@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0x4EE6eCAD1c2Dae9f525404De8555724e3c35d07B",
+    "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
     "abi": [
       {
         "inputs": [
@@ -1017,7 +1017,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0xBEc49fA140aCaA83533fB00A2BB19bDdd0290f25",
+    "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
     "abi": [
       {
         "inputs": [
@@ -1814,7 +1814,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0xD84379CEae14AA33C123Af12424A37803F885889",
+    "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
     "abi": [
       {
         "inputs": [

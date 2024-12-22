@@ -439,13 +439,10 @@ function AddQuantityObat() {
                   required
                 >
                   <option value="" disabled>Pilih Quantity Obat</option>
-                  <option value="1">1 Obat</option>
-                  <option value="3">3 Obat</option>
+                  <option value="1">5 Obat</option>
                   <option value="50">50 Obat</option>
                   <option value="100">100 Obat</option>
-                  <option value="150">150 Obat</option>
                   <option value="200">200 Obat</option>
-                  <option value="400">400 Obat</option>
                 </select>
               </div>
             </li>

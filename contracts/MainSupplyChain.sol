@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "hardhat/console.sol";
 import "./RoleManager.sol";
 import "./EnumsLibrary.sol";
 
@@ -102,28 +101,10 @@ contract MainSupplyChain {
     address _userAddr,
     uint8 _userRole
   ) public {
+    require(_userAddr == msg.sender, "Sender address mismatch");
+    roleManager.registerUser(_name, _instanceName, msg.sender, EnumsLibrary.Roles(_userRole)); 
 
-    roleManager.registerUser(_name, _instanceName, _userAddr, EnumsLibrary.Roles(_userRole)); 
-
-    if(_userRole == uint8(EnumsLibrary.Roles.Factory)) {
-      st_certificateRequest memory autoCpotb = st_certificateRequest({
-        certId: 'aauhd8j',
-        senderName: "TAKAKI YUYA",
-        senderInstance: 'PT. Budi Pekerti'
-      }); 
-      requestCpotb(autoCpotb, 0); 
-
-      st_certificateApproval memory approve = st_certificateApproval({
-        certNumber: "aSAJK-ASFDAS",
-        certId: 'aauhd8j',
-        bpomName: 'NILOJURI',
-        bpomInstance: 'BPOM Makassar'
-      });
-
-      approveCpotb(approve, 0); 
-    }
-
-    emit evt_UserRegistered(_userAddr, _name, _instanceName, uint8(_userRole)); 
+    emit evt_UserRegistered(msg.sender, _name, _instanceName, uint8(_userRole)); 
   }
 
   // status: 200ok
@@ -146,9 +127,9 @@ contract MainSupplyChain {
     string memory _userInstanceName
   ) internal pure returns (st_userCertificate memory) {
       return st_userCertificate({
-          userName: _userName,
-          userAddr: _userAddr,
-          userInstanceName: _userInstanceName
+        userName: _userName,
+        userAddr: _userAddr,
+        userInstanceName: _userInstanceName
       });
   }
 
@@ -158,11 +139,11 @@ contract MainSupplyChain {
     st_userCertificate memory _bpom
   ) internal view returns (st_certificateDetails memory) {
       return st_certificateDetails({
-          status: EnumsLibrary.StatusCertificate.Requested,
-          timestampRequest: block.timestamp,
-          timestampApprove: 0,
-          sender: _sender,
-          bpom: _bpom
+        status: EnumsLibrary.StatusCertificate.Requested,
+        timestampRequest: block.timestamp,
+        timestampApprove: 0,
+        sender: _sender,
+        bpom: _bpom
       });
   }
 
@@ -199,19 +180,19 @@ contract MainSupplyChain {
       st_certificateDetails memory certficateDetails = createCertificateDetails(userFactory, userBpom);
 
       cpotbDataById[requestData.certId] = st_cpotb({
-          cpotbId: requestData.certId,
-          cpotbNumber: "", 
-          details: certficateDetails,
-          tipePermohonan: EnumsLibrary.TipePermohonanCpotb(_tipePermohonanCpotb)
+        cpotbId: requestData.certId,
+        cpotbNumber: "", 
+        details: certficateDetails,
+        tipePermohonan: EnumsLibrary.TipePermohonanCpotb(_tipePermohonanCpotb)
       });
 
       st_certificateList memory certificateList = createCertificateList(
-          requestData.certId,
-          "", 
-          requestData.senderInstance, 
-          uint8(EnumsLibrary.TipePermohonanCpotb(_tipePermohonanCpotb)),
-          "cpotb",
-          EnumsLibrary.StatusCertificate.Requested
+        requestData.certId,
+        "", 
+        requestData.senderInstance, 
+        uint8(EnumsLibrary.TipePermohonanCpotb(_tipePermohonanCpotb)),
+        "cpotb",
+        EnumsLibrary.StatusCertificate.Requested
       );
 
       allCertificateData.push(certificateList); 
@@ -347,19 +328,19 @@ contract MainSupplyChain {
       st_certificateDetails memory certficateDetails = createCertificateDetails(userPbf, userBpom);
 
       cdobDataById[requestData.certId] = st_cdob({
-          cdobId: requestData.certId,
-          cdobNumber: "", 
-          details: certficateDetails,
-          tipePermohonan: EnumsLibrary.TipePermohonanCdob(_tipePermohonanCdob)
+        cdobId: requestData.certId,
+        cdobNumber: "", 
+        details: certficateDetails,
+        tipePermohonan: EnumsLibrary.TipePermohonanCdob(_tipePermohonanCdob)
       });
 
       st_certificateList memory certificateList = createCertificateList(
-          requestData.certId,
-          "", 
-          requestData.senderInstance, 
-          uint8(EnumsLibrary.TipePermohonanCdob(_tipePermohonanCdob)),
-          "cdob",
-          EnumsLibrary.StatusCertificate.Requested
+        requestData.certId,
+        "", 
+        requestData.senderInstance, 
+        uint8(EnumsLibrary.TipePermohonanCdob(_tipePermohonanCdob)),
+        "cdob",
+        EnumsLibrary.StatusCertificate.Requested
       );
 
       allCertificateData.push(certificateList); 

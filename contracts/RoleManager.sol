@@ -19,7 +19,6 @@ contract RoleManager {
     event RoleAssigned(address indexed user, EnumsLibrary.Roles role);
     event UserRegistered(address indexed userAddr, string name, string instanceName, EnumsLibrary.Roles role);
 
-    // Register a user and assign a role
     function registerUser(
         string memory _name,
         string memory _instanceName,
@@ -54,7 +53,6 @@ contract RoleManager {
     function checkRegistration(address _userAddr) external view returns (bool) {
         return isRegistered[_userAddr];
     }
-
 
     function hasRole(address _userAddr, EnumsLibrary.Roles _role) external view returns (bool) {
         return isRegistered[_userAddr] && users[_userAddr].role == _role;

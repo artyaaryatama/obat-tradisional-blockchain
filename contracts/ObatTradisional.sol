@@ -143,13 +143,6 @@ contract ObatTradisional {
 
       allObatIds.push(_obatId);
 
-      approveNie(
-        _obatId,
-        "LALALAL12-1",
-        "BPOM Makassar",
-        0x70997970C51812dc3A010C7d01b50e0d17dc79C8
-      ); 
-
     emit evt_obatCreated(_namaProduk, _factoryInstance, msg.sender);
   }
    
