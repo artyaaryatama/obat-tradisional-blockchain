@@ -230,23 +230,22 @@ function AddQuantityObat() {
     };
 
     console.log(detailObat);
-    generateIpfsHash(detailObat, parseInt(quantityObat), batchName)
+    generateIpfs(detailObat, parseInt(quantityObat), batchName)
   };
 
-  const generateIpfsHash = async(dataObat, quantity, batchNameObat) => {
+  const generateIpfs = async(dataObat, quantity, batchNameObat) => {
+    console.log(dataObat, quantity, batchNameObat); 
     let newIpfsHashes = [];
-    const randomSixDigits = Math.floor(100000 + Math.random() * 900000);
-    const randomTwoLetters = String.fromCharCode(
-      65 + Math.floor(Math.random() * 26),
-      65 + Math.floor(Math.random() * 26),
-      65 + Math.floor(Math.random() * 26),
-      65 + Math.floor(Math.random() * 26)
-    );
+
+    const timestampYear = new Date().getFullYear().toString().slice(-4);
+    const randomFourLetters = Array.from({ length: 4 }, () =>
+      String.fromCharCode(65 + Math.floor(Math.random() * 26))
+    ).join(''); 
 
     for (let i = 0; i < quantity; i++) {
       const obat = {
         batchName: batchNameObat,
-        obatIdPackage: `OT-${i * 23}${randomSixDigits}-${randomTwoLetters}`,
+        obatIdPackage: `OT-${i}${timestampYear}-${randomFourLetters}`,
         dataObat:  {
           obatIdProduk: dataObat.obatId,
           namaProduk: dataObat.namaProduk,
@@ -326,7 +325,7 @@ function AddQuantityObat() {
         ),
         width: '820',
         showCancelButton: true,
-        confirmButtonText: 'Send Obat',
+        confirmButtonText: 'Confirm Obat',
         allowOutsideClick: false,
   
       }).then((result) => {
@@ -439,7 +438,7 @@ function AddQuantityObat() {
                   required
                 >
                   <option value="" disabled>Pilih Quantity Obat</option>
-                  <option value="1">5 Obat</option>
+                  <option value="5">5 Obat</option>
                   <option value="50">50 Obat</option>
                   <option value="100">100 Obat</option>
                   <option value="200">200 Obat</option>

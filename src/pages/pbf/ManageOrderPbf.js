@@ -135,7 +135,7 @@ function ManageOrderPbf() {
     const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
   
     MySwal.fire({
-      title:  `Order Completed Obat ${_namaProduk}`,
+      title: "Order Completed Successfully!",
       html: (
         <div className='form-swal'>
           <ul>
@@ -638,20 +638,19 @@ function ManageOrderPbf() {
     console.log(dataOrder);
     
     let newIpfsHashes = [];
-    const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
-    const randomTwoLetters = String.fromCharCode(
-      65 + Math.floor(Math.random() * 26),
-      65 + Math.floor(Math.random() * 26)
-    );
 
     const date = new Date();
     const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
     timestamps.timestampComplete = formattedDate;
+    const timestampYear = new Date().getFullYear().toString().slice(-4);
+    const randomFourLetters = Array.from({ length: 4 }, () =>
+      String.fromCharCode(65 + Math.floor(Math.random() * 26))
+    ).join(''); 
 
     for (let i = 0; i < dataOrder.orderQuantity; i++) {
       const obat = {
         batchName: batchName,
-        obatIdPackage: `OT-${i * 23}${randomFourDigit}${randomTwoLetters}`,
+        obatIdPackage: `OT-${i}${timestampYear}-${randomFourLetters}`,
         dataObat:  {
           obatIdProduk: dataObat.obatId,
           namaProduk: dataObat.namaObat,
@@ -753,7 +752,7 @@ function ManageOrderPbf() {
         ),
         width: '820',
         showCancelButton: true,
-        confirmButtonText: 'Send Obat',
+        confirmButtonText: 'Confirm Obat',
         allowOutsideClick: false,
   
       }).then((result) => {

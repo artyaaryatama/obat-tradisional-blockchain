@@ -145,7 +145,7 @@ function ManageOrderPbfRetailer() {
     const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
   
     MySwal.fire({
-      title: `Order Shipped Obat ${_namaProduk}`,
+     title: "Order Shipped Successfully!",
       html: (
         <div className='form-swal'>
           <ul>
@@ -668,17 +668,17 @@ function ManageOrderPbfRetailer() {
     })
 
     let newIpfsHashes = [];
-    const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
-    const randomTwoLetters = String.fromCharCode(
-      65 + Math.floor(Math.random() * 26),
-      65 + Math.floor(Math.random() * 26)
-    );
 
     const date = new Date();
     const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
     timestamps.timestampShipped = formattedDate;
 
     console.log(dataOrder);
+
+    const timestampYear = new Date().getFullYear().toString().slice(-4);
+    const randomFourLetters = Array.from({ length: 4 }, () =>
+      String.fromCharCode(65 + Math.floor(Math.random() * 26))
+    ).join(''); 
 
     try {
       const prevOrderPbfCt = await contracts.orderManagement.detailOrder(prevOrderId)
@@ -687,11 +687,12 @@ function ManageOrderPbfRetailer() {
       const pbfTimestampOrder =  new Date(Number(orderTimestampCt[0]) * 1000).toLocaleDateString('id-ID', options)
       const pbfTimestampShipped = orderTimestampCt[1] !== 0n ? new Date(Number(orderTimestampCt[1]) * 1000).toLocaleDateString('id-ID', options) : "-"
       const pbfTimestampCompleted = orderTimestampCt[2] !== 0n ? new Date(Number(orderTimestampCt[2]) * 1000).toLocaleDateString('id-ID', options) : "-"
+
       
       for (let i = 0; i < dataOrder.orderQuantity; i++) {
         const obat = {
           batchName: batchName,
-          obatIdPackage: `OT-${i * 23}${randomFourDigit}${randomTwoLetters}`,
+          obatIdPackage: `OT-${i}${timestampYear}-${randomFourLetters}`,
           dataObat:  {
             obatIdProduk: dataObat.obatId,
             namaProduk: dataObat.namaProduk,
@@ -802,7 +803,7 @@ function ManageOrderPbfRetailer() {
         ),
         width: '820',
         showCancelButton: true,
-        confirmButtonText: 'Send Obat',
+        confirmButtonText: 'Confirm Obat',
         allowOutsideClick: false,
   
       }).then((result) => {

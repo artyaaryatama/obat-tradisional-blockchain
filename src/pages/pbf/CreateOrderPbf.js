@@ -120,7 +120,7 @@ function CreateOrderPbf() {
     const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
   
     MySwal.fire({
-      title: "Success Create Order Obat Tradisional",
+      title: "Order Created Successfully",
       html: (
         <div className='form-swal'>
           <ul>
