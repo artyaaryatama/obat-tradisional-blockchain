@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+    "address": "0x9d4454B023096f34B160D6B654540c56A1F81688",
     "abi": [
       {
         "inputs": [
@@ -254,6 +254,11 @@
             "type": "tuple"
           },
           {
+            "internalType": "string",
+            "name": "_ipfsCert",
+            "type": "string"
+          },
+          {
             "internalType": "uint8",
             "name": "_tipePermohonanCdob",
             "type": "uint8"
@@ -294,6 +299,11 @@
             "type": "tuple"
           },
           {
+            "internalType": "string",
+            "name": "_ipfsCert",
+            "type": "string"
+          },
+          {
             "internalType": "uint8",
             "name": "_tipePermohonanCpotb",
             "type": "uint8"
@@ -315,9 +325,21 @@
         "name": "approvedTipePermohonan",
         "outputs": [
           {
-            "internalType": "uint8[]",
+            "components": [
+              {
+                "internalType": "string",
+                "name": "ipfsCert",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "tipePermohonan",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct MainSupplyChain.st_approvedCert[]",
             "name": "",
-            "type": "uint8[]"
+            "type": "tuple[]"
           }
         ],
         "stateMutability": "view",
@@ -339,9 +361,74 @@
         "name": "approvedTipePermohonanByFactory",
         "outputs": [
           {
+            "internalType": "string",
+            "name": "ipfsCert",
+            "type": "string"
+          },
+          {
             "internalType": "uint8",
-            "name": "",
+            "name": "tipePermohonan",
             "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "approvedTipePermohonanByPbf",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "ipfsCert",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "tipePermohonan",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_pbfName",
+            "type": "string"
+          }
+        ],
+        "name": "approvedTipePermohonanCdob",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "ipfsCert",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "tipePermohonan",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct MainSupplyChain.st_approvedCert[]",
+            "name": "",
+            "type": "tuple[]"
           }
         ],
         "stateMutability": "view",
@@ -427,6 +514,11 @@
                 "internalType": "struct MainSupplyChain.st_userCertificate",
                 "name": "bpom",
                 "type": "tuple"
+              },
+              {
+                "internalType": "string",
+                "name": "ipfsCert",
+                "type": "string"
               }
             ],
             "internalType": "struct MainSupplyChain.st_certificateDetails",
@@ -522,6 +614,11 @@
                 "internalType": "struct MainSupplyChain.st_userCertificate",
                 "name": "bpom",
                 "type": "tuple"
+              },
+              {
+                "internalType": "string",
+                "name": "ipfsCert",
+                "type": "string"
               }
             ],
             "internalType": "struct MainSupplyChain.st_certificateDetails",
@@ -619,6 +716,11 @@
                     "internalType": "struct MainSupplyChain.st_userCertificate",
                     "name": "bpom",
                     "type": "tuple"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "ipfsCert",
+                    "type": "string"
                   }
                 ],
                 "internalType": "struct MainSupplyChain.st_certificateDetails",
@@ -721,6 +823,11 @@
                     "internalType": "struct MainSupplyChain.st_userCertificate",
                     "name": "bpom",
                     "type": "tuple"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "ipfsCert",
+                    "type": "string"
                   }
                 ],
                 "internalType": "struct MainSupplyChain.st_certificateDetails",
@@ -1017,7 +1124,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+    "address": "0x5eb3Bc0a489C5A8288765d2336659EbCA68FCd00",
     "abi": [
       {
         "inputs": [
@@ -1138,6 +1245,12 @@
           },
           {
             "indexed": false,
+            "internalType": "uint256",
+            "name": "tipeObat",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
             "internalType": "string",
             "name": "factoryInstance",
             "type": "string"
@@ -1225,11 +1338,6 @@
             "internalType": "string",
             "name": "_instanceName",
             "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "_instanceAddr",
-            "type": "address"
           }
         ],
         "name": "approveNie",
@@ -1278,6 +1386,16 @@
             "internalType": "enum EnumsLibrary.TipeProduk",
             "name": "_tipeProduk",
             "type": "uint8"
+          },
+          {
+            "internalType": "enum EnumsLibrary.TipePermohonanCdob",
+            "name": "_tipeObat",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "_cpotbIpfs",
+            "type": "string"
           }
         ],
         "name": "createObat",
@@ -1392,6 +1510,21 @@
                 "internalType": "address",
                 "name": "factoryAddr",
                 "type": "address"
+              },
+              {
+                "internalType": "enum EnumsLibrary.TipePermohonanCdob",
+                "name": "tipeObat",
+                "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "cpotbHash",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "cdobHash",
+                "type": "string"
               }
             ],
             "internalType": "struct ObatShared.st_obatDetails",
@@ -1668,9 +1801,21 @@
         "name": "getJenisSediaanAvail",
         "outputs": [
           {
-            "internalType": "uint8[]",
+            "components": [
+              {
+                "internalType": "string",
+                "name": "ipfsCert",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "tipePermohonan",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct MainSupplyChain.st_approvedCert[]",
             "name": "",
-            "type": "uint8[]"
+            "type": "tuple[]"
           }
         ],
         "stateMutability": "view",
@@ -1814,7 +1959,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "address": "0x36C02dA8a0983159322a80FFE9F24b1acfF8B570",
     "abi": [
       {
         "inputs": [
@@ -1831,6 +1976,11 @@
           {
             "internalType": "address",
             "name": "_obatSharedAddr",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_mainSupplyChainAddr",
             "type": "address"
           }
         ],
@@ -2012,6 +2162,11 @@
             "internalType": "uint8",
             "name": "_orderQuantity",
             "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "_cdobHash",
+            "type": "string"
           }
         ],
         "name": "createOrder",
@@ -2497,6 +2652,19 @@
         "type": "function"
       },
       {
+        "inputs": [],
+        "name": "mainSupplyChain",
+        "outputs": [
+          {
+            "internalType": "contract MainSupplyChain",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [
           {
             "internalType": "string",
@@ -2572,6 +2740,30 @@
             "internalType": "struct OrderManagement.st_orderTimestamp",
             "name": "",
             "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_pbfName",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "_tipeObat",
+            "type": "uint8"
+          }
+        ],
+        "name": "pbfAvailableToBuy",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "ipfsCert",
+            "type": "string"
           }
         ],
         "stateMutability": "view",

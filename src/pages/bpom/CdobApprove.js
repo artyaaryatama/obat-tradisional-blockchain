@@ -2,28 +2,27 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
+import { create } from 'ipfs-http-client';
 
 import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 
+const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 const MySwal = withReactContent(Swal);
 
 function CdobApprove() {
 
   const navigate = useNavigate();
   const [contract, setContract] = useState();
-  const [loader, setLoader] = useState(false);
-  
-  const [isApproved, setIsApproved] = useState(false);
-  const [numberCdob, setNumberCdob] = useState("");
   const [dataCdob, setDataCdob] = useState([]);
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
 
   const tipePermohonanMap = {
     0: "Obat Lain",
     1: "CCP (Cold Chain Product)",
+    2: "Narkotika"
   };
 
   const statusMap = {
@@ -197,7 +196,7 @@ function CdobApprove() {
 
       const [cdobId, cdobNumber, cdobDetail, tipePermohonan] = detailCdobCt
 
-      const [status, timestampRequest, timestampApprove, sender, bpom] = cdobDetail
+      const [status, timestampRequest, timestampApprove, sender, bpom, cdobIpfs] = cdobDetail
 
       const detailCdob = {
         cdobId: cdobId,
@@ -212,9 +211,8 @@ function CdobApprove() {
         bpomName : bpom[0] ? bpom[0] : "-",
         bpomInstance: bpom[2] ? bpom[2] : "-",
         bpomAddr: bpom[1] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
+        cdobIpfs: cdobIpfs ? cdobIpfs : "-"
       };
-
-      console.log(detailCdob.timestampApprove);
 
       if(detailCdob.status === 'Approved'){
         MySwal.fire({
@@ -256,6 +254,22 @@ function CdobApprove() {
                     </li>
                     <li className="input">
                       <p>{detailCdob.bpomAddr}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>IPFS CDOB</p> 
+                    </li>
+                    <li className="input">
+                      <a
+                        href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View CDOB on IPFS
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
                     </li>
                   </ul>
                 </div>
@@ -538,7 +552,7 @@ function CdobApprove() {
                   allowOutsideClick: false
                 })
 
-                approveCdob(cdobNumber, cdobId, tipePermohonan)
+                generateIpfs(cdobNumber, detailCdob)
               }
             })
           } 
@@ -551,10 +565,55 @@ function CdobApprove() {
     }
   }
 
-  const approveCdob = async(certNumber, certTd, tp) => {
+  const generateIpfs = async (cdobNumber, detailCdob) => {
+
+    console.log(detailCdob);
+    console.log(cdobNumber);
+
+
+    const date = new Date();
+    const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
+
+    const cpotbData = {
+      certName: "CDOB",
+      tipePermohonan: detailCdob.tipePermohonan,
+      certNumber: cdobNumber,
+      timestampRequest: detailCdob.timestampRequest, 
+      timestampApprove: formattedDate,
+      senderInstance: detailCdob.pbfName,
+      senderAddress: detailCdob.pbfAddr,
+      bpomInstance: userdata.instanceName,
+      bpomAddress: userdata.address
+    }
 
     try {
-      const approveCt = await contract.approveCdob([certNumber, certTd, userdata.name, userdata.instanceName], tp)
+      const result = await client.add(JSON.stringify(cpotbData), 
+        { progress: (bytes) => 
+          console.log(`Uploading data CPOTB: ${bytes} bytes uploaded`) }
+      );
+
+      if (result.path) {
+        console.log("IPFS Hash:", result.path);
+        
+        approveCdob(cdobNumber, detailCdob.cdobId, detailCdob.tipePermohonan, result.path);
+
+      }
+
+    } catch (error) {
+      errAlert(error, "Can't upload Data Obat to IPFS."); 
+    }
+  } 
+
+  const approveCdob = async(certNumber, certTd, tp, cdobIpfs) => {
+
+    const tpMap = {
+      "Obat Lain" : 0,
+      "CCP (Cold Chain Product)" : 1,
+      "Narkotika" : 2
+    }; 
+
+    try {
+      const approveCt = await contract.approveCdob([certNumber, certTd, userdata.name, userdata.instanceName], cdobIpfs, tpMap[tp])
 
       if(approveCt){
         MySwal.update({
@@ -567,7 +626,7 @@ function CdobApprove() {
         handleEventCdobApproved(bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, approveCt.hash);
       });
     } catch (error) {
-      errAlert(error, "Can't Approve CPOTB")
+      errAlert(error, "Can't Approve CDOB")
     }
   } 
 

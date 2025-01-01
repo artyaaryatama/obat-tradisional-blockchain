@@ -30,6 +30,12 @@ function StockObatFactory() {
     1: "Stock Empty",
   };
 
+  const tipeObatMap = {
+    0n: "Obat Lain",
+    1n: "Cold Chain Product",
+    2n: "Narkotika"
+  };
+
   const obatStatusMap = {
     0: "In Local Production",
     1: "Requested NIE",
@@ -128,9 +134,11 @@ function StockObatFactory() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+
+      console.log(cpotbHash);
 
       const [dataObat, obatIpfs] = detailBatchCt
 
@@ -152,7 +160,8 @@ function StockObatFactory() {
         factoryAddr: factoryAddr,
         factoryInstanceName: factoryInstance,
         bpomAddr: bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddr,
-        bpomInstanceNames:  bpomInstance ?  bpomInstance : "-"
+        bpomInstanceNames:  bpomInstance ?  bpomInstance : "-",
+        tipeObat: tipeObatMap[tipeObat]
       };
 
       console.log(detailObatCt);
@@ -189,7 +198,18 @@ function StockObatFactory() {
                           <p>Di Produksi oleh</p>
                         </li>
                         <li className="input">
-                          <p>{detailObat.factoryInstanceName}</p>
+                          <p>{detailObat.factoryInstanceName}
+                            <span className='linked'>
+                              <a
+                                href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                (CPOTB Details
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                              </a>
+                            </span>
+                          </p>
                         </li>
                       </ul>
 
@@ -227,6 +247,15 @@ function StockObatFactory() {
                       </li>
                       <li className="input">
                         <p>{detailObat.tipeProduk}</p> 
+                      </li>
+                    </ul>
+
+                    <ul>
+                      <li className="label">
+                        <p>Tipe Obat</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailObat.tipeObat}</p> 
                       </li>
                     </ul>
 

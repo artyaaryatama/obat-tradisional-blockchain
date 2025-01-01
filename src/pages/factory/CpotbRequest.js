@@ -14,13 +14,21 @@ const MySwal = withReactContent(Swal);
 function CpotbRequest() {
   const [contract, setContract] = useState();
   const navigate = useNavigate();
-  const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'))
 
   const [jenisSediaan, setJenisSediaan] = useState(""); 
   const [loader, setLoader] = useState(false)
 
   const today = new Date();
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short'
+  }
+
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
   const js = {
@@ -145,7 +153,7 @@ function CpotbRequest() {
     setLoader(false)
   }
 
-  const requestCpotb = async (e) => {
+  const mountData = async (e) => {
     e.preventDefault();
 
     setLoader(true)
@@ -177,22 +185,23 @@ function CpotbRequest() {
     try {
       const requestCpotbCt = await contract.requestCpotb([id, userdata.name, userdata.instanceName], jenisSediaanInt);
       console.log('Receipt:', requestCpotbCt);
-
+  
       if(requestCpotbCt){
         MySwal.update({
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
         });
       }
-
+  
       contract.once("evt_cpotbRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
         handleEventCpotbRequested(_name, _userAddr, _jenisSediaan, _timestampRequest, requestCpotbCt.hash);
       });
-
+  
     } catch (err) {
       setLoader(false)
       errAlert(err, "Error making request!");
     }
+
   };
 
   const handleOptionJenisSediaan = (e) => {
@@ -206,7 +215,7 @@ function CpotbRequest() {
         <h1>Pengajuan Data Sertifikat CPOTB Baru</h1>
       </div>
       <div className='container-form'>
-        <form onSubmit={requestCpotb}>
+        <form onSubmit={mountData}>
           <ul>
             <li className="label">
               <label htmlFor="formatedDate">Tanggal Pengajuan</label>

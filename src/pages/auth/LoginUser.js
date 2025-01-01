@@ -149,6 +149,7 @@ function LoginPage() {
     }
     
   }
+  
   const formattedAddress = (addr) => {
     if (!addr) return "";
     return `${addr.slice(0, 16)}...${addr.slice(-14)}`;

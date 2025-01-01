@@ -30,6 +30,12 @@ function CreateOrderPbf() {
     1: "Suplemen Kesehatan"
   };
 
+  const tipeObatMap = {
+    0n: "Obat Lain",
+    1n: "Cold Chain Product",
+    2n: "Narkotika"
+  };
+
   const options = {
     year: 'numeric',
     month: 'long',
@@ -214,7 +220,7 @@ function CreateOrderPbf() {
 
       const [statusStok, namaProduct, batchNamee, obatQuantity, factoryInstancee] = dataObat
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -234,7 +240,9 @@ function CreateOrderPbf() {
         factoryAddr: factoryAddr,
         factoryInstanceName: factoryInstance,
         bpomAddr: bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddr,
-        bpomInstanceNames:  bpomInstance ?  bpomInstance : "-"
+        bpomInstanceNames:  bpomInstance ?  bpomInstance : "-",
+        tipeObat: tipeObatMap[tipeObat]
+
       };
 
       MySwal.fire({
@@ -290,6 +298,15 @@ function CreateOrderPbf() {
 
                     <ul>
                       <li className="label">
+                        <p>Tipe Obat</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailObat.tipeObat}</p> 
+                      </li>
+                    </ul>   
+
+                    <ul>
+                      <li className="label">
                         <p>Kemasan Obat</p>
                       </li>
                       <li className="input">
@@ -328,7 +345,18 @@ function CreateOrderPbf() {
                         <p>Factory Instance</p>
                       </li>
                       <li className="input">
-                        <p>{detailObat.factoryInstanceName}</p>
+                        <p>{detailObat.factoryInstanceName}
+                          <span className='linked'>
+                            <a
+                              href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              (CPOTB Details
+                              <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                            </a>
+                          </span>
+                        </p>
                       </li>
                     </ul>
 
@@ -361,7 +389,7 @@ function CreateOrderPbf() {
             allowOutsideClick: false,
           })
 
-          orderObat(id, factoryInstance, namaProduk, obatQuantity, batchName)
+          orderObat(id, factoryInstance, namaProduk, obatQuantity, batchName, tipeObat)
         }
       })
       
@@ -370,7 +398,7 @@ function CreateOrderPbf() {
     }
   }
 
-  const orderObat = async (id, factoryInstance, namaProduk, orderQuantity, batchName) => {
+  const orderObat = async (id, factoryInstance, namaProduk, orderQuantity, batchName, tipeObat) => {
 
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
@@ -383,18 +411,33 @@ function CreateOrderPbf() {
     try {
       console.log(orderId, id, namaProduk, factoryInstance, userData.instanceName, orderQuantity);
 
-      const createOrderCt = await contracts.orderManagement.createOrder("",orderId, id, batchName, namaProduk, userData.instanceName, factoryInstance, orderQuantity);
+      const checkAvailCt = await contracts.orderManagement.pbfAvailableToBuy(userData.instanceName, tipeObat);
 
-      if(createOrderCt){
-        MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+      console.log(checkAvailCt);
+
+      if(checkAvailCt !== "") {
+
+        const createOrderCt = await contracts.orderManagement.createOrder("",orderId, id, batchName, namaProduk, userData.instanceName, factoryInstance, orderQuantity, checkAvailCt);
+  
+        if(createOrderCt){
+          MySwal.update({
+            title: "Processing your transaction...",
+            text: "This may take a moment. Hang tight! ⏳"
+          });
+        }
+  
+        contracts.orderManagement.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+          handleEventCreateOrder(userData.instanceName, orderId, id, _batchName, _namaProduk, _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, createOrderCt.hash);
+        });
+
+      } else {
+        MySwal.fire({
+          title: "CDOB Not Found",
+          text: "PBF does not have the required CDOB for the selected medicine type.",
+          icon: 'error',
         });
       }
 
-      contracts.orderManagement.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
-        handleEventCreateOrder(userData.instanceName, orderId, id, _batchName, _namaProduk, _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, createOrderCt.hash);
-      });
 
     } catch (error) {
       errAlert(error, "Can't make an obat order.")

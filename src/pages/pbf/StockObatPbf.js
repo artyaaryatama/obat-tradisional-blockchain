@@ -21,15 +21,15 @@ function StockObatPbf() {
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObatReady, setDataObatReady] = useState([]);
   
-  const obatStatusMap = {
-    0: "Order Placed",
-    1: "Order Shipped",
-    2: "Order Completed"
-  };
-
   const stokStatusMap = {
     0: "Stock Available",
     1: "Stock Empty",
+  };
+
+  const tipeObatMap = {
+    0n: "Obat Lain",
+    1n: "Cold Chain Product",
+    2n: "Narkotika"
   };
 
   const tipeProdukMap = {
@@ -136,13 +136,15 @@ function StockObatPbf() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
       const [orderIdd, obatId, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = detailOrderCt
 
       const [timestampOrder, timestampShipped, timestampComplete] = orderTimestampCt
+
+      console.log(statusOrder);
 
       const detailObat = {
         obatId: id,
@@ -160,7 +162,8 @@ function StockObatPbf() {
         factoryAddr: factoryAddr,
         factoryInstance: factoryInstance,
         bpomAddr: bpomAddr ,
-        bpomInstance:  bpomInstance 
+        bpomInstance:  bpomInstance,
+        tipeObat: tipeObatMap[tipeObat]
       };
 
       const timestamps = {
@@ -200,7 +203,18 @@ function StockObatPbf() {
                           <p>Factory Instance</p>
                         </li>
                         <li className="input">
-                          <p>{factoryInstance}</p>
+                          <p>{factoryInstance}
+                            <span className='linked'>
+                              <a
+                                href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                (CPOTB Details
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                              </a>
+                            </span>
+                          </p>
                         </li>
                       </ul>
                     
@@ -218,13 +232,24 @@ function StockObatPbf() {
                           <p>PBF Instance</p>
                         </li>
                         <li className="input">
-                          <p>{buyerUser[0]}</p>
+                          <p>{buyerUser[0]}
+                            <span className='linked'>
+                              <a
+                                href={`http://localhost:3000/public/certificate/${cdobHash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                (CDOB Details
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                              </a>
+                            </span>
+                          </p>
                         </li>
                       </ul>
                     
                       <ul>
                         <li className="label">
-                          <p>PBF Instance</p>
+                          <p>PBF Address</p>
                         </li>
                         <li className="input">
                           <p>{buyerUser[1]}</p>
@@ -237,7 +262,7 @@ function StockObatPbf() {
                         </li>
                         <li className="input">
                           {
-                            statusOrder === 2n ? 
+                            statusOrder !== 2n ? 
                             <p> {orderQuantity.toString()} Obat (Stock Empty)</p> : 
                             <p> {orderQuantity.toString()} Obat (Stock Available)</p>
                           }
@@ -268,6 +293,15 @@ function StockObatPbf() {
                       </li>
                       <li className="input">
                         <p>{detailObat.tipeProduk}</p> 
+                      </li>
+                    </ul>
+
+                    <ul>
+                      <li className="label">
+                        <p>Tipe Obat</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailObat.tipeObat}</p> 
                       </li>
                     </ul>
 

@@ -124,9 +124,8 @@ function ManageCpotb() {
 
       const [cpotbId, cpotbNumber, cpotbDetail, jenisSediaan] = detailCpotbCt
 
-      const [status, timestampRequest, timestampApprove, sender, bpom] = cpotbDetail
+      const [status, timestampRequest, timestampApprove, sender, bpom, cpotbIpfs] = cpotbDetail
 
-      console.log(status);
       const detailCpotb = {
         cpotbId: cpotbId,
         cpotbNumber: cpotbNumber ? cpotbNumber : "-",
@@ -140,7 +139,9 @@ function ManageCpotb() {
         bpomName : bpom[0] ? bpom[0] : "-",
         bpomInstance: bpom[2] ? bpom[2] : "-",
         bpomAddr: bpom[1] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
+        cpotbIpfs: cpotbIpfs ? cpotbIpfs : "-"
       };
+      console.log(detailCpotb.cpotbIpfs);
 
       MySwal.fire({
         title: "Detail Sertifikat CPOTB",
@@ -183,6 +184,25 @@ function ManageCpotb() {
                     <p>{detailCpotb.bpomAddr}</p> 
                   </li>
                 </ul>
+
+                {
+                  detailCpotb.cpotbIpfs === "-" ? <div></div> : 
+                    <ul>
+                      <li className="label">
+                        <p>IPFS CPOTB</p> 
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:3000/public/certificate/${detailCpotb.cpotbIpfs}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View CPOTB on IPFS
+                          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                }
               </div>
 
               <div className="col">

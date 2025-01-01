@@ -13,6 +13,9 @@ contract ObatShared {
     EnumsLibrary.TipeProduk tipeProduk;
     string factoryInstance;
     address factoryAddr;
+    EnumsLibrary.TipePermohonanCdob tipeObat;
+    string cpotbHash;
+    string cdobHash;
   }
 
   struct st_obatProduction {
@@ -72,7 +75,9 @@ contract ObatShared {
     string memory _kemasan,
     EnumsLibrary.TipeProduk _tipeProduk,
     string memory _factoryInstance,
-    address _factoryAddr
+    address _factoryAddr,
+    EnumsLibrary.TipePermohonanCdob _tipeObat,
+    string memory _cpotbHash
   ) external {
       require(bytes(_obatId).length > 0, "Invalid ID");
 
@@ -84,7 +89,10 @@ contract ObatShared {
         kemasan: _kemasan,
         tipeProduk: _tipeProduk,
         factoryInstance: _factoryInstance,
-        factoryAddr: _factoryAddr
+        factoryAddr: _factoryAddr,
+        tipeObat: _tipeObat, 
+        cpotbHash: _cpotbHash,
+        cdobHash: ""
       });
   }
 
@@ -96,6 +104,14 @@ contract ObatShared {
       require(bytes(_obatId).length > 0, "Invalid ID");
       return obatDetailsById[_obatId];
   }
+
+  function addCdobId(
+    string memory _obatId,
+    string memory _cdobHash
+  ) external {
+      require(bytes(_obatId).length > 0, "Invalid ID");
+      obatDetailsById[_obatId].cdobHash= _cdobHash; 
+  } 
 
   // status: 200ok
   function addBatchProduction(
@@ -362,3 +378,4 @@ contract ObatShared {
     return obatInstance;
   }
 }
+

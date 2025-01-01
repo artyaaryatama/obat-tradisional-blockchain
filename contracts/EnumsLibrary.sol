@@ -9,5 +9,5 @@ library EnumsLibrary {
     enum Roles { Factory, PBF, BPOM, Retailer }
     enum TipeProduk { obatTradisional, suplemenKesehatan }
     enum TipePermohonanCpotb { Tablet, Kapsul, KapsulLunak, SerbukOral, CairanOral, CairanObatDalam, CairanObatLuar, EdibleFilm, Pil }
-    enum TipePermohonanCdob { ObatLain, CCP }
+    enum TipePermohonanCdob { ObatLain, CCP, Narkotika }
 }

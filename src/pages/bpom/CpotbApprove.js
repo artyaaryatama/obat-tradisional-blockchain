@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
+import { create } from 'ipfs-http-client';
 
 import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
@@ -9,14 +10,12 @@ import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 
 const MySwal = withReactContent(Swal);
+const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 
 function CpotbApprove() {
 
   const navigate = useNavigate();
   const [contract, setContract] = useState();
-  const [loader, setLoader] = useState(false)
-  
-  const [isApproved, setIsApproved] = useState(false);
   const [dataCpotb, setDataCpotb] = useState([])
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
 
@@ -204,7 +203,7 @@ function CpotbApprove() {
 
       const [cpotbId, cpotbNumber, cpotbDetail, jenisSediaan] = detailCpotbCt
 
-      const [status, timestampRequest, timestampApprove, sender, bpom] = cpotbDetail
+      const [status, timestampRequest, timestampApprove, sender, bpom, cpotbIpfs] = cpotbDetail
 
       const detailCpotb = {
         cpotbId: cpotbId,
@@ -219,6 +218,7 @@ function CpotbApprove() {
         bpomUserName : bpom[0] ? bpom[0] : "-",
         bpomInstance: bpom[2] ? bpom[2] : "-",
         bpomAddr: bpom[1] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
+        cpotbIpfs: cpotbIpfs ? cpotbIpfs : "-"
       };
 
       if(detailCpotb.status === 'Approved'){
@@ -261,6 +261,22 @@ function CpotbApprove() {
                     </li>
                     <li className="input">
                       <p>{detailCpotb.bpomAddr}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>IPFS CPOTB</p> 
+                    </li>
+                    <li className="input">
+                      <a
+                        href={`http://localhost:3000/public/certificate/${detailCpotb.cpotbIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View CPOTB on IPFS
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
                     </li>
                   </ul>
                 </div>
@@ -542,7 +558,7 @@ function CpotbApprove() {
                   allowOutsideClick: false
                 })
 
-                approveCpotb(cpotbNumber, id, detailCpotb.jenisSediaan)
+                generateIpfs(cpotbNumber, detailCpotb)
               }
             })
           } 
@@ -555,7 +571,44 @@ function CpotbApprove() {
     }
   }
 
-  const approveCpotb = async(certNumber, certTd, jenisSediaan) => {
+  const generateIpfs = async (cpotbNumber, detailCpotb) => {
+
+    console.log(detailCpotb);
+    console.log(cpotbNumber);
+
+
+    const date = new Date();
+    const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
+
+    const cpotbData = {
+      certName: "CPOTB",
+      tipePermohonan: detailCpotb.jenisSediaan,
+      certNumber: cpotbNumber,
+      timestampRequest: detailCpotb.timestampRequest, 
+      timestampApprove: formattedDate,
+      senderInstance: detailCpotb.factoryInstanceName,
+      senderAddress: detailCpotb.factoryAddr,
+      bpomInstance: userdata.instanceName,
+      bpomAddress: userdata.address
+    }
+
+    try {
+      const result = await client.add(JSON.stringify(cpotbData), 
+        { progress: (bytes) => 
+          console.log(`Uploading data CPOTB: ${bytes} bytes uploaded`) }
+      );
+
+      if (result.path) {
+        console.log("IPFS Hash:", result.path);
+        approveCpotb(cpotbNumber, detailCpotb.cpotbId, detailCpotb.jenisSediaan, result.path);
+      }
+
+    } catch (error) {
+      errAlert(error, "Can't upload Data Obat to IPFS."); 
+    }
+  } 
+
+  const approveCpotb = async(certNumber, certTd, jenisSediaan, cpotbIpfs) => {
 
     const jenisMap = {
       "Tablet": 0n,
@@ -568,12 +621,15 @@ function CpotbApprove() {
       "Film Strip / Edible Film": 7n,
       "Pil": 8n
     };
+
     console.log(certNumber, certTd, jenisMap[jenisSediaan]);
 
     try {
-      const jenis = jenisMap[jenisSediaan];
       
-      const approveCt = await contract.approveCpotb([certNumber, certTd, userdata.name, userdata.instanceName], jenis)
+      const approveCt = await contract.approveCpotb(
+        [certNumber, certTd, userdata.name, userdata.instanceName], 
+        cpotbIpfs,
+        jenisMap[jenisSediaan])
       console.log(approveCt);
 
       if(approveCt){

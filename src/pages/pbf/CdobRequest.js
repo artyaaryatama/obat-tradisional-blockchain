@@ -20,7 +20,14 @@ function CdobRequest() {
   const [loader, setLoader] = useState(false)
 
   const today = new Date();
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short'
+  }
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
   useEffect(() => {
@@ -71,6 +78,7 @@ function CdobRequest() {
     const tp = {
       0: "Obat Lain",
       1: "CCP (Cold Chain Product)",
+      2: "Narkotika"
     };
   
     MySwal.fire({
@@ -232,6 +240,7 @@ function CdobRequest() {
               >
                 <option value="" disabled>Select Jenis Sediaan</option>
                 <option value="CCP">CCP (Cold Chain Product)</option>
+                <option value="Narkotika">Narkotika</option>
                 <option value="ObatLain">Obat Lain</option>
               </select>
             </li>

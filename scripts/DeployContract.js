@@ -28,7 +28,7 @@ async function main() {
 
     // Deploy OrderObatTradisional
     const OrderManagement = await hre.ethers.getContractFactory("OrderManagement");
-    const deployedOrderManagement = await OrderManagement.deploy(deployedObatTradisional.target, deployedRoleManager.target, deployedObatShared.target);
+    const deployedOrderManagement = await OrderManagement.deploy(deployedObatTradisional.target, deployedRoleManager.target, deployedObatShared.target, deployedMainSupplyChain.target);
     await deployedOrderManagement.waitForDeployment();
     console.log("OrderManagement deployed to:", deployedOrderManagement.target);
 

@@ -42,6 +42,12 @@ function ManageOrderPbf() {
     1: "Suplemen Kesehatan"
   };
 
+  const tipeObatMap = {
+    0n: "Obat Lain",
+    1n: "Cold Chain Product",
+    2n: "Narkotika"
+  };
+
   const options = {
     year: 'numeric',
     month: 'long',
@@ -224,7 +230,7 @@ function ManageOrderPbf() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -248,7 +254,8 @@ function ManageOrderPbf() {
         factoryAddr: factoryAddr,
         factoryInstance: factoryInstance,
         bpomAddr: bpomAddr ,
-        bpomInstance:  bpomInstance 
+        bpomInstance:  bpomInstance,
+        tipeObat: tipeObatMap[tipeObat]
       };
       
       const detailOrder = {
@@ -329,7 +336,18 @@ function ManageOrderPbf() {
                             <p>Factory Instance</p>
                           </li>
                           <li className="input">
-                            <p>{factoryInstance}</p>
+                            <p>{factoryInstance}
+                              <span className='linked'>
+                                <a
+                                  href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  (CPOTB Details
+                                  <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                                </a>
+                              </span>
+                            </p>
                           </li>
                         </ul>
 
@@ -366,6 +384,15 @@ function ManageOrderPbf() {
                         </li>
                         <li className="input">
                           <p>{detailObat.tipeProduk}</p> 
+                        </li>
+                      </ul>
+  
+                      <ul>
+                        <li className="label">
+                          <p>Tipe Obat</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.tipeObat}</p> 
                         </li>
                       </ul>
   
@@ -425,7 +452,7 @@ function ManageOrderPbf() {
           }
         }).then((result) => {
           if (result.isConfirmed) {
-            generateIpfs(detailObat, detailOrder, timestamps, orderId, batchName)
+            generateIpfs(detailObat, detailOrder, timestamps, orderId, batchName, cpotbHash, cdobHash)
           }
         })
 
@@ -489,7 +516,18 @@ function ManageOrderPbf() {
                             <p>Factory Instance</p>
                           </li>
                           <li className="input">
-                            <p>{factoryInstance}</p>
+                            <p>{factoryInstance}
+                              <span className='linked'>
+                                <a
+                                  href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  (CPOTB Details
+                                  <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                                </a>
+                              </span>
+                            </p>
                           </li>
                         </ul>
 
@@ -526,6 +564,15 @@ function ManageOrderPbf() {
                         </li>
                         <li className="input">
                           <p>{detailObat.tipeProduk}</p> 
+                        </li>
+                      </ul>
+
+                      <ul>
+                        <li className="label">
+                          <p>Tipe Obat</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.tipeObat}</p> 
                         </li>
                       </ul>
   
@@ -625,7 +672,7 @@ function ManageOrderPbf() {
     }
   }
   
-  const generateIpfs = async(dataObat, dataOrder, timestamps, orderId, batchName) => {
+  const generateIpfs = async(dataObat, dataOrder, timestamps, orderId, batchName, cpotbHash, cdobHash) => {
     MySwal.fire({
       title:"Preparing your data",
       text:"Your request is on its way. This won't take long. 🚀",
@@ -651,8 +698,9 @@ function ManageOrderPbf() {
       const obat = {
         batchName: batchName,
         obatIdPackage: `OT-${i}${timestampYear}-${randomFourLetters}`,
+        cpotbHash: cpotbHash,
+        cdobHash: cdobHash,
         dataObat:  {
-          obatIdProduk: dataObat.obatId,
           namaProduk: dataObat.namaObat,
           merk: dataObat.merk,
           klaim: dataObat.klaim,

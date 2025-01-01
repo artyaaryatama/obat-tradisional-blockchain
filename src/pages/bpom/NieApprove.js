@@ -28,6 +28,12 @@ function NieApprove() {
     2: "Approved NIE"
   };
 
+  const tipeObatMap = {
+    0n: "Obat Lain",
+    1n: "Cold Chain Product",
+    2n: "Narkotika"
+  };
+
   const tipeProdukMap = {
     0: "Obat Tradisional",
     1: "Suplemen Kesehatan"
@@ -188,7 +194,7 @@ function NieApprove() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
       console.log(parseInt(nieStatus));
@@ -208,7 +214,8 @@ function NieApprove() {
         factoryAddr: factoryAddr,
         factoryInstanceName: factoryInstance,
         bpomAddr: bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddr,
-        bpomInstanceNames:  bpomInstance ?  bpomInstance : "-"
+        bpomInstanceNames:  bpomInstance ?  bpomInstance : "-",
+        tipeObat: tipeObatMap[tipeObat]
       };
 
       console.log(detailObatCt);
@@ -244,6 +251,15 @@ function NieApprove() {
                     </li>
                     <li className="input">
                       <p>{detailObat.tipeProduk}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.tipeObat}</p> 
                     </li>
                   </ul>
   
@@ -318,6 +334,16 @@ function NieApprove() {
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryInstanceName}
+                        <span className='linked'>
+                          <a
+                            href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            (CPOTB Details
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                          </a>
+                        </span>
                       </p>
                     </li>
                   </ul>
@@ -400,6 +426,15 @@ function NieApprove() {
                       <p>{detailObat.tipeProduk}</p> 
                     </li>
                   </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.tipeObat}</p> 
+                    </li>
+                  </ul>
   
                   <ul>
                     <li className="label">
@@ -473,6 +508,16 @@ function NieApprove() {
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryInstanceName}
+                        <span className='linked'>
+                          <a
+                            href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            (CPOTB Details
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                          </a>
+                        </span>
                       </p>
                     </li>
                   </ul>
@@ -610,13 +655,27 @@ function NieApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="factoryInstanceName">Tipe Produk</label>
+                          <label htmlFor="tipeProduk">Tipe Produk</label>
                         </li>
                         <li className="input">
                           <input
                             type="text"
-                            id="factoryInstanceName"
+                            id="tipeProduk"
                             value={detailObat.tipeProduk}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="tipeObat">Tipe Obat</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="tipeObat"
+                            value={detailObat.tipeObat}
                             readOnly
                           />
                         </li>
@@ -648,6 +707,24 @@ function NieApprove() {
                             readOnly
                           />
                         </li>
+                      </ul>
+
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="factoryAddr">Factory CPOTB</label>
+                        </li>
+                        <li className="input">
+                          <span className='linked-i'>
+                            <a
+                              href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              CPOTB Details
+                              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </span>
+                    </li>
                       </ul>
 
                       <ul>
@@ -700,7 +777,7 @@ function NieApprove() {
   const approveNie = async(id, nieNumber) => {
 
     try {
-      const approveNieCt =  await contract.approveNie(id, nieNumber, userdata.instanceName, userdata.address)
+      const approveNieCt =  await contract.approveNie(id, nieNumber, userdata.instanceName)
       console.log(approveNieCt);
 
       if(approveNieCt){

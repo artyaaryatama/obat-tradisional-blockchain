@@ -64,9 +64,6 @@ function Navbar() {
                     <li className={currentPath === '/retailer-orders' || currentPath === '/create-retailer-order' || currentPath === '/obat-available-retailer' ? 'active' : ''}>
                       <Link to="/retailer-orders">ORDER OBAT</Link>
                     </li>
-                    <li className={currentPath === '/nie-approval' ? 'active' : ''}>
-                      <Link to="/error">CEK OBAT</Link>
-                    </li>
                   </>
                 )}
               </ul>

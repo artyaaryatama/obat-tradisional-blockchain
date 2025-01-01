@@ -30,8 +30,8 @@ function CheckObatIpfs() {
   const [bpomAddr, setBpomAddr] = useState("");
   const [bpomInstanceName, setBpomInstanceName] = useState("");
   const [statusNie, setStatusNie] = useState("");
-  const [statusOrderPbf, setStatusOrderPbf] = useState("");
-  const [statusOrderRetailer, setStatusOrderRetailer] = useState("");
+  const [cpotbHash, setCpotbHash] = useState("");
+  const [cdobHash, setCdobHash] = useState("");
 
   useEffect(() => {
     document.title = "Check Obat Tradisional"; 
@@ -92,6 +92,7 @@ function CheckObatIpfs() {
         }
         console.log(detailOrderPbf);
         setDetailOrderPbf(detailOrderPbf)
+        setCdobHash(obatData.cdobHash)
       }
       
       if(obatData.dataOrderRetailer && Object.keys(obatData.dataOrderRetailer).length > 0) {
@@ -126,15 +127,11 @@ function CheckObatIpfs() {
       setBpomAddr(detailObat.bpomAddr);
       setBpomInstanceName(detailObat.bpomInstanceName);
       setStatusNie(detailObat.nieStatus)
+      setCpotbHash(obatData.cpotbHash)
     }
 
     getDetailData();
   }, []);
-
-  function getData() {
-  }
-
-  getData()
 
   return (
     <>
@@ -173,6 +170,16 @@ function CheckObatIpfs() {
                       <span className="label">Factory Instance</span>
                       <span>{factoryInstanceName}</span>
                       <span className='addr'> ({factoryAddr})</span>
+                      <span className='linked'>
+                        <a
+                          href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View CPOTB
+                          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </span>
                     </li>
                     <li className="info-item">
                       <span className="label">Merk</span>
@@ -253,6 +260,16 @@ function CheckObatIpfs() {
                           <span className="label">Instance PBF</span>
                           <span>{detailOrderPbf.senderInstanceName}</span>
                           <span className='addr'>({detailOrderPbf.senderAddress})</span>
+                          <span className='linked'>
+                            <a
+                              href={`http://localhost:3000/public/certificate/${cdobHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              View CDOB
+                              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </span>
                         </li>
                         <li className="info-item">
                           <span className="label">instance Factory</span>

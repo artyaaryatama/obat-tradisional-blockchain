@@ -31,6 +31,12 @@ function ManageOrderRetailer() {
     2: "Approved NIE"
   };
 
+  const tipeObatMap = {
+    0n: "Obat Lain",
+    1n: "Cold Chain Product",
+    2n: "Narkotika"
+  };
+
   const orderStatusMap = {
     0: "Order Placed",
     1: "Order Shipped",
@@ -106,7 +112,7 @@ function ManageOrderRetailer() {
       if (contracts) {
         try {
 
-          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromBuyer(userData.instanceName);
+          const listOrderedObatCt = await contracts.orderManagement(userData.instanceName);
 
           const tempData = [];
 
@@ -236,7 +242,7 @@ function ManageOrderRetailer() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -262,7 +268,8 @@ function ManageOrderRetailer() {
         factoryAddr: factoryAddr,
         factoryInstance: factoryInstance,
         bpomAddr: bpomAddr ,
-        bpomInstance:  bpomInstance 
+        bpomInstance:  bpomInstance,
+        tipeObat: tipeObatMap[tipeObat]
       };
 
       const timestamps = {
@@ -328,7 +335,18 @@ function ManageOrderRetailer() {
                               <p>Factory Instance</p>
                             </li>
                             <li className="input">
-                              <p>{factoryInstance}</p>
+                              <p>{factoryInstance}
+                                <span className='linked'>
+                                  <a
+                                    href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    (CPOTB Details
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                                  </a>
+                                </span>
+                              </p>
                             </li>
                           </ul>
                         
@@ -348,13 +366,24 @@ function ManageOrderRetailer() {
                             <p>PBF Instance</p>
                           </li>
                           <li className="input">
-                            <p>{prevBuyerInstance}</p>
+                            <p>{prevBuyerInstance}
+                              <span className='linked'>
+                                <a
+                                  href={`http://localhost:3000/public/certificate/${cdobHash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  (CDOB Details
+                                  <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                                </a>
+                              </span>
+                            </p>
                           </li>
                         </ul>
                       
                         <ul>
                           <li className="label">
-                            <p>PBF Instance</p>
+                            <p>PBF Address</p>
                           </li>
                           <li className="input">
                             <p>{prevBuyerAddr}</p>
@@ -394,6 +423,15 @@ function ManageOrderRetailer() {
                         </li>
                         <li className="input">
                           <p>{detailObat.tipeProduk}</p> 
+                        </li>
+                      </ul>
+
+                      <ul>
+                        <li className="label">
+                          <p>Tipe Obat</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.tipeObat}</p> 
                         </li>
                       </ul>
   
@@ -453,7 +491,7 @@ function ManageOrderRetailer() {
           }
         }).then((result) => {
           if (result.isConfirmed) {
-            generateIpfs(prevOrderId, detailObat, detailOrder, timestamps, orderId, batchName)
+            generateIpfs(prevOrderId, detailObat, detailOrder, timestamps, orderId, batchName, cpotbHash, cdobHash)
           }
         })
 
@@ -493,12 +531,24 @@ function ManageOrderRetailer() {
                             <p>{detailObat.namaProduk}</p> 
                           </li>
                         </ul>
+
                         <ul>
                           <li className="label">
                             <p>Factory Instance</p>
                           </li>
                           <li className="input">
-                            <p>{factoryInstance}</p>
+                            <p>{factoryInstance}
+                              <span className='linked'>
+                                <a
+                                  href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  (CPOTB Details
+                                  <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                                </a>
+                              </span>
+                            </p>
                           </li>
                         </ul>
                       
@@ -516,13 +566,24 @@ function ManageOrderRetailer() {
                             <p>PBF Instance</p>
                           </li>
                           <li className="input">
-                            <p>{prevBuyerInstance}</p>
+                            <p>{prevBuyerInstance}
+                              <span className='linked'>
+                                <a
+                                  href={`http://localhost:3000/public/certificate/${cdobHash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  (CDOB Details
+                                  <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                                </a>
+                              </span>
+                            </p>
                           </li>
                         </ul>
                       
                         <ul>
                           <li className="label">
-                            <p>PBF Instance</p>
+                            <p>PBF Address</p>
                           </li>
                           <li className="input">
                             <p>{prevBuyerAddr}</p>
@@ -562,6 +623,15 @@ function ManageOrderRetailer() {
                         </li>
                         <li className="input">
                           <p>{detailObat.tipeProduk}</p> 
+                        </li>
+                      </ul>
+
+                      <ul>
+                        <li className="label">
+                          <p>Tipe Obat</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.tipeObat}</p> 
                         </li>
                       </ul>
   
@@ -656,7 +726,7 @@ function ManageOrderRetailer() {
 
   }
   
-  const generateIpfs = async(prevOrderId, dataObat, dataOrder, timestamps, orderId, batchName) => {
+  const generateIpfs = async(prevOrderId, dataObat, dataOrder, timestamps, orderId, batchName, cpotbHash, cdobHash) => {
     MySwal.fire({ 
       title:"Processing your request...",
       text:"Your request is on its way. This won't take long. 🚀",
@@ -680,7 +750,7 @@ function ManageOrderRetailer() {
 
     try {
       const prevOrderPbfCt = await contracts.orderManagement.detailOrder(prevOrderId)
-      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
+      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(prevOrderId);
 
       const pbfTimestampOrder =  new Date(Number(orderTimestampCt[0]) * 1000).toLocaleDateString('id-ID', options)
       const pbfTimestampShipped = orderTimestampCt[1] !== 0n ? new Date(Number(orderTimestampCt[1]) * 1000).toLocaleDateString('id-ID', options) : "-"
@@ -690,8 +760,9 @@ function ManageOrderRetailer() {
         const obat = {
           batchName: batchName,
           obatIdPackage: `OT-${i}${timestampYear}-${randomFourLetters}`,
+          cpotbHash: cpotbHash,
+          cdobHash: cdobHash,
           dataObat:  {
-            obatIdProduk: dataObat.obatId,
             namaProduk: dataObat.namaProduk,
             merk: dataObat.merk,
             klaim: dataObat.klaim,

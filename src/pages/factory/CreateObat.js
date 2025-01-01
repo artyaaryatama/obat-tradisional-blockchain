@@ -29,10 +29,12 @@ function CreateObat() {
   const [komposisi, setKomposisi] = useState([""])
   const [tipeProduk, setTipeProduk] = useState("obatTradisonal")
   const [options, setOptions] = useState([]);
+  const [tipeObat, setTipeObat] = useState("CCP");
+  const [allJenisSediaan, setAllJenisSediaan] = useState([]); 
 
   const klaimValue = klaim.join("\n");
 
-  const js = {
+  const kemasanMap = {
     0n: "Tablet",
     1n: "Kapsul",
     2n: "Kapsul Lunak",
@@ -94,12 +96,17 @@ function CreateObat() {
           console.log("ini jenis sediaan yg ada", ListJenisSediaanCt);
   
           if (ListJenisSediaanCt.length > 0) {
-            const dynamicOptions = Object.entries(ListJenisSediaanCt).reduce((acc, [key, value]) => {
-              acc[value] = js[value]; 
-              return acc;
-            }, {});
+            const listJenisSediaan = ListJenisSediaanCt.map((item) => ({
+              cpotbHash: item[0], 
+              jenisSediaan: kemasanMap[item[1]] 
+            }));
+
+            const jenisSediaan = ListJenisSediaanCt.map((item) => kemasanMap[item[1]]);
             
-            setOptions(dynamicOptions)
+            console.log(listJenisSediaan)
+            console.log(jenisSediaan)
+            setOptions(jenisSediaan)
+            setAllJenisSediaan(listJenisSediaan)
           } else {
             errAlert(0, "No approved CPOTB records available.");
           }
@@ -114,8 +121,15 @@ function CreateObat() {
     loadJenisSediaan()
   }, [contract])
 
-  const handleEventObatCreated = (_namaProduk, _factoryInstanceName, _factoryAddr, txHash) =>{
-    
+  const handleEventObatCreated = (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, txHash) =>{
+    console.log(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, txHash)
+
+    const tipeObatMap = {
+      0n :"Obat Lain",
+      1n :"Cold Chain Product",
+      2n :"Narkotika"
+    };
+
     MySwal.fire({
       title: "Success Create Obat Tradisonal",
       html: (
@@ -126,6 +140,14 @@ function CreateObat() {
             </li>
             <li className="input">
               <p>{_namaProduk}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Tipe Obat</p> 
+            </li>
+            <li className="input">
+              <p>{tipeObatMap[_tipeObat]}</p> 
             </li>
           </ul>
           <ul>
@@ -191,6 +213,16 @@ function CreateObat() {
       "suplemenKesehatan": 1n
     };
 
+    const tipeObatMap = {
+      "ObatLain" : 0n,
+      "CCP" : 1n,
+      "Narkotika" : 2n
+    };
+
+    const selectedKemasanPrim = allJenisSediaan.find((item) => kemasanPrim === item.jenisSediaan);
+
+    console.log(selectedKemasanPrim);
+
     const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
     console.log(kemasanSet);
     
@@ -200,10 +232,13 @@ function CreateObat() {
       65 + Math.floor(Math.random() * 26)
     );
     const id = `ot-${randomFourDigit}${randomTwoLetters}`;
+    console.log(
+      id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeProdukMap[tipeProduk], tipeObatMap[tipeObat], selectedKemasanPrim.cpotbHash);
 
     try {
+      
       const createObatCt = await contract.createObat(
-      id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeProdukMap[tipeProduk]);
+      id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeProdukMap[tipeProduk], tipeObatMap[tipeObat], selectedKemasanPrim.cpotbHash);
       
       console.log('Receipt:', createObatCt);
         
@@ -214,8 +249,8 @@ function CreateObat() {
         });
       }
 
-      contract.once("evt_obatCreated", (_namaProduk, _factoryInstanceName, _factoryAddr) => {
-        handleEventObatCreated(_namaProduk, _factoryInstanceName, _factoryAddr, createObatCt.hash);
+      contract.once("evt_obatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
+        handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);
       });
 
     } catch (err) {
@@ -326,19 +361,40 @@ function CreateObat() {
 
           <ul>
             <li className="label">
-              <label htmlFor="tipeObat">Tipe Produk</label>
+              <label htmlFor="tipeProduk">Tipe Produk</label>
             </li>
             <li className="input">
               <div className="input-group">
                 <select
-                  name="tipeObat"
-                  id="tipeObat"
+                  name="tipeProduk"
+                  id="tipeProduk"
                   value={tipeProduk}
                   onChange= {(e) => setTipeProduk(e.target.value)}
                   required
                 >
                   <option value="obatTradisional">Obat Tradisional</option>
                   <option value="suplemenKesehatan">Suplemen Kesehatan</option>
+                </select>
+              </div>
+            </li>
+          </ul>
+
+          <ul>
+            <li className="label">
+              <label htmlFor="tipeObat">Tipe Obat</label>
+            </li>
+            <li className="input">
+              <div className="input-group">
+                <select
+                  name="tipeObat"
+                  id="tipeObat"
+                  value={tipeObat}
+                  onChange= {(e) => setTipeObat(e.target.value)}
+                  required
+                >
+                  <option value="CCP">Cold Chain Product</option>
+                  <option value="Narkotika">Narkotika</option>
+                  <option value="ObatLain">Obat Lain</option>
                 </select>
               </div>
             </li>

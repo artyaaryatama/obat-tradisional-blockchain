@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./RoleManager.sol";
 import "./ObatTradisional.sol";
+import "./MainSupplyChain.sol";
 import "./EnumsLibrary.sol";
 import "./ObatShared.sol";
  
@@ -11,11 +12,13 @@ contract OrderManagement {
   ObatTradisional public obatTradisional;
   RoleManager public roleManager;
   ObatShared public obatShared;
-
-  constructor(address _obatTradisionalAddr, address _roleManagerAddr, address _obatSharedAddr) {
+  MainSupplyChain public mainSupplyChain; 
+ 
+  constructor(address _obatTradisionalAddr, address _roleManagerAddr, address _obatSharedAddr, address _mainSupplyChainAddr) {
     roleManager = RoleManager(_roleManagerAddr);
     obatTradisional = ObatTradisional(_obatTradisionalAddr);
     obatShared = ObatShared(_obatSharedAddr);
+    mainSupplyChain = MainSupplyChain(_mainSupplyChainAddr);
   }
 
   modifier onlyRole(EnumsLibrary.Roles role) {
@@ -96,6 +99,21 @@ contract OrderManagement {
     orderTimestampByOrderId[_orderId] = newTimestamp;
   }
 
+  function pbfAvailableToBuy( 
+    string memory _pbfName,
+    uint8 _tipeObat
+  ) public view returns (string memory ipfsCert) {
+    MainSupplyChain.st_approvedCert[] memory approvedCdob = mainSupplyChain.approvedTipePermohonanCdob(_pbfName); 
+
+    for (uint i=0; i < approvedCdob.length; i++) {
+      if (approvedCdob[i].tipePermohonan == _tipeObat) {
+        return approvedCdob[i].ipfsCert; 
+      }
+    } 
+
+    return ""; 
+  }
+
   // status: 200ok
   function createOrder (
     string memory _prevOrderIdPbf,
@@ -105,7 +123,8 @@ contract OrderManagement {
     string memory _namaProduk,
     string memory _buyerInstance,
     string memory _sellerInstance,
-    uint8 _orderQuantity
+    uint8 _orderQuantity,
+    string memory _cdobHash
   ) public{
       st_orderUser memory buyerUser = createOrderUser(_buyerInstance, msg.sender);
       st_orderUser memory sellerUser = createOrderUser(_sellerInstance, address(0));
@@ -116,7 +135,11 @@ contract OrderManagement {
 
       createTimestamp(_orderId);
 
-      st_obatOrder memory orderData = st_obatOrder({
+      if ((roleManager.hasRole(msg.sender, EnumsLibrary.Roles.PBF))) {
+        obatShared.addCdobId(_obatId, _cdobHash);
+      }
+
+      st_obatOrder memory orderData = st_obatOrder({ 
         orderId: _orderId,
         obatId: _obatId,
         namaProduk: _namaProduk,
@@ -125,7 +148,7 @@ contract OrderManagement {
         buyerUser: buyerUser,
         sellerUser: sellerUser,
         statusOrder: EnumsLibrary.OrderStatus.OrderPlaced,
-        prevOrderIdPbf: _prevOrderIdPbf
+        prevOrderIdPbf: _prevOrderIdPbf 
       });
 
       orderByOrderId[_orderId] = orderData;

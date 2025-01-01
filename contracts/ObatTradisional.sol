@@ -78,7 +78,7 @@ contract ObatTradisional {
   mapping (string => st_obatNie) public obatNieById;
   mapping (string => st_obatNameApprovedNie[]) public obatProductNameApprovedByFactory;
 
-  event evt_obatCreated(string namaProduk, string factoryInstance, address factoryAddresses);
+  event evt_obatCreated(string namaProduk, uint tipeObat, string factoryInstance, address factoryAddresses);
   event evt_nieRequested(string factoryInstance, address factoryAddr,uint timestampRequest);
   event evt_nieApproved(string bpomInstance, address bpomAddr, string nieNumber, uint timestampApproved);
   event evt_addBatchProduction(string batchName, uint8 quantity, string namaProduk, string factoryInstance);
@@ -89,9 +89,9 @@ contract ObatTradisional {
     public 
     view 
     returns(
-      uint8[] memory
+      MainSupplyChain.st_approvedCert[] memory
   ) {
-     uint8[] memory approvedJenisSediaan = mainSupplyChain.approvedTipePermohonan(_factoryInstanceName); 
+     MainSupplyChain.st_approvedCert[] memory approvedJenisSediaan = mainSupplyChain.approvedTipePermohonan(_factoryInstanceName); 
      return approvedJenisSediaan;
   }
 
@@ -120,20 +120,24 @@ contract ObatTradisional {
     string memory _kemasan,
     string[] memory _komposisi,
     string memory _factoryInstance,
-    EnumsLibrary.TipeProduk _tipeProduk
+    EnumsLibrary.TipeProduk _tipeProduk,
+    EnumsLibrary.TipePermohonanCdob _tipeObat,
+    string memory _cpotbIpfs
   ) public onlyFactory {
       require(bytes(_obatId).length > 0, "Invalid ID");
 
       obatShared.setObatDetail(
-          _obatId,
-          _merk,
-          _namaProduk,
-          _klaim,
-          _komposisi,
-          _kemasan,
-          _tipeProduk,
-          _factoryInstance,
-          msg.sender
+        _obatId,
+        _merk, 
+        _namaProduk,
+        _klaim,
+        _komposisi,
+        _kemasan,
+        _tipeProduk,
+        _factoryInstance,
+        msg.sender,
+        _tipeObat,
+        _cpotbIpfs 
       );
 
       obatNieById[_obatId] = createObatNie(
@@ -143,8 +147,8 @@ contract ObatTradisional {
 
       allObatIds.push(_obatId);
 
-    emit evt_obatCreated(_namaProduk, _factoryInstance, msg.sender);
-  }
+    emit evt_obatCreated(_namaProduk, uint8(_tipeObat),  _factoryInstance, msg.sender);
+  } 
    
   // status: 200ok
   function getAllObat()
@@ -155,20 +159,18 @@ contract ObatTradisional {
   {
       uint256 totalObat = allObatIds.length;
 
-      // First, count the number of valid entries
       uint256 totalNie = 0;
       for (uint256 i = 0; i < totalObat; i++) {
-          string memory obatId = allObatIds[i];
-          st_obatNie memory nie = obatNieById[obatId];
-          if (nie.nieStatus != EnumsLibrary.NieStatus.inLocalProduction) {
-              totalNie++;
-          }
+        string memory obatId = allObatIds[i];
+        st_obatNie memory nie = obatNieById[obatId];
+
+        if (nie.nieStatus != EnumsLibrary.NieStatus.inLocalProduction) {
+          totalNie++;
+        }
       }
 
-      // Allocate the array based on the valid count
       st_obatOutputNie[] memory obatList = new st_obatOutputNie[](totalNie);
 
-      // Populate the array with valid entries
       uint256 index = 0;
       for (uint256 i = 0; i < totalObat; i++) {
           string memory obatId = allObatIds[i];
@@ -176,14 +178,14 @@ contract ObatTradisional {
           ObatShared.st_obatDetails memory details = obatShared.getObatDetail(obatId);
 
           if (nie.nieStatus != EnumsLibrary.NieStatus.inLocalProduction) {
-              obatList[index] = st_obatOutputNie({
-                  obatId: obatId,
-                  namaProduk: details.namaProduk,
-                  nieNumber: nie.nieNumber,
-                  nieStatus: nie.nieStatus,
-                  factoryInstance: details.factoryInstance
-              });
-              index++;
+            obatList[index] = st_obatOutputNie({
+              obatId: obatId,
+              namaProduk: details.namaProduk,
+              nieNumber: nie.nieNumber,
+              nieStatus: nie.nieStatus,
+              factoryInstance: details.factoryInstance
+            });
+            index++;
           }
       }
 
@@ -227,11 +229,11 @@ contract ObatTradisional {
         if (keccak256(abi.encodePacked(details.factoryInstance)) == keccak256(abi.encodePacked(_instanceName))) {
 
             filteredObatList[index] = st_obatOutputNie({
-                obatId: obatId,
-                namaProduk: details.namaProduk,
-                nieNumber: nie.nieNumber,
-                nieStatus: nie.nieStatus,
-                factoryInstance: details.factoryInstance
+              obatId: obatId,
+              namaProduk: details.namaProduk,
+              nieNumber: nie.nieNumber,
+              nieStatus: nie.nieStatus,
+              factoryInstance: details.factoryInstance
             });
 
             index++;
@@ -263,16 +265,15 @@ contract ObatTradisional {
       emit evt_nieRequested(_factoryInstance, msg.sender, block.timestamp );
   }
 
-  // status: 200ok (change into bpom onlyl later) DAN UBAH MSG SENDER NYA DI BPOM ADDR
+  // status: 200ok
   function approveNie (
     string memory _obatId,
     string memory _nieNumber,
-    string memory _instanceName, 
-    address _instanceAddr 
-  ) public {
+    string memory _instanceName
+  ) public onlyBPOM{
 
       obatNieById[_obatId].bpomInstance = _instanceName;
-      obatNieById[_obatId].bpomAddr = _instanceAddr;
+      obatNieById[_obatId].bpomAddr = msg.sender;
       obatNieById[_obatId].nieNumber = _nieNumber;
       obatNieById[_obatId].timestampNieApprove = block.timestamp;
       obatNieById[_obatId].nieStatus = EnumsLibrary.NieStatus.ApprovedNie;
@@ -391,7 +392,6 @@ contract ObatTradisional {
 
       st_obatOutputBatch[] memory obatReadyStock = new st_obatOutputBatch[](totalReady);
 
-      // diubah ke bytes krn lebih murah untuk gas fees nya
       bytes32 instanceHash = keccak256(abi.encodePacked(_instanceName));
 
       uint256 index = 0;
@@ -464,6 +464,7 @@ contract ObatTradisional {
     for (uint256 i = 0; i < obatBatches.length; i++){
       if (keccak256(abi.encodePacked(obatBatches[i].batchName)) == batchHash) {
         obatBatchDetail =  obatBatches[i];
+        break;
       } 
     }
 

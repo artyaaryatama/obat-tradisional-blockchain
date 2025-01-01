@@ -17,20 +17,10 @@ contract MainSupplyChain {
   using EnumsLibrary for EnumsLibrary.StatusCertificate;
   using EnumsLibrary for EnumsLibrary.TipePermohonanCdob;
 
-  modifier onlyFactory() { 
-    require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.Factory), "Access restricted to Factory role");
+  modifier onlyRole(EnumsLibrary.Roles role) {
+    require(roleManager.hasRole(msg.sender, role), "Unauthorized");
     _;
-  }
- 
-  modifier onlyBPOM() {
-    require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.BPOM), "Access restricted to BPOM role");
-    _;
-  }
- 
-  modifier onlyPBF() {
-    require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.PBF), "Access restricted to PBF role");
-    _; 
-  }
+  } 
 
   struct st_userCertificate {
     string userName;
@@ -44,6 +34,7 @@ contract MainSupplyChain {
     uint timestampApprove;
     st_userCertificate sender;
     st_userCertificate bpom; 
+    string ipfsCert;
   }
 
   struct st_cpotb {
@@ -82,9 +73,15 @@ contract MainSupplyChain {
     EnumsLibrary.StatusCertificate status;
   }
 
+  struct st_approvedCert {
+    string ipfsCert;
+    uint8 tipePermohonan;
+  }
+
   mapping (string => st_cpotb) public cpotbDataById;
   mapping (string => st_cdob) public cdobDataById;
-  mapping(string => uint8[]) public approvedTipePermohonanByFactory;
+  mapping(string => st_approvedCert[]) public approvedTipePermohonanByFactory;
+  mapping(string => st_approvedCert[]) public approvedTipePermohonanByPbf;
 
   st_certificateList[] public allCertificateData;
 
@@ -136,15 +133,16 @@ contract MainSupplyChain {
   // status: 200ok
   function createCertificateDetails(
     st_userCertificate memory _sender,
-    st_userCertificate memory _bpom
+    st_userCertificate memory _bpom 
   ) internal view returns (st_certificateDetails memory) {
       return st_certificateDetails({
         status: EnumsLibrary.StatusCertificate.Requested,
         timestampRequest: block.timestamp,
         timestampApprove: 0,
         sender: _sender,
-        bpom: _bpom
-      });
+        bpom: _bpom,
+        ipfsCert: ""
+      }); 
   }
 
   // status: 200ok
@@ -170,14 +168,14 @@ contract MainSupplyChain {
   function requestCpotb(
     st_certificateRequest memory requestData,
     uint8 _tipePermohonanCpotb
-  ) public onlyFactory {
+  ) public onlyRole(EnumsLibrary.Roles.Factory) {
 
       require(bytes(cpotbDataById[requestData.certId].cpotbId).length == 0, "CPOTB ID already exists");
 
       st_userCertificate memory userFactory = createUserCertificate(requestData.senderName, msg.sender, requestData.senderInstance);
       st_userCertificate memory userBpom = createUserCertificate("", address(0), "");
 
-      st_certificateDetails memory certficateDetails = createCertificateDetails(userFactory, userBpom);
+      st_certificateDetails memory certficateDetails =  createCertificateDetails(userFactory, userBpom); 
 
       cpotbDataById[requestData.certId] = st_cpotb({
         cpotbId: requestData.certId,
@@ -200,11 +198,12 @@ contract MainSupplyChain {
       emit evt_cpotbRequested(requestData.senderInstance, msg.sender,EnumsLibrary.TipePermohonanCpotb(_tipePermohonanCpotb), block.timestamp); 
   }
 
-  // status: 200ok(make it onlyBPOM)
+  // status: 200ok
   function approveCpotb(
     st_certificateApproval memory approvalData,
+    string memory _ipfsCert,
     uint8 _tipePermohonanCpotb
-  ) public  {
+  ) public onlyRole(EnumsLibrary.Roles.BPOM) {
 
       st_cpotb storage cpotbData = cpotbDataById[approvalData.certId];
 
@@ -216,12 +215,16 @@ contract MainSupplyChain {
       cpotbData.details.status = EnumsLibrary.StatusCertificate.Approved;
       cpotbData.details.timestampApprove = block.timestamp;
       cpotbData.cpotbNumber = approvalData.certNumber;
+      cpotbData.details.ipfsCert = _ipfsCert;  
 
       string memory factoryInstance = cpotbData.details.sender.userInstanceName;
+ 
+      st_approvedCert memory approvedCpotb = st_approvedCert({
+        ipfsCert : _ipfsCert, 
+        tipePermohonan: _tipePermohonanCpotb
+      });
 
-      approvedTipePermohonanByFactory[factoryInstance].push(
-        uint8(EnumsLibrary.TipePermohonanCpotb(_tipePermohonanCpotb))
-      );
+      approvedTipePermohonanByFactory[factoryInstance].push(approvedCpotb);
 
       for (uint i = 0; i < allCertificateData.length; i++) {
         if (keccak256(abi.encodePacked(allCertificateData[i].certId)) == keccak256(abi.encodePacked(approvalData.certId))) {
@@ -235,8 +238,14 @@ contract MainSupplyChain {
 
   // status: 200ok
   function approvedTipePermohonan(string memory _factoryName)
-    public view returns (uint8[] memory){ 
+    public view returns (st_approvedCert[] memory) { 
       return approvedTipePermohonanByFactory[_factoryName];
+  } 
+
+  // status: 200ok
+  function approvedTipePermohonanCdob(string memory _pbfName)
+    public view returns (st_approvedCert[] memory) { 
+      return approvedTipePermohonanByPbf[_pbfName]; 
   } 
 
   // status: 200ok
@@ -318,14 +327,14 @@ contract MainSupplyChain {
   function requestCdob(
     st_certificateRequest memory requestData,
     uint8 _tipePermohonanCdob
-  ) public onlyPBF {
+  ) public onlyRole(EnumsLibrary.Roles.PBF) {
 
       require(bytes(cdobDataById[requestData.certId].cdobId).length == 0, "CDOB ID already exists");
 
       st_userCertificate memory userPbf = createUserCertificate(requestData.senderName, msg.sender, requestData.senderInstance);
       st_userCertificate memory userBpom = createUserCertificate("", address(0), "");
 
-      st_certificateDetails memory certficateDetails = createCertificateDetails(userPbf, userBpom);
+      st_certificateDetails memory certficateDetails = createCertificateDetails(userPbf, userBpom); 
 
       cdobDataById[requestData.certId] = st_cdob({
         cdobId: requestData.certId,
@@ -351,8 +360,9 @@ contract MainSupplyChain {
   // status: 200ok
   function approveCdob(
     st_certificateApproval memory approvalData,
+    string memory _ipfsCert, 
     uint8 _tipePermohonanCdob
-  ) public onlyBPOM {
+  ) public onlyRole(EnumsLibrary.Roles.BPOM) {
 
       st_cdob storage cdobData = cdobDataById[approvalData.certId];
 
@@ -364,6 +374,7 @@ contract MainSupplyChain {
       cdobData.details.status = EnumsLibrary.StatusCertificate.Approved;
       cdobData.details.timestampApprove = block.timestamp;
       cdobData.cdobNumber = approvalData.certNumber;
+      cdobData.details.ipfsCert = _ipfsCert; 
 
       for (uint i = 0; i < allCertificateData.length; i++) {
         if (keccak256(abi.encodePacked(allCertificateData[i].certId)) == keccak256(abi.encodePacked(approvalData.certId))) {
@@ -371,6 +382,15 @@ contract MainSupplyChain {
           allCertificateData[i].status = EnumsLibrary.StatusCertificate.Approved;
         } 
       }
+
+      string memory pbfInstance = cdobData.details.sender.userInstanceName;
+      
+      st_approvedCert memory approvedCdob = st_approvedCert({
+        ipfsCert : _ipfsCert, 
+        tipePermohonan: uint8(_tipePermohonanCdob)
+      });
+
+      approvedTipePermohonanByPbf[pbfInstance].push(approvedCdob);
 
       emit evt_cdobApproved(approvalData.bpomInstance, msg.sender, EnumsLibrary.TipePermohonanCdob(_tipePermohonanCdob), approvalData.certNumber, block.timestamp);
   }

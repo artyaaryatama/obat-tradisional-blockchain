@@ -2,9 +2,6 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { create } from 'ipfs-http-client';
-
-import DataIpfsHash from '../../components/TableHash';
 
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
@@ -19,13 +16,17 @@ function CreateOrderRetailer() {
 
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
-  const [ipfsHashes, setIpfsHashes] = useState([])
   
-
   const obatStatusMap = {
     0: "Order Placed",
     1: "Order Shipped",
     2: "Order Completed"
+  };
+
+  const tipeObatMap = {
+    0n: "Obat Lain",
+    1n: "Cold Chain Product",
+    2n: "Narkotika"
   };
 
   const tipeProdukMap = {
@@ -64,7 +65,6 @@ function CreateOrderRetailer() {
             signer
           );
 
-          // Update state with both contracts
           setContracts({
             orderManagement: orderManagementContract,
             obatTradisional: obatTradisionalContract
@@ -219,7 +219,7 @@ function CreateOrderRetailer() {
 
       const [statusStok, namaProduct, batchNamee, obatQuantity, factoryInstancee] = dataObat
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -242,8 +242,9 @@ function CreateOrderRetailer() {
         nieNumber: nieNumber ? nieNumber : "-",
         factoryAddr: factoryAddr,
         factoryInstanceName: factoryInstance,
-        bpomAddr: bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddr,
-        bpomInstanceNames:  bpomInstance ?  bpomInstance : "-"
+        bpomAddr: bpomAddr,
+        bpomInstanceNames:  bpomInstance,
+        tipeObat: tipeObatMap[tipeObat]
       };
 
       MySwal.fire({
@@ -288,85 +289,116 @@ function CreateOrderRetailer() {
                     </li>
                   </ul>
 
-                    <ul>
-                      <li className="label">
-                        <p>Tipe Produk</p>
-                      </li>
-                      <li className="input">
-                        <p>{detailObat.tipeProduk}</p> 
-                      </li>
-                    </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Produk</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.tipeProduk}</p> 
+                    </li>
+                  </ul>
 
-                    <ul>
-                      <li className="label">
-                        <p>Kemasan Obat</p>
-                      </li>
-                      <li className="input">
-                        <p>{detailObat.kemasan}</p> 
-                      </li>
-                    </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.tipeObat}</p> 
+                    </li>
+                  </ul>
 
-                    <ul>
-                      <li className="label">
-                        <p>Klaim Obat</p>
-                      </li>
-                      <li className="input">
-                        <ul className='numbered1'>
-                          {detailObat.klaim.map((item, index) => (
-                            <li key={index}><p>{item}</p></li>
-                          ))}
-                        </ul>
-                      </li>
-                    </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Kemasan Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.kemasan}</p> 
+                    </li>
+                  </ul>
 
-                    <ul>
-                      <li className="label">
-                        <p>Komposisi Obat</p>
-                      </li>
-                      <li className="input">
-                        <ul className='numbered1'>
-                          {detailObat.komposisi.map((item, index) => (
-                            <li key={index}><p>{item}</p></li>
-                          ))}
-                        </ul>
-                      </li>
-                    </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Klaim Obat</p>
+                    </li>
+                    <li className="input">
+                      <ul className='numbered1'>
+                        {detailObat.klaim.map((item, index) => (
+                          <li key={index}><p>{item}</p></li>
+                        ))}
+                      </ul>
+                    </li>
+                  </ul>
 
-                    <ul>
-                      <li className="label">
-                        <p>Factory Instance</p>
-                      </li>
-                      <li className="input">
-                        <p>{detailObat.factoryInstanceName}</p>
-                      </li>
-                    </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Komposisi Obat</p>
+                    </li>
+                    <li className="input">
+                      <ul className='numbered1'>
+                        {detailObat.komposisi.map((item, index) => (
+                          <li key={index}><p>{item}</p></li>
+                        ))}
+                      </ul>
+                    </li>
+                  </ul>
 
-                    <ul>
-                      <li className="label">
-                        <p>Factory Address</p>
-                      </li>
-                      <li className="input">
-                        <p>{detailObat.factoryAddr}</p>
-                      </li>
-                    </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Factory Instance</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.factoryInstanceName}
+                        <span className='linked'>
+                          <a
+                            href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            (CPOTB Details
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                          </a>
+                        </span>
+                      </p>
+                    </li>
+                  </ul>
 
-                    <ul>
-                      <li className="label">
-                        <p>PBF Instance</p>
-                      </li>
-                      <li className="input">
-                        <p>{pbfInstance}</p>
-                      </li>
-                    </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Factory Address</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.factoryAddr}</p>
+                    </li>
+                  </ul>
 
-                    <ul>
-                      <li className="label">
-                        <p>PBF Address</p>
-                      </li>
-                      <li className="input">
-                        <p>{pbfAddr}</p>
-                      </li>
-                    </ul>
+                  <ul>
+                    <li className="label">
+                      <p>PBF Instance</p>
+                    </li>
+                    <li className="input">
+                      <p>{pbfInstance}
+                        <span className='linked'>
+                          <a
+                            href={`http://localhost:3000/public/certificate/${cdobHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            (CDOB Details
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                          </a>
+                        </span>
+                      </p>
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>PBF Address</p>
+                    </li>
+                    <li className="input">
+                      <p>{pbfAddr}</p>
+                    </li>
+                  </ul>
 
                 </div>
               </div>
@@ -410,7 +442,7 @@ function CreateOrderRetailer() {
     try {
       console.log(prevOrderIdPbf, orderId, id, batchName, namaProduk, userData.instanceName, pbfInstance, orderQuantity);
       
-      const createOrderCt = await contracts.orderManagement.createOrder(prevOrderIdPbf, orderId, id, batchName, namaProduk, userData.instanceName, pbfInstance, orderQuantity);
+      const createOrderCt = await contracts.orderManagement.createOrder(prevOrderIdPbf, orderId, id, batchName, namaProduk, userData.instanceName, pbfInstance, orderQuantity, "");
 
       if(createOrderCt){
         MySwal.update({

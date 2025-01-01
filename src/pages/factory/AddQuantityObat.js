@@ -17,7 +17,7 @@ const MySwal = withReactContent(Swal);
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 
 function AddQuantityObat() {
-  const [contract, setContract] = useState();
+  const [contract, setContract] = useState(null);
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
 
@@ -31,6 +31,12 @@ function AddQuantityObat() {
   const tipeProdukMap = {
     0: "Obat Tradisional",
     1: "Suplemen Kesehatan"
+  };
+
+  const tipeObatMap = {
+    0n: "Obat Lain",
+    1n: "Cold Chain Product",
+    2n: "Narkotika"
   };
 
   const options = {
@@ -57,6 +63,8 @@ function AddQuantityObat() {
             contractData.ObatTradisional.abi, 
             signer
           );
+
+
             
           setContract(contr);
         } catch (err) {
@@ -207,10 +215,11 @@ function AddQuantityObat() {
 
     const [obatDetails, obatNie] = detailObatCt;
 
-    const [merk, namaProduct, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr] = obatDetails;
+    const [merk, namaProduct, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
 
     const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
-    console.log(obatNie);
+    console.log(cpotbHash);
+    
     const detailObat = {
       obatId: id,
       merk: merk,
@@ -225,15 +234,16 @@ function AddQuantityObat() {
       nieNumber: nieNumber ? nieNumber : "-",
       factoryAddr: factoryAddr,
       factoryInstanceName: factoryInstance,
-      bpomAddr: bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddr,
-      bpomInstanceName:  bpomInstance ?  bpomInstance : "-"
+      bpomAddr: bpomAddr,
+      bpomInstanceName:  bpomInstance,
+      tipeObat: tipeObatMap[tipeObat]
     };
 
     console.log(detailObat);
-    generateIpfs(detailObat, parseInt(quantityObat), batchName)
+    generateIpfs(detailObat, parseInt(quantityObat), batchName, cpotbHash)
   };
 
-  const generateIpfs = async(dataObat, quantity, batchNameObat) => {
+  const generateIpfs = async(dataObat, quantity, batchNameObat, cpotbHash) => {
     console.log(dataObat, quantity, batchNameObat); 
     let newIpfsHashes = [];
 
@@ -246,8 +256,8 @@ function AddQuantityObat() {
       const obat = {
         batchName: batchNameObat,
         obatIdPackage: `OT-${i}${timestampYear}-${randomFourLetters}`,
+        cpotbHash: cpotbHash,
         dataObat:  {
-          obatIdProduk: dataObat.obatId,
           namaProduk: dataObat.namaProduk,
           merk: dataObat.merk,
           klaim: dataObat.klaim,
@@ -438,6 +448,7 @@ function AddQuantityObat() {
                   required
                 >
                   <option value="" disabled>Pilih Quantity Obat</option>
+                  <option value="1">1 Obat</option>
                   <option value="5">5 Obat</option>
                   <option value="50">50 Obat</option>
                   <option value="100">100 Obat</option>

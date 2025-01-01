@@ -80,6 +80,24 @@
                span.addr{
                 margin-left: 23px;
                }
+
+               span.linked{
+                margin-left: 23px;
+
+                a{
+                  color: $black;
+                  text-decoration: none;
+                  
+                  &:hover{
+                    color: $blue;
+                    text-decoration: underline;
+                  }
+        
+                  i{
+                    margin-left: 6px;
+                  }
+                }
+               }
  
                &.list-item{
                  display: flex;

@@ -104,7 +104,7 @@ export default function TableHash({ ipfsHashes = [] }) {
   );
 
   const handleMouseEnter = (e) => {
-    e.target.style.color = "#530AF7";
+    e.target.style.color = "#1d61d6";
     e.target.style.textDecoration = "underline"; 
   };
 
@@ -137,7 +137,6 @@ export default function TableHash({ ipfsHashes = [] }) {
           ) : (
             rowsToDisplay.map((hash, index) => (
               <TableRow key={index}>
-                {/* Add the row number */}
                 <TableCell align="left" sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontWeight: 'normal', fontStyle: 'normal', fontSize: '12px' }}>
                   {page * rowsPerPage + index + 1}.
                 </TableCell>
@@ -155,7 +154,7 @@ export default function TableHash({ ipfsHashes = [] }) {
                     onMouseEnter={handleMouseEnter}   
                     onMouseLeave={handleMouseLeave}
                   >
-                  {hash}
+                    {hash}
                   </a>
                 </TableCell>
               </TableRow>
