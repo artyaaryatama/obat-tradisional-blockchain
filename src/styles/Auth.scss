@@ -22,8 +22,7 @@
 .App {
   .container{
     background-color: $grey-light;
-    width: 400px;
-    padding: 48px 0;
+    padding: 48px 20px;
     border-radius: 10px;
 
     .form-container{
@@ -37,10 +36,9 @@
       }
 
       form{
-        // background-color: rgb(119, 195, 195);
         display: flex;
         flex-direction: column;
-        width: 286px;
+        width: 360px;
         padding: 14px;
 
         &>*{
@@ -56,6 +54,20 @@
             background-color: $grey-secondary;
             font-style: italic;
           }
+        }
+        
+        textarea{
+          @include inputForm($grey, $white);
+          border: none;
+          color: $black;
+          width: auto;
+          font-family: "Instrument Sans", sans-serif;
+  
+          &:disabled{
+            background-color: $grey-secondary;
+            font-style: italic;
+          }
+
         }
         
         select{
@@ -83,10 +95,33 @@
         color: $purple;
         
       }
+
     }
-
+    
   }
+  
+}
 
+.btn-group{
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+
+  ul{
+    @include list();
+    gap: 16px;
+
+    li{
+      width: 50%;
+
+      button.test{
+        margin-top: 20px;
+        @include btnUniversal($white, $grey, 4px);
+        width: -webkit-fill-available;
+      }
+    }
+    
+  }
 }
 
 #LoginPage.App{
@@ -117,9 +152,8 @@
   
     .form-container{
       background-color: $grey-light;
-      padding: 48px 0;
+      padding: 48px 20px;
       border-radius: 10px;
-      width: 44%;
 
       form{
         button{

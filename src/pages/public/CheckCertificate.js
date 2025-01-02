@@ -13,13 +13,14 @@ function ChechCerticateIpfs() {
   const [certName, setCertName] = useState("");
   const [tipePermohonan, setTipePermohonan] = useState("");
   const [certNumber, setCertNumber] = useState("");
-  const [certStatus, setCertStatus] = useState("");
   const [timestampReq, setTimestampReq] = useState("");
   const [timestampApp, setTimestampApp] = useState("");
   const [senderInstance, setSenderInstance] = useState("");
   const [senderAddr, setSenderAddr] = useState("");
-  const [bpomInstance, setBpomInstance] = useState("");;
+  const [bpomInstance, setBpomInstance] = useState("");
   const [bpomAddr, setBpomAddr] = useState("");
+  const [bpomInstanceAddress, setBpomInstanceAddress] = useState("");
+  const [senderInstanceAddress, setSenderInstanceAddress] = useState("");
 
   useEffect(() => {
     document.title = "Check Instance Certificate"; 
@@ -48,13 +49,14 @@ function ChechCerticateIpfs() {
       setCertName(certData.certName);
       setTipePermohonan(certData.tipePermohonan);
       setCertNumber(certData.certNumber);
-      setCertStatus(certData.statusCert);
       setTimestampReq(certData.timestampRequest);
       setTimestampApp(certData.timestampApprove);
       setSenderInstance(certData.senderInstance);
       setSenderAddr(certData.senderAddress);
       setBpomInstance(certData.bpomInstance);
       setBpomAddr(certData.bpomAddress);
+      setBpomInstanceAddress(certData.bpomInstanceAddress);
+      setSenderInstanceAddress(certData.senderInstanceAddress);
     }
 
     getDetailData();
@@ -106,9 +108,23 @@ function ChechCerticateIpfs() {
                       <span className='addr'>({senderAddr})</span>
                     </li>
                     <li className="info-item">
+                        {
+                        certName === "CPOTB" ?
+                          <span className="label">
+                          Factory Address</span> : 
+                          <span className="label">
+                          PBF Address</span>
+                        }
+                      <span>{senderInstanceAddress}</span>
+                    </li>
+                    <li className="info-item">
                       <span className="label">BPOM Instance</span>
                       <span>{bpomInstance}</span>
                       <span className='addr'>({bpomAddr})</span>
+                    </li>
+                    <li className="info-item">
+                      <span className="label">BPOM Address</span>
+                      <span>{bpomInstanceAddress}</span>
                     </li>
                   </ul>
                 </div>

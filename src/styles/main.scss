@@ -20,11 +20,6 @@ html, body {
   color: $black;
 }
 
-button.test{
-  margin-top: 20px;
-  @include btnUniversal($white, $grey, 4px)
-}
-
 .layout-page{
   padding: 10px 110px;
 }

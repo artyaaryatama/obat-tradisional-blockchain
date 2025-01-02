@@ -356,24 +356,6 @@ function CdobApprove() {
                     </li>
                   </ul>
   
-                  <ul>
-                    <li className="label">
-                      <p>BPOM Instance</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCdob.bpomInstance}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>BPOM Address</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCdob.bpomAddr}</p> 
-                    </li>
-                  </ul>
-  
                 </div>
   
                 <div className="col">
@@ -388,16 +370,7 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>Nomor CDOB</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailCdob.cdobNumber}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tiper Permohonan</p>
+                      <p>Tipe Permohonan</p>
                     </li>
                     <li className="input">
                       <p>{detailCdob.tipePermohonan}</p> 
@@ -410,15 +383,6 @@ function CdobApprove() {
                     </li>
                     <li className="input">
                       <p>{detailCdob.timestampRequest}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Disertifikasi</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCdob.timestampApprove}</p> 
                     </li>
                   </ul>
                 </div>
@@ -574,20 +538,29 @@ function CdobApprove() {
     const date = new Date();
     const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
 
-    const cpotbData = {
-      certName: "CDOB",
-      tipePermohonan: detailCdob.tipePermohonan,
-      certNumber: cdobNumber,
-      timestampRequest: detailCdob.timestampRequest, 
-      timestampApprove: formattedDate,
-      senderInstance: detailCdob.pbfName,
-      senderAddress: detailCdob.pbfAddr,
-      bpomInstance: userdata.instanceName,
-      bpomAddress: userdata.address
-    }
-
+    
     try {
-      const result = await client.add(JSON.stringify(cpotbData), 
+
+      const userPbfCt = await contract.getRegisteredUser(detailCdob.pbfAddr)
+      const userBpomCt = await contract.getRegisteredUser(userdata.address)
+
+      const cdobData = {
+        certName: "CDOB",
+        tipePermohonan: detailCdob.tipePermohonan,
+        certNumber: cdobNumber,
+        timestampRequest: detailCdob.timestampRequest, 
+        timestampApprove: formattedDate,
+        senderInstance: detailCdob.pbfName,
+        senderAddress: detailCdob.pbfAddr,
+        senderInstanceAddress: userPbfCt[4],
+        bpomInstance: userdata.instanceName,
+        bpomAddress: userdata.address,
+        bpomInstanceAddress: userBpomCt[4]
+      }
+
+      console.log(cdobData);
+
+      const result = await client.add(JSON.stringify(cdobData), 
         { progress: (bytes) => 
           console.log(`Uploading data CPOTB: ${bytes} bytes uploaded`) }
       );
@@ -596,7 +569,6 @@ function CdobApprove() {
         console.log("IPFS Hash:", result.path);
         
         approveCdob(cdobNumber, detailCdob.cdobId, detailCdob.tipePermohonan, result.path);
-
       }
 
     } catch (error) {

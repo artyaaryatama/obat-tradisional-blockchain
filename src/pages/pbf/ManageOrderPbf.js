@@ -17,7 +17,6 @@ const MySwal = withReactContent(Swal);
 
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 
-
 function ManageOrderPbf() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
@@ -79,9 +78,16 @@ function ManageOrderPbf() {
             signer
           );
 
+          const MainSupplyChain = new Contract(
+            contractData.MainSupplyChain.address,
+            contractData.MainSupplyChain.abi,
+            signer
+          );
+
           setContracts({
             orderManagement: orderManagementContract,
-            obatTradisional: obatTradisionalContract
+            obatTradisional: obatTradisionalContract,
+            mainSupplyChain: MainSupplyChain,
           });
         } catch (err) {
           console.error("User access denied!")
@@ -694,6 +700,10 @@ function ManageOrderPbf() {
       String.fromCharCode(65 + Math.floor(Math.random() * 26))
     ).join(''); 
 
+    const userFactoryCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.factoryAddr);
+    const userBpomCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.bpomAddr);
+    const userPbfCt = await contracts.mainSupplyChain.getRegisteredUser(dataOrder.buyerAddress);
+
     for (let i = 0; i < dataOrder.orderQuantity; i++) {
       const obat = {
         batchName: batchName,
@@ -708,6 +718,7 @@ function ManageOrderPbf() {
           komposisi: dataObat.komposisi,
           factoryAddr: dataObat.factoryAddr,
           factoryInstanceName: dataObat.factoryInstance,
+          factoryAddressInstance: userFactoryCt[4],
           tipeProduk: dataObat.tipeProduk,
           nieNumber: dataObat.nieNumber,
           obatStatus: "NIE Approved",
@@ -715,17 +726,18 @@ function ManageOrderPbf() {
           nieApprovalDate: dataObat.nieApprovalDate,
           bpomAddr: dataObat.bpomAddr,
           bpomInstanceName: dataObat.bpomInstance,
+          bpomAddressInstance: userBpomCt[4],
         },
         dataOrderPbf: {
           orderQuantity: dataOrder.orderQuantity,
           senderInstanceName: dataOrder.buyerInstance,
           senderAddress: dataOrder.buyerAddress,
-          statusOrder : "Order Completed",
+          pbfInstanceAddress: userPbfCt[4],
+          statusOrder : "Order Shipped",
           targetInstanceName : dataOrder.sellerInstance,
-          targetAddress: dataOrder.sellerAddress,
+          targetAddress: userData.address,
           timestampOrder: timestamps.timestampOrder,
-          timestampShipped: timestamps.timestampShipped,
-          timestampComplete: timestamps.timestampComplete
+          timestampShipped: timestamps.timestampShipped
         }
       };
       

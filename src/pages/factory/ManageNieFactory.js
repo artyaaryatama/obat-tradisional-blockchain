@@ -541,6 +541,15 @@ function ManageNieFactory() {
   
                   <ul>
                     <li className="label">
+                      <p>Tipe Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.tipeObat}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
                       <p>Kemasan Obat</p>
                     </li>
                     <li className="input">

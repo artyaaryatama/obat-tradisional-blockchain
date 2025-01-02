@@ -17,7 +17,7 @@ const MySwal = withReactContent(Swal);
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 
 function AddQuantityObat() {
-  const [contract, setContract] = useState(null);
+  const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
 
@@ -58,15 +58,21 @@ function AddQuantityObat() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const contr = new Contract(
-            contractData.ObatTradisional.address, 
-            contractData.ObatTradisional.abi, 
+          const MainSupplyChain = new Contract(
+            contractData.MainSupplyChain.address,
+            contractData.MainSupplyChain.abi,
+            signer
+          );
+          const obatTradisionalContract = new Contract(
+            contractData.ObatTradisional.address,
+            contractData.ObatTradisional.abi,
             signer
           );
 
-
-            
-          setContract(contr);
+          setContracts({
+            mainSupplyChain: MainSupplyChain,
+            obatTradisional: obatTradisionalContract
+          });
         } catch (err) {
           console.error("User access denied!");
           errAlert(err, "User access denied!");
@@ -94,9 +100,9 @@ function AddQuantityObat() {
   useEffect(() => {
 
     const loadObatDataAvailable = async () => {
-      if(contract) {
+      if(contracts) {
         try {
-          const listObatNameCt = await contract.getAllObatNameApprovedNie(userdata.instanceName);
+          const listObatNameCt = await contracts.obatTradisional.getAllObatNameApprovedNie(userdata.instanceName);
 
           console.log(listObatNameCt);
 
@@ -126,7 +132,7 @@ function AddQuantityObat() {
     }
 
     loadObatDataAvailable()
-  }, [contract])
+  }, [contracts])
 
 
   const handleEventAddBatchProduction = (_batchName, _obatQuantity, _namaProduk, _factoryInstance, txHash) => {
@@ -211,7 +217,7 @@ function AddQuantityObat() {
 
     const id = selectedObat[0].obatId;
 
-    const detailObatCt = await contract.detailObat(id);
+    const detailObatCt = await contracts.obatTradisional.detailObat(id);
 
     const [obatDetails, obatNie] = detailObatCt;
 
@@ -252,6 +258,9 @@ function AddQuantityObat() {
       String.fromCharCode(65 + Math.floor(Math.random() * 26))
     ).join(''); 
 
+    const userFactoryCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.factoryAddr);
+    const userBpomCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.bpomAddr);
+
     for (let i = 0; i < quantity; i++) {
       const obat = {
         batchName: batchNameObat,
@@ -265,6 +274,7 @@ function AddQuantityObat() {
           komposisi: dataObat.komposisi,
           factoryAddr: dataObat.factoryAddr,
           factoryInstanceName: dataObat.factoryInstanceName,
+          factoryAddressInstance: userFactoryCt[4], 
           tipeProduk: dataObat.tipeProduk,
           nieNumber: dataObat.nieNumber,
           obatStatus: "NIE Approved",
@@ -272,6 +282,7 @@ function AddQuantityObat() {
           nieApprovalDate: dataObat.nieApprovalDate,
           bpomAddr: dataObat.bpomAddr,
           bpomInstanceName: dataObat.bpomInstanceName,
+          bpomAddressInstance: userBpomCt[4],
         }
       };
       
@@ -364,7 +375,7 @@ function AddQuantityObat() {
       
       console.log(dataObat.obatId, dataObat.namaProduk, batchNameObat, quantity, newIpfsHashes,  dataObat.factoryInstanceName);
 
-      const addBatchCt = await contract.addBatchProduction(dataObat.obatId, dataObat.namaProduk, batchNameObat, quantity, newIpfsHashes,  dataObat.factoryInstanceName);
+      const addBatchCt = await contracts.obatTradisional.addBatchProduction(dataObat.obatId, dataObat.namaProduk, batchNameObat, quantity, newIpfsHashes,  dataObat.factoryInstanceName);
 
       if(addBatchCt){
         MySwal.update({
@@ -373,7 +384,7 @@ function AddQuantityObat() {
         });
       }
 
-      contract.once('evt_addBatchProduction',  (_batchName, _obatQuantity, _namaProduk, _factoryInstance) => {
+      contracts.obatTradisional.once('evt_addBatchProduction',  (_batchName, _obatQuantity, _namaProduk, _factoryInstance) => {
         handleEventAddBatchProduction(_batchName, _obatQuantity, _namaProduk, _factoryInstance, addBatchCt.hash)
       });
   

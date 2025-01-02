@@ -85,7 +85,7 @@ contract MainSupplyChain {
 
   st_certificateList[] public allCertificateData;
 
-  event evt_UserRegistered(address userAddr, string name, string instanceName, uint8 role);
+  event evt_UserRegistered(address userAddr, string name, string instanceName, uint8 role, string addressInstance);
   event evt_cpotbRequested(string factoryInstance, address factoryAddr, EnumsLibrary.TipePermohonanCpotb, uint timestampRequest);
   event evt_cpotbApproved(string bpomInstance, address bpomAddr, EnumsLibrary.TipePermohonanCpotb, string cpotbId, uint timestampApproved);
   event evt_cdobRequested(string pbfInstance, address pbfAddr, EnumsLibrary.TipePermohonanCdob tipePermohonan, uint timestampRequest);
@@ -96,25 +96,20 @@ contract MainSupplyChain {
     string memory _name, 
     string memory _instanceName,
     address _userAddr,
-    uint8 _userRole
+    uint8 _userRole,
+    string memory _addressInstance
   ) public {
     require(_userAddr == msg.sender, "Sender address mismatch");
-    roleManager.registerUser(_name, _instanceName, msg.sender, EnumsLibrary.Roles(_userRole)); 
+    roleManager.registerUser(_name, _instanceName, msg.sender, EnumsLibrary.Roles(_userRole), _addressInstance); 
 
-    emit evt_UserRegistered(msg.sender, _name, _instanceName, uint8(_userRole)); 
+    emit evt_UserRegistered(msg.sender, _name, _instanceName, uint8(_userRole), _addressInstance); 
   }
 
   // status: 200ok
   function getRegisteredUser(address _userAddr) 
-    public view returns (
-      address, 
-      string memory, 
-      string memory, uint8
-    ) {
-
-      (string memory name, string memory instanceName, address userAddr, EnumsLibrary.Roles role) = roleManager.getRegisteredUser(_userAddr);
-       
-      return (userAddr, name, instanceName, uint8(role)); 
+    public view returns (RoleManager.st_user memory) {
+        
+      return roleManager.getRegisteredUser(_userAddr); 
   }
 
   // status: 200ok

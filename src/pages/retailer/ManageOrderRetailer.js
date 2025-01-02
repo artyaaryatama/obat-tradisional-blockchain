@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
-import { useNavigate } from 'react-router-dom';
+import { data, useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
 
 import DataIpfsHash from '../../components/TableHash';
@@ -78,10 +78,16 @@ function ManageOrderRetailer() {
             contractData.ObatTradisional.abi,
             signer
           );
+          const MainSupplyChain = new Contract(
+            contractData.MainSupplyChain.address,
+            contractData.MainSupplyChain.abi,
+            signer
+          );
 
           setContracts({
             orderManagement: orderManagementContract,
-            obatTradisional: obatTradisionalContract
+            obatTradisional: obatTradisionalContract,
+            mainSupplyChain: MainSupplyChain
           });
         } catch (err) {
           console.error("User access denied!")
@@ -112,7 +118,7 @@ function ManageOrderRetailer() {
       if (contracts) {
         try {
 
-          const listOrderedObatCt = await contracts.orderManagement(userData.instanceName);
+          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromBuyer(userData.instanceName);
 
           const tempData = [];
 
@@ -755,6 +761,11 @@ function ManageOrderRetailer() {
       const pbfTimestampOrder =  new Date(Number(orderTimestampCt[0]) * 1000).toLocaleDateString('id-ID', options)
       const pbfTimestampShipped = orderTimestampCt[1] !== 0n ? new Date(Number(orderTimestampCt[1]) * 1000).toLocaleDateString('id-ID', options) : "-"
       const pbfTimestampCompleted = orderTimestampCt[2] !== 0n ? new Date(Number(orderTimestampCt[2]) * 1000).toLocaleDateString('id-ID', options) : "-"
+
+      const userFactoryCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.factoryAddr);
+      const userBpomCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.bpomAddr);
+      const userRetailerCt = await contracts.mainSupplyChain.getRegisteredUser(dataOrder.buyerAddress);
+      const userPbfCt = await contracts.mainSupplyChain.getRegisteredUser(dataOrder.sellerAddress);
       
       for (let i = 0; i < dataOrder.orderQuantity; i++) {
         const obat = {
@@ -770,6 +781,7 @@ function ManageOrderRetailer() {
             komposisi: dataObat.komposisi,
             factoryAddr: dataObat.factoryAddr,
             factoryInstanceName: dataObat.factoryInstance,
+            factoryAddressInstance: userFactoryCt[4],
             tipeProduk: dataObat.tipeProduk,
             nieNumber: dataObat.nieNumber,
             obatStatus: "NIE Approved",
@@ -777,12 +789,14 @@ function ManageOrderRetailer() {
             nieApprovalDate: dataObat.nieApprovalDate,
             bpomAddr: dataObat.bpomAddr,
             bpomInstanceName: dataObat.bpomInstance,
+            bpomAddressInstance: userBpomCt[4]
           },
           dataOrderPbf: {
             orderQuantity: parseInt(prevOrderPbfCt[4]),
             senderInstanceName: prevOrderPbfCt[5][0],
             senderAddress: prevOrderPbfCt[5][1],
             statusOrder : "Order Completed",
+            pbfInstanceAddress: userPbfCt[4],
             targetInstanceName : prevOrderPbfCt[6][0] ,
             targetAddress: prevOrderPbfCt[6][1],
             timestampOrder: pbfTimestampOrder,
@@ -794,6 +808,7 @@ function ManageOrderRetailer() {
             senderInstanceName: dataOrder.buyerInstance,
             senderAddress: dataOrder.buyerAddress,
             statusOrder : "Order Completed",
+            retailerInstanceAddress: userRetailerCt[4],
             targetInstanceName : dataOrder.sellerInstance,
             targetAddress: dataOrder.sellerAddress,
             timestampOrder: timestamps.timestampOrder,

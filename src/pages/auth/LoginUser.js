@@ -24,7 +24,6 @@ function LoginPage() {
     document.title = "Welcome!"; 
   }, []);
 
-  // connect wallet
   useEffect(() => {
     async function connectWallet() {
       if (window.ethereum) {
@@ -72,7 +71,7 @@ function LoginPage() {
         const loginCt = await contract.getRegisteredUser(userAddr);
         console.log('loginCt', loginCt);
 
-        const [address, userName, instanceName, role] = loginCt;
+        const [userName, instanceName, address, role, addressInstance] = loginCt;
         
         if (userAddr === address || nameUpperCase === name) {
           console.log('role pas login',{role, address});
@@ -81,7 +80,8 @@ function LoginPage() {
             address: address,
             name: userName,
             instanceName: instanceName,
-            role: role.toString()
+            role: role.toString(),
+            addressInstance: addressInstance
           }
           
           sessionStorage.setItem("userdata", JSON.stringify(userdata))
@@ -177,7 +177,7 @@ function LoginPage() {
             <input 
               type="text" 
               placeholder="Account E-Wallet Address" 
-              value={formattedAddress(userAddr)} 
+              value={userAddr} 
               onChange={(e) => setUserAddr(e.target.value)} 
               required 
             />
@@ -198,10 +198,25 @@ function LoginPage() {
             Don't have an account? <a href="/register">Sign Up here</a>
           </p>
 
-          <button className="test" onClick={(event) => autoFilled(event, 0)}>Auto Filled Factory</button>
-          <button className="test" onClick={(event) => autoFilled(event, 2)}>Auto Filled BPOM</button>
-          <button className="test" onClick={(event) => autoFilled(event, 1)}>Auto Filled PBF</button>
-          <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled Retailer</button>
+          <div className="btn-group">
+            <ul>
+              <li>
+                <button className="test" onClick={(event) => autoFilled(event, 0)}>Auto Filled Factory</button>
+              </li>
+              <li>
+                <button className="test" onClick={(event) => autoFilled(event, 1)}>Auto Filled PBF</button>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <button className="test" onClick={(event) => autoFilled(event, 2)}>Auto Filled BPOM</button>
+              </li>
+
+              <li>
+                <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled Retailer</button>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

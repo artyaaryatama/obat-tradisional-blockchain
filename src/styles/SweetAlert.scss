@@ -227,6 +227,12 @@
     }
   }
   
+  &regist{
+    ul{
+      align-items: center
+    }
+  }
+
   ul{
     @include list();
     justify-items: center;

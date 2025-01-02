@@ -79,9 +79,16 @@ function ManageOrderPbfRetailer() {
             signer
           );
 
+          const MainSupplyChain = new Contract(
+            contractData.MainSupplyChain.address,
+            contractData.MainSupplyChain.abi,
+            signer
+          );
+
           setContracts({
             orderManagement: orderManagementContract,
-            obatTradisional: obatTradisionalContract
+            obatTradisional: obatTradisionalContract,
+            mainSupplyChain: MainSupplyChain
           });
         } catch (err) {
           console.error("User access denied!")
@@ -732,9 +739,14 @@ function ManageOrderPbfRetailer() {
 
       console.log(orderTimestampCt);
 
-      const pbfTimestampOrder =  new Date(Number(orderTimestampCt[0]) * 1000).toLocaleDateString('id-ID', options)
-      const pbfTimestampShipped = orderTimestampCt[1] !== 0n ? new Date(Number(orderTimestampCt[1]) * 1000).toLocaleDateString('id-ID', options) : "-"
-      const pbfTimestampCompleted = orderTimestampCt[2] !== 0n ? new Date(Number(orderTimestampCt[2]) * 1000).toLocaleDateString('id-ID', options) : "-"
+      const pbfTimestampOrder =  new Date(Number(orderTimestampCt[0]) * 1000).toLocaleDateString('id-ID', options);
+      const pbfTimestampShipped = orderTimestampCt[1] !== 0n ? new Date(Number(orderTimestampCt[1]) * 1000).toLocaleDateString('id-ID', options) : "-";
+      const pbfTimestampCompleted = orderTimestampCt[2] !== 0n ? new Date(Number(orderTimestampCt[2]) * 1000).toLocaleDateString('id-ID', options) : "-";
+
+      const userFactoryCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.factoryAddr);
+      const userBpomCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.bpomAddr);
+      const userRetailerCt = await contracts.mainSupplyChain.getRegisteredUser(dataOrder.buyerAddress);
+      const userPbfCt = await contracts.mainSupplyChain.getRegisteredUser(userData.address);
 
       for (let i = 0; i < dataOrder.orderQuantity; i++) {
         const obat = {
@@ -750,6 +762,7 @@ function ManageOrderPbfRetailer() {
             komposisi: dataObat.komposisi,
             factoryAddr: dataObat.factoryAddr,
             factoryInstanceName: dataObat.factoryInstance,
+            factoryAddressInstance: userFactoryCt[4],
             tipeProduk: dataObat.tipeProduk,
             nieNumber: dataObat.nieNumber,
             obatStatus: "NIE Approved",
@@ -757,11 +770,13 @@ function ManageOrderPbfRetailer() {
             nieApprovalDate: dataObat.nieApprovalDate,
             bpomAddr: dataObat.bpomAddr,
             bpomInstanceName: dataObat.bpomInstance,
+            bpomAddressInstance: userBpomCt[4]
           },
           dataOrderPbf: {
             orderQuantity: parseInt(prevOrderPbfCt[4]),
             senderInstanceName: prevOrderPbfCt[5][0],
             senderAddress: prevOrderPbfCt[5][1],
+            pbfInstanceAddress: userPbfCt[4],
             statusOrder : "Order Completed",
             targetInstanceName : prevOrderPbfCt[6][0] ,
             targetAddress: prevOrderPbfCt[6][1],
@@ -773,6 +788,7 @@ function ManageOrderPbfRetailer() {
             orderQuantity: dataOrder.orderQuantity,
             senderInstanceName: dataOrder.buyerInstance,
             senderAddress: dataOrder.buyerAddress,
+            retailerInstanceAddress: userRetailerCt[4],
             statusOrder : "Order Shipped",
             targetInstanceName : dataOrder.sellerInstance,
             targetAddress: userData.address,

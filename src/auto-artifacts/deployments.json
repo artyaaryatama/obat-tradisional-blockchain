@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0x9d4454B023096f34B160D6B654540c56A1F81688",
+    "address": "0x09635F643e140090A9A8Dcd712eD6285858ceBef",
     "abi": [
       {
         "inputs": [
@@ -39,6 +39,12 @@
             "internalType": "uint8",
             "name": "role",
             "type": "uint8"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "addressInstance",
+            "type": "string"
           }
         ],
         "name": "evt_UserRegistered",
@@ -1000,24 +1006,36 @@
         "name": "getRegisteredUser",
         "outputs": [
           {
-            "internalType": "address",
+            "components": [
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "instanceName",
+                "type": "string"
+              },
+              {
+                "internalType": "address",
+                "name": "userAddr",
+                "type": "address"
+              },
+              {
+                "internalType": "enum EnumsLibrary.Roles",
+                "name": "role",
+                "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "addressInstance",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct RoleManager.st_user",
             "name": "",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "",
-            "type": "string"
-          },
-          {
-            "internalType": "uint8",
-            "name": "",
-            "type": "uint8"
+            "type": "tuple"
           }
         ],
         "stateMutability": "view",
@@ -1044,6 +1062,11 @@
             "internalType": "uint8",
             "name": "_userRole",
             "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "_addressInstance",
+            "type": "string"
           }
         ],
         "name": "registerUser",
@@ -1124,7 +1147,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0x5eb3Bc0a489C5A8288765d2336659EbCA68FCd00",
+    "address": "0xc5a5C42992dECbae36851359345FE25997F5C42d",
     "abi": [
       {
         "inputs": [
@@ -1959,7 +1982,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0x36C02dA8a0983159322a80FFE9F24b1acfF8B570",
+    "address": "0x67d269191c92Caf3cD7723F116c85e6E9bf55933",
     "abi": [
       {
         "inputs": [

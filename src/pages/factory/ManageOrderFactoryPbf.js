@@ -79,9 +79,16 @@ function ManageOrderFactoryPbf() {
             signer
           );
 
+          const MainSupplyChain = new Contract(
+            contractData.MainSupplyChain.address,
+            contractData.MainSupplyChain.abi,
+            signer
+          );
+
           setContracts({
             orderManagement: orderManagementContract,
-            obatTradisional: obatTradisionalContract
+            obatTradisional: obatTradisionalContract,
+            mainSupplyChain: MainSupplyChain
           });
         } catch (err) {
           console.error("User access denied!")
@@ -655,7 +662,9 @@ function ManageOrderFactoryPbf() {
       String.fromCharCode(65 + Math.floor(Math.random() * 26))
     ).join(''); 
 
-    console.log(dataOrder);
+    const userFactoryCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.factoryAddr);
+    const userBpomCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.bpomAddr);
+    const userPbfCt = await contracts.mainSupplyChain.getRegisteredUser(dataOrder.buyerAddress);
 
     for (let i = 0; i < dataOrder.orderQuantity; i++) {
       const obat = {
@@ -671,6 +680,7 @@ function ManageOrderFactoryPbf() {
           komposisi: dataObat.komposisi,
           factoryAddr: dataObat.factoryAddr,
           factoryInstanceName: dataObat.factoryInstance,
+          factoryAddressInstance: userFactoryCt[4],
           tipeProduk: dataObat.tipeProduk,
           nieNumber: dataObat.nieNumber,
           obatStatus: "NIE Approved",
@@ -678,11 +688,13 @@ function ManageOrderFactoryPbf() {
           nieApprovalDate: dataObat.nieApprovalDate,
           bpomAddr: dataObat.bpomAddr,
           bpomInstanceName: dataObat.bpomInstance,
+          bpomAddressInstance: userBpomCt[4]
         },
         dataOrderPbf: {
           orderQuantity: dataOrder.orderQuantity,
           senderInstanceName: dataOrder.buyerInstance,
           senderAddress: dataOrder.buyerAddress,
+          pbfInstanceAddress: userPbfCt[4],
           statusOrder : "Order Shipped",
           targetInstanceName : dataOrder.sellerInstance,
           targetAddress: userData.address,

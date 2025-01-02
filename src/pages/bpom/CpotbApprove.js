@@ -451,7 +451,7 @@ function CpotbApprove() {
                     <div className="col">
                       <ul>
                         <li className="label">
-                          <label htmlFor="factoryInstanceName">factory Instance</label>
+                          <label htmlFor="factoryInstanceName">Factory Instance</label>
                         </li>
                         <li className="input">
                           <input
@@ -576,23 +576,30 @@ function CpotbApprove() {
     console.log(detailCpotb);
     console.log(cpotbNumber);
 
-
     const date = new Date();
     const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
 
-    const cpotbData = {
-      certName: "CPOTB",
-      tipePermohonan: detailCpotb.jenisSediaan,
-      certNumber: cpotbNumber,
-      timestampRequest: detailCpotb.timestampRequest, 
-      timestampApprove: formattedDate,
-      senderInstance: detailCpotb.factoryInstanceName,
-      senderAddress: detailCpotb.factoryAddr,
-      bpomInstance: userdata.instanceName,
-      bpomAddress: userdata.address
-    }
-
     try {
+
+      const userFactoryCt = await contract.getRegisteredUser(detailCpotb.factoryAddr)
+      const userBpomCt = await contract.getRegisteredUser(userdata.address)
+
+      const cpotbData = {
+        certName: "CPOTB",
+        tipePermohonan: detailCpotb.jenisSediaan,
+        certNumber: cpotbNumber,
+        timestampRequest: detailCpotb.timestampRequest, 
+        timestampApprove: formattedDate,
+        senderInstance: detailCpotb.factoryInstanceName,
+        senderAddress: detailCpotb.factoryAddr,
+        senderInstanceAddress: userFactoryCt[4],
+        bpomInstance: userdata.instanceName,
+        bpomAddress: userdata.address,
+        bpomInstanceAddress: userBpomCt[4]
+      }
+
+    console.log(cpotbData);
+
       const result = await client.add(JSON.stringify(cpotbData), 
         { progress: (bytes) => 
           console.log(`Uploading data CPOTB: ${bytes} bytes uploaded`) }

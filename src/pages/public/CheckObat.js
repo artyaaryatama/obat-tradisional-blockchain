@@ -16,7 +16,6 @@ function CheckObatIpfs() {
   const [detailOrderPbf, setDetailOrderPbf] = useState([]);
   const [detailOrderRetailer, setDetailOrderRetailer] = useState([]);
   
-  // These states will be used for displaying detailed information
   const [namaObat, setNamaObat] = useState("");
   const [merkObat, setMerkObat] = useState("");
   const [klaim, setKlaim] = useState([]);
@@ -32,6 +31,10 @@ function CheckObatIpfs() {
   const [statusNie, setStatusNie] = useState("");
   const [cpotbHash, setCpotbHash] = useState("");
   const [cdobHash, setCdobHash] = useState("");
+  const [bpomAddressInstance, setBpomAddressInstance] = useState("");
+  const [factoryAddressInstance, setFactoryAddressInstance] = useState("");
+  const [pbfInstanceAddress, setPbfInstanceAddress] = useState("");
+  const [retailerInstanceAddress, setRetailerInstanceAddress] = useState("");
 
   useEffect(() => {
     document.title = "Check Obat Tradisional"; 
@@ -75,6 +78,8 @@ function CheckObatIpfs() {
         nieNumber: obatData.dataObat.nieNumber,
         bpomAddr: obatData.dataObat.bpomAddr,
         bpomInstanceName: obatData.dataObat.bpomInstanceName,
+        factoryAddressInstance: obatData.dataObat.factoryAddressInstance, 
+        bpomAddressInstance: obatData.dataObat.bpomAddressInstance,
       };
 
       if(obatData.dataOrderPbf && Object.keys(obatData.dataOrderPbf).length > 0) {
@@ -93,6 +98,7 @@ function CheckObatIpfs() {
         console.log(detailOrderPbf);
         setDetailOrderPbf(detailOrderPbf)
         setCdobHash(obatData.cdobHash)
+        setPbfInstanceAddress(obatData.dataOrderPbf.pbfInstanceAddress)
       }
       
       if(obatData.dataOrderRetailer && Object.keys(obatData.dataOrderRetailer).length > 0) {
@@ -108,7 +114,7 @@ function CheckObatIpfs() {
           timestampShipped: obatData.dataOrderRetailer.timestampShipped,
           timestampComplete: obatData.dataOrderRetailer.timestampComplete ?  obatData.dataOrderRetailer.timestampComplete : "-" 
         }
-        
+        setRetailerInstanceAddress(obatData.dataOrderRetailer.retailerInstanceAddress)
         setDetailOrderRetailer(detailOrderRetailer)
       }
 
@@ -126,8 +132,10 @@ function CheckObatIpfs() {
       setNieApprovalDate(detailObat.nieApprovalDate);
       setBpomAddr(detailObat.bpomAddr);
       setBpomInstanceName(detailObat.bpomInstanceName);
-      setStatusNie(detailObat.nieStatus)
-      setCpotbHash(obatData.cpotbHash)
+      setStatusNie(detailObat.nieStatus);
+      setCpotbHash(obatData.cpotbHash);
+      setBpomAddressInstance(detailObat.bpomAddressInstance);
+      setFactoryAddressInstance(detailObat.factoryAddressInstance);
     }
 
     getDetailData();
@@ -155,16 +163,12 @@ function CheckObatIpfs() {
                       <span>{batchName}</span>
                     </li>
                     <li className="info-item">
-                      <span className="label">Obat ID Package</span>
+                      <span className="label">ID Package</span>
                       <span>{obatIdPackage}</span>
                     </li>
                     <li className="info-item">
                       <span className="label">Nama Obat</span>
                       <span>{namaObat}</span>
-                    </li>
-                    <li className="info-item">
-                      <span className="label">Nomor NIE</span>
-                      <span>{nieNumber}</span>
                     </li>
                     <li className="info-item">
                       <span className="label">Factory Instance</span>
@@ -181,6 +185,12 @@ function CheckObatIpfs() {
                         </a>
                       </span>
                     </li>
+
+                    <li className="info-item">
+                      <span className="label">Factory Address</span>
+                      <span className='address'>{factoryAddressInstance}</span>
+                    </li>
+                    
                     <li className="info-item">
                       <span className="label">Merk</span>
                       <span>{merkObat}</span>
@@ -241,6 +251,10 @@ function CheckObatIpfs() {
                       <span>{bpomInstanceName}</span>
                       <span className='addr'>({bpomAddr})</span>
                     </li>
+                    <li className="info-item">
+                      <span className="label">BPOM Address</span>
+                      <span>{bpomAddressInstance}</span>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -257,7 +271,7 @@ function CheckObatIpfs() {
                     <div className="list-detail">
                       <ul className="info-list">
                         <li className="info-item">
-                          <span className="label">Instance PBF</span>
+                          <span className="label">PBF Instance</span>
                           <span>{detailOrderPbf.senderInstanceName}</span>
                           <span className='addr'>({detailOrderPbf.senderAddress})</span>
                           <span className='linked'>
@@ -270,6 +284,10 @@ function CheckObatIpfs() {
                               <i class="fa-solid fa-arrow-up-right-from-square"></i>
                             </a>
                           </span>
+                        </li>
+                        <li className="info-item">
+                          <span className="label">PBF Address</span>
+                          <span>{pbfInstanceAddress}</span>
                         </li>
                         <li className="info-item">
                           <span className="label">instance Factory</span>
@@ -309,12 +327,16 @@ function CheckObatIpfs() {
                     <div className="list-detail">
                       <ul className="info-list">
                         <li className="info-item">
-                          <span className="label">Instance Retailer</span>
+                          <span className="label">Retailer Instance</span>
                           <span>{detailOrderRetailer.senderInstanceName}</span>
                           <span className='addr'>({detailOrderRetailer.senderAddress})</span>
                         </li>
                         <li className="info-item">
-                          <span className="label">instance PBF</span>
+                          <span className="label">Retailer Address</span>
+                          <span>{retailerInstanceAddress}</span>
+                        </li>
+                        <li className="info-item">
+                          <span className="label">PBF Instance</span>
                           <span>{detailOrderRetailer.targetInstanceName}</span>
                           <span className='addr'>({detailOrderRetailer.targetAddress})</span>
                         </li>
