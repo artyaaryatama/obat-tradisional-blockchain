@@ -397,7 +397,7 @@ function AddQuantityObat() {
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>
       <div className="title-menu">
-        <h1>Add Quantity Obat Tradisional</h1>
+        <h1>Add Batch Production Obat Tradisional</h1>
       </div>
       
       <div className='container-form'>

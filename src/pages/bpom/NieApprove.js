@@ -122,7 +122,7 @@ function NieApprove() {
     const timestamp = new Date(Number(_timestampApprove) * 1000).toLocaleDateString('id-ID', options)
   
     MySwal.fire({
-      title: "Success Request NIE",
+      title: "Success Approve NIE",
       html: (
         <div className='form-swal'>
           <ul>

@@ -115,7 +115,7 @@ function CdobApprove() {
     const formattedTimestamp = new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options)
   
     MySwal.fire({
-      title: "Success Approve CPOTB",
+      title: "Success Approve CDOB",
       html: (
         <div className='form-swal'>
           <ul>
@@ -562,7 +562,7 @@ function CdobApprove() {
 
       const result = await client.add(JSON.stringify(cdobData), 
         { progress: (bytes) => 
-          console.log(`Uploading data CPOTB: ${bytes} bytes uploaded`) }
+          console.log(`Uploading data CDOB: ${bytes} bytes uploaded`) }
       );
 
       if (result.path) {
@@ -610,7 +610,7 @@ function CdobApprove() {
         </div>
         <div className="tab-menu">
           <ul>
-            <li><button onClick={() => navigate('/cpotb-approval')}>List CPOTB</button></li>
+            <li><button onClick={() => navigate('/cpotb-approval')}>List CDOB</button></li>
             <li><button className='active' onClick={() => navigate('/cdob-approval')}>List CDOB</button></li>
           </ul>
         </div>

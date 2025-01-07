@@ -733,11 +733,12 @@ function ManageOrderPbf() {
           senderInstanceName: dataOrder.buyerInstance,
           senderAddress: dataOrder.buyerAddress,
           pbfInstanceAddress: userPbfCt[4],
-          statusOrder : "Order Shipped",
+          statusOrder : "Order Completed",
           targetInstanceName : dataOrder.sellerInstance,
           targetAddress: userData.address,
           timestampOrder: timestamps.timestampOrder,
-          timestampShipped: timestamps.timestampShipped
+          timestampShipped: timestamps.timestampShipped,
+          timestampComplete: timestamps.timestampComplete
         }
       };
       

@@ -266,8 +266,8 @@ function CreateObat() {
 
   const handleAutoFill = () => {
     const autoFillValues = {
-      namaProduk: "[TEST] BUYUNG UPIK INSTANT RASA COKLAT",
-      merk: "Buyung Upik Instan Rasa Coklat",
+      namaProduk: "[TEST] UPIK INSTANT RASA COKLAT",
+      merk: " Upik Instan Rasa Coklat",
       tipeProduk: "obatTradisional",
       klaim: [
         "Memelihara kesehatan",
