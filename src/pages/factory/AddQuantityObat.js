@@ -28,11 +28,6 @@ function AddQuantityObat() {
   const [namaProduk, setNamaProduk] = useState("");
   const [quantityObat, setQuantityObat] = useState("")
 
-  const tipeProdukMap = {
-    0: "Obat Tradisional",
-    1: "Suplemen Kesehatan"
-  };
-
   const tipeObatMap = {
     0n: "Obat Lain",
     1n: "Cold Chain Product",
@@ -58,9 +53,9 @@ function AddQuantityObat() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const MainSupplyChain = new Contract(
-            contractData.MainSupplyChain.address,
-            contractData.MainSupplyChain.abi,
+          const RoleManager = new Contract(
+            contractData.RoleManager.address,
+            contractData.RoleManager.abi,
             signer
           );
           const obatTradisionalContract = new Contract(
@@ -70,7 +65,7 @@ function AddQuantityObat() {
           );
 
           setContracts({
-            mainSupplyChain: MainSupplyChain,
+            roleManager: RoleManager,
             obatTradisional: obatTradisionalContract
           });
         } catch (err) {
@@ -221,7 +216,7 @@ function AddQuantityObat() {
 
     const [obatDetails, obatNie] = detailObatCt;
 
-    const [merk, namaProduct, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
+    const [merk, namaProduct, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
 
     const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
     console.log(cpotbHash);
@@ -233,7 +228,7 @@ function AddQuantityObat() {
       klaim: klaim,
       kemasan: kemasan,
       komposisi: komposisi,
-      tipeProduk: tipeProdukMap[tipeProduk], 
+      tipeProduk: "Obat Tradisional", 
       produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
       nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
       nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
@@ -258,8 +253,8 @@ function AddQuantityObat() {
       String.fromCharCode(65 + Math.floor(Math.random() * 26))
     ).join(''); 
 
-    const userFactoryCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.factoryAddr);
-    const userBpomCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.bpomAddr);
+    const userFactoryCt = await contracts.roleManager.getUserData(dataObat.factoryAddr);
+    const userBpomCt = await contracts.roleManager.getUserData(dataObat.bpomAddr);
 
     for (let i = 0; i < quantity; i++) {
       const obat = {
@@ -313,6 +308,15 @@ function AddQuantityObat() {
                   </li>
                   <li className="input input-1">
                     <p>{dataObat.namaProduk}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label label-1">
+                    <p>Batch Name</p>
+                  </li>
+                  <li className="input input-1">
+                    <p>{batchNameObat}</p> 
                   </li>
                 </ul>
   

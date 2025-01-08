@@ -170,10 +170,17 @@ function CdobRequest() {
 
     const tp = {
       "ObatLain": 0n,
-      "CCP": 1n
+      "CCP": 1n,
+      "Narkotika": 2n
     };
 
-    const id = `cdob-${Math.random().toString(36).slice(2, 9)}`;
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0'); 
+    const year = today.getFullYear();
+    const randomNumber = Math.floor(100000 + Math.random() * 900000); 
+
+    const id = `cdob-${day}${month}${year}-${randomNumber}` 
 
     console.log(userdata.instanceName, id, userdata.name, tp[tipePermohonan]);
 

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
-import { data, useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
 
 import DataIpfsHash from '../../components/TableHash';
@@ -19,8 +18,7 @@ const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 
 
 function ManageOrderPbfRetailer() {
-  const [contracts, setContracts] = useState(null);
-  const navigate = useNavigate();
+  const [contracts, setContracts] = useState(null);;
 
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataOrder, setDataOrder] = useState([]);
@@ -41,11 +39,6 @@ function ManageOrderPbfRetailer() {
     0: "Order Placed",
     1: "Order Shipped",
     2: "Order Completed"
-  };
-  
-  const tipeProdukMap = {
-    0: "Obat Tradisional",
-    1: "Suplemen Kesehatan"
   };
 
   const options = {
@@ -79,16 +72,16 @@ function ManageOrderPbfRetailer() {
             signer
           );
 
-          const MainSupplyChain = new Contract(
-            contractData.MainSupplyChain.address,
-            contractData.MainSupplyChain.abi,
+          const RoleManager = new Contract(
+            contractData.RoleManager.address,
+            contractData.RoleManager.abi,
             signer
           );
 
           setContracts({
             orderManagement: orderManagementContract,
             obatTradisional: obatTradisionalContract,
-            mainSupplyChain: MainSupplyChain
+            roleManager: RoleManager
           });
         } catch (err) {
           console.error("User access denied!")
@@ -170,7 +163,7 @@ function ManageOrderPbfRetailer() {
           </ul>
           <ul>
             <li className="label">
-              <p>Batchname</p> 
+              <p>Batch Name</p> 
             </li>
             <li className="input">
               <p>{_batchName}</p> 
@@ -247,7 +240,7 @@ function ManageOrderPbfRetailer() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -262,7 +255,7 @@ function ManageOrderPbfRetailer() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        tipeProduk: tipeProdukMap[tipeProduk], 
+        tipeProduk: "Obat Tradisional", 
         nieStatus: obatStatusMap[nieStatus], 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
@@ -305,16 +298,7 @@ function ManageOrderPbfRetailer() {
                       <div className="col">
                         <ul>
                           <li className="label">
-                            <p>prevOrderId</p>
-                          </li>
-                          <li className="input">
-                            <p>{prevOrderId}</p> 
-                          </li>
-                        </ul>
-
-                        <ul>
-                          <li className="label">
-                            <p>Order ID</p>
+                            <p>ID Order</p>
                           </li>
                           <li className="input">
                             <p>{orderId}</p> 
@@ -332,7 +316,7 @@ function ManageOrderPbfRetailer() {
 
                         <ul>
                           <li className="label">
-                            <p>Batchname</p>
+                            <p>Batch Name</p>
                           </li>
                           <li className="input">
                             <p>{batchName}</p> 
@@ -415,6 +399,15 @@ function ManageOrderPbfRetailer() {
                 <div className="row row--obat">
                   <div className="col column">
   
+                      <ul>
+                        <li className="label">
+                          <p>Merk Obat</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.merk}</p> 
+                        </li>
+                      </ul>
+
                       <ul>
                         <li className="label">
                           <p>Tipe Produk</p>
@@ -514,7 +507,7 @@ function ManageOrderPbfRetailer() {
 
                         <ul>
                           <li className="label">
-                            <p>Batchname</p>
+                            <p>Batch Name</p>
                           </li>
                           <li className="input">
                             <p>{batchName}</p> 
@@ -595,6 +588,15 @@ function ManageOrderPbfRetailer() {
                 <div className="row row--obat">
                   <div className="col column">
   
+                      <ul>
+                        <li className="label">
+                          <p>Merk Obat</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.merk}</p> 
+                        </li>
+                      </ul>
+
                       <ul>
                         <li className="label">
                           <p>Tipe Produk</p>
@@ -743,10 +745,10 @@ function ManageOrderPbfRetailer() {
       const pbfTimestampShipped = orderTimestampCt[1] !== 0n ? new Date(Number(orderTimestampCt[1]) * 1000).toLocaleDateString('id-ID', options) : "-";
       const pbfTimestampCompleted = orderTimestampCt[2] !== 0n ? new Date(Number(orderTimestampCt[2]) * 1000).toLocaleDateString('id-ID', options) : "-";
 
-      const userFactoryCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.factoryAddr);
-      const userBpomCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.bpomAddr);
-      const userRetailerCt = await contracts.mainSupplyChain.getRegisteredUser(dataOrder.buyerAddress);
-      const userPbfCt = await contracts.mainSupplyChain.getRegisteredUser(userData.address);
+      const userFactoryCt = await contracts.roleManager.getUserData(dataObat.factoryAddr);
+      const userBpomCt = await contracts.roleManager.getUserData(dataObat.bpomAddr);
+      const userRetailerCt = await contracts.roleManager.getUserData(dataOrder.buyerAddress);
+      const userPbfCt = await contracts.roleManager.getUserData(userData.address);
 
       for (let i = 0; i < dataOrder.orderQuantity; i++) {
         const obat = {
@@ -763,7 +765,6 @@ function ManageOrderPbfRetailer() {
             factoryAddr: dataObat.factoryAddr,
             factoryInstanceName: dataObat.factoryInstance,
             factoryAddressInstance: userFactoryCt[4],
-            tipeProduk: dataObat.tipeProduk,
             nieNumber: dataObat.nieNumber,
             obatStatus: "NIE Approved",
             nieRequestDate: dataObat.nieRequestDate,
@@ -886,11 +887,11 @@ function ManageOrderPbfRetailer() {
           <h1>Data Order Obat Tradisional PBF</h1>
           <p>Di kelola oleh {userData.instanceName}</p>
         </div>
-        <div className="tab-menu">
+        {/* <div className="tab-menu">
           <ul>
             <li><button className='active'  onClick={() => navigate('/manage-orders-pbf')}>Order Obat</button></li>
           </ul>
-        </div>
+        </div> */}
         <div className="container-data ">
         <div className="data-list">
             {dataOrder.length !== 0 ? (

@@ -99,7 +99,7 @@ function NieApprove() {
             return {
               obatId: item[0],
               namaProduk: item[1],
-              nieNumber: item[2],
+              nieNumber: item[2] ? item[2] : "TBA",
               nieStatus: obatStatusMap[item[3]],
               factoryInstance: item[4]
             };
@@ -194,7 +194,7 @@ function NieApprove() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
       console.log(parseInt(nieStatus));
@@ -205,7 +205,7 @@ function NieApprove() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        tipeProduk: tipeProdukMap[tipeProduk], 
+        tipeProduk: "Obat Tradisional", 
         nieStatus: obatStatusMap[nieStatus], 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
@@ -242,6 +242,14 @@ function NieApprove() {
                     </li>
                     <li className="input">
                       <p>{detailObat.namaObat}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Merk Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.merk}</p> 
                     </li>
                   </ul>
   
@@ -415,6 +423,14 @@ function NieApprove() {
                     </li>
                     <li className="input">
                       <p>{detailObat.namaObat}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Merk Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.merk}</p> 
                     </li>
                   </ul>
   
@@ -800,7 +816,8 @@ function NieApprove() {
     <>
       <div id="CpotbPage" className='Layout-Menu layout-page'>
         <div className="title-menu">
-          <h1>Data Izin Edar</h1>
+          <h1>Data Izin Edar Obat Tradisional</h1>
+          <p>Dikelola oleh {userdata.instanceName}</p>
         </div>
         <div className="container-data">
           <div className="data-list">

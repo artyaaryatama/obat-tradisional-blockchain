@@ -14,7 +14,7 @@ function ManageCpotb() {
   const [contract, setContract] = useState();
   const navigate = useNavigate();
 
-  const userData = JSON.parse(sessionStorage.getItem('userdata')) || {};
+  const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
   const [dataCpotb, setDataCpotb] = useState([]);
 
   const jenisSediaanMap = {
@@ -50,7 +50,7 @@ function ManageCpotb() {
   useEffect(() => {
     async function connectWallet() {
       if (window.ethereum) {
-        try {
+      try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const contr = new Contract(
@@ -88,11 +88,11 @@ function ManageCpotb() {
     const loadData = async () => {
       if (contract) {
         try {
-          console.log(userData.instanceName);
-          const listAllCt = await contract.getListAllCertificateByInstance(userData.instanceName);
+          console.log(userdata.instanceName);
+          const listAllCt = await contract.getListAllCertificateByInstance(userdata.instanceName);
           console.log(listAllCt);
           const reconstructedData = listAllCt.map((item, index) => {
-            const cpotbNumber = item[1] ? item[1] : '-'
+            const cpotbNumber = item[1] ? item[1] : 'TBA'
 
             return {
               cpotbId: item[0], 
@@ -112,7 +112,7 @@ function ManageCpotb() {
     };
   
     loadData();
-  }, [contract, userData.instanceName]);
+  }, [contract, userdata.instanceName]);
 
   const getDetailCpotb = async (id) => {
     
@@ -271,7 +271,7 @@ function ManageCpotb() {
       <div id="CpotbPage" className='Layout-Menu layout-page'>
         <div className="title-menu">
           <h1>Data Sertifikat CPOTB</h1>
-          <p>Di ajukan oleh {userData.instanceName}</p>
+          <p>Di ajukan oleh {userdata.instanceName}</p>
         </div>
         <div className="container-data">
           <div className="menu-data">

@@ -32,11 +32,6 @@ function StockObatPbf() {
     2n: "Narkotika"
   };
 
-  const tipeProdukMap = {
-    0: "Obat Tradisional",
-    1: "Suplemen Kesehatan"
-  };
-
   const options = {
     year: 'numeric',
     month: 'long',
@@ -136,7 +131,7 @@ function StockObatPbf() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -153,7 +148,7 @@ function StockObatPbf() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        tipeProduk: tipeProdukMap[tipeProduk], 
+        tipeProduk: "Obat Tradisional", 
         nieStatus: 'NIE Approved', 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
@@ -166,14 +161,8 @@ function StockObatPbf() {
         tipeObat: tipeObatMap[tipeObat]
       };
 
-      const timestamps = {
-        timestampOrder: timestampOrder ? new Date(Number(timestampOrder) * 1000).toLocaleDateString('id-ID', options) : 0, 
-        timestampShipped: timestampShipped ? new Date(Number(timestampShipped) * 1000).toLocaleDateString('id-ID', options) : 0,
-        timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
-      }
-
       MySwal.fire({
-        title: `Detail Order Obat ${detailObat.namaProduk}`,
+        title: `Obat Available ${detailObat.namaProduk}`,
         html: (
           <div className='form-swal order'>
             <div className="row1">
@@ -183,7 +172,7 @@ function StockObatPbf() {
                     <div className="col">
                       <ul>
                         <li className="label">
-                          <p>ID ORDER</p>
+                          <p>ID Order</p>
                         </li>
                         <li className="input">
                           <p>{orderId}</p> 
@@ -280,6 +269,15 @@ function StockObatPbf() {
 
                     <ul>
                       <li className="label-sm">
+                        <p>Batch Name</p>
+                      </li>
+                      <li className="input">
+                        <p>{batchName}</p> 
+                      </li>
+                    </ul>
+
+                    <ul>
+                      <li className="label-sm">
                         <p>Nomor NIE</p>
                       </li>
                       <li className="input">
@@ -344,22 +342,12 @@ function StockObatPbf() {
               </div>
 
             </div>
-            <div className="container-stepper">
-              <div id="stepperOrder"></div>
-            </div>
           </div>
         ),
         width: '1220',
         showCancelButton: false,
         showCloseButton: true,
         showConfirmButton: false,
-        didOpen: () => {
-          const stepperOrder = document.getElementById('stepperOrder');
-          const root = ReactDOM.createRoot(stepperOrder);
-          root.render( 
-            <OrderStatusStepper orderStatus={statusOrder} timestamps={timestamps} />
-          );
-        }
       })
       
     } catch (e) {

@@ -893,7 +893,7 @@
 						"type": "address"
 					}
 				],
-				"name": "getRegisteredUser",
+				"name": "getUserData",
 				"outputs": [
 					{
 						"internalType": "address",

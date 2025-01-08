@@ -14,12 +14,13 @@ function ManageCdob() {
   const [contract, setContract] = useState();
   const navigate = useNavigate();
 
-  const userData = JSON.parse(sessionStorage.getItem('userdata')) || {};
+  const userData = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataCdob, setDataCdob] = useState([]);
 
   const tipePermohonanMap = {
     0: "Obat Lain",
     1: "CCP (Cold Chain Product)",
+    2: "Narkotika"
   };
 
   const statusMap = {
@@ -52,7 +53,7 @@ function ManageCdob() {
             signer
           );
             
-          setContract(contr);
+        setContract(contr);
         } catch (err) {
           console.error("User access denied!")
           errAlert(err, "User access denied!")
@@ -84,7 +85,7 @@ function ManageCdob() {
           const listAllCt = await contract.getListAllCertificateByInstance(userData.instanceName);
           console.log(listAllCt);
           const reconstructedData = listAllCt.map((item, index) => {
-            const cdobNumber = item[1] ? item[1] : '-'
+            const cdobNumber = item[1] ? item[1] : 'TBA'
 
             return {
               cdobId: item[0], 

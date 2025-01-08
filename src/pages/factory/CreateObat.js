@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
-import { useNavigate } from 'react-router-dom';
+import { data, useNavigate } from 'react-router-dom';
 
 import imgLoader from '../../assets/images/loader.svg';
 import "../../styles/MainLayout.scss";
@@ -12,7 +12,7 @@ import './../../styles/SweetAlert.scss';
 const MySwal = withReactContent(Swal);
 
 function CreateObat() {
-  const [contract, setContract] = useState();
+  const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
 
@@ -27,14 +27,14 @@ function CreateObat() {
   const [satuanKemasanPrim, setSatuanKemasanPrim] = useState("ml")
   const [ketKemasanSeku, setKetKemasanSeku] = useState("")
   const [komposisi, setKomposisi] = useState([""])
-  const [tipeProduk, setTipeProduk] = useState("obatTradisonal")
   const [options, setOptions] = useState([]);
   const [tipeObat, setTipeObat] = useState("CCP");
   const [allJenisSediaan, setAllJenisSediaan] = useState([]); 
+  const [dataCpotb, setDataCpotb] = useState([])
 
   const klaimValue = klaim.join("\n");
 
-  const kemasanMap = {
+  const jenisSediaanMap = {
     0n: "Tablet",
     1n: "Kapsul",
     2n: "Kapsul Lunak",
@@ -42,7 +42,7 @@ function CreateObat() {
     4n: "Cairan Oral",
     5n: "Cairan Obat Dalam",
     6n: "Cairan Obat Luar",
-    7n: "Film Strip / Edible Film",
+    7n: "Film Strip",
     8n: "Pil"
   };
 
@@ -56,13 +56,23 @@ function CreateObat() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const contr = new Contract(
-            contractData.ObatTradisional.address, 
-            contractData.ObatTradisional.abi, 
+;
+          const MainSupplyChain = new Contract(
+            contractData.MainSupplyChain.address,
+            contractData.MainSupplyChain.abi,
+            signer
+          );
+
+          const ObatTradisional = new Contract(
+            contractData.ObatTradisional.address,
+            contractData.ObatTradisional.abi,
             signer
           );
             
-          setContract(contr);
+        setContracts({
+          mainSupplyChain: MainSupplyChain,
+          obatTradisional: ObatTradisional
+        });
         } catch (err) {
           console.error("User access denied!");
           errAlert(err, "User access denied!");
@@ -90,26 +100,38 @@ function CreateObat() {
   useEffect(() => {
 
     const loadJenisSediaan = async () => {
-      if(contract) {
+      if(contracts) {
         try {
-          const ListJenisSediaanCt = await contract.getJenisSediaanAvail(userdata.instanceName);
-          console.log("ini jenis sediaan yg ada", ListJenisSediaanCt);
-  
-          if (ListJenisSediaanCt.length > 0) {
-            const listJenisSediaan = ListJenisSediaanCt.map((item) => ({
-              cpotbHash: item[0], 
-              jenisSediaan: kemasanMap[item[1]] 
-            }));
+          console.log(userdata.instanceName);
+          const listAllCt = await contracts.mainSupplyChain.getListAllCertificateByInstance(userdata.instanceName);
+          console.log(listAllCt);
+          const reconstructedData = listAllCt.map((item, index) => {
+            return {
+              cpotbHash: item[6],
+              jenisSediaan: jenisSediaanMap[item[4]]
+            };
+          })
 
-            const jenisSediaan = ListJenisSediaanCt.map((item) => kemasanMap[item[1]]);
+          setDataCpotb(reconstructedData);
+          console.log(reconstructedData);
+          // const ListJenisSediaanCt = await contract.getJenisSediaanAvail(userdata.instanceName);
+          // console.log("ini jenis sediaan yg ada", ListJenisSediaanCt);
+  
+          // if (ListJenisSediaanCt.length > 0) {
+          //   const listJenisSediaan = ListJenisSediaanCt.map((item) => ({
+          //     cpotbHash: item[0], 
+          //     jenisSediaan: kemasanMap[item[1]] 
+          //   }));
+
+          //   const jenisSediaan = ListJenisSediaanCt.map((item) => kemasanMap[item[1]]);
             
-            console.log(listJenisSediaan)
-            console.log(jenisSediaan)
-            setOptions(jenisSediaan)
-            setAllJenisSediaan(listJenisSediaan)
-          } else {
-            errAlert(0, "No approved CPOTB records available.");
-          }
+          //   console.log(listJenisSediaan)
+          //   console.log(jenisSediaan)
+          //   setOptions(jenisSediaan)
+          //   setAllJenisSediaan(listJenisSediaan)
+          // } else {
+          //   errAlert(0, "No approved CPOTB records available.");
+          // }
 
         } catch (error) {
           errAlert(error, "Can't access CPOTB data.")
@@ -119,7 +141,7 @@ function CreateObat() {
     }
 
     loadJenisSediaan()
-  }, [contract])
+  }, [contracts])
 
   const handleEventObatCreated = (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, txHash) =>{
     console.log(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, txHash)
@@ -208,55 +230,52 @@ function CreateObat() {
       allowOutsideClick: false,
     })
 
-    const tipeProdukMap = {
-      "obatTradisional": 0n,
-      "suplemenKesehatan": 1n
-    };
-
     const tipeObatMap = {
       "ObatLain" : 0n,
       "CCP" : 1n,
       "Narkotika" : 2n
     };
 
-    const selectedKemasanPrim = allJenisSediaan.find((item) => kemasanPrim === item.jenisSediaan);
+    const selectedKemasanPrim = dataCpotb.find((item) => item.jenisSediaan === kemasanPrim)|| false;
 
-    console.log(selectedKemasanPrim);
-
-    const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
-    console.log(kemasanSet);
-    
-    const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
-    const randomTwoLetters = String.fromCharCode(
-      65 + Math.floor(Math.random() * 26),
-      65 + Math.floor(Math.random() * 26)
-    );
-    const id = `ot-${randomFourDigit}${randomTwoLetters}`;
-    console.log(
-      id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeProdukMap[tipeProduk], tipeObatMap[tipeObat], selectedKemasanPrim.cpotbHash);
-
-    try {
+    if (selectedKemasanPrim) {
+      const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
+      console.log(kemasanSet);
       
-      const createObatCt = await contract.createObat(
-      id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeProdukMap[tipeProduk], tipeObatMap[tipeObat], selectedKemasanPrim.cpotbHash);
-      
-      console.log('Receipt:', createObatCt);
+      const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
+      const randomTwoLetters = String.fromCharCode(
+        65 + Math.floor(Math.random() * 26),
+        65 + Math.floor(Math.random() * 26)
+      );
+      const id = `ot-${randomFourDigit}${randomTwoLetters}`;
+      console.log( id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], selectedKemasanPrim.cpotbHash);
+  
+      try {
         
-      if(createObatCt){
-        MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+        const createObatCt = await contracts.obatTradisional.createObat(
+        id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], selectedKemasanPrim.cpotbHash);
+        
+        console.log('Receipt:', createObatCt);
+          
+        if(createObatCt){
+          MySwal.update({
+            title: "Processing your transaction...",
+            text: "This may take a moment. Hang tight! ⏳"
+          });
+        }
+  
+        contracts.obatTradisional.once("evt_obatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
+          handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);
         });
+  
+      } catch (err) {
+        setLoader(false)
+        errAlert(err, "Error making request!");
       }
-
-      contract.once("evt_obatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
-        handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);
-      });
-
-    } catch (err) {
-      setLoader(false)
-      errAlert(err, "Error making request!");
+    } else{
+      errAlert({reason: "CPOTB Certification Not Found"}, `${userdata.instanceName} does not have a CPOTB certification for the "${kemasanPrim}" primary packaging`);
     }
+
   };
 
   const handleKlaimChange = (e) => {
@@ -268,13 +287,12 @@ function CreateObat() {
     const autoFillValues = {
       namaProduk: "[TEST] UPIK INSTANT RASA COKLAT",
       merk: " Upik Instan Rasa Coklat",
-      tipeProduk: "obatTradisional",
       klaim: [
         "Memelihara kesehatan",
         "Membantu memperbaiki nafsu makan",
         "Secara tradisional digunakan pada penderita kecacingan"
       ],
-      kemasanPrim: "Blister Pack",
+      kemasanPrim: "Pil",
       ketKemasanPrim: "5",
       satuanKemasanPrim: "gram",
       kemasanSeku: "Dus",
@@ -282,15 +300,12 @@ function CreateObat() {
       komposisi: [
         "Cinnamomum Burmanii Cortex",
         "Curcuma Aeruginosa Rhizoma",
-        "Curcuma Domestica Rhizoma",
-        "Curcuma Xanthorrhiza Rhizoma"
       ]
     };
 
     setNamaProduk(autoFillValues.namaProduk);
     setMerk(autoFillValues.merk);
     setKlaim(autoFillValues.klaim);
-    setTipeProduk(autoFillValues.tipeProduk);
     setKemasanPrim(autoFillValues.kemasanPrim);
     setKetKemasanPrim(autoFillValues.ketKemasanPrim);
     setSatuanKemasanPrim(autoFillValues.satuanKemasanPrim);
@@ -361,26 +376,6 @@ function CreateObat() {
 
           <ul>
             <li className="label">
-              <label htmlFor="tipeProduk">Tipe Produk</label>
-            </li>
-            <li className="input">
-              <div className="input-group">
-                <select
-                  name="tipeProduk"
-                  id="tipeProduk"
-                  value={tipeProduk}
-                  onChange= {(e) => setTipeProduk(e.target.value)}
-                  required
-                >
-                  <option value="obatTradisional">Obat Tradisional</option>
-                  <option value="suplemenKesehatan">Suplemen Kesehatan</option>
-                </select>
-              </div>
-            </li>
-          </ul>
-
-          <ul>
-            <li className="label">
               <label htmlFor="tipeObat">Tipe Obat</label>
             </li>
             <li className="input">
@@ -444,12 +439,22 @@ function CreateObat() {
                 onChange={(e) => setKemasanPrim(e.target.value)}
                 required
               >
-                <option value="">Select an option</option>
+                <option value="" disabled>Select Kemasan Obat Primer</option>
+                <option value="Tablet">Tablet</option>
+                <option value="Pil">Pil</option>
+                <option value="Kapsul">Kapsul</option>
+                <option value="Kapsul Lunak">Kapsul Lunak</option>
+                <option value="Serbuk Oral">Serbuk Oral</option>
+                <option value="Cairan Oral">Cairan Oral</option>
+                <option value="Cairan Obat Dalam">Cairan Obat Dalam</option>
+                <option value="Cairan Obat Luar">Cairan Obat Luar</option>
+                <option value="Film Strip">Film Strip / Edible Film</option>
+                {/* <option value="">Select an option</option>
                 {Object.entries(options).map(([key, value]) => (
                   <option key={key} value={value}>
                     {value}
                   </option>
-                ))}
+                ))} */}
               </select>
                 <input 
                   type="number" 

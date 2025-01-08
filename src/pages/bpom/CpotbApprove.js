@@ -15,7 +15,7 @@ const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 function CpotbApprove() {
 
   const navigate = useNavigate();
-  const [contract, setContract] = useState();
+  const [contracts, setContracts] = useState(null);
   const [dataCpotb, setDataCpotb] = useState([])
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
 
@@ -55,13 +55,22 @@ function CpotbApprove() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const contr = new Contract(
-            contractData.MainSupplyChain.address, 
-            contractData.MainSupplyChain.abi, 
+          const MainSupplyChain = new Contract(
+            contractData.MainSupplyChain.address,
+            contractData.MainSupplyChain.abi,
+            signer
+          );
+
+          const RoleManager = new Contract(
+            contractData.RoleManager.address,
+            contractData.RoleManager.abi,
             signer
           );
             
-          setContract(contr);
+        setContracts({
+          mainSupplyChain: MainSupplyChain,
+          roleManager: RoleManager
+        });
         } catch (err) {
           console.error("User access denied!");
           errAlert(err, "User access denied!");
@@ -89,13 +98,13 @@ function CpotbApprove() {
   useEffect(() => {
 
     const getAllCpotb = async () => {
-      if(contract){
+      if(contracts){
         try {
-          const listAllCpotb = await contract.getListAllCpotb()
+          const listAllCpotb = await contracts.mainSupplyChain.getListAllCpotb()
           console.log(listAllCpotb);
 
           const reconstructedData = listAllCpotb.map((item) => {
-            const cpotbNumber = item[1] ? item[1] : '-'
+            const cpotbNumber = item[1] ? item[1] : 'TBA'
 
             return {
               cpotbId: item[0],  
@@ -116,7 +125,7 @@ function CpotbApprove() {
     }
 
     getAllCpotb()
-  }, [contract])
+  }, [contracts])
 
   const handleEventCpotbApproved = (bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove, txHash) => {
 
@@ -199,7 +208,7 @@ function CpotbApprove() {
     console.log(id); 
     
     try {
-      const detailCpotbCt = await contract.detailCpotb(id);
+      const detailCpotbCt = await contracts.mainSupplyChain.detailCpotb(id);
 
       const [cpotbId, cpotbNumber, cpotbDetail, jenisSediaan] = detailCpotbCt
 
@@ -207,7 +216,7 @@ function CpotbApprove() {
 
       const detailCpotb = {
         cpotbId: cpotbId,
-        cpotbNumber: cpotbNumber ? cpotbNumber : "-",
+        cpotbNumber: cpotbNumber ? cpotbNumber : "(TBA)",
         factoryUserName: sender[0],
         factoryAddr: sender[1],
         factoryInstanceName: sender[2],
@@ -581,8 +590,8 @@ function CpotbApprove() {
 
     try {
 
-      const userFactoryCt = await contract.getRegisteredUser(detailCpotb.factoryAddr)
-      const userBpomCt = await contract.getRegisteredUser(userdata.address)
+      const userFactoryCt = await contracts.roleManager.getUserData(detailCpotb.factoryAddr)
+      const userBpomCt = await contracts.roleManager.getUserData(userdata.address)
 
       const cpotbData = {
         certName: "CPOTB",
@@ -633,7 +642,7 @@ function CpotbApprove() {
 
     try {
       
-      const approveCt = await contract.approveCpotb(
+      const approveCt = await contracts.mainSupplyChain.approveCpotb(
         [certNumber, certTd, userdata.name, userdata.instanceName], 
         cpotbIpfs,
         jenisMap[jenisSediaan])
@@ -646,7 +655,7 @@ function CpotbApprove() {
         });
       }
 
-      contract.on('evt_cpotbApproved',  (bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove) => {
+      contracts.mainSupplyChain.on('evt_cpotbApproved',  (bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove) => {
         handleEventCpotbApproved(bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove, approveCt.hash);
       });
     } catch (error) {
@@ -659,6 +668,7 @@ function CpotbApprove() {
       <div id="CpotbPage" className='Layout-Menu layout-page'>
         <div className="title-menu">
           <h1>Data Sertifikat CPOTB</h1>
+          <p>Dikelola oleh {userdata.instanceName}</p>
         </div>
         <div className="tab-menu">
           <ul>

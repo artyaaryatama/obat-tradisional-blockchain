@@ -36,15 +36,19 @@ async function main() {
     const deploymentData = {
         MainSupplyChain: {
             address: deployedMainSupplyChain.target,
-            abi: (await hre.artifacts.readArtifact("MainSupplyChain")).abi,
+            abi: (await hre.artifacts.readArtifact("MainSupplyChain")).abi
         },
         ObatTradisional: {
             address: deployedObatTradisional.target,
-            abi: (await hre.artifacts.readArtifact("ObatTradisional")).abi,
+            abi: (await hre.artifacts.readArtifact("ObatTradisional")).abi
         },
         OrderManagement: {
             address: deployedOrderManagement.target,
-            abi: (await hre.artifacts.readArtifact("OrderManagement")).abi,
+            abi: (await hre.artifacts.readArtifact("OrderManagement")).abi
+        },
+        RoleManager: {
+            address: deployedRoleManager.target,
+            abi: (await hre.artifacts.readArtifact("RoleManager")).abi
         }
     };
 

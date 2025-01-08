@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
-import { data, useNavigate } from 'react-router-dom';
-import { create } from 'ipfs-http-client';
+import { useNavigate } from 'react-router-dom';
 
 import DataIpfsHash from '../../components/TableHash';
 
@@ -13,16 +12,12 @@ import './../../styles/SweetAlert.scss';
 
 const MySwal = withReactContent(Swal);
 
-const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
-
-
 function StockObatFactory() {
   const [contract, setContract] = useState();
   const navigate = useNavigate();
 
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
-  const [namaObatArray, setNamaObatArray] = useState([""])
   
 
   const stokStatusMap = {
@@ -40,11 +35,6 @@ function StockObatFactory() {
     0: "In Local Production",
     1: "Requested NIE",
     2: "Approved NIE"
-  };
-
-  const tipeProdukMap = {
-    0: "Obat Tradisional",
-    1: "Suplemen Kesehatan"
   };
 
   const options = {
@@ -134,7 +124,7 @@ function StockObatFactory() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -151,7 +141,7 @@ function StockObatFactory() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        tipeProduk: tipeProdukMap[tipeProduk], 
+        tipeProduk: "Obat Tradisional", 
         nieStatus: obatStatusMap[nieStatus], 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
@@ -215,7 +205,7 @@ function StockObatFactory() {
 
                       <ul>
                         <li className="label-sm">
-                          <p>Batch</p>
+                          <p>Batch Name</p>
                         </li>
                         <li className="input">
                           <p>{batchName}</p>
@@ -240,6 +230,15 @@ function StockObatFactory() {
               </div>
               <div className="row row--obat">
                 <div className="col column">
+
+                    <ul>
+                      <li className="label">
+                        <p>Merk Obat</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailObat.merk}</p> 
+                      </li>
+                    </ul>
 
                     <ul>
                       <li className="label">

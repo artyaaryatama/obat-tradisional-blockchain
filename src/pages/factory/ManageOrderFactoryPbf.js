@@ -31,21 +31,16 @@ function ManageOrderFactoryPbf() {
     2: "Approved NIE"
   };
 
-  const statusOrderMap = {
-    0: "Order Placed",
-    1: "Order Shipped",
-    2: "Order Completed"
+  const orderStatusMap = {
+    0n: "Order Placed",
+    1n: "Order Shipped",
+    2n: "Order Completed"
   };
 
   const tipeObatMap = {
     0n: "Obat Lain",
     1n: "Cold Chain Product",
     2n: "Narkotika"
-  };
-
-  const tipeProdukMap = {
-    0: "Obat Tradisional",
-    1: "Suplemen Kesehatan"
   };
 
   const options = {
@@ -79,16 +74,16 @@ function ManageOrderFactoryPbf() {
             signer
           );
 
-          const MainSupplyChain = new Contract(
-            contractData.MainSupplyChain.address,
-            contractData.MainSupplyChain.abi,
+          const RoleManager = new Contract(
+            contractData.RoleManager.address,
+            contractData.RoleManager.abi,
             signer
           );
 
           setContracts({
             orderManagement: orderManagementContract,
             obatTradisional: obatTradisionalContract,
-            mainSupplyChain: MainSupplyChain
+            roleManager: RoleManager
           });
         } catch (err) {
           console.error("User access denied!")
@@ -131,7 +126,7 @@ function ManageOrderFactoryPbf() {
             orderQuantity: item[4],
             buyerUser: item[5],
             sellerUser: item[6],
-            statusOrder: statusOrderMap[item[7]],
+            statusOrder: orderStatusMap[item[7]],
           }));
 
           setDataOrder(reconstructedDataorder)
@@ -244,7 +239,7 @@ function ManageOrderFactoryPbf() {
 
       console.log(orderObatIpfs);
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
 
       console.log(cpotbHash, cdobHash);
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
@@ -260,7 +255,7 @@ function ManageOrderFactoryPbf() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        tipeProduk: tipeProdukMap[tipeProduk], 
+        tipeProduk: "Obat Tradisional", 
         nieStatus: obatStatusMap[nieStatus], 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
@@ -281,7 +276,7 @@ function ManageOrderFactoryPbf() {
         buyerAddress: buyerUser[1],
         sellerInstance: sellerUser[0],
         sellerAddress: userData.address,
-        statusOrder: statusOrderMap[statusOrder],
+        statusOrder: orderStatusMap[statusOrder],
         orderObatIpfs: orderObatIpfs
       }
       
@@ -303,6 +298,24 @@ function ManageOrderFactoryPbf() {
                       <div className="col">
                         <ul>
                           <li className="label">
+                            <p>ID Order</p>
+                          </li>
+                          <li className="input">
+                            <p>{orderId}</p> 
+                          </li>
+                        </ul>
+
+                        <ul>
+                          <li className="label">
+                            <p>Status Order</p>
+                          </li>
+                          <li className="input">
+                            <p>{orderStatusMap[statusOrder]}</p> 
+                          </li>
+                        </ul>
+
+                        <ul>
+                          <li className="label">
                             <p>Nama Obat</p>
                           </li>
                           <li className="input">
@@ -312,7 +325,7 @@ function ManageOrderFactoryPbf() {
 
                         <ul>
                           <li className="label">
-                            <p>Batchname</p>
+                            <p>Batch Name</p>
                           </li>
                           <li className="input">
                             <p>{batchName}</p> 
@@ -375,6 +388,15 @@ function ManageOrderFactoryPbf() {
                 </div>
                 <div className="row row--obat">
                   <div className="col column">
+  
+                      <ul>
+                        <li className="label">
+                          <p>Merk Obat</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.merk}</p> 
+                        </li>
+                      </ul>
   
                       <ul>
                         <li className="label">
@@ -464,6 +486,25 @@ function ManageOrderFactoryPbf() {
                   <div className="detailObat">
                     <div className="row row--obat">
                       <div className="col">
+
+                        <ul>
+                          <li className="label">
+                            <p>ID Order</p>
+                          </li>
+                          <li className="input">
+                            <p>{orderId}</p> 
+                          </li>
+                        </ul>
+                        
+                        <ul>
+                          <li className="label">
+                            <p>Status Order</p>
+                          </li>
+                          <li className="input">
+                            <p>{orderStatusMap[statusOrder]}</p> 
+                          </li>
+                        </ul>
+
                         <ul>
                           <li className="label">
                             <p>Nama Obat</p>
@@ -475,7 +516,7 @@ function ManageOrderFactoryPbf() {
 
                         <ul>
                           <li className="label">
-                            <p>Batchname</p>
+                            <p>Batch Name</p>
                           </li>
                           <li className="input">
                             <p>{batchName}</p> 
@@ -526,6 +567,15 @@ function ManageOrderFactoryPbf() {
                 </div>
                 <div className="row row--obat">
                   <div className="col column">
+  
+                      <ul>
+                        <li className="label">
+                          <p>Merk Obat</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.merk}</p> 
+                        </li>
+                      </ul>
   
                       <ul>
                         <li className="label">
@@ -662,9 +712,9 @@ function ManageOrderFactoryPbf() {
       String.fromCharCode(65 + Math.floor(Math.random() * 26))
     ).join(''); 
 
-    const userFactoryCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.factoryAddr);
-    const userBpomCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.bpomAddr);
-    const userPbfCt = await contracts.mainSupplyChain.getRegisteredUser(dataOrder.buyerAddress);
+    const userFactoryCt = await contracts.roleManager.getUserData(dataObat.factoryAddr);
+    const userBpomCt = await contracts.roleManager.getUserData(dataObat.bpomAddr);
+    const userPbfCt = await contracts.roleManager.getUserData(dataOrder.buyerAddress);
 
     for (let i = 0; i < dataOrder.orderQuantity; i++) {
       const obat = {
@@ -681,7 +731,6 @@ function ManageOrderFactoryPbf() {
           factoryAddr: dataObat.factoryAddr,
           factoryInstanceName: dataObat.factoryInstance,
           factoryAddressInstance: userFactoryCt[4],
-          tipeProduk: dataObat.tipeProduk,
           nieNumber: dataObat.nieNumber,
           obatStatus: "NIE Approved",
           nieRequestDate: dataObat.nieRequestDate,

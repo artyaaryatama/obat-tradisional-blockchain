@@ -4,13 +4,13 @@ pragma solidity ^0.8.0;
 import "./EnumsLibrary.sol";
 
 contract ObatShared {
+  
   struct st_obatDetails {
     string merk;
     string namaProduk;
     string[] klaim;
     string[] komposisi;
     string kemasan; 
-    EnumsLibrary.TipeProduk tipeProduk;
     string factoryInstance;
     address factoryAddr;
     EnumsLibrary.TipePermohonanCdob tipeObat;
@@ -73,8 +73,7 @@ contract ObatShared {
     string[] memory _klaim,
     string[] memory _komposisi,
     string memory _kemasan,
-    EnumsLibrary.TipeProduk _tipeProduk,
-    string memory _factoryInstance,
+    string memory _factoryInstance, 
     address _factoryAddr,
     EnumsLibrary.TipePermohonanCdob _tipeObat,
     string memory _cpotbHash
@@ -86,8 +85,7 @@ contract ObatShared {
         namaProduk: _namaProduk,
         klaim: _klaim,
         komposisi: _komposisi,
-        kemasan: _kemasan,
-        tipeProduk: _tipeProduk,
+        kemasan: _kemasan, 
         factoryInstance: _factoryInstance,
         factoryAddr: _factoryAddr,
         tipeObat: _tipeObat, 

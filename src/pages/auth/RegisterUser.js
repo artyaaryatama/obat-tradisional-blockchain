@@ -18,9 +18,9 @@ function RegisterPage() {
 
   const [name, setName] = useState("");
   const [instanceName, setInstanceName] = useState("");
-  const [userAddr, setUserAddr] = useState("");
+  // const [userAddr, setUserAddr] = useState("");
   const [role, setRole] = useState("");
-  const [addrInstance, setAddrInstance] = useState("");
+  const [locationInstance, setLocationInstance] = useState("");
 
   useEffect(() => {
     document.title = "Sign Up"; 
@@ -34,12 +34,13 @@ function RegisterPage() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const contr = new Contract(
-            contractData.MainSupplyChain.address, 
-            contractData.MainSupplyChain.abi, 
+            contractData.RoleManager.address, 
+            contractData.RoleManager.abi, 
             signer
           );
 
           setContract(contr)
+          console.log(signer);
 
         } catch (err) {
           console.error("User access denied!");
@@ -65,7 +66,7 @@ function RegisterPage() {
     };
   }, []);
 
-  const handleEventUserRegister = (_userAddr, _name, _instanceName, _role, _addrInstance, txHash) => {
+  const handleEventUserRegister = (_userAddr,_name, _instanceName, _role, _locationInstance, txHash) => {
     const roles = {
       0n: "Factory",
       1n: "PBF",
@@ -103,18 +104,18 @@ function RegisterPage() {
           </ul>
           <ul>
             <li className="label">
-              <p>Address Instance</p> 
-            </li>
-            <li className="input">
-              <p>{_addrInstance}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
               <p>User Role</p> 
             </li>
             <li className="input">
               <p>{roles[_role]}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Location</p> 
+            </li>
+            <li className="input">
+              <p>{_locationInstance}</p> 
             </li>
           </ul>
           <ul className="txHash">
@@ -161,7 +162,7 @@ function RegisterPage() {
 
     try {
       const nameUpperCase = name.toUpperCase()
-      const registCt = await contract.registerUser(nameUpperCase, instanceName, userAddr, role, addrInstance);
+      const registCt = await contract.registerUser(nameUpperCase, instanceName, role, locationInstance);
       console.log("Transaction receipt:", registCt);
       console.log("Transaction hash:", registCt.hash);
 
@@ -172,8 +173,8 @@ function RegisterPage() {
         });
       }
 
-      contract.once("evt_UserRegistered", (_userAddr, _name, _instanceName, _role, _addrInstance) => {
-        handleEventUserRegister(_userAddr, _name, _instanceName, _role, _addrInstance, registCt.hash);
+      contract.once("evt_UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance) => {
+        handleEventUserRegister(_userAddr, _name, _instanceName, _role, _locationInstance, registCt.hash);
       });
       
     } catch (err) {
@@ -189,32 +190,32 @@ function RegisterPage() {
       setInstanceName('PT. Budi Pekerti')
       setRole(parseInt(0))
       setName('Factory ABC')
-      setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
-      setAddrInstance("Jl. Ini Alamat Factory PT. Budi Pekerti, Jakarta Selatan")
+      // setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+      setLocationInstance("Jl. Ini Alamat Factory PT. Budi Pekerti, Jakarta Selatan")
       // setUserAddr("0x6142E74121ADE0de3BEC1641e0318dBcCFcDe06A")
       
     } else if(role===1){
       setInstanceName('PT. Mangga Arum')
       setRole(parseInt(1))
       setName('PBF DEF') 
-      setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
-      setAddrInstance("Jl. Ini Alamat PBF PT. Mangga Arum, Jakarta Selatan")
+      // setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
+      setLocationInstance("Jl. Ini Alamat PBF PT. Mangga Arum, Jakarta Selatan")
       // setUserAddr("0x97CB6400E271e65150B2330ad27f213a4C9c31af")
       
     } else if(role===2){
       setInstanceName('BPOM Makassar')
       setRole(parseInt(2))
       setName('BPOM GHI') 
-      setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
-      setAddrInstance("Jl. Ini Alamat BPOM Makassar, Makassar")
+      // setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
+      setLocationInstance("Jl. Ini Alamat BPOM Makassar, Makassar")
       // setUserAddr('0xcbcD762c3C27212937314C1D46072a214346F2F3')
       
     }  else if(role===3){
       setInstanceName('Apotek Sejahtera')
       setRole(parseInt(3))
       setName('Retailer JKL') 
-      setUserAddr('0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65')
-      setAddrInstance("Jl. Ini Alamat Apotek Sejahtera, Jakarta Selatan")
+      // setUserAddr('0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65')
+      setLocationInstance("Jl. Ini Alamat Apotek Sejahtera, Jakarta Selatan")
       // setUserAddr('0xA3cE1983150Fade27518DF467a99a74FB4082dDa')
     }
   }
@@ -253,19 +254,19 @@ function RegisterPage() {
                 required 
               />
               
-              <input 
+              {/* <input 
                 type="text" 
                 placeholder="Account E-Wallet Address" 
                 value={userAddr} 
                 onChange={(e) => setUserAddr(e.target.value)} 
                 required
-              />
+              /> */}
 
               <textarea 
                 type="text" 
                 placeholder="Address Instance" 
-                value={addrInstance} 
-                onChange={(e) => setAddrInstance(e.target.value)} 
+                value={locationInstance} 
+                onChange={(e) => setLocationInstance(e.target.value)} 
                 rows="3"
                 required
               />

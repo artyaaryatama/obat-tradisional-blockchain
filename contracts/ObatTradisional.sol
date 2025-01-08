@@ -38,7 +38,6 @@ contract ObatTradisional {
   using EnumsLibrary for EnumsLibrary.OrderStatus;
   using EnumsLibrary for EnumsLibrary.ObatAvailability;
   using EnumsLibrary for EnumsLibrary.Roles;
-  using EnumsLibrary for EnumsLibrary.TipeProduk;
   using EnumsLibrary for EnumsLibrary.TipePermohonanCpotb;
 
   struct st_obatNie {
@@ -85,15 +84,15 @@ contract ObatTradisional {
 
 
   // status: 200ok
-  function getJenisSediaanAvail(string memory _factoryInstanceName)
-    public 
-    view 
-    returns(
-      MainSupplyChain.st_approvedCert[] memory
-  ) {
-     MainSupplyChain.st_approvedCert[] memory approvedJenisSediaan = mainSupplyChain.approvedTipePermohonan(_factoryInstanceName); 
-     return approvedJenisSediaan;
-  }
+  // function getJenisSediaanAvail(string memory _factoryInstanceName)
+  //   public 
+  //   view 
+  //   returns(
+  //     MainSupplyChain.st_approvedCert[] memory
+  // ) {
+  //    MainSupplyChain.st_approvedCert[] memory approvedJenisSediaan = mainSupplyChain.approvedTipePermohonan(_factoryInstanceName); 
+  //    return approvedJenisSediaan;
+  // }
 
   // status: 200ok
   function createObatNie(
@@ -120,7 +119,6 @@ contract ObatTradisional {
     string memory _kemasan,
     string[] memory _komposisi,
     string memory _factoryInstance,
-    EnumsLibrary.TipeProduk _tipeProduk,
     EnumsLibrary.TipePermohonanCdob _tipeObat,
     string memory _cpotbIpfs
   ) public onlyFactory {
@@ -133,10 +131,9 @@ contract ObatTradisional {
         _klaim,
         _komposisi,
         _kemasan,
-        _tipeProduk,
         _factoryInstance,
         msg.sender,
-        _tipeObat,
+        _tipeObat, 
         _cpotbIpfs 
       );
 

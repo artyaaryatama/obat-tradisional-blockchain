@@ -1,0 +1,454 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap");
+html, body {
+  font-family: "Instrument Sans", sans-serif;
+  background-color: white;
+  margin: 0;
+  padding: 0;
+  color: #1B1C1E;
+}
+
+.layout-page {
+  padding: 10px 110px;
+}
+
+.form-swal {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-top: solid 2px rgba(242, 243, 245, 0.6196078431);
+}
+.form-swal.form {
+  padding: 14px 20px;
+}
+.form-swal.form ul li.label {
+  width: 26%;
+}
+.form-swal.form ul li.input {
+  width: 74%;
+}
+.form-swal .container-stepper {
+  padding: 14px;
+  width: 16%;
+  background-color: rgba(242, 243, 245, 0.6196078431);
+  border-radius: 14px;
+  height: -moz-fit-content;
+  height: fit-content;
+  height: 252px;
+}
+.form-swal.order {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+}
+.form-swal.order .row1 .row--obat ul li.input, .form-swal.order .row1 .row--obat ul li.label-sm {
+  width: 100%;
+}
+.form-swal .row1 {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+}
+.form-swal .row1 .produce-obat {
+  flex: 2;
+  padding-right: 14px;
+}
+.form-swal .row1 .row {
+  flex: 1;
+}
+.form-swal .row1 .row ul li.label-sm {
+  width: 18%;
+  text-align: left;
+  font-weight: 600;
+}
+.form-swal .row1 .row ul li.label-sm label {
+  font-size: 13px;
+  color: #1B1C1E;
+}
+.form-swal .row1 .row .column ul {
+  flex-direction: column;
+}
+.form-swal .col2 {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.form-swal .row {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  width: 100%;
+}
+.form-swal .row--obat {
+  flex-direction: row-reverse;
+}
+.form-swal .row--row {
+  flex-direction: row;
+  gap: 10px;
+}
+.form-swal .row--row .col {
+  flex: 1;
+}
+.form-swal .row--row .container-stepper {
+  width: 18%;
+}
+.form-swal .row .col {
+  width: 100%;
+}
+.form-swal .row .col ul {
+  align-items: flex-start;
+  padding-bottom: 4px;
+  flex-direction: row;
+}
+.form-swal .row .col ul.numbered1 {
+  flex-direction: column;
+  width: 100%;
+  list-style: decimal;
+  margin-left: 12px;
+  margin-bottom: 4px;
+}
+.form-swal .row .col ul.numbered1 li::marker {
+  color: #1B1C1E;
+}
+.form-swal .row .col ul.numbered {
+  flex-direction: column;
+  width: 100%;
+}
+.form-swal .row .col ul.numbered li.klaim {
+  padding: 6px 4px;
+  background-color: rgba(242, 243, 245, 0.6196078431);
+  margin-bottom: 4px;
+  width: 100%;
+  border-radius: 4px;
+}
+.form-swal .row .col ul.numbered li.klaim::marker {
+  color: #737373;
+}
+.form-swal .row .col ul.numbered li.klaim p {
+  font-size: 13px;
+  color: #737373;
+}
+.form-swal .row .col.col1 {
+  width: 40%;
+}
+.form-swal .row .col.col1 ul {
+  display: flex;
+  flex-direction: column;
+}
+.form-swal .row .col.col1 ul li.label {
+  width: 100%;
+}
+.form-swal .row .col.col1 ul li.input {
+  width: 100%;
+}
+.form-swal .row .col.col1 ul li.input span.linked {
+  margin-left: 8px;
+}
+.form-swal .row .col.col2 {
+  width: 60%;
+}
+.form-swal .row .col.col2 ul {
+  display: flex;
+  flex-direction: column;
+}
+.form-swal .row .col.col3 {
+  width: 44%;
+}
+.form-swal .row .col.col3 ul {
+  display: flex;
+  flex-direction: column;
+}
+.form-swal .row .col.col3 ul li.label {
+  width: 100%;
+  margin-bottom: 6px;
+}
+.form-swal .row .col.col3 ul li.input {
+  width: 100%;
+}
+.form-swalregist ul {
+  align-items: center;
+}
+.form-swal ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.form-swal ul.txHash a {
+  color: #1d61d6;
+  text-decoration: underline;
+}
+.form-swal ul li p {
+  color: #1B1C1E;
+  font-size: 13px;
+}
+.form-swal ul li p span.username {
+  margin-left: 14px;
+}
+.form-swal ul li p span.linked {
+  margin-left: 8px;
+}
+.form-swal ul li.label {
+  font-weight: 600;
+  text-align: left;
+  width: 28%;
+}
+.form-swal ul li.label label {
+  font-size: 13px;
+  color: #1B1C1E;
+}
+.form-swal ul li.label1 {
+  width: 36%;
+}
+.form-swal ul li.label-1 {
+  width: 16%;
+}
+.form-swal ul li.input {
+  text-align: left;
+  width: 68%;
+  font-size: 12px;
+}
+.form-swal ul li.input a {
+  color: #1B1C1E;
+  text-decoration: none;
+}
+.form-swal ul li.input a:hover {
+  color: #1d61d6;
+  text-decoration: underline;
+}
+.form-swal ul li.input a i {
+  margin-left: 6px;
+}
+.form-swal ul li.input select {
+  font-family: "Instrument Sans", sans-serif;
+  background-color: rgba(242, 243, 245, 0.6196078431);
+  border: none;
+  margin: 10px 0;
+  padding: 8px 6px;
+  font-size: 14px;
+  border-radius: 4px;
+  color: #1B1C1E;
+  width: 100%;
+}
+.form-swal ul li.input select:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.form-swal ul li.input input {
+  background-color: #fff;
+  border: solid 1px #A6A6A6;
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  color: #1B1C1E;
+  width: -webkit-fill-available;
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+.form-swal ul li.input input::-moz-placeholder {
+  font-family: "Instrument Sans", sans-serif;
+  color: #1B1C1E;
+  font-style: italic;
+}
+.form-swal ul li.input input::placeholder {
+  font-family: "Instrument Sans", sans-serif;
+  color: #1B1C1E;
+  font-style: italic;
+}
+.form-swal ul li.input input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.form-swal ul li.input input:-moz-read-only {
+  background-color: rgba(242, 243, 245, 0.6196078431);
+  color: #737373;
+  border: none;
+}
+.form-swal ul li.input input:read-only {
+  background-color: rgba(242, 243, 245, 0.6196078431);
+  color: #737373;
+  border: none;
+}
+.form-swal ul li.input input:-moz-read-only {
+  background-color: rgba(242, 243, 245, 0.6196078431);
+}
+.form-swal ul li.input input:read-only {
+  background-color: rgba(242, 243, 245, 0.6196078431);
+}
+.form-swal ul li.input.full-width-table {
+  width: 100%;
+}
+.form-swal ul li.input-1 {
+  width: 76%;
+}
+.form-swal ul li.select select {
+  margin: 0;
+  background-color: transparent;
+  border: solid 1px #A6A6A6;
+}
+.form-swal ul li.select input {
+  width: 100%;
+}
+
+div:where(.swal2-container) div:where(.swal2-popup) {
+  border-radius: 10px;
+  font-family: "Instrument Sans", sans-serif;
+  padding: 14px 0;
+}
+
+div:where(.swal2-icon) {
+  margin: 20px auto;
+}
+
+div:where(.swal2-container) input:where(.swal2-input), div:where(.swal2-container) input:where(.swal2-file), div:where(.swal2-container) textarea:where(.swal2-textarea), div:where(.swal2-container) select:where(.swal2-select), div:where(.swal2-container) div:where(.swal2-radio), div:where(.swal2-container) label:where(.swal2-checkbox) {
+  margin: 12px 2em;
+}
+
+div:where(.swal2-container) .swal2-input {
+  background-color: #fff;
+  border: solid 1px #A6A6A6;
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  color: #A6A6A6;
+  width: -webkit-fill-available;
+  border: solid 1px #A6A6A6;
+}
+div:where(.swal2-container) .swal2-input::-moz-placeholder {
+  font-family: "Instrument Sans", sans-serif;
+  color: #A6A6A6;
+  font-style: italic;
+}
+div:where(.swal2-container) .swal2-input::placeholder {
+  font-family: "Instrument Sans", sans-serif;
+  color: #A6A6A6;
+  font-style: italic;
+}
+div:where(.swal2-container) .swal2-input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+div:where(.swal2-container) .swal2-input:-moz-read-only {
+  background-color: rgba(242, 243, 245, 0.6196078431);
+  color: #737373;
+  border: none;
+}
+div:where(.swal2-container) .swal2-input:read-only {
+  background-color: rgba(242, 243, 245, 0.6196078431);
+  color: #737373;
+  border: none;
+}
+
+div:where(.swal2-icon).swal2-success {
+  border-color: #a5dc86;
+  color: #a5dc86;
+}
+
+div:where(.swal2-icon).swal2-info {
+  border-color: rgb(157, 224, 246);
+  color: #3fc3ee;
+}
+
+div:where(.swal2-container) h2:where(.swal2-title) {
+  padding: 20px 16px 4px;
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 24px;
+  color: #1B1C1E;
+}
+
+div:where(.swal2-container) .swal2-html-container {
+  font-family: "Instrument Sans", sans-serif;
+  margin: 0;
+  padding: 10px 20px;
+  color: #A6A6A6;
+}
+
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm) {
+  font-family: "Instrument Sans", sans-serif;
+  background-color: #530AF7;
+  color: #fff;
+  font-size: 16px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 4px;
+}
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm):hover {
+  background-color: #3b06b4;
+  cursor: pointer;
+}
+
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel) {
+  font-family: "Instrument Sans", sans-serif;
+  background-color: #E33333;
+  color: #fff;
+  font-size: 16px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 4px;
+}
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel):hover {
+  background-color: #b61919;
+  cursor: pointer;
+}
+
+div:where(.swal2-container) div:where(.swal2-actions) {
+  margin: 8px 0 0;
+}
+
+h5 {
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 24px;
+  margin: 0;
+}
+
+p {
+  font-family: "Instrument Sans", sans-serif;
+  margin: 0;
+  font-size: 16px;
+  color: #A6A6A6;
+}
+
+ul.noList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+ul.noList li {
+  margin-bottom: 4px;
+}
+
+ul.numbered {
+  list-style-type: decimal;
+  list-style-position: outside;
+  padding: 0;
+  margin: 0;
+  padding-left: 12px;
+  color: #1B1C1E;
+  text-align: start;
+}
+ul.numbered li p {
+  display: inline;
+  margin-left: 0;
+}
+
+button.addQuantity {
+  background-color: #1d61d6;
+  color: #fff;
+  font-size: 12px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 7px;
+}
+button.addQuantity:hover {
+  background-color: #144497;
+  cursor: pointer;
+}
+button.addQuantity i {
+  margin-right: 8px;
+}/*# sourceMappingURL=SweetAlert.css.map */

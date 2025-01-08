@@ -2,6 +2,14 @@
 @import 'mixin';
 
 #publicObat{
+  padding: 20px;
+
+  &.txHash{
+    .container{
+      display: block;
+    }
+  }
+
   .title-menu{
     h2{
       font-size: 26px;
@@ -31,6 +39,7 @@
        background-color: #f2f2f36a; 
        padding: 10px;
        margin-bottom: 20px;
+       border-radius: 6px;
 
        .title{
          padding: 8px 0;
@@ -122,10 +131,90 @@
          }
        }
 
+       pre {
+        white-space: pre-wrap; /* Allows the text to wrap to the next line */
+        word-wrap: break-word; /* Breaks long words */
+        width: 100%; /* Ensures the <pre> element spans the full width of its parent */
+        box-sizing: border-box; /* Includes padding and border in the width calculation */
+        overflow-wrap: break-word; /* Prevents text from overflowing */
+        overflow: auto; /* Adds a scrollbar if content still overflows */
+      }
+
+
       }
       
     }
 
   }
   
+  .form-container{
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+
+    h1{
+      font-size: 26px;
+      margin: 0 0 18px 0;
+    }
+
+    form{
+      display: flex;
+      width: -webkit-fill-available;
+
+      &>*{
+        margin-right: 10px;
+      }
+
+      input{
+        @include inputForm($grey, $white);
+        border: none;
+        color: $black;
+
+        &:disabled{
+          background-color: $grey-secondary;
+          font-style: italic;
+        }
+      }
+      
+      textarea{
+        @include inputForm($grey, $white);
+        border: none;
+        color: $black;
+        width: auto;
+        font-family: "Instrument Sans", sans-serif;
+
+        &:disabled{
+          background-color: $grey-secondary;
+          font-style: italic;
+        }
+
+      }
+      
+      select{
+        @include selectForm($white)
+      }
+
+      button{
+        @include btnUniversal($white, $black, 4px)
+      }
+    }
+
+    p{
+      font-style: italic;
+      font-size: 12px;
+      margin: 4px 0;
+
+      :hover{
+        font-weight: 600;
+        text-decoration: underline;
+      }
+    }
+    
+    a{
+      text-decoration: none;
+      color: $purple;
+      
+    }
+
+  }
 }

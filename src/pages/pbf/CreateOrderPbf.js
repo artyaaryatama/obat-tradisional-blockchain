@@ -16,18 +16,12 @@ function CreateOrderPbf() {
 
   const userData = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
-  const [ipfsHashes, setIpfsHashes] = useState([])
   
 
   const obatStatusMap = {
     0: "In Local Production",
     1: "Requested NIE",
     2: "Approved NIE"
-  };
-
-  const tipeProdukMap = {
-    0: "Obat Tradisional",
-    1: "Suplemen Kesehatan"
   };
 
   const tipeObatMap = {
@@ -139,7 +133,7 @@ function CreateOrderPbf() {
           </ul>
           <ul>
             <li className="label">
-              <p>Batchname</p> 
+              <p>Batch Name</p> 
             </li>
             <li className="input">
               <p>{_batchName}</p> 
@@ -220,7 +214,7 @@ function CreateOrderPbf() {
 
       const [statusStok, namaProduct, batchNamee, obatQuantity, factoryInstancee] = dataObat
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -231,7 +225,7 @@ function CreateOrderPbf() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        tipeProduk: tipeProdukMap[tipeProduk], 
+        tipeProduk: "Obat Tradisional", 
         nieStatus: obatStatusMap[nieStatus], 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
@@ -246,19 +240,21 @@ function CreateOrderPbf() {
       };
 
       MySwal.fire({
-        title: `Form Order Obat ${detailObat.namaObat}`,
+        title: `Form Order Obat`,
         html: (
           <div className='form-swal'>
+              <div className="stok">
+                <ul>
+                  <li className="label">
+                    <p>Stok Tersedia</p>
+                  </li>
+                  <li className="input">
+                    <p>{obatQuantity.toString()} Obat</p>
+                  </li>
+                </ul>
+              </div>
               <div className="row row--obat">
                 <div className="col">
-                  <ul>
-                    <li className="label">
-                      <p>Stok Tersedia</p>
-                    </li>
-                    <li className="input">
-                      <p>{obatQuantity.toString()} Obat</p>
-                    </li>
-                  </ul>
 
                   <ul>
                     <li className="label">
@@ -271,7 +267,16 @@ function CreateOrderPbf() {
 
                   <ul>
                     <li className="label">
-                      <p>Batchname</p>
+                      <p>Merk Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.merk}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Batch Name</p>
                     </li>
                     <li className="input">
                       <p>{batchName}</p> 
@@ -406,7 +411,7 @@ function CreateOrderPbf() {
     const year = today.getFullYear();
     const randomNumber = Math.floor(100000 + Math.random() * 900000); 
 
-    const orderId = `ORDER-PBF-${day}${month}${year}-${randomNumber}` 
+    const orderId = `order-pbf-${day}${month}${year}-${randomNumber}` 
   
     try {
       console.log(orderId, id, namaProduk, factoryInstance, userData.instanceName, orderQuantity);
@@ -467,7 +472,7 @@ function CreateOrderPbf() {
                   <li key={index} className='row'>
                     <div className="detail">
                       <h5>{item.namaProduk}</h5>
-                      <p>Batchname : {item.batchName}</p>
+                      <p>Batch Name : {item.batchName}</p>
                       <p>Stok tersedia: {item.obatQuantity} Obat</p>
                       <p>Factory Instance: {item.factoryInstanceName}</p>
 

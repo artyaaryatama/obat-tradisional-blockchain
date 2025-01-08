@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
-import { data, useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
+import { useNavigate } from 'react-router-dom';
 
 import DataIpfsHash from '../../components/TableHash';
 import OrderStatusStepper from '../../components/StepperOrder';
@@ -43,11 +43,6 @@ function ManageOrderRetailer() {
     2: "Order Completed"
   };
 
-  const tipeProdukMap = {
-    0: "Obat Tradisional",
-    1: "Suplemen Kesehatan"
-  };
-
   const options = {
     year: 'numeric',
     month: 'long',
@@ -78,16 +73,16 @@ function ManageOrderRetailer() {
             contractData.ObatTradisional.abi,
             signer
           );
-          const MainSupplyChain = new Contract(
-            contractData.MainSupplyChain.address,
-            contractData.MainSupplyChain.abi,
+          const RoleManager = new Contract(
+            contractData.RoleManager.address,
+            contractData.RoleManager.abi,
             signer
           );
 
           setContracts({
             orderManagement: orderManagementContract,
             obatTradisional: obatTradisionalContract,
-            mainSupplyChain: MainSupplyChain
+            roleManager: RoleManager
           });
         } catch (err) {
           console.error("User access denied!")
@@ -171,7 +166,7 @@ function ManageOrderRetailer() {
           </ul>
           <ul>
           <li className="label">
-            <p>Batchname</p> 
+            <p>Batch Name</p> 
           </li>
           <li className="input">
             <p>{_batchName}</p> 
@@ -248,7 +243,7 @@ function ManageOrderRetailer() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -265,7 +260,7 @@ function ManageOrderRetailer() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        tipeProduk: tipeProdukMap[tipeProduk], 
+        tipeProduk: "Obat Tradisional", 
         nieStatus: obatStatusMap[nieStatus], 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
@@ -310,7 +305,7 @@ function ManageOrderRetailer() {
                       <div className="col">
                         <ul>
                           <li className="label">
-                            <p>ID ORDER</p>
+                            <p>ID Order</p>
                           </li>
                           <li className="input">
                             <p>{orderId}</p> 
@@ -416,10 +411,28 @@ function ManageOrderRetailer() {
   
                       <ul>
                         <li className="label-sm">
+                          <p>Batch Name</p>
+                        </li>
+                        <li className="input">
+                          <p>{batchName}</p> 
+                        </li>
+                      </ul>
+  
+                      <ul>
+                        <li className="label-sm">
                           <p>Nomor NIE</p>
                         </li>
                         <li className="input">
                           <p>{detailObat.nieNumber}</p> 
+                        </li>
+                      </ul>
+
+                      <ul>
+                        <li className="label-sm">
+                          <p>Merk Obat</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.merk}</p> 
                         </li>
                       </ul>
   
@@ -513,7 +526,7 @@ function ManageOrderRetailer() {
                       <div className="col">
                         <ul>
                           <li className="label">
-                            <p>ID ORDER</p>
+                            <p>ID Order</p>
                           </li>
                           <li className="input">
                             <p>{orderId}</p> 
@@ -616,10 +629,28 @@ function ManageOrderRetailer() {
   
                       <ul>
                         <li className="label-sm">
+                          <p>Batch Name</p>
+                        </li>
+                        <li className="input">
+                          <p>{batchName}</p> 
+                        </li>
+                      </ul>
+  
+                      <ul>
+                        <li className="label-sm">
                           <p>Nomor NIE</p>
                         </li>
                         <li className="input">
                           <p>{detailObat.nieNumber}</p> 
+                        </li>
+                      </ul>
+
+                      <ul>
+                        <li className="label-sm">
+                          <p>Merk Obat</p>
+                        </li>
+                        <li className="input">
+                          <p>{detailObat.merk}</p> 
                         </li>
                       </ul>
   
@@ -762,10 +793,10 @@ function ManageOrderRetailer() {
       const pbfTimestampShipped = orderTimestampCt[1] !== 0n ? new Date(Number(orderTimestampCt[1]) * 1000).toLocaleDateString('id-ID', options) : "-"
       const pbfTimestampCompleted = orderTimestampCt[2] !== 0n ? new Date(Number(orderTimestampCt[2]) * 1000).toLocaleDateString('id-ID', options) : "-"
 
-      const userFactoryCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.factoryAddr);
-      const userBpomCt = await contracts.mainSupplyChain.getRegisteredUser(dataObat.bpomAddr);
-      const userRetailerCt = await contracts.mainSupplyChain.getRegisteredUser(dataOrder.buyerAddress);
-      const userPbfCt = await contracts.mainSupplyChain.getRegisteredUser(dataOrder.sellerAddress);
+      const userFactoryCt = await contracts.roleManager.getUserData(dataObat.factoryAddr);
+      const userBpomCt = await contracts.roleManager.getUserData(dataObat.bpomAddr);
+      const userRetailerCt = await contracts.roleManager.getUserData(dataOrder.buyerAddress);
+      const userPbfCt = await contracts.roleManager.getUserData(dataOrder.sellerAddress);
       
       for (let i = 0; i < dataOrder.orderQuantity; i++) {
         const obat = {

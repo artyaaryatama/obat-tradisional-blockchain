@@ -66,6 +66,7 @@ contract MainSupplyChain {
     string certificateType;
     uint8 tipePermohonan;
     EnumsLibrary.StatusCertificate status;
+    string ipfsCert;
   }
 
   struct st_approvedCert {
@@ -87,29 +88,11 @@ contract MainSupplyChain {
   event evt_cdobApproved(string bpomInstance, address bpomAddr, EnumsLibrary.TipePermohonanCdob, string cdobNumber, uint timestampApproved);
 
 
-  function checkRole(EnumsLibrary.Roles role) internal view {
-    require(roleManager.hasRole(msg.sender, role), "Unauthorized");
-  }
-
-  // status: 200ok
-  function registerUser(
-    string memory _name, 
-    string memory _instanceName,
-    address _userAddr,
-    uint8 _userRole,
-    string memory _addressInstance
-  ) public {
-    require(_userAddr == msg.sender, "Sender address mismatch");
-    roleManager.registerUser(_name, _instanceName, msg.sender, EnumsLibrary.Roles(_userRole), _addressInstance); 
-
-    emit evt_UserRegistered(msg.sender, _name, _instanceName, uint8(_userRole), _addressInstance); 
-  }
-
-  // status: 200ok
-  function getRegisteredUser(address _userAddr) 
-    public view returns (RoleManager.st_user memory) {
-        
-      return roleManager.getRegisteredUser(_userAddr); 
+  function checkRole(
+    EnumsLibrary.Roles _role, 
+    address _userAddr
+  ) internal view {
+    require(roleManager.hasRole(_userAddr, _role), "Unauthorized");
   }
 
   // status: 200ok
@@ -155,7 +138,8 @@ contract MainSupplyChain {
         instanceName: _instanceName,
         certificateType: _certificateType,
         tipePermohonan: _tipePermohonan,
-        status: _status
+        status: _status,
+        ipfsCert: ""
       });
   }
 
@@ -164,7 +148,7 @@ contract MainSupplyChain {
     st_certificateRequest memory requestData,
     uint8 _tipePermohonanCpotb
   ) public {
-      checkRole(EnumsLibrary.Roles.Factory);
+      checkRole(EnumsLibrary.Roles.Factory, msg.sender);
       require(bytes(cpotbDataById[requestData.certId].cpotbId).length == 0, "CPOTB ID already exists");
 
       st_userCertificate memory userFactory = createUserCertificate(requestData.senderName, msg.sender, requestData.senderInstance);
@@ -199,7 +183,7 @@ contract MainSupplyChain {
     string memory _ipfsCert,
     uint8 _tipePermohonanCpotb
   ) public {
-      checkRole(EnumsLibrary.Roles.BPOM);
+      checkRole(EnumsLibrary.Roles.BPOM, msg.sender);
       st_cpotb storage cpotbData = cpotbDataById[approvalData.certId];
 
       require(bytes(cpotbData.cpotbId).length > 0, "CPOTB not found");
@@ -225,6 +209,7 @@ contract MainSupplyChain {
         if (keccak256(abi.encodePacked(allCertificateData[i].certId)) == keccak256(abi.encodePacked(approvalData.certId))) {
           allCertificateData[i].certNumber = approvalData.certNumber;
           allCertificateData[i].status = EnumsLibrary.StatusCertificate.Approved;
+          allCertificateData[i].ipfsCert = _ipfsCert;
         } 
       }
 
@@ -323,7 +308,7 @@ contract MainSupplyChain {
     st_certificateRequest memory requestData,
     uint8 _tipePermohonanCdob
   ) public {
-      checkRole(EnumsLibrary.Roles.PBF);
+      checkRole(EnumsLibrary.Roles.PBF, msg.sender);
       require(bytes(cdobDataById[requestData.certId].cdobId).length == 0, "CDOB ID already exists");
 
       st_userCertificate memory userPbf = createUserCertificate(requestData.senderName, msg.sender, requestData.senderInstance);
@@ -358,7 +343,7 @@ contract MainSupplyChain {
     string memory _ipfsCert, 
     uint8 _tipePermohonanCdob
   ) public {
-      checkRole(EnumsLibrary.Roles.BPOM); 
+      checkRole(EnumsLibrary.Roles.BPOM, msg.sender);
       st_cdob storage cdobData = cdobDataById[approvalData.certId];
 
       require(bytes(cdobData.cdobId).length > 0, "CDOB not found");

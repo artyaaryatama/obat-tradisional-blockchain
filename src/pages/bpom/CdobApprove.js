@@ -15,7 +15,7 @@ const MySwal = withReactContent(Swal);
 function CdobApprove() {
 
   const navigate = useNavigate();
-  const [contract, setContract] = useState();
+  const [contracts, setContracts] = useState(null);
   const [dataCdob, setDataCdob] = useState([]);
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
 
@@ -49,13 +49,22 @@ function CdobApprove() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const contr = new Contract(
-            contractData.MainSupplyChain.address, 
-            contractData.MainSupplyChain.abi, 
+          const MainSupplyChain = new Contract(
+            contractData.MainSupplyChain.address,
+            contractData.MainSupplyChain.abi,
+            signer
+          );
+
+          const RoleManager = new Contract(
+            contractData.RoleManager.address,
+            contractData.RoleManager.abi,
             signer
           );
             
-          setContract(contr);
+        setContracts({
+          mainSupplyChain: MainSupplyChain,
+          roleManager: RoleManager
+        });
         } catch (err) {
           console.error("User access denied!");
           errAlert(err, "User access denied!");
@@ -83,13 +92,13 @@ function CdobApprove() {
   useEffect(() => {
 
     const getAllCdob = async () => {
-      if(contract){
+      if(contracts){
         try {
-          const listAllCdob = await contract.getListAllCdob()
+          const listAllCdob = await contracts.mainSupplyChain.getListAllCdob()
           console.log(listAllCdob);
 
           const reconstructedData = listAllCdob.map((item) => {
-            const cdobNumber = item[1] ? item[1] : '-'
+            const cdobNumber = item[1] ? item[1] : '(TBA)'
 
             return {
               cdobId: item[0],  
@@ -108,7 +117,7 @@ function CdobApprove() {
     }
 
     getAllCdob()
-  }, [contract])
+  }, [contracts])
 
   const handleEventCdobApproved = (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, txHash) => {
 
@@ -192,7 +201,7 @@ function CdobApprove() {
     console.log(id); 
     
     try {
-      const detailCdobCt = await contract.detailCdob(id);
+      const detailCdobCt = await contracts.mainSupplyChain.detailCdob(id);
 
       const [cdobId, cdobNumber, cdobDetail, tipePermohonan] = detailCdobCt
 
@@ -200,7 +209,7 @@ function CdobApprove() {
 
       const detailCdob = {
         cdobId: cdobId,
-        cdobNumber: cdobNumber ? cdobNumber : "-",
+        cdobNumber: cdobNumber ? cdobNumber : "(TBA)",
         pbfUserName: sender[0],
         pbfAddr: sender[1],
         pbfName: sender[2],
@@ -541,8 +550,7 @@ function CdobApprove() {
     
     try {
 
-      const userPbfCt = await contract.getRegisteredUser(detailCdob.pbfAddr)
-      const userBpomCt = await contract.getRegisteredUser(userdata.address)
+      const userPbfCt = await contracts.roleManager.getUserData(detailCdob.pbfAddr)
 
       const cdobData = {
         certName: "CDOB",
@@ -555,7 +563,7 @@ function CdobApprove() {
         senderInstanceAddress: userPbfCt[4],
         bpomInstance: userdata.instanceName,
         bpomAddress: userdata.address,
-        bpomInstanceAddress: userBpomCt[4]
+        bpomInstanceAddress: userdata.location
       }
 
       console.log(cdobData);
@@ -585,7 +593,7 @@ function CdobApprove() {
     }; 
 
     try {
-      const approveCt = await contract.approveCdob([certNumber, certTd, userdata.name, userdata.instanceName], cdobIpfs, tpMap[tp])
+      const approveCt = await contracts.mainSupplyChain.approveCdob([certNumber, certTd, userdata.name, userdata.instanceName], cdobIpfs, tpMap[tp])
 
       if(approveCt){
         MySwal.update({
@@ -594,7 +602,7 @@ function CdobApprove() {
         });
       }
 
-      contract.once('evt_cdobApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
+      contracts.mainSupplyChain.once('evt_cdobApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
         handleEventCdobApproved(bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, approveCt.hash);
       });
     } catch (error) {
@@ -607,6 +615,7 @@ function CdobApprove() {
       <div id="CpotbPage" className='Layout-Menu layout-page'>
         <div className="title-menu">
           <h1>Data Sertifikat CDOB</h1>
+          <p>Dikelola oleh {userdata.instanceName}</p>
         </div>
         <div className="tab-menu">
           <ul>

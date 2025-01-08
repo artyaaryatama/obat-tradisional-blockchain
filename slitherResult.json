@@ -62012,7 +62012,7 @@
             "type_specific_fields": {
               "parent": {
                 "type": "function",
-                "name": "getRegisteredUser",
+                "name": "getUserData",
                 "source_mapping": {
                   "start": 3756,
                   "length": 359,
@@ -62471,7 +62471,7 @@
                       "ending_column": 0
                     }
                   },
-                  "signature": "getRegisteredUser(address)"
+                  "signature": "getUserData(address)"
                 }
               }
             },
@@ -62481,8 +62481,8 @@
             }
           }
         ],
-        "description": "Parameter MainSupplyChain.getRegisteredUser(address)._userAddr (contracts/MainSupplyChain.sol#130) is not in mixedCase\n",
-        "markdown": "Parameter [MainSupplyChain.getRegisteredUser(address)._userAddr](contracts/MainSupplyChain.sol#L130) is not in mixedCase\n",
+        "description": "Parameter MainSupplyChain.getUserData(address)._userAddr (contracts/MainSupplyChain.sol#130) is not in mixedCase\n",
+        "markdown": "Parameter [MainSupplyChain.getUserData(address)._userAddr](contracts/MainSupplyChain.sol#L130) is not in mixedCase\n",
         "first_markdown_element": "contracts/MainSupplyChain.sol#L130",
         "id": "33eb279a556cb639f542503a787fef7e56e27645c294addf48a859f4a0955d51",
         "check": "naming-convention",
@@ -83982,7 +83982,7 @@
             "type_specific_fields": {
               "parent": {
                 "type": "function",
-                "name": "getRegisteredUser",
+                "name": "getUserData",
                 "source_mapping": {
                   "start": 1189,
                   "length": 349,
@@ -84078,7 +84078,7 @@
                       "ending_column": 2
                     }
                   },
-                  "signature": "getRegisteredUser(address)"
+                  "signature": "getUserData(address)"
                 }
               }
             },
@@ -84088,8 +84088,8 @@
             }
           }
         ],
-        "description": "Parameter RoleManager.getRegisteredUser(address)._userAddr (contracts/RoleManager.sol#44) is not in mixedCase\n",
-        "markdown": "Parameter [RoleManager.getRegisteredUser(address)._userAddr](contracts/RoleManager.sol#L44) is not in mixedCase\n",
+        "description": "Parameter RoleManager.getUserData(address)._userAddr (contracts/RoleManager.sol#44) is not in mixedCase\n",
+        "markdown": "Parameter [RoleManager.getUserData(address)._userAddr](contracts/RoleManager.sol#L44) is not in mixedCase\n",
         "first_markdown_element": "contracts/RoleManager.sol#L44",
         "id": "711a5863fb127c6429fa62d30d4a3d4e399a1f2672c808ddc7c1c7123f1ad6e9",
         "check": "naming-convention",

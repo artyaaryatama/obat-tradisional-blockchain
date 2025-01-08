@@ -29,11 +29,6 @@ function CreateOrderRetailer() {
     2n: "Narkotika"
   };
 
-  const tipeProdukMap = {
-    0: "Obat Tradisional",
-    1: "Suplemen Kesehatan"
-  };
-
   const options = {
     year: 'numeric',
     month: 'long',
@@ -140,7 +135,7 @@ function CreateOrderRetailer() {
           </ul>
           <ul>
             <li className="label">
-              <p>Batchname</p> 
+              <p>Batch Name</p> 
             </li>
             <li className="input">
               <p>{_batchName}</p> 
@@ -219,7 +214,7 @@ function CreateOrderRetailer() {
 
       const [statusStok, namaProduct, batchNamee, obatQuantity, factoryInstancee] = dataObat
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -234,7 +229,7 @@ function CreateOrderRetailer() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        tipeProduk: tipeProdukMap[tipeProduk], 
+        tipeProduk: "Obat Tradisional", 
         nieStatus: obatStatusMap[nieStatus], 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
@@ -251,17 +246,18 @@ function CreateOrderRetailer() {
         title: `Form Order Obat ${detailObat.namaObat}`,
         html: (
           <div className='form-swal'>
+              <div className="stok">
+                <ul>
+                  <li className="label">
+                    <p>Stok Tersedia</p>
+                  </li>
+                  <li className="input">
+                    <p>{obatQuantity.toString()} Obat</p>
+                  </li>
+                </ul>
+              </div>
               <div className="row row--obat">
                 <div className="col">
-                  <ul>
-                    <li className="label">
-                      <p>Stok Tersedia</p>
-                    </li>
-                    <li className="input">
-                      <p>{obatQuantity.toString()} Obat</p>
-                    </li>
-                  </ul>
-
                   <ul>
                     <li className="label">
                       <p>Nama Obat</p>
@@ -437,7 +433,7 @@ function CreateOrderRetailer() {
     const year = today.getFullYear();
     const randomNumber = Math.floor(100000 + Math.random() * 900000); 
 
-    const orderId = `ORDER-RET-${day}${month}${year}-${randomNumber}` 
+    const orderId = `order-ret-${day}${month}${year}-${randomNumber}` 
   
     try {
       console.log(prevOrderIdPbf, orderId, id, batchName, namaProduk, userData.instanceName, pbfInstance, orderQuantity);

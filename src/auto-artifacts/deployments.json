@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0x95401dc811bb5740090279Ba06cfA8fcF6113778",
+    "address": "0x99aF12BE68e571a6A780263e4ee5cDcfA4809bC5",
     "abi": [
       {
         "inputs": [
@@ -225,6 +225,11 @@
             "internalType": "enum EnumsLibrary.StatusCertificate",
             "name": "status",
             "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "ipfsCert",
+            "type": "string"
           }
         ],
         "stateMutability": "view",
@@ -889,6 +894,11 @@
                 "internalType": "enum EnumsLibrary.StatusCertificate",
                 "name": "status",
                 "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "ipfsCert",
+                "type": "string"
               }
             ],
             "internalType": "struct MainSupplyChain.st_certificateList[]",
@@ -940,6 +950,11 @@
                 "internalType": "enum EnumsLibrary.StatusCertificate",
                 "name": "status",
                 "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "ipfsCert",
+                "type": "string"
               }
             ],
             "internalType": "struct MainSupplyChain.st_certificateList[]",
@@ -985,6 +1000,11 @@
                 "internalType": "enum EnumsLibrary.StatusCertificate",
                 "name": "status",
                 "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "ipfsCert",
+                "type": "string"
               }
             ],
             "internalType": "struct MainSupplyChain.st_certificateList[]",
@@ -993,85 +1013,6 @@
           }
         ],
         "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_userAddr",
-            "type": "address"
-          }
-        ],
-        "name": "getRegisteredUser",
-        "outputs": [
-          {
-            "components": [
-              {
-                "internalType": "string",
-                "name": "name",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "instanceName",
-                "type": "string"
-              },
-              {
-                "internalType": "address",
-                "name": "userAddr",
-                "type": "address"
-              },
-              {
-                "internalType": "enum EnumsLibrary.Roles",
-                "name": "role",
-                "type": "uint8"
-              },
-              {
-                "internalType": "string",
-                "name": "addressInstance",
-                "type": "string"
-              }
-            ],
-            "internalType": "struct RoleManager.st_user",
-            "name": "",
-            "type": "tuple"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_instanceName",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "_userAddr",
-            "type": "address"
-          },
-          {
-            "internalType": "uint8",
-            "name": "_userRole",
-            "type": "uint8"
-          },
-          {
-            "internalType": "string",
-            "name": "_addressInstance",
-            "type": "string"
-          }
-        ],
-        "name": "registerUser",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -1147,7 +1088,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0x998abeb3E57409262aE5b751f60747921B33613E",
+    "address": "0x75a4eEF5284EC25e8e285A7715615DF981c2387A",
     "abi": [
       {
         "inputs": [
@@ -1406,11 +1347,6 @@
             "type": "string"
           },
           {
-            "internalType": "enum EnumsLibrary.TipeProduk",
-            "name": "_tipeProduk",
-            "type": "uint8"
-          },
-          {
             "internalType": "enum EnumsLibrary.TipePermohonanCdob",
             "name": "_tipeObat",
             "type": "uint8"
@@ -1518,11 +1454,6 @@
                 "internalType": "string",
                 "name": "kemasan",
                 "type": "string"
-              },
-              {
-                "internalType": "enum EnumsLibrary.TipeProduk",
-                "name": "tipeProduk",
-                "type": "uint8"
               },
               {
                 "internalType": "string",
@@ -1814,37 +1745,6 @@
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_factoryInstanceName",
-            "type": "string"
-          }
-        ],
-        "name": "getJenisSediaanAvail",
-        "outputs": [
-          {
-            "components": [
-              {
-                "internalType": "string",
-                "name": "ipfsCert",
-                "type": "string"
-              },
-              {
-                "internalType": "uint8",
-                "name": "tipePermohonan",
-                "type": "uint8"
-              }
-            ],
-            "internalType": "struct MainSupplyChain.st_approvedCert[]",
-            "name": "",
-            "type": "tuple[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
         "inputs": [],
         "name": "mainSupplyChain",
         "outputs": [
@@ -1982,7 +1882,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0x70e0bA845a1A0F2DA3359C97E0285013525FFC49",
+    "address": "0xBCDc01073aE441DA6C532e656129B9a96FfB3704",
     "abi": [
       {
         "inputs": [
@@ -2803,6 +2703,205 @@
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      }
+    ]
+  },
+  "RoleManager": {
+    "address": "0xEe6a1cF9B162933b958954904a8d503564A9030f",
+    "abi": [
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "userAddr",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "instanceName",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "enum EnumsLibrary.Roles",
+            "name": "role",
+            "type": "uint8"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "locationInstance",
+            "type": "string"
+          }
+        ],
+        "name": "evt_UserRegistered",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_userAddr",
+            "type": "address"
+          }
+        ],
+        "name": "checkRegistration",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_userAddr",
+            "type": "address"
+          }
+        ],
+        "name": "getUserData",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "instanceName",
+                "type": "string"
+              },
+              {
+                "internalType": "address",
+                "name": "userAddr",
+                "type": "address"
+              },
+              {
+                "internalType": "enum EnumsLibrary.Roles",
+                "name": "role",
+                "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "locationInstance",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct RoleManager.st_user",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_userAddr",
+            "type": "address"
+          },
+          {
+            "internalType": "enum EnumsLibrary.Roles",
+            "name": "_role",
+            "type": "uint8"
+          }
+        ],
+        "name": "hasRole",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "loginUser",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "instanceName",
+                "type": "string"
+              },
+              {
+                "internalType": "address",
+                "name": "userAddr",
+                "type": "address"
+              },
+              {
+                "internalType": "enum EnumsLibrary.Roles",
+                "name": "role",
+                "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "locationInstance",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct RoleManager.st_user",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_instanceName",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "_role",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "_locationInstance",
+            "type": "string"
+          }
+        ],
+        "name": "registerUser",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       }
     ]

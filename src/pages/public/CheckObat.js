@@ -20,9 +20,9 @@ function CheckObatIpfs() {
   const [merkObat, setMerkObat] = useState("");
   const [klaim, setKlaim] = useState([]);
   const [komposisi, setKomposisi] = useState([]);
+  const [kemasan, setKemasan] = useState("");
   const [factoryAddr, setFactoryAddr] = useState("");
   const [factoryInstanceName, setFactoryInstanceName] = useState("");
-  const [tipeProduk, setTipeProduk] = useState("");
   const [nieNumber, setNieNumber] = useState("");
   const [nieRequestDate, setNieRequestDate] = useState("");
   const [nieApprovalDate, setNieApprovalDate] = useState("");
@@ -46,7 +46,7 @@ function CheckObatIpfs() {
     return hash;
   };
 
-  // const obatDataFull = {"batchName":"BN-8047-JIGV","obatIdPackage":"OT-02838OL","dataObat":{"obatIdProduk":"ot-3385CI","namaProduk":"Upik Instan Rasa Coklat","merk":"Upik Instan Rasa Coklat","klaim":["Memelihara kesehatan","Membantu memperbaiki nafsu makan","Secara tradisional digunakan pada penderita kecacingan"],"kemasan":"Dus, 11 @Tablet (5 gram)","komposisi":["Cinnamomum Burmanii Cortex","Curcuma Aeruginosa Rhizoma","Curcuma Domestica Rhizoma","Curcuma Xanthorrhiza Rhizoma"],"factoryAddr":"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266","factoryInstanceName":"PT. Budi Pekerti","factoryUserName":"TAKAKI YUYA","tipeProduk":"Obat Tradisional","nieNumber":"TETSDFSDF","nieRequestDate":"-","nieApprovalDate":"-","bpomAddr":"-","bpomInstanceName":"-"},"datOrderPbf":{"orderQuantity":2,"senderInstanceName":"PT. Mangga Arum","targetInstanceName":"PT. Budi Pekerti","timestampOrder":"9 Desember 2024 pukul 00.29 WITA","timestampShipped":"9 Desember 2024 pukul 00.29 WITA","timestampComplete":"9 Desember 2024 pukul 00.30 WITA"},"dataOrderRetailer":{"orderQuantity":2,"senderInstanceName":"Apotek Sejahtera","targetInstanceName":"PT. Mangga Arum","timestampOrder":"9 Desember 2024 pukul 00.32 WITA","timestampShipped":"9 Desember 2024 pukul 00.32 WITA","timestampComplete":"9 Desember 2024 pukul 00.33 WITA"}}
+  // const obatDataFull = {"batchName":"BN-8047-JIGV","obatIdPackage":"OT-02838OL","dataObat":{"obatIdProduk":"ot-3385CI","namaProduk":"Upik Instan Rasa Coklat","merk":"Upik Instan Rasa Coklat","klaim":["Memelihara kesehatan","Membantu memperbaiki nafsu makan","Secara tradisional digunakan pada penderita kecacingan"],"kemasan":"Dus, 11 @Tablet (5 gram)","komposisi":["Cinnamomum Burmanii Cortex","Curcuma Aeruginosa Rhizoma","Curcuma Domestica Rhizoma","Curcuma Xanthorrhiza Rhizoma"],"factoryAddr":"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266","factoryInstanceName":"PT. Budi Pekerti","factoryUserName":"TAKAKI YUYA", "nieNumber":"TETSDFSDF","nieRequestDate":"-","nieApprovalDate":"-","bpomAddr":"-","bpomInstanceName":"-"},"datOrderPbf":{"orderQuantity":2,"senderInstanceName":"PT. Mangga Arum","targetInstanceName":"PT. Budi Pekerti","timestampOrder":"9 Desember 2024 pukul 00.29 WITA","timestampShipped":"9 Desember 2024 pukul 00.29 WITA","timestampComplete":"9 Desember 2024 pukul 00.30 WITA"},"dataOrderRetailer":{"orderQuantity":2,"senderInstanceName":"Apotek Sejahtera","targetInstanceName":"PT. Mangga Arum","timestampOrder":"9 Desember 2024 pukul 00.32 WITA","timestampShipped":"9 Desember 2024 pukul 00.32 WITA","timestampComplete":"9 Desember 2024 pukul 00.33 WITA"}}
 
   
   useEffect(() => {
@@ -71,7 +71,6 @@ function CheckObatIpfs() {
         komposisi: obatData.dataObat.komposisi,
         factoryAddr: obatData.dataObat.factoryAddr,
         factoryInstanceName: obatData.dataObat.factoryInstanceName,
-        tipeProduk: obatData.dataObat.tipeProduk, 
         nieStatus: obatData.dataObat.obatStatus,
         nieRequestDate: obatData.dataObat.nieRequestDate, 
         nieApprovalDate: obatData.dataObat.nieApprovalDate,
@@ -123,10 +122,10 @@ function CheckObatIpfs() {
       setNamaObat(detailObat.namaObat);
       setMerkObat(detailObat.merk);
       setKlaim(detailObat.klaim);
+      setKemasan(detailObat.kemasan)
       setKomposisi(detailObat.komposisi);
       setFactoryAddr(detailObat.factoryAddr);
       setFactoryInstanceName(detailObat.factoryInstanceName);
-      setTipeProduk(detailObat.tipeProduk);
       setNieNumber(detailObat.nieNumber);
       setNieRequestDate(detailObat.nieRequestDate);
       setNieApprovalDate(detailObat.nieApprovalDate);
@@ -145,7 +144,7 @@ function CheckObatIpfs() {
     <>
       <div id="publicObat" className='layout-page'>
         <div className="title-menu">
-          <h2>{namaObat} <span>{tipeProduk}</span></h2>
+          <h2>{namaObat} <span>Obat Tradisional</span></h2>
 
         </div>
         <div className="container">
@@ -171,29 +170,12 @@ function CheckObatIpfs() {
                       <span>{namaObat}</span>
                     </li>
                     <li className="info-item">
-                      <span className="label">Factory Instance</span>
-                      <span>{factoryInstanceName}</span>
-                      <span className='addr'> ({factoryAddr})</span>
-                      <span className='linked'>
-                        <a
-                          href={`http://localhost:3000/public/certificate/${cpotbHash}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          View CPOTB
-                          <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        </a>
-                      </span>
-                    </li>
-
-                    <li className="info-item">
-                      <span className="label">Factory Address</span>
-                      <span className='address'>{factoryAddressInstance}</span>
-                    </li>
-                    
-                    <li className="info-item">
                       <span className="label">Merk</span>
                       <span>{merkObat}</span>
+                    </li>
+                    <li className="info-item">
+                      <span className="label">Kemasan Obat</span>
+                      <span>{kemasan}</span>
                     </li>
                     <li className="info-item list-item">
                       <span className="label">Klaim</span>
@@ -220,6 +202,26 @@ function CheckObatIpfs() {
                           }
                         </ol>
                       </div>
+                    </li>
+                    <li className="info-item">
+                      <span className="label">Factory Instance</span>
+                      <span>{factoryInstanceName}</span>
+                      <span className='addr'> ({factoryAddr})</span>
+                      <span className='linked'>
+                        <a
+                          href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View CPOTB
+                          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </span>
+                    </li>
+
+                    <li className="info-item">
+                      <span className="label">Factory Address</span>
+                      <span className='address'>{factoryAddressInstance}</span>
                     </li>
                   </ul>
                 </div>

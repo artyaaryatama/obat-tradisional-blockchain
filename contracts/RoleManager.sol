@@ -11,43 +11,42 @@ contract RoleManager {
         string instanceName;
         address userAddr;
         EnumsLibrary.Roles role;
-        string addressInstance;
+        string locationInstance;
     }
 
     mapping(address => st_user) private users;
     mapping(address => bool) private isRegistered;
 
-    event RoleAssigned(address indexed user, EnumsLibrary.Roles role);
-    event UserRegistered(address indexed userAddr, string name, string instanceName, EnumsLibrary.Roles role);
+    event evt_UserRegistered(address userAddr, string name, string instanceName, EnumsLibrary.Roles role, string locationInstance);
 
-    function registerUser(
+    function registerUser( 
         string memory _name,
         string memory _instanceName,
-        address _userAddr,
-        EnumsLibrary.Roles _role,
-        string memory _addressInstance
-    ) external {
-        require(!isRegistered[_userAddr], "User already registered");
+        uint8 _role,
+        string memory _locationInstance
+    ) public {
+        require(!isRegistered[msg.sender], "User already registered");
 
-        users[_userAddr] = st_user({
+        users[msg.sender] = st_user({
             name: _name,
             instanceName: _instanceName,
-            userAddr: _userAddr,
-            role: _role,
-            addressInstance: _addressInstance 
+            userAddr: msg.sender,
+            role: EnumsLibrary.Roles(_role),
+            locationInstance: _locationInstance
         });
 
-        isRegistered[_userAddr] = true;
+        isRegistered[msg.sender] = true;
 
-        emit UserRegistered(_userAddr, _name, _instanceName, _role);
-        emit RoleAssigned(_userAddr, _role);
+        emit evt_UserRegistered(msg.sender, _name, _instanceName, EnumsLibrary.Roles(_role), _locationInstance);
     }
-
-    function getRegisteredUser(address _userAddr)
-        external
-        view
-        returns (st_user memory)
-    {
+ 
+    function loginUser() public view returns (st_user memory) {
+        require(isRegistered[msg.sender], "User address missmatch");
+        
+        return users[msg.sender];
+        
+    }
+    function getUserData(address _userAddr) public view returns (st_user memory) {
         require(isRegistered[_userAddr], "User is not registered");
         
         return users[_userAddr];

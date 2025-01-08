@@ -504,7 +504,7 @@
 					"parameterSlots": 0,
 					"returnSlots": 1
 				},
-				"@getRegisteredUser_351": {
+				"@getUserData_351": {
 					"entryPoint": 11440,
 					"id": 351,
 					"parameterSlots": 1,
@@ -24657,7 +24657,7 @@
 				"getListAllCdob()": "infinite",
 				"getListAllCertificateByInstance(string)": "infinite",
 				"getListAllCpotb()": "infinite",
-				"getRegisteredUser(address)": "infinite",
+				"getUserData(address)": "infinite",
 				"registerUser(string,string,address,uint8)": "infinite",
 				"requestCdob((string,string,string),uint8)": "infinite",
 				"requestCpotb((string,string,string),uint8)": "infinite"
@@ -24683,7 +24683,7 @@
 			"getListAllCdob()": "cec1fc1e",
 			"getListAllCertificateByInstance(string)": "a814a60f",
 			"getListAllCpotb()": "ec176587",
-			"getRegisteredUser(address)": "e54a29bb",
+			"getUserData(address)": "e54a29bb",
 			"registerUser(string,string,address,uint8)": "d1233672",
 			"requestCdob((string,string,string),uint8)": "6d2a362f",
 			"requestCpotb((string,string,string),uint8)": "387bb30e"
@@ -25578,7 +25578,7 @@
 					"type": "address"
 				}
 			],
-			"name": "getRegisteredUser",
+			"name": "getUserData",
 			"outputs": [
 				{
 					"internalType": "address",

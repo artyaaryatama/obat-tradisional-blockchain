@@ -180,7 +180,7 @@ function CpotbRequest() {
     const year = today.getFullYear();
     const randomNumber = Math.floor(100000 + Math.random() * 900000); 
 
-    const id = `CPOTB-${day}${month}${year}-${randomNumber}` 
+    const id = `cpotb-${day}${month}${year}-${randomNumber}` 
 
     try {
       const requestCpotbCt = await contract.requestCpotb([id, userdata.name, userdata.instanceName], jenisSediaanInt);

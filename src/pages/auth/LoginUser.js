@@ -14,7 +14,8 @@ const MySwal = withReactContent(Swal);
 
 function LoginPage() {
   const [name, setName] = useState("");
-  const [userAddr, setUserAddr] = useState("");
+  // const [userAddr, setUserAddr] = useState("");
+  const [signer, setSigner] = useState("");
 
   const navigate = useNavigate();
   const [contract, setContract] = useState();
@@ -30,12 +31,15 @@ function LoginPage() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
+
+          console.log(signer)
           const contr = new Contract(
-            contractData.MainSupplyChain.address, 
-            contractData.MainSupplyChain.abi, 
+            contractData.RoleManager.address, 
+            contractData.RoleManager.abi, 
             signer);
 
           setContract(contr);
+          setSigner(signer)
           console.log(contr);
         } catch (err) {
           console.error("User denied access: ", err);
@@ -65,62 +69,61 @@ function LoginPage() {
     e.preventDefault();
     setLoader(true)
 
-    if(userAddr && name){
-      try {
-        const nameUpperCase = name.toUpperCase()
-        const loginCt = await contract.getRegisteredUser(userAddr);
-        console.log('loginCt', loginCt);
+    try {
+      const nameUpperCase = name.toUpperCase()
+      const loginCt = await contract.loginUser();
+      console.log('loginCt', loginCt);
+      
+      const [userName, instanceName, userAddr, role, location] = loginCt;
+      
+      if (nameUpperCase === userName && signer.address === userAddr) {
+        console.log('role pas login',{role, userAddr});
 
-        const [userName, instanceName, address, role, addressInstance] = loginCt;
-        
-        if (userAddr === address || nameUpperCase === name) {
-          console.log('role pas login',{role, address});
-
-          const userdata = {
-            address: address,
-            name: userName,
-            instanceName: instanceName,
-            role: role.toString(),
-            addressInstance: addressInstance
-          }
-          
-          sessionStorage.setItem("userdata", JSON.stringify(userdata))
-          console.log(userdata);
-
-          MySwal.fire({
-            title: "Login Success",
-            html: `<div>
-                    <p>Please wait a moment, we are redirecting you to the page <span>&#127939;</span></p>
-                  </div>`,
-            timer: 2000,
-            icon: 'success',
-            timerProgressBar: true,
-            showCancelButton: false,
-            showConfirmButton: false,
-            allowOutsideClick: false,
-          })
-          .then(() => {
-            if (userdata.role === "1") {
-              navigate('/cdob');
-            } else if (userdata.role  === "0") {
-              navigate('/cpotb');
-            } else if (userdata.role === '2') {
-              navigate('/cpotb-approval')
-            } else if (userdata.role === '3') {
-              navigate('/create-retailer-order')
-            } else{
-              navigate('/unauthorized');
-            }
-          });
-          
+        const userdata = {
+          address: userAddr,
+          name: userName,
+          instanceName: instanceName,
+          role: role.toString(),
+          location: location
         }
         
-      } catch (err) {
-        setLoader(false)
-        errAlert(err, "Failed to login!")
+        sessionStorage.setItem("userdata", JSON.stringify(userdata))
+        console.log(userdata);
+
+        MySwal.fire({
+          title: "Login Success",
+          html: `<div>
+                  <p>Please wait a moment, we are redirecting you to the page <span>&#127939;</span></p>
+                </div>`,
+          timer: 2000,
+          icon: 'success',
+          timerProgressBar: true,
+          showCancelButton: false,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+        })
+        .then(() => {
+          if (userdata.role === "1") {
+            navigate('/cdob');
+          } else if (userdata.role  === "0") {
+            navigate('/cpotb');
+          } else if (userdata.role === '2') {
+            navigate('/cpotb-approval')
+          } else if (userdata.role === '3') {
+            navigate('/create-retailer-order')
+          } else{
+            navigate('/unauthorized');
+          }
+        });
+        
+      } else {
+        errAlert({reason: "Username not recognized"}, "Please ensure the username is correct and try again.")
+        setLoader(false);
       }
-    } else {
-      console.log("Please filled all input!")
+      
+    } catch (err) {
+      setLoader(false);
+      errAlert(err, "Failed to login!");
     }
   }; 
   
@@ -128,22 +131,22 @@ function LoginPage() {
     event.preventDefault();
     if(role===0){
       setName('Factory ABC')
-      setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+      // setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
       // setUserAddr("0x6142E74121ADE0de3BEC1641e0318dBcCFcDe06A")
 
     } else if(role===1){ 
-      setName('PBF EDF') 
-      setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
+      setName('PBF DEF') 
+      // setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
       // setUserAddr("0x97CB6400E271e65150B2330ad27f213a4C9c31af")
 
     } else if(role===2){ 
       setName('BPOM GHI') 
-      setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
+      // setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
       // setUserAddr('0xcbcD762c3C27212937314C1D46072a214346F2F3')
 
     } else if(role===3){
       setName('Retailer JKL') 
-      setUserAddr('0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65')
+      // setUserAddr('0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65')
       // setUserAddr('0xA3cE1983150Fade27518DF467a99a74FB4082dDa')
       
     }
@@ -174,13 +177,13 @@ function LoginPage() {
               required 
             />
             
-            <input 
+            {/* <input 
               type="text" 
               placeholder="Account E-Wallet Address" 
               value={userAddr} 
               onChange={(e) => setUserAddr(e.target.value)} 
               required 
-            />
+            /> */}
             
             <button type="submit">
               {

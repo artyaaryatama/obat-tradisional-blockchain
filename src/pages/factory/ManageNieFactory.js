@@ -97,7 +97,7 @@ function ManageNieFactory() {
 
           const reconstructedData = listAllObatCt.map((item, index) => {
 
-            const nie = item[2] !== "" ? item[2] : "-"
+            const nie = item[2] !== "" ? item[2] : "TBA"
             return {
               obatId: item[0],
               namaProduk: item[1],
@@ -186,7 +186,7 @@ function ManageNieFactory() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, tipeProduk, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
       console.log(cpotbHash);
@@ -198,7 +198,6 @@ function ManageNieFactory() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        tipeProduk: tipeProdukMap[tipeProduk], 
         nieStatus: obatStatusMap[nieStatus], 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
@@ -237,13 +236,21 @@ function ManageNieFactory() {
                       <p>{detailObat.namaObat}</p> 
                     </li>
                   </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Merk Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.merk}</p> 
+                    </li>
+                  </ul>
   
                   <ul>
                     <li className="label">
                       <p>Tipe Produk</p>
                     </li>
                     <li className="input">
-                      <p>{detailObat.tipeProduk}</p> 
+                      <p>Obat Tradisional</p> 
                     </li>
                   </ul>
 
@@ -411,20 +418,6 @@ function ManageNieFactory() {
                             />
                           </li>
                         </ul>
-
-                        <ul>
-                          <li className="label">
-                            <label htmlFor="tipeProduk">Tipe Produk</label>
-                          </li>
-                          <li className="input">
-                            <input
-                              type="text"
-                              id="tipeProduk"
-                              value={detailObat.tipeProduk}
-                              readOnly
-                            />
-                          </li>
-                        </ul>
                         
                         <ul>
                           <li className="label">
@@ -529,13 +522,21 @@ function ManageNieFactory() {
                       <p>{detailObat.namaObat}</p> 
                     </li>
                   </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Merk Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.merk}</p> 
+                    </li>
+                  </ul>
   
                   <ul>
                     <li className="label">
                       <p>Tipe Produk</p>
                     </li>
                     <li className="input">
-                      <p>{detailObat.tipeProduk}</p> 
+                      <p>Obat Tradisional</p> 
                     </li>
                   </ul>
   
