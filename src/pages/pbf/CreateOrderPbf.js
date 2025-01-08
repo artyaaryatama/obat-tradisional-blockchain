@@ -14,7 +14,7 @@ function CreateOrderPbf() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
 
-  const userData = JSON.parse(sessionStorage.getItem('userdata'));
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
   
 
@@ -414,15 +414,15 @@ function CreateOrderPbf() {
     const orderId = `order-pbf-${day}${month}${year}-${randomNumber}` 
   
     try {
-      console.log(orderId, id, namaProduk, factoryInstance, userData.instanceName, orderQuantity);
+      console.log(orderId, id, namaProduk, factoryInstance, userdata.instanceName, orderQuantity);
 
-      const checkAvailCt = await contracts.orderManagement.pbfAvailableToBuy(userData.instanceName, tipeObat);
+      const checkAvailCt = await contracts.orderManagement.pbfAvailableToBuy(userdata.instanceName, tipeObat);
 
       console.log(checkAvailCt);
 
       if(checkAvailCt !== "") {
 
-        const createOrderCt = await contracts.orderManagement.createOrder("",orderId, id, batchName, namaProduk, userData.instanceName, factoryInstance, orderQuantity, checkAvailCt);
+        const createOrderCt = await contracts.orderManagement.createOrder("",orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, checkAvailCt);
   
         if(createOrderCt){
           MySwal.update({
@@ -432,15 +432,11 @@ function CreateOrderPbf() {
         }
   
         contracts.orderManagement.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
-          handleEventCreateOrder(userData.instanceName, orderId, id, _batchName, _namaProduk, _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, createOrderCt.hash);
+          handleEventCreateOrder(userdata.instanceName, orderId, id, _batchName, _namaProduk, _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, createOrderCt.hash);
         });
 
       } else {
-        MySwal.fire({
-          title: "CDOB Not Found",
-          text: "PBF does not have the required CDOB for the selected medicine type.",
-          icon: 'error',
-        });
+        errAlert({reason: `Unable to order obat`}, `${userdata.instanceName} does not have a CDOB Certification for ${namaProduk}`)
       }
 
 
@@ -455,7 +451,7 @@ function CreateOrderPbf() {
       <div id="ObatProduce" className='Layout-Menu layout-page'>
         <div className="title-menu">
           <h1>Pengajuan Order Obat Tradisional</h1>
-          <p>Oleh {userData.instanceName}</p>
+          <p>Oleh {userdata.instanceName}</p>
         </div>
         <div className="tab-menu">
           <ul>

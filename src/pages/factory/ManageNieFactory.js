@@ -18,7 +18,7 @@ function ManageNieFactory() {
   const [contract, setContract] = useState();
   const navigate = useNavigate();
 
-  const userData = JSON.parse(sessionStorage.getItem('userdata'));
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
 
   const obatStatusMap = {
@@ -90,9 +90,9 @@ function ManageNieFactory() {
 
   useEffect(() => { 
     const loadData = async () => {
-      if (contract && userData.instanceName) {
+      if (contract && userdata.instanceName) {
         try {
-          const listAllObatCt = await contract.getAllObatByInstance(userData.instanceName);
+          const listAllObatCt = await contract.getAllObatByInstance(userdata.instanceName);
           console.log(listAllObatCt);
 
           const reconstructedData = listAllObatCt.map((item, index) => {
@@ -117,7 +117,7 @@ function ManageNieFactory() {
     };
     
     loadData();
-  }, [contract, userData.instanceName]);
+  }, [contract, userdata.instanceName]);
 
   const handleEventNieRequsted = ( _factoryInstance, _factoryAddr, _timestampRequestNie, txHash) =>{
 
@@ -700,7 +700,7 @@ function ManageNieFactory() {
   const requestNie = async(id) => {
 
     try {
-      const requestNieCt = await contract.requestNie(id, userData.instanceName);
+      const requestNieCt = await contract.requestNie(id, userdata.instanceName);
       
       if(requestNieCt){
         MySwal.update({
@@ -728,7 +728,7 @@ function ManageNieFactory() {
         ["Memelihara kesehatan", "Membantu memperbaiki nafsu makan", "Secara tradisional digunakan pada penderita kecacingan"],
         "Dus, 11 @Tablet (5 gram)",
         ["Cinnamomum Burmanii Cortex", "Curcuma Aeruginosa Rhizoma", "Curcuma Domestica Rhizoma", "Curcuma Xanthorrhiza Rhizoma"],
-        userData.instanceName,
+        userdata.instanceName,
         0
       );
   
@@ -746,7 +746,7 @@ function ManageNieFactory() {
       <div id="ObatNie" className='Layout-Menu layout-page'>
         <div className="title-menu">
           <h1>Data Obat Tradisional</h1>
-          <p>Di produksi oleh {userData.instanceName}</p>
+          <p>Di produksi oleh {userdata.instanceName}</p>
         </div>
         <div className="tab-menu">
           <ul>

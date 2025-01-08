@@ -14,7 +14,7 @@ function CreateOrderRetailer() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
 
-  const userData = JSON.parse(sessionStorage.getItem('userdata'));
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
   
   const obatStatusMap = {
@@ -436,9 +436,9 @@ function CreateOrderRetailer() {
     const orderId = `order-ret-${day}${month}${year}-${randomNumber}` 
   
     try {
-      console.log(prevOrderIdPbf, orderId, id, batchName, namaProduk, userData.instanceName, pbfInstance, orderQuantity);
+      console.log(prevOrderIdPbf, orderId, id, batchName, namaProduk, userdata.instanceName, pbfInstance, orderQuantity);
       
-      const createOrderCt = await contracts.orderManagement.createOrder(prevOrderIdPbf, orderId, id, batchName, namaProduk, userData.instanceName, pbfInstance, orderQuantity, "");
+      const createOrderCt = await contracts.orderManagement.createOrder(prevOrderIdPbf, orderId, id, batchName, namaProduk, userdata.instanceName, pbfInstance, orderQuantity, "");
 
       if(createOrderCt){
         MySwal.update({
@@ -462,7 +462,7 @@ function CreateOrderRetailer() {
       <div id="ObatProduce" className='Layout-Menu layout-page'>
         <div className="title-menu">
           <h1>Pengajuan Order Obat Tradisional</h1>
-          <p>Oleh {userData.instanceName}</p>
+          <p>Oleh {userdata.instanceName}</p>
         </div>
         <div className="tab-menu">
           <ul>

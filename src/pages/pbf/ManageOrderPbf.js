@@ -21,7 +21,7 @@ function ManageOrderPbf() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
 
-  const userData = JSON.parse(sessionStorage.getItem('userdata'));
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataOrder, setDataOrder] = useState([]);
 
   const obatStatusMap = {
@@ -111,7 +111,7 @@ function ManageOrderPbf() {
     const loadData = async () => {
       if (contracts) {
         try {
-          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromBuyer(userData.instanceName);
+          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromBuyer(userdata.instanceName);
           console.log(listOrderedObatCt);
 
           const reconstructedDataorder = listOrderedObatCt.map((item, index) => ({
@@ -747,7 +747,7 @@ function ManageOrderPbf() {
           pbfInstanceAddress: userPbfCt[4],
           statusOrder : "Order Completed",
           targetInstanceName : dataOrder.sellerInstance,
-          targetAddress: userData.address,
+          targetAddress: userdata.address,
           timestampOrder: timestamps.timestampOrder,
           timestampShipped: timestamps.timestampShipped,
           timestampComplete: timestamps.timestampComplete
@@ -783,6 +783,15 @@ function ManageOrderPbf() {
                   </li>
                   <li className="input input-1">
                     <p>{dataObat.namaObat}</p> 
+                  </li>
+                </ul>
+  
+                <ul>
+                  <li className="label label-1">
+                    <p>Batch Name</p>
+                  </li>
+                  <li className="input input-1">
+                    <p>{batchName}</p> 
                   </li>
                 </ul>
   
@@ -842,7 +851,7 @@ function ManageOrderPbf() {
       <div id="ObatProduce" className='Layout-Menu layout-page'>
         <div className="title-menu">
           <h1>List Order Obat Tradisional</h1>
-          <p>Oleh {userData.instanceName}</p>
+          <p>Oleh {userdata.instanceName}</p>
         </div>
         <div className="tab-menu">
           <ul>

@@ -31,6 +31,7 @@ function CreateObat() {
   const [tipeObat, setTipeObat] = useState("CCP");
   const [allJenisSediaan, setAllJenisSediaan] = useState([]); 
   const [dataCpotb, setDataCpotb] = useState([])
+  const [namaObatExisted, setNamaObatExisted] = useState([])
 
   const klaimValue = klaim.join("\n");
 
@@ -114,24 +115,6 @@ function CreateObat() {
 
           setDataCpotb(reconstructedData);
           console.log(reconstructedData);
-          // const ListJenisSediaanCt = await contract.getJenisSediaanAvail(userdata.instanceName);
-          // console.log("ini jenis sediaan yg ada", ListJenisSediaanCt);
-  
-          // if (ListJenisSediaanCt.length > 0) {
-          //   const listJenisSediaan = ListJenisSediaanCt.map((item) => ({
-          //     cpotbHash: item[0], 
-          //     jenisSediaan: kemasanMap[item[1]] 
-          //   }));
-
-          //   const jenisSediaan = ListJenisSediaanCt.map((item) => kemasanMap[item[1]]);
-            
-          //   console.log(listJenisSediaan)
-          //   console.log(jenisSediaan)
-          //   setOptions(jenisSediaan)
-          //   setAllJenisSediaan(listJenisSediaan)
-          // } else {
-          //   errAlert(0, "No approved CPOTB records available.");
-          // }
 
         } catch (error) {
           errAlert(error, "Can't access CPOTB data.")
@@ -139,7 +122,29 @@ function CreateObat() {
       }
 
     }
+    const loadData = async () => {
+      if (contracts && userdata.instanceName) {
+        try {
+          const listAllObatCt = await contracts.obatTradisional.getAllObatByInstance(userdata.instanceName);
+          console.log(listAllObatCt);
 
+          const reconstructedData = listAllObatCt.map((item, index) => {
+            return {
+              namaProduk: item[1]
+            }
+          })
+          
+          setNamaObatExisted(reconstructedData);
+          console.log(reconstructedData); 
+          
+        } catch (error) {
+          console.error("Error loading data: ", error);
+        }
+      }
+    };
+    
+    
+    loadData();
     loadJenisSediaan()
   }, [contracts])
 
@@ -237,44 +242,52 @@ function CreateObat() {
     };
 
     const selectedKemasanPrim = dataCpotb.find((item) => item.jenisSediaan === kemasanPrim)|| false;
+    const newObatName = namaObatExisted.map((item) => item.namaProduk !== namaProduk);
 
-    if (selectedKemasanPrim) {
-      const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
-      console.log(kemasanSet);
-      
-      const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
-      const randomTwoLetters = String.fromCharCode(
-        65 + Math.floor(Math.random() * 26),
-        65 + Math.floor(Math.random() * 26)
-      );
-      const id = `ot-${randomFourDigit}${randomTwoLetters}`;
-      console.log( id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], selectedKemasanPrim.cpotbHash);
-  
-      try {
+    console.log(newObatName);
+    if (newObatName[0]) {
+      if (selectedKemasanPrim) {
+        const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
+        console.log(kemasanSet);
         
-        const createObatCt = await contracts.obatTradisional.createObat(
-        id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], selectedKemasanPrim.cpotbHash);
-        
-        console.log('Receipt:', createObatCt);
+        const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
+        const randomTwoLetters = String.fromCharCode(
+          65 + Math.floor(Math.random() * 26),
+          65 + Math.floor(Math.random() * 26)
+        );
+        const id = `ot-${randomFourDigit}${randomTwoLetters}`;
+        console.log( id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], selectedKemasanPrim.cpotbHash);
+    
+        try {
           
-        if(createObatCt){
-          MySwal.update({
-            title: "Processing your transaction...",
-            text: "This may take a moment. Hang tight! ⏳"
+          const createObatCt = await contracts.obatTradisional.createObat(
+          id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], selectedKemasanPrim.cpotbHash);
+          
+          console.log('Receipt:', createObatCt);
+            
+          if(createObatCt){
+            MySwal.update({
+              title: "Processing your transaction...",
+              text: "This may take a moment. Hang tight! ⏳"
+            });
+          }
+    
+          contracts.obatTradisional.once("evt_obatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
+            handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);
           });
+    
+        } catch (err) {
+          setLoader(false)
+          errAlert(err, "Error making request!");
         }
-  
-        contracts.obatTradisional.once("evt_obatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
-          handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);
-        });
-  
-      } catch (err) {
-        setLoader(false)
-        errAlert(err, "Error making request!");
+      } else{
+        errAlert({reason: "Unable to Create Obat"}, `${userdata.instanceName} does not have a CPOTB certification for the "${kemasanPrim}" primary packaging`);
       }
     } else{
-      errAlert({reason: "CPOTB Certification Not Found"}, `${userdata.instanceName} does not have a CPOTB certification for the "${kemasanPrim}" primary packaging`);
+      errAlert({reason: "Unable to Create Obat"}, `The obat with the name "${namaProduk}" already exists. Please use a different name.`);
+      
     }
+
 
   };
 

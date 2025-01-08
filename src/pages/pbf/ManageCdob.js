@@ -14,7 +14,7 @@ function ManageCdob() {
   const [contract, setContract] = useState();
   const navigate = useNavigate();
 
-  const userData = JSON.parse(sessionStorage.getItem('userdata'));
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataCdob, setDataCdob] = useState([]);
 
   const tipePermohonanMap = {
@@ -80,9 +80,9 @@ function ManageCdob() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (contract && userData.instanceName) {
+      if (contract && userdata.instanceName) {
         try {
-          const listAllCt = await contract.getListAllCertificateByInstance(userData.instanceName);
+          const listAllCt = await contract.getListAllCertificateByInstance(userdata.instanceName);
           console.log(listAllCt);
           const reconstructedData = listAllCt.map((item, index) => {
             const cdobNumber = item[1] ? item[1] : 'TBA'
@@ -105,7 +105,7 @@ function ManageCdob() {
     };
   
     loadData();
-  }, [contract, userData.instanceName]);
+  }, [contract, userdata.instanceName]);
 
   const getDetailCdob = async (id) => {
     
@@ -244,7 +244,7 @@ function ManageCdob() {
       <div id="CpotbPage" className='Layout-Menu layout-page'>
         <div className="title-menu">
           <h1>Data Sertifikat CDOB</h1>
-          <p>Di ajukan oleh {userData.instanceName}</p>
+          <p>Di ajukan oleh {userdata.instanceName}</p>
         </div>
         <div className="container-data">
           <div className="menu-data">

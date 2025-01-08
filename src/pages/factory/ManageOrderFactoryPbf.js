@@ -22,7 +22,7 @@ function ManageOrderFactoryPbf() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
 
-  const userData = JSON.parse(sessionStorage.getItem('userdata'));
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataOrder, setDataOrder] = useState([]);
 
   const obatStatusMap = {
@@ -111,11 +111,11 @@ function ManageOrderFactoryPbf() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (contracts && userData.instanceName) {
+      if (contracts && userdata.instanceName) {
 
         try {
 
-          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromSeller(userData.instanceName);
+          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromSeller(userdata.instanceName);
           console.log(listOrderedObatCt);
 
           const reconstructedDataorder = listOrderedObatCt.map((item, index) => ({
@@ -275,7 +275,7 @@ function ManageOrderFactoryPbf() {
         buyerInstance: buyerUser[0],
         buyerAddress: buyerUser[1],
         sellerInstance: sellerUser[0],
-        sellerAddress: userData.address,
+        sellerAddress: userdata.address,
         statusOrder: orderStatusMap[statusOrder],
         orderObatIpfs: orderObatIpfs
       }
@@ -746,7 +746,7 @@ function ManageOrderFactoryPbf() {
           pbfInstanceAddress: userPbfCt[4],
           statusOrder : "Order Shipped",
           targetInstanceName : dataOrder.sellerInstance,
-          targetAddress: userData.address,
+          targetAddress: userdata.address,
           timestampOrder: timestamps.timestampOrder,
           timestampShipped: timestamps.timestampShipped
         }
@@ -781,6 +781,14 @@ function ManageOrderFactoryPbf() {
                   </li>
                   <li className="input input-1">
                     <p>{dataObat.namaObat}</p> 
+                  </li>
+                </ul>
+                <ul>
+                  <li className="label label-1">
+                    <p>Batch Name</p>
+                  </li>
+                  <li className="input input-1">
+                    <p>{batchName}</p> 
                   </li>
                 </ul>
   
@@ -840,7 +848,7 @@ function ManageOrderFactoryPbf() {
       <div id="ObatProduce" className='Layout-Menu layout-page'>
         <div className="title-menu">
           <h1>Data Order Obat Tradisional</h1>
-          <p>Di kelola oleh {userData.instanceName}</p>
+          <p>Di kelola oleh {userdata.instanceName}</p>
         </div>
         <div className="tab-menu">
           <ul>

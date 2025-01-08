@@ -20,7 +20,7 @@ const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 function ManageOrderPbfRetailer() {
   const [contracts, setContracts] = useState(null);;
 
-  const userData = JSON.parse(sessionStorage.getItem('userdata'));
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataOrder, setDataOrder] = useState([]);
 
   const obatStatusMap = {
@@ -109,10 +109,10 @@ function ManageOrderPbfRetailer() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (contracts && userData.instanceName) {
+      if (contracts && userdata.instanceName) {
 
         try {
-          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromSeller(userData.instanceName);
+          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromSeller(userdata.instanceName);
 
           const tempData = [];
 
@@ -144,7 +144,7 @@ function ManageOrderPbfRetailer() {
     };
   
     loadData();
-  }, [contracts, userData.instanceName]);
+  }, [contracts, userdata.instanceName]);
 
   const handleEventOrderUpdate = (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, txHash) => {
     const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
@@ -748,7 +748,7 @@ function ManageOrderPbfRetailer() {
       const userFactoryCt = await contracts.roleManager.getUserData(dataObat.factoryAddr);
       const userBpomCt = await contracts.roleManager.getUserData(dataObat.bpomAddr);
       const userRetailerCt = await contracts.roleManager.getUserData(dataOrder.buyerAddress);
-      const userPbfCt = await contracts.roleManager.getUserData(userData.address);
+      const userPbfCt = await contracts.roleManager.getUserData(userdata.address);
 
       for (let i = 0; i < dataOrder.orderQuantity; i++) {
         const obat = {
@@ -792,7 +792,7 @@ function ManageOrderPbfRetailer() {
             retailerInstanceAddress: userRetailerCt[4],
             statusOrder : "Order Shipped",
             targetInstanceName : dataOrder.sellerInstance,
-            targetAddress: userData.address,
+            targetAddress: userdata.address,
             timestampOrder: timestamps.timestampOrder,
             timestampShipped: timestamps.timestampShipped
           }
@@ -826,6 +826,15 @@ function ManageOrderPbfRetailer() {
                   </li>
                   <li className="input input-1">
                     <p>{dataObat.namaProduk}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label label-1">
+                    <p>Batch Name</p>
+                  </li>
+                  <li className="input input-1">
+                    <p>{batchName}</p> 
                   </li>
                 </ul>
   
@@ -885,7 +894,7 @@ function ManageOrderPbfRetailer() {
       <div id="ObatProduce" className='Layout-Menu layout-page'>
         <div className="title-menu">
           <h1>Data Order Obat Tradisional PBF</h1>
-          <p>Di kelola oleh {userData.instanceName}</p>
+          <p>Di kelola oleh {userdata.instanceName}</p>
         </div>
         {/* <div className="tab-menu">
           <ul>

@@ -16,7 +16,7 @@ function StockObatFactory() {
   const [contract, setContract] = useState();
   const navigate = useNavigate();
 
-  const userData = JSON.parse(sessionStorage.getItem('userdata'));
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
   
 
@@ -89,10 +89,10 @@ function StockObatFactory() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (contract && userData.instanceName) {
+      if (contract && userdata.instanceName) {
         try {
 
-          const listProducedObatCt = await contract.getAllBatchProductionByInstance(userData.instanceName);
+          const listProducedObatCt = await contract.getAllBatchProductionByInstance(userdata.instanceName);
           
           console.log(listProducedObatCt);
           const reconstructedData = listProducedObatCt.map((item) => {
@@ -114,7 +114,7 @@ function StockObatFactory() {
     };
   
     loadData();
-  }, [contract, userData.instanceName]);
+  }, [contract, userdata.instanceName]);
 
   const getDetailObat = async (id, batchName) => {
 
@@ -315,7 +315,7 @@ function StockObatFactory() {
       <div id="ObatProduce" className='Layout-Menu layout-page'>
         <div className="title-menu">
           <h1>Data Produksi Obat Tradisional</h1>
-          <p>Di produksi oleh {userData.instanceName}</p>
+          <p>Di produksi oleh {userdata.instanceName}</p>
         </div>
         <div className="tab-menu">
           <ul>

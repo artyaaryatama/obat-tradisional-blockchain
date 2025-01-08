@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom/client';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 
 import DataIpfsHash from '../../components/TableHash';
-import OrderStatusStepper from '../../components/StepperOrder';
 
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
@@ -18,7 +16,7 @@ function StockObatPbf() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
 
-  const userData = JSON.parse(sessionStorage.getItem('userdata'));
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObatReady, setDataObatReady] = useState([]);
   
   const stokStatusMap = {
@@ -96,7 +94,7 @@ function StockObatPbf() {
       if (contracts) {
         try {
 
-          const allPbfReadyObat = await contracts.orderManagement.getAllObatPbfByInstance(userData.instanceName);
+          const allPbfReadyObat = await contracts.orderManagement.getAllObatPbfByInstance(userdata.instanceName);
           console.log(allPbfReadyObat);
 
           const reconstructedData = allPbfReadyObat.map((item, index) => ({
@@ -119,7 +117,7 @@ function StockObatPbf() {
     };
   
     loadData();
-  }, [contracts, userData.instanceName]);
+  }, [contracts, userdata.instanceName]);
 
   const getDetailObat = async (id, orderId) => {
 
@@ -360,7 +358,7 @@ function StockObatPbf() {
       <div id="ObatProduce" className='Layout-Menu layout-page'>
         <div className="title-menu">
           <h1>Data Obat Tradisional PBF</h1>
-          <p>Oleh {userData.instanceName}</p>
+          <p>Oleh {userdata.instanceName}</p>
         </div>
         <div className="tab-menu">
           <ul>

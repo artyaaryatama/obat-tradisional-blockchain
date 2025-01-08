@@ -22,7 +22,7 @@ function ManageOrderRetailer() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
 
-  const userData = JSON.parse(sessionStorage.getItem('userdata'));
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObatOrder, setDataObatOrder] = useState([]);
 
   const obatStatusMap = {
@@ -113,7 +113,7 @@ function ManageOrderRetailer() {
       if (contracts) {
         try {
 
-          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromBuyer(userData.instanceName);
+          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromBuyer(userdata.instanceName);
 
           const tempData = [];
 
@@ -146,7 +146,7 @@ function ManageOrderRetailer() {
     };
   
     loadData();
-  }, [contracts, userData.instanceName]);
+  }, [contracts, userdata.instanceName]);
 
   const handleEventOrderUpdate = (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, txHash) => {
 
@@ -878,7 +878,16 @@ function ManageOrderRetailer() {
                     <p>{dataObat.namaProduk}</p> 
                   </li>
                 </ul>
-  
+                
+                <ul>
+                  <li className="label label-1">
+                    <p>Batch Name</p>
+                  </li>
+                  <li className="input input-1">
+                    <p>{batchName}</p> 
+                  </li>
+                </ul>
+
                 <ul>
                   <li className="label label-1">
                     <p>PBF Instance</p> 
@@ -935,7 +944,7 @@ function ManageOrderRetailer() {
       <div id="ObatProduce" className='Layout-Menu layout-page'>
         <div className="title-menu">
           <h1>List Order Obat Tradisional</h1>
-          <p>Oleh {userData.instanceName}</p>
+          <p>Oleh {userdata.instanceName}</p>
         </div>
         <div className="tab-menu">
           <ul>
