@@ -27,8 +27,7 @@ function StockObatFactory() {
 
   const tipeObatMap = {
     0n: "Obat Lain",
-    1n: "Cold Chain Product",
-    2n: "Narkotika"
+    1n: "Cold Chain Product"
   };
 
   const obatStatusMap = {

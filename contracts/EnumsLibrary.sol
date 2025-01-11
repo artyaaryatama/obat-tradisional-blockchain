@@ -8,5 +8,5 @@ library EnumsLibrary {
     enum ObatAvailability { Ready, Sold }
     enum Roles { Factory, PBF, BPOM, Retailer }
     enum TipePermohonanCpotb { Tablet, Kapsul, KapsulLunak, SerbukOral, CairanOral, CairanObatDalam, CairanObatLuar, EdibleFilm, Pil }
-    enum TipePermohonanCdob { ObatLain, CCP, Narkotika }
+    enum TipePermohonanCdob { ObatLain, CCP }
 }

@@ -19,8 +19,7 @@ function ManageCdob() {
 
   const tipePermohonanMap = {
     0: "Obat Lain",
-    1: "CCP (Cold Chain Product)",
-    2: "Narkotika"
+    1: "CCP (Cold Chain Product)"
   };
 
   const statusMap = {

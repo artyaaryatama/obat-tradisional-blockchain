@@ -77,8 +77,7 @@ function CdobRequest() {
   
     const tp = {
       0: "Obat Lain",
-      1: "CCP (Cold Chain Product)",
-      2: "Narkotika"
+      1: "CCP (Cold Chain Product)"
     };
   
     MySwal.fire({
@@ -170,8 +169,7 @@ function CdobRequest() {
 
     const tp = {
       "ObatLain": 0n,
-      "CCP": 1n,
-      "Narkotika": 2n
+      "CCP": 1n
     };
 
     const today = new Date();
@@ -247,7 +245,6 @@ function CdobRequest() {
               >
                 <option value="" disabled>Select Jenis Sediaan</option>
                 <option value="CCP">CCP (Cold Chain Product)</option>
-                <option value="Narkotika">Narkotika</option>
                 <option value="ObatLain">Obat Lain</option>
               </select>
             </li>

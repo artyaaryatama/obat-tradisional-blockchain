@@ -21,8 +21,7 @@ function CdobApprove() {
 
   const tipePermohonanMap = {
     0: "Obat Lain",
-    1: "CCP (Cold Chain Product)",
-    2: "Narkotika"
+    1: "CCP (Cold Chain Product)"
   };
 
   const statusMap = {
@@ -588,8 +587,7 @@ function CdobApprove() {
 
     const tpMap = {
       "Obat Lain" : 0,
-      "CCP (Cold Chain Product)" : 1,
-      "Narkotika" : 2
+      "CCP (Cold Chain Product)" : 1
     }; 
 
     try {

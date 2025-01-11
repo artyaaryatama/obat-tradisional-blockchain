@@ -153,8 +153,7 @@ function CreateObat() {
 
     const tipeObatMap = {
       0n :"Obat Lain",
-      1n :"Cold Chain Product",
-      2n :"Narkotika"
+      1n :"Cold Chain Product"
     };
 
     MySwal.fire({
@@ -237,8 +236,7 @@ function CreateObat() {
 
     const tipeObatMap = {
       "ObatLain" : 0n,
-      "CCP" : 1n,
-      "Narkotika" : 2n
+      "CCP" : 1n
     };
 
     const selectedKemasanPrim = dataCpotb.find((item) => item.jenisSediaan === kemasanPrim)|| false;
@@ -401,7 +399,6 @@ function CreateObat() {
                   required
                 >
                   <option value="CCP">Cold Chain Product</option>
-                  <option value="Narkotika">Narkotika</option>
                   <option value="ObatLain">Obat Lain</option>
                 </select>
               </div>
