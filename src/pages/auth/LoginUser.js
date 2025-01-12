@@ -74,19 +74,33 @@ function LoginPage() {
       const loginCt = await contract.loginUser();
       console.log('loginCt', loginCt);
       
-      const [userName, instanceName, userAddr, role, location] = loginCt;
+      const [userName, instanceName, userAddr, role, location, factoryType] = loginCt;
       
       if (nameUpperCase === userName && signer.address === userAddr) {
         console.log('role pas login',{role, userAddr});
 
-        const userdata = {
-          address: userAddr,
-          name: userName,
-          instanceName: instanceName,
-          role: role.toString(),
-          location: location
+        let userdata;
+
+        if (role === 0n) {
+          userdata = {
+            address: userAddr,
+            name: userName,
+            instanceName: instanceName,
+            role: role.toString(),
+            location: location,
+            factoryType: factoryType
+          }
+
+        } else {
+          userdata = {
+            address: userAddr,
+            name: userName,
+            instanceName: instanceName,
+            role: role.toString(),
+            location: location
+          }
+  
         }
-        
         sessionStorage.setItem("userdata", JSON.stringify(userdata))
         console.log(userdata);
 

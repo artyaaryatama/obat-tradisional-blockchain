@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0x3734E11839Ffa520b9a9a623C14Afd5e5Ddf85af",
+    "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
     "abi": [
       {
         "inputs": [
@@ -135,8 +135,8 @@
           },
           {
             "indexed": false,
-            "internalType": "enum EnumsLibrary.TipePermohonanCpotb",
-            "name": "",
+            "internalType": "uint8",
+            "name": "TipePermohonanCpotb",
             "type": "uint8"
           },
           {
@@ -172,8 +172,8 @@
           },
           {
             "indexed": false,
-            "internalType": "enum EnumsLibrary.TipePermohonanCpotb",
-            "name": "",
+            "internalType": "uint8",
+            "name": "TipePermohonanCpotb",
             "type": "uint8"
           },
           {
@@ -637,9 +637,14 @@
             "type": "tuple"
           },
           {
-            "internalType": "enum EnumsLibrary.TipePermohonanCpotb",
+            "internalType": "uint8",
             "name": "tipePermohonan",
             "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "factoryType",
+            "type": "string"
           }
         ],
         "stateMutability": "view",
@@ -846,9 +851,14 @@
                 "type": "tuple"
               },
               {
-                "internalType": "enum EnumsLibrary.TipePermohonanCpotb",
+                "internalType": "uint8",
                 "name": "tipePermohonan",
                 "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "factoryType",
+                "type": "string"
               }
             ],
             "internalType": "struct MainSupplyChain.st_cpotb",
@@ -1078,6 +1088,11 @@
             "internalType": "uint8",
             "name": "_tipePermohonanCpotb",
             "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "_factoryType",
+            "type": "string"
           }
         ],
         "name": "requestCpotb",
@@ -1088,7 +1103,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0x9cdEcF1d9887cA76f6b843FaD604623f6ca12776",
+    "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
     "abi": [
       {
         "inputs": [
@@ -1355,6 +1370,11 @@
             "internalType": "string",
             "name": "_cpotbIpfs",
             "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_jenisObat",
+            "type": "string"
           }
         ],
         "name": "createObat",
@@ -1478,6 +1498,11 @@
               {
                 "internalType": "string",
                 "name": "cdobHash",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "jenisObat",
                 "type": "string"
               }
             ],
@@ -1882,7 +1907,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0x0b491C49284239Ad37Cb6E7879Fa63C878e844d0",
+    "address": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
     "abi": [
       {
         "inputs": [
@@ -2708,7 +2733,7 @@
     ]
   },
   "RoleManager": {
-    "address": "0x557F531e5336f66475CAcD110476122AA78a65ab",
+    "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
     "abi": [
       {
         "anonymous": false,
@@ -2802,6 +2827,11 @@
                 "internalType": "string",
                 "name": "locationInstance",
                 "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "factoryType",
+                "type": "string"
               }
             ],
             "internalType": "struct RoleManager.st_user",
@@ -2866,6 +2896,11 @@
                 "internalType": "string",
                 "name": "locationInstance",
                 "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "factoryType",
+                "type": "string"
               }
             ],
             "internalType": "struct RoleManager.st_user",
@@ -2896,6 +2931,11 @@
           {
             "internalType": "string",
             "name": "_locationInstance",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_factoryType",
             "type": "string"
           }
         ],

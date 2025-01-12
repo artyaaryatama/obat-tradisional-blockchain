@@ -13,7 +13,6 @@ contract MainSupplyChain {
   }
 
   using EnumsLibrary for EnumsLibrary.Roles;
-  using EnumsLibrary for EnumsLibrary.TipePermohonanCpotb;
   using EnumsLibrary for EnumsLibrary.StatusCertificate;
   using EnumsLibrary for EnumsLibrary.TipePermohonanCdob;
 
@@ -36,7 +35,8 @@ contract MainSupplyChain {
     string cpotbId;
     string cpotbNumber;
     st_certificateDetails details;
-    EnumsLibrary.TipePermohonanCpotb tipePermohonan;
+    uint8 tipePermohonan;
+    string factoryType;
   }
 
   struct st_cdob {
@@ -82,8 +82,8 @@ contract MainSupplyChain {
   st_certificateList[] public allCertificateData;
 
   event evt_UserRegistered(address userAddr, string name, string instanceName, uint8 role, string addressInstance);
-  event evt_cpotbRequested(string factoryInstance, address factoryAddr, EnumsLibrary.TipePermohonanCpotb, uint timestampRequest);
-  event evt_cpotbApproved(string bpomInstance, address bpomAddr, EnumsLibrary.TipePermohonanCpotb, string cpotbId, uint timestampApproved);
+  event evt_cpotbRequested(string factoryInstance, address factoryAddr, uint8 TipePermohonanCpotb, uint timestampRequest);
+  event evt_cpotbApproved(string bpomInstance, address bpomAddr, uint8 TipePermohonanCpotb, string cpotbId, uint timestampApproved);
   event evt_cdobRequested(string pbfInstance, address pbfAddr, EnumsLibrary.TipePermohonanCdob tipePermohonan, uint timestampRequest);
   event evt_cdobApproved(string bpomInstance, address bpomAddr, EnumsLibrary.TipePermohonanCdob, string cdobNumber, uint timestampApproved);
 
@@ -146,7 +146,8 @@ contract MainSupplyChain {
   // status: 200ok
   function requestCpotb(
     st_certificateRequest memory requestData,
-    uint8 _tipePermohonanCpotb
+    uint8 _tipePermohonanCpotb,
+    string memory _factoryType
   ) public {
       checkRole(EnumsLibrary.Roles.Factory, msg.sender);
       require(bytes(cpotbDataById[requestData.certId].cpotbId).length == 0, "CPOTB ID already exists");
@@ -160,21 +161,22 @@ contract MainSupplyChain {
         cpotbId: requestData.certId,
         cpotbNumber: "", 
         details: certficateDetails,
-        tipePermohonan: EnumsLibrary.TipePermohonanCpotb(_tipePermohonanCpotb)
+        tipePermohonan: _tipePermohonanCpotb,
+        factoryType: _factoryType
       });
 
       st_certificateList memory certificateList = createCertificateList(
         requestData.certId,
         "", 
         requestData.senderInstance, 
-        uint8(EnumsLibrary.TipePermohonanCpotb(_tipePermohonanCpotb)),
+        _tipePermohonanCpotb,
         "cpotb",
         EnumsLibrary.StatusCertificate.Requested
       );
 
       allCertificateData.push(certificateList); 
 
-      emit evt_cpotbRequested(requestData.senderInstance, msg.sender,EnumsLibrary.TipePermohonanCpotb(_tipePermohonanCpotb), block.timestamp); 
+      emit evt_cpotbRequested(requestData.senderInstance, msg.sender,_tipePermohonanCpotb, block.timestamp);  
   }
 
   // status: 200ok
@@ -212,8 +214,8 @@ contract MainSupplyChain {
           allCertificateData[i].ipfsCert = _ipfsCert;
         } 
       }
-
-      emit evt_cpotbApproved(approvalData.bpomInstance, msg.sender, EnumsLibrary.TipePermohonanCpotb(_tipePermohonanCpotb), approvalData.certNumber, block.timestamp);
+ 
+      emit evt_cpotbApproved(approvalData.bpomInstance, msg.sender, _tipePermohonanCpotb, approvalData.certNumber, block.timestamp);
   }
 
   // status: 200ok

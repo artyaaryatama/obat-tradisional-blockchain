@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-
 import DataIpfsHash from '../../components/TableHash';
-
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 
@@ -127,7 +126,7 @@ function StockObatRetailer() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -142,7 +141,6 @@ function StockObatRetailer() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        tipeProduk: "Obat Tradisional", 
         nieStatus: 'NIE Approved', 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
@@ -152,7 +150,8 @@ function StockObatRetailer() {
         factoryInstance: factoryInstance,
         bpomAddr: bpomAddr ,
         bpomInstance:  bpomInstance,
-        tipeObat: tipeObatMap[tipeObat]
+        tipeObat: tipeObatMap[tipeObat],
+        jenisObat: jenisObat,
       };
 
       const timestamps = {
@@ -161,8 +160,10 @@ function StockObatRetailer() {
         timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
       }
 
+      const kemasanKeterangan = kemasan.match(/@(.+?)\s*\(/);
+
       MySwal.fire({
-        title: `Detail Order Obat ${detailObat.namaProduk}`,
+        title: `Detail ${detailObat.namaProduk}`,
         html: (
           <div className='form-swal order'>
             <div className="row1">
@@ -170,14 +171,6 @@ function StockObatRetailer() {
                 <div className="detailObat">
                   <div className="row row--obat">
                     <div className="col">
-                      <ul>
-                        <li className="label">
-                          <p>ID Order</p>
-                        </li>
-                        <li className="input">
-                          <p>{orderId}</p> 
-                        </li>
-                      </ul>
 
                       <ul>
                         <li className="label">
@@ -312,8 +305,12 @@ function StockObatRetailer() {
                       <li className="label">
                         <p>Tipe Produk</p>
                       </li>
-                      <li className="input">
-                        <p>{detailObat.tipeProduk}</p> 
+                      <li className="input colJenisSediaan">
+                        <p>{
+                        detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
+                        <JenisSediaanTooltip
+                          jenisSediaan={detailObat.jenisObat}
+                        />
                       </li>
                     </ul>
 
@@ -321,17 +318,23 @@ function StockObatRetailer() {
                       <li className="label">
                         <p>Tipe Obat</p>
                       </li>
-                      <li className="input">
+                      <li className="input colJenisSediaan">
                         <p>{detailObat.tipeObat}</p> 
+                        <JenisSediaanTooltip
+                          jenisSediaan={detailObat.tipeObat}
+                        />
                       </li>
                     </ul>
-
+    
                     <ul>
                       <li className="label">
                         <p>Kemasan Obat</p>
                       </li>
-                      <li className="input">
+                      <li className="input colJenisSediaan">
                         <p>{detailObat.kemasan}</p> 
+                        <JenisSediaanTooltip
+                          jenisSediaan={kemasanKeterangan[1]}
+                        />
                       </li>
                     </ul>
 

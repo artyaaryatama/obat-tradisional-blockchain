@@ -8,6 +8,7 @@ import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 
@@ -17,6 +18,7 @@ function CpotbRequest() {
   const userdata = JSON.parse(sessionStorage.getItem('userdata'))
 
   const [jenisSediaan, setJenisSediaan] = useState(""); 
+  const [filteredJenisSediaan, setFilteredJenisSediaan] = useState([]);
   const [loader, setLoader] = useState(false)
 
   const today = new Date();
@@ -31,16 +33,38 @@ function CpotbRequest() {
 
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
-  const js = {
-    0n: "Tablet",
-    1n: "Kapsul",
-    2n: "Kapsul Lunak",
-    3n: "Serbuk Oral",
-    4n: "Cairan Oral",
-    5n: "Cairan Obat Dalam",
-    6n: "Cairan Obat Luar",
-    7n: "Film Strip / Edible Film",
-    8n: "Pil"
+  const jenisSediaanMap = {
+    0n: "Cairan Obat Dalam",
+    1n: "Rajangan",
+    2n: "Serbuk",
+    3n: "Serbuk Instan",
+    4n: "Efervesen",
+    5n: "Pil",
+    6n: "Kapsul",
+    7n: "Kapsul Lunak",
+    8n: "Tablet atau Kaplet",
+    9n: "Granul",
+    10n: "Pastiles",
+    11n: "Dodol atau Jenang",
+    12n: "Film Strip",
+    13n: "Cairan Obat Luar",
+    14n: "Losio",
+    15n: "Parem",
+    16n: "Salep",
+    17n: "Krim",
+    18n: "Gel",
+    19n: "Serbuk Obat Luar",
+    20n: "Tapel",
+    21n: "Pilis",
+    22n: "Plaster atau Koyok",
+    23n: "Supositoria",
+    24n: "Rajangan Obat Luar"
+  };
+  
+  const usahaSediaanMapping = {
+    UMOT: [1n, 13n, 15n, 20n, 21n], 
+    UKOT: [0n, 1n, 2n, 3n, 5n, 6n, 9n, 10n, 11n, 12n, 13n, 14n, 15n, 16n, 17n, 18n, 19n, 20n, 21n, 22n, 24n], 
+    IOT: [0n, 1n, 2n, 3n, 4n, 5n, 6n, 7n, 8n, 9n, 10n, 11n, 12n, 13n, 14n, 15n, 16n, 17n, 18n, 19n, 20n, 21n, 22n, 23n, 24n] 
   };
   
   useEffect(() => {
@@ -84,6 +108,19 @@ function CpotbRequest() {
     };
   }, []);
 
+  useEffect(() => {
+    if (userdata.factoryType && usahaSediaanMapping[userdata.factoryType]) {
+      const filtered = usahaSediaanMapping[userdata.factoryType].map((key) => ({
+        key: key.toString(),
+        label: jenisSediaanMap[key]
+      }));
+      console.log(filtered);
+      setFilteredJenisSediaan(filtered);
+    } else {
+      setFilteredJenisSediaan([]);
+    }
+  }, [userdata.factoryType]);
+
   const handleEventCpotbRequested = (_name, _userAddr, _jenisSediaan, _timestampRequest, txHash) => {
     const formattedTimestamp = new Date(Number(_timestampRequest) * 1000).toLocaleDateString('id-ID', options)
 
@@ -112,7 +149,7 @@ function CpotbRequest() {
               <p>Jenis Sediaan</p> 
             </li>
             <li className="input">
-              <p>{js[_jenisSediaan]}</p> 
+              <p>{jenisSediaanMap[_jenisSediaan]}</p> 
             </li>
           </ul>
           <ul>
@@ -183,7 +220,7 @@ function CpotbRequest() {
     const id = `cpotb-${day}${month}${year}-${randomNumber}` 
 
     try {
-      const requestCpotbCt = await contract.requestCpotb([id, userdata.name, userdata.instanceName], jenisSediaanInt);
+      const requestCpotbCt = await contract.requestCpotb([id, userdata.name, userdata.instanceName], parseInt(jenisSediaan), userdata.factoryType);
       console.log('Receipt:', requestCpotbCt);
   
       if(requestCpotbCt){
@@ -204,9 +241,11 @@ function CpotbRequest() {
 
   };
 
-  const handleOptionJenisSediaan = (e) => {
-    setJenisSediaan((e.target.value)); 
-    console.log("Selected Jenis Sediaan (uint8):", parseInt(e.target.value));
+  const handleOptionJenisSediaan = (e) => {;
+    const selectedValue = e.target.value;
+    setJenisSediaan(selectedValue); 
+    console.log("Selected Jenis Sediaan (string):", selectedValue);
+    console.log("Selected Jenis Sediaan (uint8):", parseInt(selectedValue));
   };
 
   return (
@@ -236,24 +275,23 @@ function CpotbRequest() {
             <li className="label">
               <label htmlFor="jenisSediaan">Jenis Sediaan</label>
             </li>
-            <li className="input">
+            <li className="input col">
               <select
                 name="jenisSediaan"
-                id="jenisSediaan"
                 value={jenisSediaan}
                 onChange={handleOptionJenisSediaan}
+                className='jenisSediaan'
               >
                 <option value="" disabled>Select Jenis Sediaan</option>
-                <option value="0n">Tablet</option>
-                <option value="8n">Pil</option>
-                <option value="1n">Kapsul</option>
-                <option value="2n">Kapsul Lunak</option>
-                <option value="3n">Serbuk Oral</option>
-                <option value="4n">Cairan Oral</option>
-                <option value="5n">Cairan Obat Dalam</option>
-                <option value="6n">Cairan Obat Luar</option>
-                <option value="7n">Film Strip / Edible Film</option>
+                {filteredJenisSediaan.map(({ key, label }) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))}
               </select>
+              <JenisSediaanTooltip
+                jenisSediaan={jenisSediaanMap[jenisSediaan]}
+              />
             </li>
           </ul>
           <button type='submit'>

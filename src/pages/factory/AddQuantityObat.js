@@ -11,6 +11,7 @@ import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 
@@ -20,7 +21,6 @@ function AddQuantityObat() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
-
   const [loader, setLoader] = useState(false);
   const [dataObatAvail, setDataObatAvail] = useState([])
   const [batchName, setBatchName] = useState("")
@@ -215,7 +215,7 @@ function AddQuantityObat() {
 
     const [obatDetails, obatNie] = detailObatCt;
 
-    const [merk, namaProduct, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
+    const [merk, namaProduct, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
 
     const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
     console.log(cpotbHash);
@@ -227,7 +227,6 @@ function AddQuantityObat() {
       klaim: klaim,
       kemasan: kemasan,
       komposisi: komposisi,
-      tipeProduk: "Obat Tradisional", 
       produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
       nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
       nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
@@ -236,7 +235,8 @@ function AddQuantityObat() {
       factoryInstanceName: factoryInstance,
       bpomAddr: bpomAddr,
       bpomInstanceName:  bpomInstance,
-      tipeObat: tipeObatMap[tipeObat]
+      tipeObat: tipeObatMap[tipeObat],
+      jenisObat: jenisObat
     };
 
     console.log(detailObat);
@@ -269,7 +269,8 @@ function AddQuantityObat() {
           factoryAddr: dataObat.factoryAddr,
           factoryInstanceName: dataObat.factoryInstanceName,
           factoryAddressInstance: userFactoryCt[4], 
-          tipeProduk: dataObat.tipeProduk,
+          factoryType:  userFactoryCt[5],
+          tipeObat: dataObat.tipeObat,
           nieNumber: dataObat.nieNumber,
           obatStatus: "NIE Approved",
           nieRequestDate: dataObat.nieRequestDate,
@@ -277,6 +278,7 @@ function AddQuantityObat() {
           bpomAddr: dataObat.bpomAddr,
           bpomInstanceName: dataObat.bpomInstanceName,
           bpomAddressInstance: userBpomCt[4],
+          jenisObat: dataObat.jenisObat
         }
       };
       

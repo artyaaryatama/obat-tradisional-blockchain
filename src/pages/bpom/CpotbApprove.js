@@ -8,6 +8,7 @@ import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
@@ -20,15 +21,31 @@ function CpotbApprove() {
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
 
   const jenisSediaanMap = {
-    0n: "Tablet",
-    1n: "Kapsul",
-    2n: "Kapsul Lunak",
-    3n: "Serbuk Oral",
-    4n: "Cairan Oral",
-    5n: "Cairan Obat Dalam",
-    6n: "Cairan Obat Luar",
-    7n: "Film Strip / Edible Film",
-    8n: "Pil"
+    0n: "Cairan Obat Dalam",
+    1n: "Rajangan",
+    2n: "Serbuk",
+    3n: "Serbuk Instan",
+    4n: "Efervesen",
+    5n: "Pil",
+    6n: "Kapsul",
+    7n: "Kapsul Lunak",
+    8n: "Tablet atau Kaplet",
+    9n: "Granul",
+    10n: "Pastiles",
+    11n: "Dodol atau Jenang",
+    12n: "Film Strip",
+    13n: "Cairan Obat Luar",
+    14n: "Losio",
+    15n: "Parem",
+    16n: "Salep",
+    17n: "Krim",
+    18n: "Gel",
+    19n: "Serbuk Obat Luar",
+    20n: "Tapel",
+    21n: "Pilis",
+    22n: "Plaster atau Koyok",
+    23n: "Supositoria",
+    24n: "Rajangan Obat Luar"
   };
 
   const statusMap = {
@@ -210,7 +227,7 @@ function CpotbApprove() {
     try {
       const detailCpotbCt = await contracts.mainSupplyChain.detailCpotb(id);
 
-      const [cpotbId, cpotbNumber, cpotbDetail, jenisSediaan] = detailCpotbCt
+      const [cpotbId, cpotbNumber, cpotbDetail, jenisSediaan, factoryType ] = detailCpotbCt
 
       const [status, timestampRequest, timestampApprove, sender, bpom, cpotbIpfs] = cpotbDetail
 
@@ -227,7 +244,8 @@ function CpotbApprove() {
         bpomUserName : bpom[0] ? bpom[0] : "-",
         bpomInstance: bpom[2] ? bpom[2] : "-",
         bpomAddr: bpom[1] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
-        cpotbIpfs: cpotbIpfs ? cpotbIpfs : "-"
+        cpotbIpfs: cpotbIpfs ? cpotbIpfs : "-",
+        factoryType: factoryType
       };
 
       if(detailCpotb.status === 'Approved'){
@@ -242,10 +260,19 @@ function CpotbApprove() {
                       <p>Factory Instance</p>
                     </li>
                     <li className="input">
-                      <p>{detailCpotb.factoryInstanceName}</p>
+                      <p>{detailCpotb.factoryInstanceName} </p>
                     </li>
                   </ul>
   
+                  <ul>
+                    <li className="label">
+                      <p>Factory Type</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryType}</p> 
+                    </li>
+                  </ul>
+
                   <ul>
                     <li className="label">
                       <p>Factory Address</p> 
@@ -313,8 +340,11 @@ function CpotbApprove() {
                     <li className="label">
                       <p>Jenis Sediaan</p>
                     </li>
-                    <li className="input">
+                    <li className="input colJenisSediaan">
                       <p>{detailCpotb.jenisSediaan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailCpotb.jenisSediaan}
+                      />
                     </li>
                   </ul>
   
@@ -358,6 +388,15 @@ function CpotbApprove() {
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryInstanceName}</p>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Factory Type</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryType}</p> 
                     </li>
                   </ul>
   
@@ -414,8 +453,11 @@ function CpotbApprove() {
                     <li className="label">
                       <p>Jenis Sediaan</p>
                     </li>
-                    <li className="input">
+                    <li className="input colJenisSediaan">
                       <p>{detailCpotb.jenisSediaan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailCpotb.jenisSediaan}
+                      />
                     </li>
                   </ul>
   
@@ -601,6 +643,7 @@ function CpotbApprove() {
         timestampApprove: formattedDate,
         senderInstance: detailCpotb.factoryInstanceName,
         senderAddress: detailCpotb.factoryAddr,
+        factoryType: detailCpotb.factoryType,
         senderInstanceAddress: userFactoryCt[4],
         bpomInstance: userdata.instanceName,
         bpomAddress: userdata.address,
@@ -627,15 +670,31 @@ function CpotbApprove() {
   const approveCpotb = async(certNumber, certTd, jenisSediaan, cpotbIpfs) => {
 
     const jenisMap = {
-      "Tablet": 0n,
-      "Kapsul": 1n,
-      "Kapsul Lunak": 2n,
-      "Serbuk Oral": 3n,
-      "Cairan Oral": 4n,
-      "Cairan Obat Dalam": 5n,
-      "Cairan Obat Luar": 6n,
-      "Film Strip / Edible Film": 7n,
-      "Pil": 8n
+      "Cairan Obat Dalam": 0n,
+      "Rajangan": 1n,
+      "Serbuk": 2n,
+      "Serbuk Instan": 3n,
+      "Efervesen": 4n,
+      "Pil": 5n,
+      "Kapsul": 6n,
+      "Kapsul Lunak": 7n,
+      "Tablet atau Kaplet": 8n,
+      "Granul": 9n,
+      "Pastiles": 10n,
+      "Dodol atau Jenang": 11n,
+      "Film Strip": 12n,
+      "Cairan Obat Luar": 13n,
+      "Losio": 14n,
+      "Parem": 15n,
+      "Salep": 16n,
+      "Krim": 17n,
+      "Gel": 18n,
+      "Serbuk Obat Luar": 19n,
+      "Tapel": 20n,
+      "Pilis": 21n,
+      "Plaster atau Koyok": 22n,
+      "Supositoria": 23n,
+      "Rajangan Obat Luar": 24n,
     };
 
     console.log(certNumber, certTd, jenisMap[jenisSediaan]);

@@ -38,7 +38,6 @@ contract ObatTradisional {
   using EnumsLibrary for EnumsLibrary.OrderStatus;
   using EnumsLibrary for EnumsLibrary.ObatAvailability;
   using EnumsLibrary for EnumsLibrary.Roles;
-  using EnumsLibrary for EnumsLibrary.TipePermohonanCpotb;
 
   struct st_obatNie {
     string nieNumber; 
@@ -120,7 +119,8 @@ contract ObatTradisional {
     string[] memory _komposisi,
     string memory _factoryInstance,
     EnumsLibrary.TipePermohonanCdob _tipeObat,
-    string memory _cpotbIpfs
+    string memory _cpotbIpfs,
+    string memory _jenisObat
   ) public onlyFactory {
       require(bytes(_obatId).length > 0, "Invalid ID");
 
@@ -134,7 +134,8 @@ contract ObatTradisional {
         _factoryInstance,
         msg.sender,
         _tipeObat, 
-        _cpotbIpfs 
+        _cpotbIpfs,
+        _jenisObat
       );
 
       obatNieById[_obatId] = createObatNie(

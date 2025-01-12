@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
-import { useNavigate } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
 
 import NieStatusStepper from '../../components/StepperNie'
@@ -10,14 +9,14 @@ import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
-import { Result } from 'ethers';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+
 
 const MySwal = withReactContent(Swal);
 
 function NieApprove() {
 
   const [contract, setContract] = useState();
-  const [namaProduk, setNamaProduk] = useState("")
   const [dataObat, setDataObat] = useState([])
   
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
@@ -31,11 +30,6 @@ function NieApprove() {
   const tipeObatMap = {
     0n: "Obat Lain",
     1n: "Cold Chain Product"
-  };
-
-  const tipeProdukMap = {
-    0: "Obat Tradisional",
-    1: "Suplemen Kesehatan"
   };
 
   const options = {
@@ -193,7 +187,7 @@ function NieApprove() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash,  cdobHash, jenisObat] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
       console.log(parseInt(nieStatus));
@@ -214,8 +208,11 @@ function NieApprove() {
         factoryInstanceName: factoryInstance,
         bpomAddr: bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddr,
         bpomInstanceNames:  bpomInstance ?  bpomInstance : "-",
-        tipeObat: tipeObatMap[tipeObat]
+        tipeObat: tipeObatMap[tipeObat],
+        jenisObat: jenisObat
       };
+
+      const kemasanKeterangan = kemasan.match(/@(.+?)\s*\(/);
 
       console.log(detailObatCt);
 
@@ -256,8 +253,12 @@ function NieApprove() {
                     <li className="label">
                       <p>Tipe Produk</p>
                     </li>
-                    <li className="input">
-                      <p>{detailObat.tipeProduk}</p> 
+                    <li className="input colJenisSediaan">
+                      <p>{
+                      detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.jenisObat}
+                      />
                     </li>
                   </ul>
 
@@ -265,8 +266,11 @@ function NieApprove() {
                     <li className="label">
                       <p>Tipe Obat</p>
                     </li>
-                    <li className="input">
+                    <li className="input colJenisSediaan">
                       <p>{detailObat.tipeObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.tipeObat}
+                      />
                     </li>
                   </ul>
   
@@ -274,8 +278,11 @@ function NieApprove() {
                     <li className="label">
                       <p>Kemasan Obat</p>
                     </li>
-                    <li className="input">
+                    <li className="input colJenisSediaan">
                       <p>{detailObat.kemasan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={kemasanKeterangan[1]}
+                      />
                     </li>
                   </ul>
   
@@ -437,8 +444,12 @@ function NieApprove() {
                     <li className="label">
                       <p>Tipe Produk</p>
                     </li>
-                    <li className="input">
-                      <p>{detailObat.tipeProduk}</p> 
+                    <li className="input colJenisSediaan">
+                      <p>{
+                      detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.jenisObat}
+                      />
                     </li>
                   </ul>
 
@@ -446,8 +457,11 @@ function NieApprove() {
                     <li className="label">
                       <p>Tipe Obat</p>
                     </li>
-                    <li className="input">
+                    <li className="input colJenisSediaan">
                       <p>{detailObat.tipeObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.tipeObat}
+                      />
                     </li>
                   </ul>
   
@@ -455,8 +469,11 @@ function NieApprove() {
                     <li className="label">
                       <p>Kemasan Obat</p>
                     </li>
-                    <li className="input">
+                    <li className="input colJenisSediaan">
                       <p>{detailObat.kemasan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={kemasanKeterangan[1]}
+                      />
                     </li>
                   </ul>
   
@@ -595,7 +612,16 @@ function NieApprove() {
             const day = String(currentDate.getDate()).padStart(2, '0');
             const randomNumber = Math.floor(1000 + Math.random() * 9000); 
         
-            const nieNum = `TR${year}${month}${day}${randomNumber}`;
+            let nieNum;
+            
+            if(jenisObat === "OHT"){
+              detailObat.jenisObat = "Obat Herbal Terstandar"
+              nieNum = `HT${year}${month}${day}${randomNumber}`;
+            } else if (jenisObat === "Jamu"){
+              nieNum = `TR${year}${month}${day}${randomNumber}`;
+            } else {
+              nieNum = `FF${year}${month}${day}${randomNumber}`;
+            }
     
             if(result.isConfirmed){
 
@@ -604,7 +630,52 @@ function NieApprove() {
               html: (
                 <div className='form-swal form'>
                   <div className="row row--obat">
-                  <div className="col col3">
+                    <div className="col col3">
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="factoryAddr">Factory Instance</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="factoryAddr"
+                            value={detailObat.factoryInstanceName}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="factoryAddr">Factory CPOTB</label>
+                        </li>
+                        <li className="input">
+                          <span className='linked-i'>
+                            <a
+                              href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              CPOTB Details
+                              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </span>
+                        </li>
+                      </ul>
+
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="factoryAddr">Factory Address</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="factoryAddr"
+                            value={detailObat.factoryAddr}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
                       <ul>
                         <li className="label">
                           <label htmlFor="klaim">Klaim Obat</label>
@@ -695,6 +766,20 @@ function NieApprove() {
                           />
                         </li>
                       </ul>
+
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="jenisObat">Jenis Obat</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="jenisObat"
+                            value={detailObat.jenisObat}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
               
                       <ul>
                         <li className="label">
@@ -710,51 +795,6 @@ function NieApprove() {
                         </li>
                       </ul>
 
-                      <ul>
-                        <li className="label">
-                          <label htmlFor="factoryAddr">Factory Instance</label>
-                        </li>
-                        <li className="input">
-                          <input
-                            type="text"
-                            id="factoryAddr"
-                            value={detailObat.factoryInstanceName}
-                            readOnly
-                          />
-                        </li>
-                      </ul>
-
-                      <ul>
-                        <li className="label">
-                          <label htmlFor="factoryAddr">Factory CPOTB</label>
-                        </li>
-                        <li className="input">
-                          <span className='linked-i'>
-                            <a
-                              href={`http://localhost:3000/public/certificate/${cpotbHash}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              CPOTB Details
-                              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                            </a>
-                          </span>
-                    </li>
-                      </ul>
-
-                      <ul>
-                        <li className="label">
-                          <label htmlFor="factoryAddr">Factory Address</label>
-                        </li>
-                        <li className="input">
-                          <input
-                            type="text"
-                            id="factoryAddr"
-                            value={detailObat.factoryAddr}
-                            readOnly
-                          />
-                        </li>
-                      </ul>
                     </div>
                   </div>
                 </div>

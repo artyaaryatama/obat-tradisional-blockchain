@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { create } from 'ipfs-http-client';
-import ReactDOM from 'react-dom/client';
-import { CID } from 'multiformats/cid'
+import oht from '../../assets/images/oht.png';
+import fitofarmaka from '../../assets/images/fitofarmaka.png';
+import Jamu from '../../assets/images/jamu.png';
 
 import "../../styles/CheckObat.scss"
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
-
 
 function CheckObatIpfs() {
   const [batchName, setBatchName] = useState(null);
@@ -15,14 +16,17 @@ function CheckObatIpfs() {
   const [dataOrderRetailer, setDataOrderRetailer] = useState(false);
   const [detailOrderPbf, setDetailOrderPbf] = useState([]);
   const [detailOrderRetailer, setDetailOrderRetailer] = useState([]);
-  
+  const [kemasanKeterangan, setKemasanKeterangan] = useState("")
   const [namaObat, setNamaObat] = useState("");
   const [merkObat, setMerkObat] = useState("");
   const [klaim, setKlaim] = useState([]);
+  const [jenisObat, setJenisObat] = useState("")
+  const [tipeObat, setTipeObat] = useState("")
   const [komposisi, setKomposisi] = useState([]);
   const [kemasan, setKemasan] = useState("");
   const [factoryAddr, setFactoryAddr] = useState("");
   const [factoryInstanceName, setFactoryInstanceName] = useState("");
+  const [factoryType, setFactoryType] = useState("")
   const [nieNumber, setNieNumber] = useState("");
   const [nieRequestDate, setNieRequestDate] = useState("");
   const [nieApprovalDate, setNieApprovalDate] = useState("");
@@ -46,9 +50,6 @@ function CheckObatIpfs() {
     return hash;
   };
 
-  // const obatDataFull = {"batchName":"BN-8047-JIGV","obatIdPackage":"OT-02838OL","dataObat":{"obatIdProduk":"ot-3385CI","namaProduk":"Upik Instan Rasa Coklat","merk":"Upik Instan Rasa Coklat","klaim":["Memelihara kesehatan","Membantu memperbaiki nafsu makan","Secara tradisional digunakan pada penderita kecacingan"],"kemasan":"Dus, 11 @Tablet (5 gram)","komposisi":["Cinnamomum Burmanii Cortex","Curcuma Aeruginosa Rhizoma","Curcuma Domestica Rhizoma","Curcuma Xanthorrhiza Rhizoma"],"factoryAddr":"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266","factoryInstanceName":"PT. Budi Pekerti","factoryUserName":"TAKAKI YUYA", "nieNumber":"TETSDFSDF","nieRequestDate":"-","nieApprovalDate":"-","bpomAddr":"-","bpomInstanceName":"-"},"datOrderPbf":{"orderQuantity":2,"senderInstanceName":"PT. Mangga Arum","targetInstanceName":"PT. Budi Pekerti","timestampOrder":"9 Desember 2024 pukul 00.29 WITA","timestampShipped":"9 Desember 2024 pukul 00.29 WITA","timestampComplete":"9 Desember 2024 pukul 00.30 WITA"},"dataOrderRetailer":{"orderQuantity":2,"senderInstanceName":"Apotek Sejahtera","targetInstanceName":"PT. Mangga Arum","timestampOrder":"9 Desember 2024 pukul 00.32 WITA","timestampShipped":"9 Desember 2024 pukul 00.32 WITA","timestampComplete":"9 Desember 2024 pukul 00.33 WITA"}}
-
-  
   useEffect(() => {
     const getDetailData = async () => {
 
@@ -62,7 +63,7 @@ function CheckObatIpfs() {
   
       const obatData = JSON.parse(data);
       console.log("Parsed Data from IPFS:", obatData);
-
+      
       const detailObat = {
         merk: obatData.dataObat.merk,
         namaObat: obatData.dataObat.namaProduk,
@@ -70,6 +71,7 @@ function CheckObatIpfs() {
         kemasan: obatData.dataObat.kemasan,
         komposisi: obatData.dataObat.komposisi,
         factoryAddr: obatData.dataObat.factoryAddr,
+        factoryType: obatData.dataObat.factoryType,
         factoryInstanceName: obatData.dataObat.factoryInstanceName,
         nieStatus: obatData.dataObat.obatStatus,
         nieRequestDate: obatData.dataObat.nieRequestDate, 
@@ -79,7 +81,25 @@ function CheckObatIpfs() {
         bpomInstanceName: obatData.dataObat.bpomInstanceName,
         factoryAddressInstance: obatData.dataObat.factoryAddressInstance, 
         bpomAddressInstance: obatData.dataObat.bpomAddressInstance,
+        tipeObat: obatData.dataObat.tipeObat,
+        jenisObat: obatData.dataObat.jenisObat
       };
+
+      if (detailObat.factoryType === "UMOT"){
+        setFactoryType("Usaha Mikro Obat Tradisional (UMOT)")
+      } else if (detailObat.factoryType === "UKOT"){
+        setFactoryType("Usaha Kecil Obat Tradisional (UKOT) ")
+      } else{
+        setFactoryType("Industri Obat Tradisional (IOT)")
+      }
+
+      if(detailObat.jenisObat === "OHT"){
+        setJenisObat("Obat Herbal Terstandar")
+      } else {
+        setJenisObat(detailObat.jenisObat)
+      }
+      
+      const ketmasanKet = detailObat.kemasan.match(/@(.+?)\s*\(/);
 
       if(obatData.dataOrderPbf && Object.keys(obatData.dataOrderPbf).length > 0) {
         setDataOrderPbf(true)
@@ -117,9 +137,11 @@ function CheckObatIpfs() {
         setDetailOrderRetailer(detailOrderRetailer)
       }
 
+      setKemasanKeterangan(ketmasanKet[1])
       setBatchName(obatData.batchName);
       setObatIdPackage(obatData.obatIdPackage);
       setNamaObat(detailObat.namaObat);
+      setTipeObat(detailObat.tipeObat);
       setMerkObat(detailObat.merk);
       setKlaim(detailObat.klaim);
       setKemasan(detailObat.kemasan)
@@ -140,10 +162,21 @@ function CheckObatIpfs() {
     getDetailData();
   }, []);
 
+  const imageMap = {
+    "Jamu": Jamu,
+    "Obat Herbal Terstandar": oht, 
+    "Fitofarmaka": fitofarmaka,
+  };
+  
+  const imgSrc = imageMap[jenisObat]
+
   return (
     <>
       <div id="publicObat" className='layout-page'>
         <div className="title-menu">
+          <div className="logo-obat">
+          <img src={imgSrc} alt={jenisObat} />
+          </div>
           <h2>{namaObat} <span>Obat Tradisional</span></h2>
 
         </div>
@@ -170,12 +203,29 @@ function CheckObatIpfs() {
                       <span>{namaObat}</span>
                     </li>
                     <li className="info-item">
-                      <span className="label">Merk</span>
+                      <span className="label">Merk Obat</span>
                       <span>{merkObat}</span>
+                    </li>
+                    <li className="info-item">
+                      <span className="label">Jenis Obat</span>
+                      <span>{jenisObat}</span>
+                      <JenisSediaanTooltip
+                        jenisSediaan={jenisObat}
+                      />
+                    </li>
+                    <li className="info-item">
+                      <span className="label">Tipe Obat</span>
+                      <span>{tipeObat}</span>
+                      <JenisSediaanTooltip
+                        jenisSediaan={tipeObat}
+                      />
                     </li>
                     <li className="info-item">
                       <span className="label">Kemasan Obat</span>
                       <span>{kemasan}</span>
+                      <JenisSediaanTooltip
+                        jenisSediaan={kemasanKeterangan}
+                      />
                     </li>
                     <li className="info-item list-item">
                       <span className="label">Klaim</span>
@@ -219,6 +269,10 @@ function CheckObatIpfs() {
                       </span>
                     </li>
 
+                    <li className="info-item">
+                      <span className="label">Factory Type</span>
+                      <span className='address'>{factoryType}</span>
+                    </li>
                     <li className="info-item">
                       <span className="label">Factory Address</span>
                       <span className='address'>{factoryAddressInstance}</span>
@@ -364,10 +418,6 @@ function CheckObatIpfs() {
             }
 
           </div>
-
-          {/* <div className="data-timestamp">
-            <h3>INi data timestamp</h3>
-          </div> */}
 
         </div>
       </div>

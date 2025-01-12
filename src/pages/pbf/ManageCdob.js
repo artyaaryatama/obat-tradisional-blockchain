@@ -7,6 +7,7 @@ import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 
@@ -19,7 +20,7 @@ function ManageCdob() {
 
   const tipePermohonanMap = {
     0: "Obat Lain",
-    1: "CCP (Cold Chain Product)"
+    1: "Cold Chain Product (CCP)"
   };
 
   const statusMap = {
@@ -202,8 +203,11 @@ function ManageCdob() {
                   <li className="label">
                     <p>Tipe Permohonan</p>
                   </li>
-                  <li className="input">
+                  <li className="input colJenisSediaan">
                     <p>{detailCdob.tipePermohonan}</p> 
+                    <JenisSediaanTooltip
+                      jenisSediaan={detailCdob.tipePermohonan}
+                    />
                   </li>
                 </ul>
 

@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
-import { data, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import imgLoader from '../../assets/images/loader.svg';
 import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 
@@ -28,23 +29,48 @@ function CreateObat() {
   const [ketKemasanSeku, setKetKemasanSeku] = useState("")
   const [komposisi, setKomposisi] = useState([""])
   const [options, setOptions] = useState([]);
-  const [tipeObat, setTipeObat] = useState("CCP");
+  const [tipeObat, setTipeObat] = useState("");
   const [allJenisSediaan, setAllJenisSediaan] = useState([]); 
   const [dataCpotb, setDataCpotb] = useState([])
   const [namaObatExisted, setNamaObatExisted] = useState([])
+  const [jenisObat, setJenisObat] = useState("")
+  const [filteredJenisSediaan, setFilteredJenisSediaan] = useState([]);
+
 
   const klaimValue = klaim.join("\n");
 
   const jenisSediaanMap = {
-    0n: "Tablet",
-    1n: "Kapsul",
-    2n: "Kapsul Lunak",
-    3n: "Serbuk Oral",
-    4n: "Cairan Oral",
-    5n: "Cairan Obat Dalam",
-    6n: "Cairan Obat Luar",
-    7n: "Film Strip",
-    8n: "Pil"
+    0n: "Cairan Obat Dalam",
+    1n: "Rajangan",
+    2n: "Serbuk",
+    3n: "Serbuk Instan",
+    4n: "Efervesen",
+    5n: "Pil",
+    6n: "Kapsul",
+    7n: "Kapsul Lunak",
+    8n: "Tablet atau Kaplet",
+    9n: "Granul",
+    10n: "Pastiles",
+    11n: "Dodol atau Jenang",
+    12n: "Film Strip",
+    13n: "Cairan Obat Luar",
+    14n: "Losio",
+    15n: "Parem",
+    16n: "Salep",
+    17n: "Krim",
+    18n: "Gel",
+    19n: "Serbuk Obat Luar",
+    20n: "Tapel",
+    21n: "Pilis",
+    22n: "Plaster atau Koyok",
+    23n: "Supositoria",
+    24n: "Rajangan Obat Luar"
+  };
+  
+  const usahaSediaanMapping = {
+    UMOT: [1n, 13n, 15n, 20n, 21n], 
+    UKOT: [0n, 1n, 2n, 3n, 5n, 6n, 9n, 10n, 11n, 12n, 13n, 14n, 15n, 16n, 17n, 18n, 19n, 20n, 21n, 22n, 24n], 
+    IOT: [0n, 1n, 2n, 3n, 4n, 5n, 6n, 7n, 8n, 9n, 10n, 11n, 12n, 13n, 14n, 15n, 16n, 17n, 18n, 19n, 20n, 21n, 22n, 23n, 24n] 
   };
 
   useEffect(() => {
@@ -105,7 +131,6 @@ function CreateObat() {
         try {
           console.log(userdata.instanceName);
           const listAllCt = await contracts.mainSupplyChain.getListAllCertificateByInstance(userdata.instanceName);
-          console.log(listAllCt);
           const reconstructedData = listAllCt.map((item, index) => {
             return {
               cpotbHash: item[6],
@@ -113,38 +138,37 @@ function CreateObat() {
             };
           })
 
-          setDataCpotb(reconstructedData);
-          console.log(reconstructedData);
-
-        } catch (error) {
-          errAlert(error, "Can't access CPOTB data.")
-        }
-      }
-
-    }
-    const loadData = async () => {
-      if (contracts && userdata.instanceName) {
-        try {
           const listAllObatCt = await contracts.obatTradisional.getAllObatByInstance(userdata.instanceName);
-          console.log(listAllObatCt);
-
-          const reconstructedData = listAllObatCt.map((item, index) => {
+          const reconstructedDataNama = listAllObatCt.map((item, index) => {
             return {
               namaProduk: item[1]
             }
           })
           
-          setNamaObatExisted(reconstructedData);
-          console.log(reconstructedData); 
-          
+          if (userdata.factoryType && usahaSediaanMapping[userdata.factoryType]) {
+            const filtered = usahaSediaanMapping[userdata.factoryType].map((key) => ({
+              key: key.toString(),
+              label: jenisSediaanMap[key]
+            }));
+            console.log(filtered);
+            setFilteredJenisSediaan(filtered);
+          } else {
+            setFilteredJenisSediaan([]);
+          }
+
+          setNamaObatExisted(reconstructedDataNama);
+          console.log(reconstructedDataNama); 
+
+          setDataCpotb(reconstructedData);
+          console.log(reconstructedData);
+
         } catch (error) {
-          console.error("Error loading data: ", error);
+          errAlert(error, "Error loading data.")
         }
       }
-    };
+
+    }
     
-    
-    loadData();
     loadJenisSediaan()
   }, [contracts])
 
@@ -239,12 +263,46 @@ function CreateObat() {
       "CCP" : 1n
     };
 
-    const selectedKemasanPrim = dataCpotb.find((item) => item.jenisSediaan === kemasanPrim)|| false;
+    const jenisSediaanMapReverse = {
+      "Cairan Obat Dalam": 0n,
+      "Rajangan": 1n,
+      "Serbuk": 2n,
+      "Serbuk Instan": 3n,
+      "Efervesen": 4n,
+      "Pil": 5n,
+      "Kapsul": 6n,
+      "Kapsul Lunak": 7n,
+      "Tablet atau Kaplet": 8n,
+      "Granul": 9n,
+      "Pastiles": 10n,
+      "Dodol atau Jenang": 11n,
+      "Film Strip": 12n,
+      "Cairan Obat Luar": 13n,
+      "Losio": 14n,
+      "Parem": 15n,
+      "Salep": 16n,
+      "Krim": 17n,
+      "Gel": 18n,
+      "Serbuk Obat Luar": 19n,
+      "Tapel": 20n,
+      "Pilis": 21n,
+      "Plaster atau Koyok": 22n,
+      "Supositoria": 23n,
+      "Rajangan Obat Luar": 24n
+    };
+    
+    const kemasanPrimSelected = jenisSediaanMapReverse[kemasanPrim]
+
+    const kemasanPrimData = dataCpotb.find((item) => item.jenisSediaan === kemasanPrim)|| false;
     const newObatName = namaObatExisted.map((item) => item.namaProduk !== namaProduk);
+
+    console.log(kemasanPrim);
+    console.log(kemasanPrimSelected);
+    console.log(kemasanPrimData);
 
     console.log(newObatName);
     if (newObatName[0]) {
-      if (selectedKemasanPrim) {
+      if (kemasanPrimData) {
         const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
         console.log(kemasanSet);
         
@@ -254,12 +312,12 @@ function CreateObat() {
           65 + Math.floor(Math.random() * 26)
         );
         const id = `ot-${randomFourDigit}${randomTwoLetters}`;
-        console.log( id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], selectedKemasanPrim.cpotbHash);
+        console.log(  id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], kemasanPrimData.cpotbHash, jenisObat);
     
         try {
           
           const createObatCt = await contracts.obatTradisional.createObat(
-          id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], selectedKemasanPrim.cpotbHash);
+          id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], kemasanPrimData.cpotbHash, jenisObat);
           
           console.log('Receipt:', createObatCt);
             
@@ -303,7 +361,7 @@ function CreateObat() {
         "Membantu memperbaiki nafsu makan",
         "Secara tradisional digunakan pada penderita kecacingan"
       ],
-      kemasanPrim: "Pil",
+      // kemasanPrim: "Pil",
       ketKemasanPrim: "5",
       satuanKemasanPrim: "gram",
       kemasanSeku: "Dus",
@@ -317,7 +375,7 @@ function CreateObat() {
     setNamaProduk(autoFillValues.namaProduk);
     setMerk(autoFillValues.merk);
     setKlaim(autoFillValues.klaim);
-    setKemasanPrim(autoFillValues.kemasanPrim);
+    // setKemasanPrim(autoFillValues.kemasanPrim);
     setKetKemasanPrim(autoFillValues.ketKemasanPrim);
     setSatuanKemasanPrim(autoFillValues.satuanKemasanPrim);
     setKemasanSeku(autoFillValues.kemasanSeku);
@@ -338,7 +396,6 @@ function CreateObat() {
   const addField = () => {
     setKomposisi([...komposisi, ""]);
     console.log("Adding new field. Current state:", komposisi);
-
   };
 
   const removeField = (index) => {
@@ -387,6 +444,45 @@ function CreateObat() {
 
           <ul>
             <li className="label">
+              <label htmlFor="merk">Merk Obat</label>
+            </li>
+            <li className="input">
+              <input
+                type="text"
+                id="merk"
+                value={merk}
+                onChange={(e) => setMerk(e.target.value)}
+              />
+            </li>
+          </ul>
+
+          <ul>
+            <li className="label">
+              <label htmlFor="jenisObat">Jenis Obat</label>
+            </li>
+            <li className="input">
+              <div className="input-group">
+                <select
+                  name="jenisObat"
+                  id="jenisObat"
+                  value={jenisObat}
+                  onChange= {(e) => setJenisObat(e.target.value)}
+                  required
+                >
+                  <option value="" disabled>Select Jenis Obat</option>
+                  <option value="Jamu">Jamu</option>
+                  <option value="OHT">Obat Herbal Terstandar (OHT)</option>
+                  <option value="Fitofarmaka">Fitofarmaka</option>
+                </select>
+                <JenisSediaanTooltip
+                  jenisSediaan={jenisObat}
+                />
+              </div>
+            </li>
+          </ul>
+
+          <ul>
+            <li className="label">
               <label htmlFor="tipeObat">Tipe Obat</label>
             </li>
             <li className="input">
@@ -397,25 +493,15 @@ function CreateObat() {
                   value={tipeObat}
                   onChange= {(e) => setTipeObat(e.target.value)}
                   required
-                >
+                > 
+                  <option value="" disabled>Select Tipe Obat</option>
                   <option value="CCP">Cold Chain Product</option>
                   <option value="ObatLain">Obat Lain</option>
                 </select>
+                <JenisSediaanTooltip
+                  jenisSediaan={tipeObat}
+                />
               </div>
-            </li>
-          </ul>
-  
-          <ul>
-            <li className="label">
-              <label htmlFor="merk">Merk Obat</label>
-            </li>
-            <li className="input">
-              <input
-                type="text"
-                id="merk"
-                value={merk}
-                onChange={(e) => setMerk(e.target.value)}
-              />
             </li>
           </ul>
   
@@ -450,22 +536,15 @@ function CreateObat() {
                 required
               >
                 <option value="" disabled>Select Kemasan Obat Primer</option>
-                <option value="Tablet">Tablet</option>
-                <option value="Pil">Pil</option>
-                <option value="Kapsul">Kapsul</option>
-                <option value="Kapsul Lunak">Kapsul Lunak</option>
-                <option value="Serbuk Oral">Serbuk Oral</option>
-                <option value="Cairan Oral">Cairan Oral</option>
-                <option value="Cairan Obat Dalam">Cairan Obat Dalam</option>
-                <option value="Cairan Obat Luar">Cairan Obat Luar</option>
-                <option value="Film Strip">Film Strip / Edible Film</option>
-                {/* <option value="">Select an option</option>
-                {Object.entries(options).map(([key, value]) => (
-                  <option key={key} value={value}>
-                    {value}
+                {filteredJenisSediaan.map(({ key, label }) => (
+                  <option key={key} value={label}>
+                    {label}
                   </option>
-                ))} */}
+                ))}
               </select>
+                <JenisSediaanTooltip
+                  jenisSediaan={kemasanPrim}
+                />
                 <input 
                   type="number" 
                   value= {ketKemasanPrim}

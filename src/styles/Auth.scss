@@ -41,6 +41,10 @@
         width: 360px;
         padding: 14px;
 
+        .empty{
+          display: none;
+        }
+
         &>*{
           margin-top: 10px;
         }
@@ -71,7 +75,8 @@
         }
         
         select{
-          @include selectForm($white)
+          @include selectForm($white);
+          margin: 10px 0 0 0;
         }
 
         button{

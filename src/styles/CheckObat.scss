@@ -11,6 +11,15 @@
   }
 
   .title-menu{
+    display: flex;
+    align-items: center;
+
+    .logo-obat{
+      margin-right: 20px;
+      img{
+        width: 64px;
+      }
+    }
     h2{
       font-size: 26px;
       display: flex;
@@ -22,8 +31,9 @@
       color: $white;
       background-color: $purple;
       padding: 6px 12px;
-      width: fit-content;
       border-radius: 10px;
+      display: flex;
+      align-items: center;
     }
   } 
 
@@ -31,6 +41,7 @@
     flex-direction: row;
     align-items: flex-start;
     gap: 12px;
+    margin: 20px 0 0 0;
 
     .data-obat{
       flex: 2;
@@ -79,6 +90,10 @@
    
              li{
                margin-bottom: 16px;
+
+               .empty{
+                display: none;
+               }
    
                span.label{
                  display: inline-block;

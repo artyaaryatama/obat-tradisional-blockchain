@@ -12,6 +12,7 @@ import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 
@@ -230,7 +231,7 @@ function ManageOrderPbf() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -255,7 +256,8 @@ function ManageOrderPbf() {
         factoryInstance: factoryInstance,
         bpomAddr: bpomAddr ,
         bpomInstance:  bpomInstance,
-        tipeObat: tipeObatMap[tipeObat]
+        tipeObat: tipeObatMap[tipeObat],
+        jenisObat: jenisObat,
       };
       
       const detailOrder = {
@@ -276,6 +278,8 @@ function ManageOrderPbf() {
         timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
       }
 
+      const kemasanKeterangan = kemasan.match(/@(.+?)\s*\(/);
+
       if(statusOrder === 1n) {
         MySwal.fire({
           title: `Detail Order Obat ${detailObat.namaObat}`,
@@ -286,14 +290,6 @@ function ManageOrderPbf() {
                   <div className="detailObat">
                     <div className="row row--obat">
                       <div className="col">
-                        <ul>
-                          <li className="label">
-                            <p>ID Order</p>
-                          </li>
-                          <li className="input">
-                            <p>{orderId}</p> 
-                          </li>
-                        </ul>
   
                         <ul>
                           <li className="label">
@@ -391,26 +387,36 @@ function ManageOrderPbf() {
                         <li className="label">
                           <p>Tipe Produk</p>
                         </li>
-                        <li className="input">
-                          <p>{detailObat.tipeProduk}</p> 
+                        <li className="input colJenisSediaan">
+                          <p>{
+                          detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={detailObat.jenisObat}
+                          />
                         </li>
                       </ul>
-  
+
                       <ul>
                         <li className="label">
                           <p>Tipe Obat</p>
                         </li>
-                        <li className="input">
+                        <li className="input colJenisSediaan">
                           <p>{detailObat.tipeObat}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={detailObat.tipeObat}
+                          />
                         </li>
                       </ul>
-  
+      
                       <ul>
-                        <li className="label label1">
+                        <li className="label">
                           <p>Kemasan Obat</p>
                         </li>
-                        <li className="input">
+                        <li className="input colJenisSediaan">
                           <p>{detailObat.kemasan}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={kemasanKeterangan[1]}
+                          />
                         </li>
                       </ul>
   
@@ -475,15 +481,6 @@ function ManageOrderPbf() {
                   <div className="detailObat">
                     <div className="row row--obat">
                       <div className="col">
-                        <ul>
-                          <li className="label">
-                            <p>ID Order</p>
-                          </li>
-                          <li className="input">
-                            <p>{orderId}</p> 
-                          </li>
-                        </ul>
-
                         <ul>
                           <li className="label">
                             <p>Status Order</p>
@@ -580,8 +577,12 @@ function ManageOrderPbf() {
                         <li className="label">
                           <p>Tipe Produk</p>
                         </li>
-                        <li className="input">
-                          <p>{detailObat.tipeProduk}</p> 
+                        <li className="input colJenisSediaan">
+                          <p>{
+                          detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={detailObat.jenisObat}
+                          />
                         </li>
                       </ul>
 
@@ -589,17 +590,23 @@ function ManageOrderPbf() {
                         <li className="label">
                           <p>Tipe Obat</p>
                         </li>
-                        <li className="input">
+                        <li className="input colJenisSediaan">
                           <p>{detailObat.tipeObat}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={detailObat.tipeObat}
+                          />
                         </li>
                       </ul>
-  
+      
                       <ul>
-                        <li className="label label1">
+                        <li className="label">
                           <p>Kemasan Obat</p>
                         </li>
-                        <li className="input">
+                        <li className="input colJenisSediaan">
                           <p>{detailObat.kemasan}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={kemasanKeterangan[1]}
+                          />
                         </li>
                       </ul>
   
@@ -650,10 +657,7 @@ function ManageOrderPbf() {
             );
           }
         })
-
       }
-
-      
     } catch (e) {
       errAlert(e, "Can't retrieve data")
     }
@@ -731,6 +735,7 @@ function ManageOrderPbf() {
           factoryAddr: dataObat.factoryAddr,
           factoryInstanceName: dataObat.factoryInstance,
           factoryAddressInstance: userFactoryCt[4],
+          factoryType:  userFactoryCt[5],
           nieNumber: dataObat.nieNumber,
           obatStatus: "NIE Approved",
           nieRequestDate: dataObat.nieRequestDate,
@@ -738,6 +743,8 @@ function ManageOrderPbf() {
           bpomAddr: dataObat.bpomAddr,
           bpomInstanceName: dataObat.bpomInstance,
           bpomAddressInstance: userBpomCt[4],
+          jenisObat: dataObat.jenisObat,
+          tipeObat: dataObat.tipeObat,
         },
         dataOrderPbf: {
           orderQuantity: dataOrder.orderQuantity,

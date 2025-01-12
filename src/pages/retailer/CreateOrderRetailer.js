@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 
@@ -213,7 +213,7 @@ function CreateOrderRetailer() {
 
       const [statusStok, namaProduct, batchNamee, obatQuantity, factoryInstancee] = dataObat
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -238,8 +238,11 @@ function CreateOrderRetailer() {
         factoryInstanceName: factoryInstance,
         bpomAddr: bpomAddr,
         bpomInstanceNames:  bpomInstance,
-        tipeObat: tipeObatMap[tipeObat]
+        tipeObat: tipeObatMap[tipeObat],
+        jenisObat: jenisObat
       };
+
+      const kemasanKeterangan = kemasan.match(/@(.+?)\s*\(/);
 
       MySwal.fire({
         title: `Form Order Obat ${detailObat.namaObat}`,
@@ -288,8 +291,12 @@ function CreateOrderRetailer() {
                     <li className="label">
                       <p>Tipe Produk</p>
                     </li>
-                    <li className="input">
-                      <p>{detailObat.tipeProduk}</p> 
+                    <li className="input colJenisSediaan">
+                      <p>{
+                      detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.jenisObat}
+                      />
                     </li>
                   </ul>
 
@@ -297,17 +304,23 @@ function CreateOrderRetailer() {
                     <li className="label">
                       <p>Tipe Obat</p>
                     </li>
-                    <li className="input">
+                    <li className="input colJenisSediaan">
                       <p>{detailObat.tipeObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.tipeObat}
+                      />
                     </li>
                   </ul>
-
+  
                   <ul>
                     <li className="label">
                       <p>Kemasan Obat</p>
                     </li>
-                    <li className="input">
+                    <li className="input colJenisSediaan">
                       <p>{detailObat.kemasan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={kemasanKeterangan[1]}
+                      />
                     </li>
                   </ul>
 

@@ -11,6 +11,7 @@ import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 
@@ -25,11 +26,6 @@ function ManageNieFactory() {
     0n: "In Local Production",
     1n: "Requested NIE",
     2n: "Approved NIE"
-  };
-  
-  const tipeProdukMap = {
-    0n: "Obat Tradisional",
-    1n: "Suplemen Kesehatan"
   };
 
   const tipeObatMap = {
@@ -185,7 +181,7 @@ function ManageNieFactory() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
       console.log(cpotbHash);
@@ -206,8 +202,11 @@ function ManageNieFactory() {
         factoryInstanceName: factoryInstance,
         bpomAddr: bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddr,
         bpomInstanceNames:  bpomInstance ?  bpomInstance : "-",
-        tipeObat: tipeObatMap[tipeObat]
+        tipeObat: tipeObatMap[tipeObat],
+        jenisObat: jenisObat
       };
+
+      const kemasanKeterangan = kemasan.match(/@(.+?)\s*\(/);
 
       console.log(detailObatCt);
 
@@ -248,8 +247,12 @@ function ManageNieFactory() {
                     <li className="label">
                       <p>Tipe Produk</p>
                     </li>
-                    <li className="input">
-                      <p>Obat Tradisional</p> 
+                    <li className="input colJenisSediaan">
+                      <p>{
+                      detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.jenisObat}
+                      />
                     </li>
                   </ul>
 
@@ -257,8 +260,11 @@ function ManageNieFactory() {
                     <li className="label">
                       <p>Tipe Obat</p>
                     </li>
-                    <li className="input">
+                    <li className="input colJenisSediaan">
                       <p>{detailObat.tipeObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.tipeObat}
+                      />
                     </li>
                   </ul>
   
@@ -266,8 +272,11 @@ function ManageNieFactory() {
                     <li className="label">
                       <p>Kemasan Obat</p>
                     </li>
-                    <li className="input">
+                    <li className="input colJenisSediaan">
                       <p>{detailObat.kemasan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={kemasanKeterangan[1]}
+                      />
                     </li>
                   </ul>
   
@@ -397,11 +406,15 @@ function ManageNieFactory() {
           }
         }).then((result) => {
   
+          if(jenisObat === "OHT"){
+            detailObat.jenisObat = "Obat Herbal Terstandar"
+          }
+
           if(result.isConfirmed){
             MySwal.fire({
               title: `Request NIE`,
               html: (
-                <div className='form-swal'>
+                <div className='form-swal full'>
                   <div className="row">
                     <div className="col">
                        <ul>
@@ -427,6 +440,20 @@ function ManageNieFactory() {
                               type="text"
                               id="tipeObat"
                               value={detailObat.tipeObat}
+                              readOnly
+                            />
+                          </li>
+                        </ul>
+                        
+                        <ul>
+                          <li className="label">
+                            <label htmlFor="jenisObat">Jenis Obat</label>
+                          </li>
+                          <li className="input">
+                            <input
+                              type="text"
+                              id="jenisObat"
+                              value={detailObat.jenisObat}
                               readOnly
                             />
                           </li>
@@ -532,10 +559,14 @@ function ManageNieFactory() {
   
                   <ul>
                     <li className="label">
-                      <p>Tipe Produk</p>
+                      <p>Jenis Obat</p>
                     </li>
-                    <li className="input">
-                      <p>Obat Tradisional</p> 
+                    <li className="input colJenisSediaan">
+                      <p><p>{
+                      detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> </p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.jenisObat}
+                      />
                     </li>
                   </ul>
   
@@ -543,8 +574,11 @@ function ManageNieFactory() {
                     <li className="label">
                       <p>Tipe Obat</p>
                     </li>
-                    <li className="input">
+                    <li className="input colJenisSediaan">
                       <p>{detailObat.tipeObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan= {detailObat.tipeObat}
+                      />
                     </li>
                   </ul>
 
@@ -552,8 +586,11 @@ function ManageNieFactory() {
                     <li className="label">
                       <p>Kemasan Obat</p>
                     </li>
-                    <li className="input">
+                    <li className="input colJenisSediaan">
                       <p>{detailObat.kemasan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={kemasanKeterangan[1]}
+                      />
                     </li>
                   </ul>
   

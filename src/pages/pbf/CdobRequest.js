@@ -8,6 +8,7 @@ import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 
@@ -70,16 +71,16 @@ function CdobRequest() {
       }
     };
   }, []);
-
+  
   const handleEventCdobRequested =  (_instanceName, _userAddr, _tipePermohonan, _timestampRequest, txHash) => {
     
     const formattedTimestamp = new Date(Number(_timestampRequest) * 1000).toLocaleDateString('id-ID', options)
   
     const tp = {
-      0: "Obat Lain",
-      1: "CCP (Cold Chain Product)"
+      0n: "Obat Lain",
+      1n: "Cold Chain Product (CCP)"
     };
-  
+
     MySwal.fire({
       title: "Pengajuan Sertifikat CDOB Berhasil",
       html: (
@@ -236,7 +237,7 @@ function CdobRequest() {
             <li className="label">
               <label htmlFor="tipePermohonan">Jenis Sediaan</label>
             </li>
-            <li className="input">
+            <li className="input col">
               <select
                 name="tipePermohonan"
                 id="tipePermohonan"
@@ -244,9 +245,12 @@ function CdobRequest() {
                 onChange={handleOptionTipePermohonan}
               >
                 <option value="" disabled>Select Jenis Sediaan</option>
-                <option value="CCP">CCP (Cold Chain Product)</option>
+                <option value="CCP">Cold Chain Product (CCP)</option>
                 <option value="ObatLain">Obat Lain</option>
               </select>
+              <JenisSediaanTooltip
+                jenisSediaan={tipePermohonan}
+              />
             </li>
           </ul>
           <button type='submit'>

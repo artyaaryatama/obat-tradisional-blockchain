@@ -8,6 +8,7 @@ import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 const MySwal = withReactContent(Swal);
@@ -21,7 +22,7 @@ function CdobApprove() {
 
   const tipePermohonanMap = {
     0: "Obat Lain",
-    1: "CCP (Cold Chain Product)"
+    1: "Cold Chain Product (CCP)"
   };
 
   const statusMap = {
@@ -304,11 +305,14 @@ function CdobApprove() {
                   </ul>
   
                   <ul>
-                    <li className="label">
+                    <li className="label ">
                       <p>Tipe Permohonan</p>
                     </li>
-                    <li className="input">
+                    <li className="input colJenisSediaan">
                       <p>{detailCdob.tipePermohonan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailCdob.tipePermohonan}
+                      />
                     </li>
                   </ul>
   
@@ -380,8 +384,11 @@ function CdobApprove() {
                     <li className="label">
                       <p>Tipe Permohonan</p>
                     </li>
-                    <li className="input">
+                    <li className="input colJenisSediaan">
                       <p>{detailCdob.tipePermohonan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailCdob.tipePermohonan}
+                      />
                     </li>
                   </ul>
   
@@ -587,7 +594,7 @@ function CdobApprove() {
 
     const tpMap = {
       "Obat Lain" : 0,
-      "CCP (Cold Chain Product)" : 1
+      "Cold Chain Product (CCP)" : 1
     }; 
 
     try {

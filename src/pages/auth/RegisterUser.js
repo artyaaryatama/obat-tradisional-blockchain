@@ -21,6 +21,7 @@ function RegisterPage() {
   // const [userAddr, setUserAddr] = useState("");
   const [role, setRole] = useState("");
   const [locationInstance, setLocationInstance] = useState("");
+  const [factoryType, setFactoryType] = useState("")
 
   useEffect(() => {
     document.title = "Sign Up"; 
@@ -162,7 +163,12 @@ function RegisterPage() {
 
     try {
       const nameUpperCase = name.toUpperCase()
-      const registCt = await contract.registerUser(nameUpperCase, instanceName, role, locationInstance);
+      let registCt;
+      if(factoryType){
+        registCt = await contract.registerUser(nameUpperCase, instanceName, role, locationInstance, factoryType);
+      } else {
+        registCt = await contract.registerUser(nameUpperCase, instanceName, role, locationInstance, "");
+      }
       console.log("Transaction receipt:", registCt);
       console.log("Transaction hash:", registCt.hash);
 
@@ -281,6 +287,20 @@ function RegisterPage() {
                 <option value="2">BPOM</option>
                 <option value="3">Retailer</option>
               </select>
+
+              {role === 0 ? 
+                <select 
+                value={factoryType} 
+                onChange={(e) => setFactoryType(e.target.value)} 
+                className="usaha"
+                required >
+                  <option value="" disabled>Pilih Jenis Usaha</option>
+                  <option value="UMOT">Usaha Mikro Obat Tradisional (UMOT) </option>
+                  <option value="UKOT">Usaha Kecil Obat Tradisional (UKOT) </option>
+                  <option value="IOT">Industri Obat Tradisional (IOT)</option>
+                </select> 
+              : <div className="empty"></div>
+            }
               
               <button type="submit">
               {

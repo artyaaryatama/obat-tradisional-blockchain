@@ -87,7 +87,7 @@
     }
 
     .row{
-      flex: 1;
+      // flex: 1;
 
       ul{
         // background-color: #a5dc86;
@@ -290,6 +290,11 @@
         }
       }
 
+      &.colJenisSediaan{
+        display: flex;
+        align-items: center;
+      }
+
       
       &.label{
         font-weight: 600;
@@ -312,7 +317,6 @@
 
       &.input{
         text-align: left;
-        width: 68%;
         font-size: 12px;
 
         a{
@@ -371,6 +375,12 @@
     }
     
     
+  }
+
+  &.full{
+    ul li.input{
+      width: 68%;
+    }
   }
 }
 

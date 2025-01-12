@@ -7,6 +7,7 @@ import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 
@@ -213,7 +214,7 @@ function CreateOrderPbf() {
 
       const [statusStok, namaProduct, batchNamee, obatQuantity, factoryInstancee] = dataObat
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -224,7 +225,6 @@ function CreateOrderPbf() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        tipeProduk: "Obat Tradisional", 
         nieStatus: obatStatusMap[nieStatus], 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
@@ -234,9 +234,11 @@ function CreateOrderPbf() {
         factoryInstanceName: factoryInstance,
         bpomAddr: bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddr,
         bpomInstanceNames:  bpomInstance ?  bpomInstance : "-",
-        tipeObat: tipeObatMap[tipeObat]
-
+        tipeObat: tipeObatMap[tipeObat],
+        jenisObat: jenisObat
       };
+
+      const kemasanKeterangan = kemasan.match(/@(.+?)\s*\(/);
 
       MySwal.fire({
         title: `Form Order Obat`,
@@ -291,32 +293,42 @@ function CreateOrderPbf() {
                     </li>
                   </ul>
 
-                    <ul>
-                      <li className="label">
-                        <p>Tipe Produk</p>
-                      </li>
-                      <li className="input">
-                        <p>{detailObat.tipeProduk}</p> 
-                      </li>
-                    </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Produk</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{
+                      detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.jenisObat}
+                      />
+                    </li>
+                  </ul>
 
-                    <ul>
-                      <li className="label">
-                        <p>Tipe Obat</p>
-                      </li>
-                      <li className="input">
-                        <p>{detailObat.tipeObat}</p> 
-                      </li>
-                    </ul>   
-
-                    <ul>
-                      <li className="label">
-                        <p>Kemasan Obat</p>
-                      </li>
-                      <li className="input">
-                        <p>{detailObat.kemasan}</p> 
-                      </li>
-                    </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Obat</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{detailObat.tipeObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.tipeObat}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Kemasan Obat</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{detailObat.kemasan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={kemasanKeterangan[1]}
+                      />
+                    </li>
+                  </ul>
 
                     <ul>
                       <li className="label">

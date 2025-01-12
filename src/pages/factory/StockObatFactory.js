@@ -9,6 +9,7 @@ import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 
@@ -123,7 +124,7 @@ function StockObatFactory() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -140,7 +141,6 @@ function StockObatFactory() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        tipeProduk: "Obat Tradisional", 
         nieStatus: obatStatusMap[nieStatus], 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
@@ -150,8 +150,11 @@ function StockObatFactory() {
         factoryInstanceName: factoryInstance,
         bpomAddr: bpomAddr === "0x0000000000000000000000000000000000000000" ? "-" : bpomAddr,
         bpomInstanceNames:  bpomInstance ?  bpomInstance : "-",
-        tipeObat: tipeObatMap[tipeObat]
+        tipeObat: tipeObatMap[tipeObat],
+        jenisObat: jenisObat
       };
+
+      const kemasanKeterangan = kemasan.match(/@(.+?)\s*\(/);
 
       console.log(detailObatCt);
 
@@ -241,19 +244,26 @@ function StockObatFactory() {
 
                     <ul>
                       <li className="label">
-                        <p>Tipe Produk</p>
+                        <p>Jenis Obat</p>
                       </li>
-                      <li className="input">
-                        <p>{detailObat.tipeProduk}</p> 
-                      </li>
+                      <li className="input colJenisSediaan">
+                        <p>{
+                        detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
+                        <JenisSediaanTooltip
+                          jenisSediaan={detailObat.jenisObat}
+                        />
+                    </li>
                     </ul>
 
                     <ul>
                       <li className="label">
                         <p>Tipe Obat</p>
                       </li>
-                      <li className="input">
-                        <p>{detailObat.tipeObat}</p> 
+                      <li className="input colJenisSediaan">
+                        <p>{detailObat.tipeObat}</p>
+                        <JenisSediaanTooltip
+                          jenisSediaan={detailObat.tipeObat}
+                        /> 
                       </li>
                     </ul>
 
@@ -261,8 +271,12 @@ function StockObatFactory() {
                       <li className="label">
                         <p>Kemasan Obat</p>
                       </li>
-                      <li className="input">
+                      <li className="input colJenisSediaan">
                         <p>{detailObat.kemasan}</p> 
+                        <JenisSediaanTooltip
+                          jenisSediaan={kemasanKeterangan[1]}
+                        /> 
+                        
                       </li>
                     </ul>
 
@@ -337,7 +351,7 @@ function StockObatFactory() {
               <ul>
                 {dataObat.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailObat(item.obatId, item.batchName)} > [ {item.batchName} ] {item.namaProduk}</button>
+                    <button className='title' onClick={() => getDetailObat(item.obatId, item.batchName)} > [{item.batchName}] {item.namaProduk}</button>
                     {item.statusStok === "Stock Available" ? 
                       <p>Stok tersedia: {item.obatQuantity} Obat</p>  :
                       <p>Terjual: {item.obatQuantity} Obat</p>

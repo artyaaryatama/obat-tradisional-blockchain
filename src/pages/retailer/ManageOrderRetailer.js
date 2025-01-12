@@ -4,19 +4,18 @@ import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { create } from 'ipfs-http-client';
 import { useNavigate } from 'react-router-dom';
-
 import DataIpfsHash from '../../components/TableHash';
 import OrderStatusStepper from '../../components/StepperOrder';
-
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+
 const MySwal = withReactContent(Swal);
 
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
-
 
 function ManageOrderRetailer() {
   const [contracts, setContracts] = useState(null);
@@ -242,7 +241,7 @@ function ManageOrderRetailer() {
 
       const [obatDetails, obatNie] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
@@ -269,7 +268,8 @@ function ManageOrderRetailer() {
         factoryInstance: factoryInstance,
         bpomAddr: bpomAddr ,
         bpomInstance:  bpomInstance,
-        tipeObat: tipeObatMap[tipeObat]
+        tipeObat: tipeObatMap[tipeObat],
+        jenisObat: jenisObat
       };
 
       const timestamps = {
@@ -290,6 +290,8 @@ function ManageOrderRetailer() {
         orderObatIpfs: orderObatIpfs
       }
 
+      const kemasanKeterangan = kemasan.match(/@(.+?)\s*\(/);
+
       console.log(detailOrder);
 
       if(statusOrder === 1n) {
@@ -302,14 +304,6 @@ function ManageOrderRetailer() {
                   <div className="detailObat">
                     <div className="row row--obat">
                       <div className="col">
-                        <ul>
-                          <li className="label">
-                            <p>ID Order</p>
-                          </li>
-                          <li className="input">
-                            <p>{orderId}</p> 
-                          </li>
-                        </ul>
   
                         <ul>
                           <li className="label">
@@ -439,8 +433,12 @@ function ManageOrderRetailer() {
                         <li className="label">
                           <p>Tipe Produk</p>
                         </li>
-                        <li className="input">
-                          <p>{detailObat.tipeProduk}</p> 
+                        <li className="input colJenisSediaan">
+                          <p>{
+                          detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={detailObat.jenisObat}
+                          />
                         </li>
                       </ul>
 
@@ -448,17 +446,23 @@ function ManageOrderRetailer() {
                         <li className="label">
                           <p>Tipe Obat</p>
                         </li>
-                        <li className="input">
+                        <li className="input colJenisSediaan">
                           <p>{detailObat.tipeObat}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={detailObat.tipeObat}
+                          />
                         </li>
                       </ul>
-  
+      
                       <ul>
-                        <li className="label label1">
+                        <li className="label">
                           <p>Kemasan Obat</p>
                         </li>
-                        <li className="input">
+                        <li className="input colJenisSediaan">
                           <p>{detailObat.kemasan}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={kemasanKeterangan[1]}
+                          />
                         </li>
                       </ul>
   
@@ -523,14 +527,6 @@ function ManageOrderRetailer() {
                   <div className="detailObat">
                     <div className="row row--obat">
                       <div className="col">
-                        <ul>
-                          <li className="label">
-                            <p>ID Order</p>
-                          </li>
-                          <li className="input">
-                            <p>{orderId}</p> 
-                          </li>
-                        </ul>
   
                         <ul>
                           <li className="label">
@@ -657,8 +653,12 @@ function ManageOrderRetailer() {
                         <li className="label">
                           <p>Tipe Produk</p>
                         </li>
-                        <li className="input">
-                          <p>{detailObat.tipeProduk}</p> 
+                        <li className="input colJenisSediaan">
+                          <p>{
+                          detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={detailObat.jenisObat}
+                          />
                         </li>
                       </ul>
 
@@ -666,17 +666,23 @@ function ManageOrderRetailer() {
                         <li className="label">
                           <p>Tipe Obat</p>
                         </li>
-                        <li className="input">
+                        <li className="input colJenisSediaan">
                           <p>{detailObat.tipeObat}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={detailObat.tipeObat}
+                          />
                         </li>
                       </ul>
-  
+      
                       <ul>
-                        <li className="label label1">
+                        <li className="label">
                           <p>Kemasan Obat</p>
                         </li>
-                        <li className="input">
+                        <li className="input colJenisSediaan">
                           <p>{detailObat.kemasan}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={kemasanKeterangan[1]}
+                          />
                         </li>
                       </ul>
   
@@ -819,7 +825,10 @@ function ManageOrderRetailer() {
             nieApprovalDate: dataObat.nieApprovalDate,
             bpomAddr: dataObat.bpomAddr,
             bpomInstanceName: dataObat.bpomInstance,
-            bpomAddressInstance: userBpomCt[4]
+            bpomAddressInstance: userBpomCt[4],
+            tipeObat: dataObat.tipeObat,
+            jenisObat: dataObat.jenisObat,
+            factoryType:  userFactoryCt[5]
           },
           dataOrderPbf: {
             orderQuantity: parseInt(prevOrderPbfCt[4]),

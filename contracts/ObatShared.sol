@@ -16,6 +16,7 @@ contract ObatShared {
     EnumsLibrary.TipePermohonanCdob tipeObat;
     string cpotbHash;
     string cdobHash;
+    string jenisObat; 
   }
 
   struct st_obatProduction {
@@ -76,7 +77,8 @@ contract ObatShared {
     string memory _factoryInstance, 
     address _factoryAddr,
     EnumsLibrary.TipePermohonanCdob _tipeObat,
-    string memory _cpotbHash
+    string memory _cpotbHash,
+    string memory _jenisObat
   ) external {
       require(bytes(_obatId).length > 0, "Invalid ID");
 
@@ -90,7 +92,8 @@ contract ObatShared {
         factoryAddr: _factoryAddr,
         tipeObat: _tipeObat, 
         cpotbHash: _cpotbHash,
-        cdobHash: ""
+        cdobHash: "",
+        jenisObat: _jenisObat
       });
   }
 

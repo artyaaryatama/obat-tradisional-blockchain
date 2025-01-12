@@ -12,6 +12,7 @@ import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 
@@ -238,7 +239,7 @@ function ManageOrderFactoryPbf() {
 
       console.log(orderObatIpfs);
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
 
       console.log(cpotbHash, cdobHash);
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
@@ -254,7 +255,6 @@ function ManageOrderFactoryPbf() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        tipeProduk: "Obat Tradisional", 
         nieStatus: obatStatusMap[nieStatus], 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
@@ -264,7 +264,8 @@ function ManageOrderFactoryPbf() {
         factoryInstance: factoryInstance,
         bpomAddr: bpomAddr ,
         bpomInstance:  bpomInstance,
-        tipeObat: tipeObatMap[tipeObat]
+        tipeObat: tipeObatMap[tipeObat],
+        jenisObat: jenisObat
       };
 
       const detailOrder = {
@@ -285,6 +286,8 @@ function ManageOrderFactoryPbf() {
         timestampComplete: timestampComplete ?  new Date(Number(timestampComplete) * 1000).toLocaleDateString('id-ID', options) : 0
       }
 
+      const kemasanKeterangan = kemasan.match(/@(.+?)\s*\(/);
+
       if(statusOrder === 0n){
         MySwal.fire({
           title: `Detail Order Obat ${detailObat.namaObat}`,
@@ -295,14 +298,6 @@ function ManageOrderFactoryPbf() {
                   <div className="detailObat">
                     <div className="row row--obat">
                       <div className="col">
-                        <ul>
-                          <li className="label">
-                            <p>ID Order</p>
-                          </li>
-                          <li className="input">
-                            <p>{orderId}</p> 
-                          </li>
-                        </ul>
 
                         <ul>
                           <li className="label">
@@ -401,8 +396,12 @@ function ManageOrderFactoryPbf() {
                         <li className="label">
                           <p>Tipe Produk</p>
                         </li>
-                        <li className="input">
-                          <p>{detailObat.tipeProduk}</p> 
+                        <li className="input colJenisSediaan">
+                          <p>{
+                          detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={detailObat.jenisObat}
+                          />
                         </li>
                       </ul>
 
@@ -410,17 +409,23 @@ function ManageOrderFactoryPbf() {
                         <li className="label">
                           <p>Tipe Obat</p>
                         </li>
-                        <li className="input">
+                        <li className="input colJenisSediaan">
                           <p>{detailObat.tipeObat}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={detailObat.tipeObat}
+                          />
                         </li>
                       </ul>
-  
+      
                       <ul>
-                        <li className="label label1">
+                        <li className="label">
                           <p>Kemasan Obat</p>
                         </li>
-                        <li className="input">
+                        <li className="input colJenisSediaan">
                           <p>{detailObat.kemasan}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={kemasanKeterangan[1]}
+                          />
                         </li>
                       </ul>
   
@@ -485,15 +490,6 @@ function ManageOrderFactoryPbf() {
                   <div className="detailObat">
                     <div className="row row--obat">
                       <div className="col">
-
-                        <ul>
-                          <li className="label">
-                            <p>ID Order</p>
-                          </li>
-                          <li className="input">
-                            <p>{orderId}</p> 
-                          </li>
-                        </ul>
                         
                         <ul>
                           <li className="label">
@@ -580,8 +576,12 @@ function ManageOrderFactoryPbf() {
                         <li className="label">
                           <p>Tipe Produk</p>
                         </li>
-                        <li className="input">
-                          <p>{detailObat.tipeProduk}</p> 
+                        <li className="input colJenisSediaan">
+                          <p>{
+                          detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={detailObat.jenisObat}
+                          />
                         </li>
                       </ul>
 
@@ -589,17 +589,23 @@ function ManageOrderFactoryPbf() {
                         <li className="label">
                           <p>Tipe Obat</p>
                         </li>
-                        <li className="input">
+                        <li className="input colJenisSediaan">
                           <p>{detailObat.tipeObat}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={detailObat.tipeObat}
+                          />
                         </li>
                       </ul>
-  
+      
                       <ul>
-                        <li className="label label1">
+                        <li className="label">
                           <p>Kemasan Obat</p>
                         </li>
-                        <li className="input">
+                        <li className="input colJenisSediaan">
                           <p>{detailObat.kemasan}</p> 
+                          <JenisSediaanTooltip
+                            jenisSediaan={kemasanKeterangan[1]}
+                          />
                         </li>
                       </ul>
   
@@ -730,18 +736,21 @@ function ManageOrderFactoryPbf() {
           factoryAddr: dataObat.factoryAddr,
           factoryInstanceName: dataObat.factoryInstance,
           factoryAddressInstance: userFactoryCt[4],
+          factoryType:  userFactoryCt[5],
           nieNumber: dataObat.nieNumber,
           obatStatus: "NIE Approved",
           nieRequestDate: dataObat.nieRequestDate,
           nieApprovalDate: dataObat.nieApprovalDate,
           bpomAddr: dataObat.bpomAddr,
           bpomInstanceName: dataObat.bpomInstance,
-          bpomAddressInstance: userBpomCt[4]
+          bpomAddressInstance: userBpomCt[4],
+          tipeObat: dataObat.tipeObat,
+          jenisObat: dataObat.jenisObat
         },
         dataOrderPbf: {
           orderQuantity: dataOrder.orderQuantity,
           senderInstanceName: dataOrder.buyerInstance,
-          senderAddress: dataOrder.buyerAddress,
+        senderAddress: dataOrder.buyerAddress,
           pbfInstanceAddress: userPbfCt[4],
           statusOrder : "Order Shipped",
           targetInstanceName : dataOrder.sellerInstance,

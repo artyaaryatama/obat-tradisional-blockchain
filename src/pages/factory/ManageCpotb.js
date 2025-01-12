@@ -7,6 +7,7 @@ import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 
@@ -18,15 +19,31 @@ function ManageCpotb() {
   const [dataCpotb, setDataCpotb] = useState([]);
 
   const jenisSediaanMap = {
-    0n: "Tablet",
-    1n: "Kapsul",
-    2n: "Kapsul Lunak",
-    3n: "Serbuk Oral",
-    4n: "Cairan Oral",
-    5n: "Cairan Obat Dalam",
-    6n: "Cairan Obat Luar",
-    7n: "Film Strip / Edible Film",
-    8n: "Pil"
+    0n: "Cairan Obat Dalam",
+    1n: "Rajangan",
+    2n: "Serbuk",
+    3n: "Serbuk Instan",
+    4n: "Efervesen",
+    5n: "Pil",
+    6n: "Kapsul",
+    7n: "Kapsul Lunak",
+    8n: "Tablet atau Kaplet",
+    9n: "Granul",
+    10n: "Pastiles",
+    11n: "Dodol atau Jenang",
+    12n: "Film Strip",
+    13n: "Cairan Obat Luar",
+    14n: "Losio",
+    15n: "Parem",
+    16n: "Salep",
+    17n: "Krim",
+    18n: "Gel",
+    19n: "Serbuk Obat Luar",
+    20n: "Tapel",
+    21n: "Pilis",
+    22n: "Plaster atau Koyok",
+    23n: "Supositoria",
+    24n: "Rajangan Obat Luar"
   };
 
   const statusMap = {
@@ -122,7 +139,7 @@ function ManageCpotb() {
       const detailCpotbCt = await contract.detailCpotb(id);
       console.log(detailCpotbCt);
 
-      const [cpotbId, cpotbNumber, cpotbDetail, jenisSediaan] = detailCpotbCt
+      const [cpotbId, cpotbNumber, cpotbDetail, jenisSediaan, factoryType] = detailCpotbCt
 
       const [status, timestampRequest, timestampApprove, sender, bpom, cpotbIpfs] = cpotbDetail
 
@@ -139,7 +156,8 @@ function ManageCpotb() {
         bpomName : bpom[0] ? bpom[0] : "-",
         bpomInstance: bpom[2] ? bpom[2] : "-",
         bpomAddr: bpom[1] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
-        cpotbIpfs: cpotbIpfs ? cpotbIpfs : "-"
+        cpotbIpfs: cpotbIpfs ? cpotbIpfs : "-",
+        factoryType: factoryType
       };
       console.log(detailCpotb.cpotbIpfs);
 
@@ -155,6 +173,14 @@ function ManageCpotb() {
                   </li>
                   <li className="input">
                     <p>{detailCpotb.factoryName}</p>
+                  </li>
+                </ul>
+                <ul>
+                  <li className="label">
+                    <p>Factory Type</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailCpotb.factoryType}</p>
                   </li>
                 </ul>
 
@@ -228,8 +254,11 @@ function ManageCpotb() {
                   <li className="label">
                     <p>Jenis Sediaan</p>
                   </li>
-                  <li className="input">
+                  <li className="input colJenisSediaan">
                     <p>{detailCpotb.jenisSediaan}</p> 
+                    <JenisSediaanTooltip
+                      jenisSediaan={detailCpotb.jenisSediaan}
+                    />
                   </li>
                 </ul>
 

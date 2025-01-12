@@ -12,6 +12,7 @@ contract RoleManager {
         address userAddr;
         EnumsLibrary.Roles role;
         string locationInstance;
+        string factoryType;
     }
 
     mapping(address => st_user) private users;
@@ -23,7 +24,8 @@ contract RoleManager {
         string memory _name,
         string memory _instanceName,
         uint8 _role,
-        string memory _locationInstance
+        string memory _locationInstance,
+        string memory _factoryType
     ) public {
         require(!isRegistered[msg.sender], "User already registered");
 
@@ -32,12 +34,13 @@ contract RoleManager {
             instanceName: _instanceName,
             userAddr: msg.sender,
             role: EnumsLibrary.Roles(_role),
-            locationInstance: _locationInstance
+            locationInstance: _locationInstance,
+            factoryType: _factoryType
         });
 
         isRegistered[msg.sender] = true;
 
-        emit evt_UserRegistered(msg.sender, _name, _instanceName, EnumsLibrary.Roles(_role), _locationInstance);
+        emit evt_UserRegistered(msg.sender, _name, _instanceName, EnumsLibrary.Roles(_role), _locationInstance); 
     }
  
     function loginUser() public view returns (st_user memory) {
@@ -46,9 +49,9 @@ contract RoleManager {
         return users[msg.sender];
         
     }
+
     function getUserData(address _userAddr) public view returns (st_user memory) {
         require(isRegistered[_userAddr], "User is not registered");
-        
         return users[_userAddr];
     }
 
