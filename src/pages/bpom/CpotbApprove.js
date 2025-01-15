@@ -50,7 +50,8 @@ function CpotbApprove() {
 
   const statusMap = {
     0: "Pending",
-    1: "Approved"
+    1: "Approved",
+    2: "Rejected"
   };
 
   const options = {
@@ -83,11 +84,19 @@ function CpotbApprove() {
             contractData.RoleManager.abi,
             signer
           );
-            
+
+          const RejectManager = new Contract(
+            contractData.RejectManager.address,
+            contractData.RejectManager.abi,
+            signer
+          );
+
         setContracts({
           mainSupplyChain: MainSupplyChain,
-          roleManager: RoleManager
+          roleManager: RoleManager,
+          rejectManager: RejectManager
         });
+
         } catch (err) {
           console.error("User access denied!");
           errAlert(err, "User access denied!");
@@ -121,7 +130,11 @@ function CpotbApprove() {
           console.log(listAllCpotb);
 
           const reconstructedData = listAllCpotb.map((item) => {
-            const cpotbNumber = item[1] ? item[1] : 'TBA'
+            let cpotbNumber = item[1] ? item[1] : 'TBA';
+
+            if(item[5] === 2n){
+              cpotbNumber= null
+            }
 
             return {
               cpotbId: item[0],  
@@ -144,80 +157,154 @@ function CpotbApprove() {
     getAllCpotb()
   }, [contracts])
 
-  const handleEventCpotbApproved = (bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove, txHash) => {
+  const handleEventCpotb = (status, bpomAddr, bpomInstance, jenisSediaan, detail, timestamp, txHash) => {
 
-    const formattedTimestamp = new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options)
+    const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
     
-    MySwal.fire({
-      title: "Success Approve CPOTB",
-      html: (
-        <div className='form-swal'>
-          <ul>
-            <li className="label">
-              <p>CPOTB Number</p> 
-            </li>
-            <li className="input">
-              <p>{cpotbNumber}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <p>BPOM Instance</p> 
-            </li>
-            <li className="input">
-              <p>{bpomInstance}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <p>BPOM Address</p> 
-            </li>
-            <li className="input">
-              <p>{bpomAddr}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <p>Tanggal Penyetujuan</p> 
-            </li>
-            <li className="input">
-              <p>{formattedTimestamp}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <p>Jenis Sediaan</p> 
-            </li>
-            <li className="input">
-              <p>{jenisSediaanMap[jenisSediaan]}</p> 
-            </li>
-          </ul>
-          <ul className="txHash">
-            <li className="label">
-              <p>Transaction Hash</p>
-            </li>
-            <li className="input">
-              <a
-                href={`https://sepolia.etherscan.io/tx/${txHash}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                View Transaction on Etherscan
-              </a>
-            </li>
-          </ul>
-        </div>
-      ),
-      icon: 'success',
-      width: '560',
-      showCancelButton: false,
-      confirmButtonText: 'Oke',
-      allowOutsideClick: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.reload();
-      }
-    });
+    // detail can be the cpotb number or rejectMsg
+    if(status === 'Approved'){
+      MySwal.fire({
+        title: "Success Approve CPOTB",
+        html: (
+          <div className='form-swal'>
+            <ul>
+              <li className="label">
+                <p>CPOTB Number</p> 
+              </li>
+              <li className="input">
+                <p>{detail}</p> 
+              </li>
+            </ul>
+            <ul>
+              <li className="label">
+                <p>BPOM Instance</p> 
+              </li>
+              <li className="input">
+                <p>{bpomInstance}</p> 
+              </li>
+            </ul>
+            <ul>
+              <li className="label">
+                <p>BPOM Address</p> 
+              </li>
+              <li className="input">
+                <p>{bpomAddr}</p> 
+              </li>
+            </ul>
+            <ul>
+              <li className="label">
+                <p>Tanggal Penyetujuan</p> 
+              </li>
+              <li className="input">
+                <p>{formattedTimestamp}</p> 
+              </li>
+            </ul>
+            <ul>
+              <li className="label">
+                <p>Jenis Sediaan</p> 
+              </li>
+              <li className="input">
+                <p>{jenisSediaanMap[jenisSediaan]}</p> 
+              </li>
+            </ul>
+            <ul className="txHash">
+              <li className="label">
+                <p>Transaction Hash</p>
+              </li>
+              <li className="input">
+                <a
+                  href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View Transaction on Etherscan
+                </a>
+              </li>
+            </ul>
+          </div>
+        ),
+        icon: 'success',
+        width: '560',
+        showCancelButton: false,
+        confirmButtonText: 'Oke',
+        allowOutsideClick: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.reload();
+        }
+      });
+    } else {
+      MySwal.fire({
+        title: "CPOTB Rejected",
+        html: (
+          <div className='form-swal'>
+            <ul>
+              <li className="label">
+                <p>BPOM Instance</p> 
+              </li>
+              <li className="input">
+                <p>{bpomInstance}</p> 
+              </li>
+            </ul>
+            <ul>
+              <li className="label">
+                <p>BPOM Address</p> 
+              </li>
+              <li className="input">
+                <p>{bpomAddr}</p> 
+              </li>
+            </ul>
+            <ul>
+              <li className="label">
+                <p>Tanggal Penolakan</p> 
+              </li>
+              <li className="input">
+                <p>{formattedTimestamp}</p> 
+              </li>
+            </ul>
+            <ul>
+              <li className="label">
+                <p>Jenis Sediaan</p> 
+              </li>
+              <li className="input">
+                <p>{jenisSediaanMap[jenisSediaan]}</p> 
+              </li>
+            </ul>
+            <ul className='rejectMsg'>
+              <li className="label">
+                <p>Alasan Penolakan</p> 
+              </li>
+              <li className="input">
+                <p>{detail}</p> 
+              </li>
+            </ul>
+            <ul className="txHash">
+              <li className="label">
+                <p>Transaction Hash</p>
+              </li>
+              <li className="input">
+                <a
+                  href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View Transaction on Etherscan
+                </a>
+              </li>
+            </ul>
+          </div>
+        ),
+        icon: 'success',
+        width: '560',
+        showCancelButton: false,
+        confirmButtonText: 'Oke',
+        allowOutsideClick: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.reload();
+        }
+      }); 
+    }
   }
   
   const getDetailCpotb = async (id) => {
@@ -375,6 +462,124 @@ function CpotbApprove() {
           showCancelButton: false,
           showConfirmButton: false
         })
+      } else if(detailCpotb.status === 'Rejected'){
+        const detailCpotbRejected = await contracts.rejectManager.rejectedDetails(id);
+
+        const [rejectMsg, bpomName, bpomInstanceName, jenisSediaanRejected, bpomAddr, timestampRejected] = detailCpotbRejected
+
+        MySwal.fire({
+          title: "Detail Sertifikat CPOTB",
+          html: (
+            <div className='form-swal'>
+              <div className="row">
+                <div className="col">
+                  <ul>
+                    <li className="label">
+                      <p>Factory Instance</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryInstanceName} </p>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Factory Type</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryType}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Factory Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryAddr}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Instance</p> 
+                    </li>
+                    <li className="input">
+                      <p>{bpomInstanceName}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{bpomAddr}</p> 
+                    </li>
+                  </ul>
+                  
+                </div>
+  
+                <div className="col">
+                  <ul className='status'>
+                    <li className="label">
+                      <p>Status Sertifikasi</p>
+                    </li>
+                    <li className="input">
+                      <p className={detailCpotb.status}>{detailCpotb.status}</p>
+                    </li>
+                  </ul>
+  
+                  <ul className='rejectMsg'>
+                    <li className="label">
+                      <p>Alasan Penolakan</p> 
+                    </li>
+                    <li className="input">
+                      <p>{rejectMsg}</p> 
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Jenis Sediaan</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{detailCpotb.jenisSediaan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailCpotb.jenisSediaan}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Pengajuan</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.timestampRequest}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Penolakan</p> 
+                    </li>
+                    <li className="input">
+                      <p>{ new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options)}</p> 
+                    </li>
+                  </ul>
+
+                </div>
+              </div>
+            
+            </div>
+          ),
+          width: '620',
+          showCloseButton: true,
+          showCancelButton: false,
+          showConfirmButton: false
+        })
+
       } else{
         MySwal.fire({
           title: "Approve Sertifikat CPOTB",
@@ -484,8 +689,11 @@ function CpotbApprove() {
             </div>
           ),
           width: '620',
-          showCancelButton: true,
+          showCloseButton: true,
+          showCancelButton: false,
           confirmButtonText: 'Approve',
+          showDenyButton: true,
+          denyButtonText: 'Reject'
         }).then((result) => {
   
           if(result.isConfirmed){
@@ -495,7 +703,7 @@ function CpotbApprove() {
             const cpotbNumber = `${prefix}.${day}.${randomString}`
             
             MySwal.fire({
-              title: 'Approve Sertifikat CPOTB',
+              title: 'Approve Pengajuan Sertifikat CPOTB',
               html: (
                 <div className="form-swal form">
                   <div className="row">
@@ -612,7 +820,133 @@ function CpotbApprove() {
                 generateIpfs(cpotbNumber, detailCpotb)
               }
             })
-          } 
+          } else if (result.isDenied){
+            MySwal.fire({
+              title: 'Reject Pengajuan Sertifikat CPOTB',
+              html: (
+                <div className="form-swal form">
+                  <div className="row">
+                    <div className="col">
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="factoryInstanceName">Factory Instance</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="factoryInstanceName"
+                            value={detailCpotb.factoryInstanceName}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="factoryAddr">Factory Address</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="factoryAddr"
+                            value={detailCpotb.factoryAddr}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="bpomInstance">BPOM Instance</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="bpomInstance"
+                            value={userdata.instanceName}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="bpomAddr">BPOM Address</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="bpomAddr"
+                            value={userdata.address}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="rejectMsg">Alasan Reject</label>
+                        </li>
+                        <li className="input">
+                          <textarea 
+                            type="text" 
+                            id="rejectMsg"
+                            rows="3"
+                            required
+                          />
+                        </li>
+                      </ul>
+                    </div>
+              
+                    <div className="col">
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="jenisSediaan">Jenis Sediaan</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="jenisSediaan"
+                            value={detailCpotb.jenisSediaan}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              ),     
+              width: '660',       
+              icon: 'warning',
+              showCancelButton: false,
+              showCloseButton: true,
+              confirmButtonText: 'Reject',
+              confirmButtonColor: '#E33333',
+              allowOutsideClick: false,
+              preConfirm: () => {
+                const rejectMsgInput = document.getElementById('rejectMsg').value;
+                if (!rejectMsgInput) {
+                  Swal.showValidationMessage('Alasan Reject is required!');
+                }
+                return { rejectMsgInput };
+              },
+            }).then((result) => {
+              
+              if(result.isConfirmed){
+
+                MySwal.fire({
+                  title:"Processing your request...",
+                  text:"Your request is on its way. This won't take long. 🚀",
+                  icon: 'info',
+                  showCancelButton: false,
+                  showConfirmButton: false,
+                  allowOutsideClick: false
+                })
+
+                rejectCpotb(id, result.value.rejectMsgInput, jenisSediaan, detailCpotb.factoryInstanceName)
+              }
+            })
+          }
         })
 
       }
@@ -715,10 +1049,31 @@ function CpotbApprove() {
       }
 
       contracts.mainSupplyChain.on('evt_cpotbApproved',  (bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove) => {
-        handleEventCpotbApproved(bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove, approveCt.hash);
+        handleEventCpotb("Approved", bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove, approveCt.hash);
       });
     } catch (error) {
       errAlert(error, "Can't Approve CPOTB")
+    }
+  }
+
+  const rejectCpotb = async(id, rejectMsg, jenisSediaan, factoryInstanceName) => {
+    console.log(rejectMsg);
+
+    try {
+      const rejectCt = await contracts.rejectManager.rejectedByBpom(rejectMsg, userdata.name, userdata.instanceName, id, "cpotb", jenisSediaan);
+
+      if(rejectCt){
+        MySwal.update({
+          title: "Processing your transaction...",
+          text: "This may take a moment. Hang tight! ⏳"
+        });
+      }
+
+      contracts.rejectManager.once("evt_cpotbRejected", (_instanceName, _instanceAddr, _jenisSediaan, timestampRejected, _rejectMsg) => {
+        handleEventCpotb( "Rejected", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, timestampRejected, rejectCt.hash);
+      });
+    } catch (error) {
+      errAlert(error, `Can't reject CPOTB ${factoryInstanceName} dengan Jenis Sediaan ${jenisSediaan}`)
     }
   }
 
@@ -742,7 +1097,9 @@ function CpotbApprove() {
                 {dataCpotb.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailCpotb(item.cpotbId)}>{item.factoryInstanceName}: {item.jenisSediaan}</button>
-                    <p>CPOTB Number : {item.cpotbNumber}</p>
+                    <p>
+                      { item.cpotbNumber !== null ? `CPOTB Number : ${item.cpotbNumber}` : "Not Available"}
+                    </p>
                     <button className={`statusPengajuan ${item.status}`}>
                       {item.status}
                     </button>

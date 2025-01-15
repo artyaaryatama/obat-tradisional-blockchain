@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+    "address": "0xf5059a5D33d5853360D16C683c16e67980206f36",
     "abi": [
       {
         "inputs": [
@@ -1028,6 +1028,24 @@
       {
         "inputs": [
           {
+            "internalType": "string",
+            "name": "_certId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_certType",
+            "type": "string"
+          }
+        ],
+        "name": "rejectCert",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
             "components": [
               {
                 "internalType": "string",
@@ -1103,7 +1121,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
+    "address": "0x95401dc811bb5740090279Ba06cfA8fcF6113778",
     "abi": [
       {
         "inputs": [
@@ -1879,6 +1897,19 @@
             "internalType": "string",
             "name": "_obatId",
             "type": "string"
+          }
+        ],
+        "name": "rejectNie",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_obatId",
+            "type": "string"
           },
           {
             "internalType": "string",
@@ -1907,7 +1938,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+    "address": "0x998abeb3E57409262aE5b751f60747921B33613E",
     "abi": [
       {
         "inputs": [
@@ -2733,7 +2764,7 @@
     ]
   },
   "RoleManager": {
-    "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+    "address": "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8",
     "abi": [
       {
         "anonymous": false,
@@ -2942,6 +2973,309 @@
         "name": "registerUser",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ]
+  },
+  "RejectManager": {
+    "address": "0x70e0bA845a1A0F2DA3359C97E0285013525FFC49",
+    "abi": [
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_roleManagerAddr",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_obatTradisionalAddr",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_mainSupplyChainAddr",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "bpomInstance",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "bpomAddr",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint8",
+            "name": "tipePermohonan",
+            "type": "uint8"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "timestampRejected",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "rejectedMsg",
+            "type": "string"
+          }
+        ],
+        "name": "evt_cdobRejected",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "bpomInstance",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "bpomAddr",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint8",
+            "name": "jenisSediaan",
+            "type": "uint8"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "timestampRejected",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "rejectedMsg",
+            "type": "string"
+          }
+        ],
+        "name": "evt_cpotbRejected",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "bpomInstance",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "bpomAddr",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "timestampRejected",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "rejectedMsg",
+            "type": "string"
+          }
+        ],
+        "name": "evt_nieRejected",
+        "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "mainSupplyChain",
+        "outputs": [
+          {
+            "internalType": "contract MainSupplyChain",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "obatTradisional",
+        "outputs": [
+          {
+            "internalType": "contract ObatTradisional",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_rejectMsg",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_bpomName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_bpomInstanceName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_id",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_certType",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "_tipePermohonan",
+            "type": "uint8"
+          }
+        ],
+        "name": "rejectedByBpom",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "name": "rejectedDataById",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "rejectMsg",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "bpomName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "bpomInstance",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "tipePermohonan",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "bpomAddr",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampRejected",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_id",
+            "type": "string"
+          }
+        ],
+        "name": "rejectedDetails",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "rejectMsg",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "bpomName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "bpomInstance",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "tipePermohonan",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "bpomAddr",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "timestampRejected",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct RejectManager.st_rejectDetails",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "roleManager",
+        "outputs": [
+          {
+            "internalType": "contract RoleManager",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       }
     ]

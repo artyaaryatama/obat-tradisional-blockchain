@@ -12,7 +12,7 @@ import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 const MySwal = withReactContent(Swal);
 
 function ManageCdob() {
-  const [contract, setContract] = useState();
+  const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
 
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
@@ -25,7 +25,8 @@ function ManageCdob() {
 
   const statusMap = {
     0: "Pending",
-    1: "Approved"
+    1: "Approved",
+    2: "Rejected"
   };
 
   const options = {
@@ -47,13 +48,22 @@ function ManageCdob() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const contr = new Contract(
-            contractData.MainSupplyChain.address, 
-            contractData.MainSupplyChain.abi, 
+          const MainSupplyChain = new Contract(
+            contractData.MainSupplyChain.address,
+            contractData.MainSupplyChain.abi,
             signer
           );
             
-        setContract(contr);
+          const RejectManager = new Contract(
+            contractData.RejectManager.address,
+            contractData.RejectManager.abi,
+            signer
+          );
+          
+          setContracts({
+            mainSupplyChain: MainSupplyChain,
+            rejectManager: RejectManager
+          });
         } catch (err) {
           console.error("User access denied!")
           errAlert(err, "User access denied!")
@@ -80,13 +90,16 @@ function ManageCdob() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (contract && userdata.instanceName) {
+      if (contracts && userdata.instanceName) {
         try {
-          const listAllCt = await contract.getListAllCertificateByInstance(userdata.instanceName);
+          const listAllCt = await contracts.mainSupplyChain.getListAllCertificateByInstance(userdata.instanceName);
           console.log(listAllCt);
           const reconstructedData = listAllCt.map((item, index) => {
-            const cdobNumber = item[1] ? item[1] : 'TBA'
+            let cdobNumber = item[1] ? item[1] : 'TBA';
 
+            if(item[5] === 2n){
+              cdobNumber= null
+            }
             return {
               cdobId: item[0], 
               cdobNumber: cdobNumber,
@@ -105,14 +118,14 @@ function ManageCdob() {
     };
   
     loadData();
-  }, [contract, userdata.instanceName]);
+  }, [contracts]);
 
   const getDetailCdob = async (id) => {
     
     console.log(id);
 
     try {
-      const detailCdobCt = await contract.detailCdob(id);
+      const detailCdobCt = await contracts.mainSupplyChain.detailCdob(id);
 
       const [cdobId, cdobNumber, cdobDetail, tipePermohonan] = detailCdobCt
 
@@ -135,108 +148,220 @@ function ManageCdob() {
 
       console.log(detailCdob.timestampApprove);
 
-      MySwal.fire({
-        title: "Detail Sertifikat CDOB",
-        html: (
-          <div className='form-swal'>
-            <div className="row">
-              <div className="col">
-                <ul>
-                  <li className="label">
-                    <p>PBF Instance</p>
-                  </li>
-                  <li className="input">
-                    <p>{detailCdob.pbfName}</p>
-                  </li>
-                </ul>
+      if(detailCdob.status === 'Rejected'){
 
-                <ul>
-                  <li className="label">
-                    <p>PBF Address</p> 
-                  </li>
-                  <li className="input">
-                    <p>{detailCdob.pbfAddr}</p> 
-                  </li>
-                </ul>
+        const detailCdobRejected = await contracts.rejectManager.rejectedDetails(id);
 
-                <ul>
-                  <li className="label">
-                    <p>BPOM Instance</p> 
-                  </li>
-                  <li className="input">
-                    <p>{detailCdob.bpomInstance}</p> 
-                  </li>
-                </ul>
+        const [rejectMsg, bpomName, bpomInstanceName, jenisSediaanRejected, bpomAddr, timestampRejected] = detailCdobRejected
 
-                <ul>
-                  <li className="label">
-                    <p>BPOM Address</p> 
-                  </li>
-                  <li className="input">
-                    <p>{detailCdob.bpomAddr}</p> 
-                  </li>
-                </ul>
+        MySwal.fire({
+          title: "Detail Sertifikat CDOB",
+          html: (
+            <div className='form-swal'>
+              <div className="row">
+                <div className="col">
+                  <ul>
+                    <li className="label">
+                      <p>PBF Instance</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.pbfName}</p>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>PBF Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.pbfAddr}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Instance</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.bpomInstance}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.bpomAddr}</p> 
+                    </li>
+                  </ul>
+                </div>
+  
+                <div className="col">
+                  <ul>
+                    <li className="label">
+                      <p>Status Sertifikasi</p>
+                      <label htmlFor="statusCpotb"></label>
+                    </li>
+                    <li className="input">
+                      <p className={detailCdob.status}>{detailCdob.status}</p>
+                    </li>
+                  </ul>
+
+                  <ul className='rejectMsg'>
+                    <li className="label">
+                      <p>Alasan Penolakan</p> 
+                    </li>
+                    <li className="input">
+                      <p>{rejectMsg}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Permohonan</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{detailCdob.tipePermohonan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailCdob.tipePermohonan}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Pengajuan</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.timestampRequest}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Penolakan</p> 
+                    </li>
+                    <li className="input">
+                      <p>{ new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options)}</p> 
+                    </li>
+                  </ul>
+                </div>
               </div>
-
-              <div className="col">
-                <ul>
-                  <li className="label">
-                    <p>Status Sertifikasi</p>
-                    <label htmlFor="statusCpotb"></label>
-                  </li>
-                  <li className="input">
-                    <p className={detailCdob.status}>{detailCdob.status}</p>
-                  </li>
-                </ul>
-
-                <ul>
-                  <li className="label">
-                    <p>Nomor CDOB</p>
-                    <label htmlFor="nomorCpotb"></label>
-                  </li>
-                  <li className="input">
-                    <p>{detailCdob.cdobNumber}</p> 
-                  </li>
-                </ul>
-
-                <ul>
-                  <li className="label">
-                    <p>Tipe Permohonan</p>
-                  </li>
-                  <li className="input colJenisSediaan">
-                    <p>{detailCdob.tipePermohonan}</p> 
-                    <JenisSediaanTooltip
-                      jenisSediaan={detailCdob.tipePermohonan}
-                    />
-                  </li>
-                </ul>
-
-                <ul>
-                  <li className="label">
-                    <p>Tanggal Pengajuan</p> 
-                  </li>
-                  <li className="input">
-                    <p>{detailCdob.timestampRequest}</p> 
-                  </li>
-                </ul>
-
-                <ul>
-                  <li className="label">
-                    <p>Tanggal Disertifikasi</p> 
-                  </li>
-                  <li className="input">
-                    <p>{detailCdob.timestampApprove}</p> 
-                  </li>
-                </ul>
-              </div>
+            
             </div>
-          
-          </div>
-        ),
-        width: '620',
-        showCancelButton: false,
-        confirmButtonText: 'Ok',
-      })
+          ),
+          width: '620',
+          showCancelButton: false,
+          confirmButtonText: 'Ok',
+        })
+
+      } else {
+        MySwal.fire({
+          title: "Detail Sertifikat CDOB",
+          html: (
+            <div className='form-swal'>
+              <div className="row">
+                <div className="col">
+                  <ul>
+                    <li className="label">
+                      <p>PBF Instance</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.pbfName}</p>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>PBF Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.pbfAddr}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Instance</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.bpomInstance}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.bpomAddr}</p> 
+                    </li>
+                  </ul>
+                </div>
+  
+                <div className="col">
+                  <ul>
+                    <li className="label">
+                      <p>Status Sertifikasi</p>
+                      <label htmlFor="statusCpotb"></label>
+                    </li>
+                    <li className="input">
+                      <p className={detailCdob.status}>{detailCdob.status}</p>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Nomor CDOB</p>
+                      <label htmlFor="nomorCpotb"></label>
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.cdobNumber}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Permohonan</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{detailCdob.tipePermohonan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailCdob.tipePermohonan}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Pengajuan</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.timestampRequest}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Disertifikasi</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.timestampApprove}</p> 
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            
+            </div>
+          ),
+          width: '620',
+          showCancelButton: false,
+          confirmButtonText: 'Ok',
+        })
+
+      }
+
     } catch (e) {
       errAlert(e, "Can't retrieve data")
     }
@@ -264,7 +389,9 @@ function ManageCdob() {
                 {dataCdob.map((item, index) => ( 
                   <li key={index}>
                     <button className='title' onClick={() => getDetailCdob(item.cdobId)}>{item.tipePermohonan}</button>
-                    <p>CDOB Number: {item.cdobNumber}</p>
+                    <p>
+                      { item.cdobNumber !== null ? `CDOB Number : ${item.cdobNumber}` : "Not Available"}
+                    </p>
                     <button className={`statusPengajuan ${item.status}`}>
                       {item.status}
                     </button>

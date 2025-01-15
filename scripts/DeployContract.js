@@ -32,6 +32,12 @@ async function main() {
     await deployedOrderManagement.waitForDeployment();
     console.log("OrderManagement deployed to:", deployedOrderManagement.target);
 
+    // Deploy RejectManager
+    const RejectManager = await hre.ethers.getContractFactory("RejectManager");
+    const deployedRejectManager = await RejectManager.deploy(deployedRoleManager.target, deployedObatTradisional.target,  deployedMainSupplyChain.target);
+    await deployedRejectManager.waitForDeployment();
+    console.log("RejectManager deployed to:", deployedRejectManager.target);
+
     // Save all deployment data
     const deploymentData = {
         MainSupplyChain: {
@@ -49,7 +55,13 @@ async function main() {
         RoleManager: {
             address: deployedRoleManager.target,
             abi: (await hre.artifacts.readArtifact("RoleManager")).abi
+        },
+        RejectManager: {
+            address: deployedRejectManager.target,
+            abi: (await hre.artifacts.readArtifact("RejectManager")).abi
+
         }
+
     };
 
     fs.writeFileSync('./src/auto-artifacts/deployments.json', JSON.stringify(deploymentData, null, 2));

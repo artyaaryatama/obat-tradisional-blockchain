@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { useUser } from '../../UserContext'; 
 import imgUnauthor from '../../assets/images/unauthorize.png';
 import "../../styles/Error.scss"
 

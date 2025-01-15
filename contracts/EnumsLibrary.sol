@@ -2,11 +2,10 @@
 pragma solidity ^0.8.0;
 
 library EnumsLibrary {
-    enum NieStatus { inLocalProduction, RequestedNie, ApprovedNie } 
+    enum NieStatus { inLocalProduction, RequestedNie, ApprovedNie, RejectedNie } 
     enum OrderStatus { OrderPlaced, OrderShipped, OrderCompleted }
-    enum StatusCertificate { Requested, Approved }
+    enum StatusCertificate { Requested, Approved, Rejected }
     enum ObatAvailability { Ready, Sold }
     enum Roles { Factory, PBF, BPOM, Retailer }
-    // enum TipePermohonanCpotb { Tablet, Kapsul, KapsulLunak, SerbukOral, CairanOral, CairanObatDalam, CairanObatLuar, EdibleFilm, Pil }
     enum TipePermohonanCdob { ObatLain, CCP }
 }

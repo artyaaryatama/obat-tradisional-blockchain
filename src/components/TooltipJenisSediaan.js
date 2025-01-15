@@ -152,9 +152,9 @@ const tooltipData = {
       "Pilis adalah sediaan padat obat tradisional, terbuat dari serbuk simplisia dan/atau ekstrak dan digunakan sebagai obat luar yang digunakan di dahi dan di pelipis.",
     source: "Modul Cerdas Memilih dan Menggunakan Obat Tradisional yang Aman (BPOM, 2023)",
   },
-  "Plester/Koyok": {
+  "Plaster/Koyok": {
     description:
-      "Plester/Koyok adalah sediaan obat tradisional terbuat dari bahan yang dapat melekat pada kulit dan tahan air yang dapat berisi serbuk simplisia dan/atau ekstrak, digunakan sebagai obat luar dan cara penggunaannya ditempelkan pada kulit.",
+      "Plaster/Koyok adalah sediaan obat tradisional terbuat dari bahan yang dapat melekat pada kulit dan tahan air yang dapat berisi serbuk simplisia dan/atau ekstrak, digunakan sebagai obat luar dan cara penggunaannya ditempelkan pada kulit.",
     source: "Modul Cerdas Memilih dan Menggunakan Obat Tradisional yang Aman (BPOM, 2023)",
   },
   "Supositoria untuk Wasir": {
@@ -176,6 +176,12 @@ const JenisSediaanTooltip = ({ jenisSediaan }) => {
     jenisSediaan = "Cold Chain Product"
   } else if(jenisSediaan === "ObatLain"){
     jenisSediaan = "Obat Lain"
+  } else if(jenisSediaan === 'Plaster atau Koyok'){
+    jenisSediaan = "Plaster/Koyok"
+  } else if(jenisSediaan === 'Dodol atau Jenang'){
+    jenisSediaan = "Dodol/Jenang"
+  } else if(jenisSediaan === 'Tablet atau Kaplet'){
+    jenisSediaan = "Tablet/Kaplet"
   }
   const { description, source } = tooltipData[jenisSediaan] || {};
   

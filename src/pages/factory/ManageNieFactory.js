@@ -1,12 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
-
 import NieStatusStepper from '../../components/StepperNie'
-
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -16,7 +13,7 @@ import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 const MySwal = withReactContent(Swal);
 
 function ManageNieFactory() {
-  const [contract, setContract] = useState();
+  const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
 
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
@@ -25,7 +22,8 @@ function ManageNieFactory() {
   const obatStatusMap = {
     0n: "In Local Production",
     1n: "Requested NIE",
-    2n: "Approved NIE"
+    2n: "Approved NIE",
+    3: "Rejected NIE"
   };
 
   const tipeObatMap = {
@@ -52,13 +50,22 @@ function ManageNieFactory() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const contr = new Contract(
+          const ObatTradisional = new Contract(
             contractData.ObatTradisional.address, 
             contractData.ObatTradisional.abi, 
             signer
           );
             
-          setContract(contr);
+          const RejectManager = new Contract(
+            contractData.RejectManager.address,
+            contractData.RejectManager.abi,
+            signer
+          );
+          
+          setContracts({
+            obatTradisional: ObatTradisional,
+            rejectManager: RejectManager
+          });
         } catch (err) {
           console.error("User access denied!")
           errAlert(err, "User access denied!")
@@ -85,21 +92,25 @@ function ManageNieFactory() {
 
   useEffect(() => { 
     const loadData = async () => {
-      if (contract && userdata.instanceName) {
+      if (contracts && userdata.instanceName) {
         try {
-          const listAllObatCt = await contract.getAllObatByInstance(userdata.instanceName);
+          const listAllObatCt = await contracts.obatTradisional.getAllObatByInstance(userdata.instanceName);
           console.log(listAllObatCt);
 
           const reconstructedData = listAllObatCt.map((item, index) => {
 
-            const nie = item[2] !== "" ? item[2] : "TBA"
+            let nieNumber = item[2] ? item[2] : 'TBA';
+
+            if(item[3] === 3n){
+              nieNumber= null
+            }
             return {
               obatId: item[0],
               namaProduk: item[1],
-              nieNumber: nie,
+              nieNumber: nieNumber,
               nieStatus: obatStatusMap[item[3]],
               factoryInstance: item[4]
-            }
+            };
           })
           
           setDataObat(reconstructedData);
@@ -112,11 +123,11 @@ function ManageNieFactory() {
     };
     
     loadData();
-  }, [contract, userdata.instanceName]);
+  }, [contracts]);
 
-  const handleEventNieRequsted = ( _factoryInstance, _factoryAddr, _timestampRequestNie, txHash) =>{
+  const handleEventNieRequsted = (namaProduk, factoryAddr, factoryInstance, timestamp, txHash) =>{
 
-    const timestamp = new Date(Number(_timestampRequestNie) * 1000).toLocaleDateString('id-ID', options)
+    const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
     
     MySwal.fire({
       title: "Success Request NIE",
@@ -124,10 +135,18 @@ function ManageNieFactory() {
         <div className='form-swal'>
           <ul>
             <li className="label">
+              <p>Nama Produk</p> 
+            </li>
+            <li className="input">
+              <p>{namaProduk}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
               <p>Factory Instance</p> 
             </li>
             <li className="input">
-              <p>{_factoryInstance}</p> 
+              <p>{factoryInstance}</p> 
             </li>
           </ul>
           <ul>
@@ -135,7 +154,7 @@ function ManageNieFactory() {
               <p>Factory Address</p> 
             </li>
             <li className="input">
-              <p>{_factoryAddr}</p> 
+              <p>{factoryAddr}</p> 
             </li>
           </ul>
           <ul>
@@ -143,7 +162,7 @@ function ManageNieFactory() {
               <p>Timestamp Request</p> 
             </li>
             <li className="input">
-              <p>{timestamp}</p> 
+              <p>{formattedTimestamp}</p> 
             </li>
           </ul>
           <ul className="txHash">
@@ -177,7 +196,7 @@ function ManageNieFactory() {
   const getDetailObat = async (id) => {
 
     try {
-      const detailObatCt = await contract.detailObat(id);
+      const detailObatCt = await contracts.obatTradisional.detailObat(id);
 
       const [obatDetails, obatNie] = detailObatCt;
 
@@ -309,6 +328,14 @@ function ManageNieFactory() {
                 </div>
 
                 <div className="col col1">
+                  <ul className='status'>
+                    <li className="label">
+                      <p>Status Izin Edar</p>
+                    </li>
+                    <li className="input">
+                      <p className={detailObat.nieStatus}>{detailObat.nieStatus}</p>
+                    </li>
+                  </ul>
     
                   <ul>
                     <li className="label">
@@ -526,12 +553,224 @@ function ManageNieFactory() {
                   allowOutsideClick: false,
                 })
 
-                requestNie(detailObat.obatId)
+                requestNie(detailObat.obatId, detailObat.namaObat)
               }
             })
           }
         })
         
+      } else if(detailObat.nieStatus === 'Rejected NIE'){
+        const detailCpotbRejected = await contracts.rejectManager.rejectedDetails(id);
+
+        const [rejectMsg, bpomName, bpomInstanceName, jenisSediaanRejected, bpomAddr, timestampRejected] = detailCpotbRejected
+
+        const newTimestamps = {
+          timestampProduction : timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : 0,
+          timestampNieRequest :timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : 0,
+          timestampNieReject : timestampRejected ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): 0
+        }
+
+        MySwal.fire({
+          title: `Detail Obat ${detailObat.namaObat}`,
+          html: (
+            <div className='form-swal'>
+              <div className="row row--row">
+                
+                <div className="col col2">
+                  <ul>
+                    <li className="label">
+                      <p>Nama Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.namaObat}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Merk Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.merk}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Jenis Obat</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p><p>{
+                      detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> </p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.jenisObat}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Obat</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{detailObat.tipeObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan= {detailObat.tipeObat}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Kemasan Obat</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{detailObat.kemasan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={kemasanKeterangan[1]}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Klaim Obat</p>
+                    </li>
+                    <li className="input">
+                      <ul className='numbered'>
+                        {detailObat.klaim.map((item, index) => (
+                          <li key={index}><p>{item}</p></li>
+                        ))}
+                      </ul>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Komposisi Obat</p>
+                    </li>
+                    <li className="input">
+                      <ul className='numbered'>
+                        {detailObat.komposisi.map((item, index) => (
+                          <li key={index}><p>{item}</p></li>
+                        ))}
+                      </ul>
+                    </li>
+                  </ul>
+  
+                </div>
+  
+                <div className="col col1">
+    
+                  <ul className='status'>
+                    <li className="label">
+                      <p>Status Izin Edar</p>
+                    </li>
+                    <li className="input">
+                      <p className={detailObat.nieStatus}>{detailObat.nieStatus}</p>
+                    </li>
+                  </ul>
+
+                  <ul className='rejectMsg'>
+                    <li className="label">
+                      <p>Alasan Penolakan</p> 
+                    </li>
+                    <li className="input">
+                      <p>{rejectMsg}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Pengajuan NIE</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.nieRequestDate}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Penolakan NIE</p> 
+                    </li>
+                    <li className="input">
+                    <p>{ new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options)}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Factory Instance</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.factoryInstanceName}
+                        <span className='linked'>
+                          <a
+                            href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            (CPOTB Details
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                          </a>
+                        </span>
+                      </p>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Factory Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.factoryAddr}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Instance</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.bpomInstanceNames}
+                        {
+                        detailObat.bpomUserName? (
+                          <span className='username'>({detailObat.bpomUserName})</span>) : <span></span>                        
+                        }
+                      </p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.bpomAddr}</p> 
+                    </li>
+                  </ul>
+  
+                </div>
+  
+                <div className="container-stepper">
+                  <div id="stepperOrder"></div>
+                </div>
+              </div>
+            
+            </div>
+          ),
+          width: '1020',
+          showCloseButton: true,
+          showConfirmButton: false,
+          showCancelButton: false,
+          didOpen: () => {
+            const stepperOrder = document.getElementById('stepperOrder');
+            const root = ReactDOM.createRoot(stepperOrder);
+            root.render( 
+              <NieStatusStepper nieStatus={parseInt(nieStatus)} timestamps={newTimestamps} />
+            )
+          }
+        })
+
       } else{
         MySwal.fire({
           title: `Detail Obat ${detailObat.namaObat}`,
@@ -624,6 +863,14 @@ function ManageNieFactory() {
 
                 <div className="col col1">
     
+                  <ul className='status'>
+                    <li className="label">
+                      <p>Status Izin Edar</p>
+                    </li>
+                    <li className="input">
+                      <p className={detailObat.nieStatus}>{detailObat.nieStatus}</p>
+                    </li>
+                  </ul>
                   <ul>
                     <li className="label">
                       <p>Nomor NIE</p>
@@ -733,10 +980,10 @@ function ManageNieFactory() {
     }
   }
 
-  const requestNie = async(id) => {
+  const requestNie = async(id, namaObat) => {
 
     try {
-      const requestNieCt = await contract.requestNie(id, userdata.instanceName);
+      const requestNieCt = await contracts.obatTradisional.requestNie(id, userdata.instanceName);
       
       if(requestNieCt){
         MySwal.update({
@@ -745,8 +992,8 @@ function ManageNieFactory() {
         });
       }
 
-      contract.once("evt_nieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
-        handleEventNieRequsted(_factoryInstance, _factoryAddr, _timestampRequestNie, requestNieCt.hash)
+      contracts.obatTradisional.once("evt_nieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
+        handleEventNieRequsted(namaObat, _factoryAddr, _factoryInstance,_timestampRequestNie, requestNieCt.hash)
       });
       
     } catch (error) {
@@ -757,7 +1004,7 @@ function ManageNieFactory() {
   const autoFilledCreateObat = async(id, name) => {
 
     try {
-      const tx = await contract.createObat(
+      const tx = await contracts.obatTradisional.createObat(
         id,
         name,
         name,
@@ -812,7 +1059,9 @@ function ManageNieFactory() {
                 {dataObat.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.obatId)} >{item.namaProduk}</button>
-                    <p>NIE Number: {item.nieNumber}</p>
+                    <p>
+                      { item.nieNumber !== null ? `NIE Number : ${item.nieNumber}` : "NIE Number: Not Available"}
+                    </p>
                     <button className={`statusPengajuan ${item.nieStatus}`}>
                       {item.nieStatus}
                     </button>

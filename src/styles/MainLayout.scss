@@ -182,7 +182,12 @@
               background-color: $green;
               color: $white;
             }
-
+            
+            &.Rejected{
+              background-color: $red;
+              color: $white;
+            }
+            
             &.Available{
               background-color: $blue;
               color: $white;

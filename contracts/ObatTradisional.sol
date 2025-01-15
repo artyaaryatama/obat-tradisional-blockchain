@@ -81,18 +81,6 @@ contract ObatTradisional {
   event evt_nieApproved(string bpomInstance, address bpomAddr, string nieNumber, uint timestampApproved);
   event evt_addBatchProduction(string batchName, uint8 quantity, string namaProduk, string factoryInstance);
 
-
-  // status: 200ok
-  // function getJenisSediaanAvail(string memory _factoryInstanceName)
-  //   public 
-  //   view 
-  //   returns(
-  //     MainSupplyChain.st_approvedCert[] memory
-  // ) {
-  //    MainSupplyChain.st_approvedCert[] memory approvedJenisSediaan = mainSupplyChain.approvedTipePermohonan(_factoryInstanceName); 
-  //    return approvedJenisSediaan;
-  // }
-
   // status: 200ok
   function createObatNie(
     EnumsLibrary.NieStatus _nieStatus,
@@ -287,6 +275,10 @@ contract ObatTradisional {
 
       obatProductNameApprovedByFactory[factoryInstance].push(obatApproved); 
       emit evt_nieApproved(_instanceName, msg.sender, _nieNumber, block.timestamp);
+  }
+
+  function rejectNie(string memory _obatId) external {
+    obatNieById[_obatId].nieStatus = EnumsLibrary.NieStatus.RejectedNie;
   }
 
   // status: 200ok

@@ -154,6 +154,16 @@
         padding-bottom: 4px;
         flex-direction: row;
 
+        &.rejectMsg{
+
+          .input{
+            width: 72%;
+            background-color: $grey-light;
+            padding: 8px;
+            border-radius: 8px;
+          }
+        }
+
         // &.status{
         //   height: 44px;
         //   align-items: center;
@@ -215,6 +225,16 @@
           display: flex;
           flex-direction: column;
 
+          &.rejectMsg{
+            .input{
+              margin-top: 6px;
+              width: 84%;
+              background-color: $grey-light;
+              padding: 8px;
+              border-radius: 8px;
+            }
+          }
+
           li.label{
             width: 100%;
           }
@@ -269,6 +289,15 @@
     width: 100%;
     margin-bottom: 12px;
 
+    &.rejectMsg{
+      .input{
+        width: 72%;
+        background-color: $grey-light;
+        padding: 8px;
+        border-radius: 8px;
+      }
+    }
+    
     &.txHash{
       a{
         color: $blue;
@@ -343,6 +372,18 @@
           width: 100%;
           padding: 6px 10px;
           font-size: 13px;   
+          
+          &:read-only{
+            background-color: $grey-light;   
+          }
+        }
+
+        textarea{
+          @include textArea($white);
+          width: 100%;
+          padding: 6px 10px;
+          font-size: 13px;   
+          border: solid 2px $grey;
           
           &:read-only{
             background-color: $grey-light;   

@@ -28,9 +28,7 @@ function CreateObat() {
   const [satuanKemasanPrim, setSatuanKemasanPrim] = useState("ml")
   const [ketKemasanSeku, setKetKemasanSeku] = useState("")
   const [komposisi, setKomposisi] = useState([""])
-  const [options, setOptions] = useState([]);
   const [tipeObat, setTipeObat] = useState("");
-  const [allJenisSediaan, setAllJenisSediaan] = useState([]); 
   const [dataCpotb, setDataCpotb] = useState([])
   const [namaObatExisted, setNamaObatExisted] = useState([])
   const [jenisObat, setJenisObat] = useState("")
@@ -150,17 +148,14 @@ function CreateObat() {
               key: key.toString(),
               label: jenisSediaanMap[key]
             }));
-            console.log(filtered);
             setFilteredJenisSediaan(filtered);
           } else {
             setFilteredJenisSediaan([]);
           }
 
           setNamaObatExisted(reconstructedDataNama);
-          console.log(reconstructedDataNama); 
 
           setDataCpotb(reconstructedData);
-          console.log(reconstructedData);
 
         } catch (error) {
           errAlert(error, "Error loading data.")
@@ -263,85 +258,89 @@ function CreateObat() {
       "CCP" : 1n
     };
 
-    const jenisSediaanMapReverse = {
-      "Cairan Obat Dalam": 0n,
-      "Rajangan": 1n,
-      "Serbuk": 2n,
-      "Serbuk Instan": 3n,
-      "Efervesen": 4n,
-      "Pil": 5n,
-      "Kapsul": 6n,
-      "Kapsul Lunak": 7n,
-      "Tablet atau Kaplet": 8n,
-      "Granul": 9n,
-      "Pastiles": 10n,
-      "Dodol atau Jenang": 11n,
-      "Film Strip": 12n,
-      "Cairan Obat Luar": 13n,
-      "Losio": 14n,
-      "Parem": 15n,
-      "Salep": 16n,
-      "Krim": 17n,
-      "Gel": 18n,
-      "Serbuk Obat Luar": 19n,
-      "Tapel": 20n,
-      "Pilis": 21n,
-      "Plaster atau Koyok": 22n,
-      "Supositoria": 23n,
-      "Rajangan Obat Luar": 24n
-    };
+    // const jenisSediaanMapReverse = {
+    //   "Cairan Obat Dalam": 0n,
+    //   "Rajangan": 1n,
+    //   "Serbuk": 2n,
+    //   "Serbuk Instan": 3n,
+    //   "Efervesen": 4n,
+    //   "Pil": 5n,
+    //   "Kapsul": 6n,
+    //   "Kapsul Lunak": 7n,
+    //   "Tablet atau Kaplet": 8n,
+    //   "Granul": 9n,
+    //   "Pastiles": 10n,
+    //   "Dodol atau Jenang": 11n,
+    //   "Film Strip": 12n,
+    //   "Cairan Obat Luar": 13n,
+    //   "Losio": 14n,
+    //   "Parem": 15n,
+    //   "Salep": 16n,
+    //   "Krim": 17n,
+    //   "Gel": 18n,
+    //   "Serbuk Obat Luar": 19n,
+    //   "Tapel": 20n,
+    //   "Pilis": 21n,
+    //   "Plaster atau Koyok": 22n,
+    //   "Supositoria": 23n,
+    //   "Rajangan Obat Luar": 24n
+    // };
     
-    const kemasanPrimSelected = jenisSediaanMapReverse[kemasanPrim]
+    // const kemasanPrimSelected = jenisSediaanMapReverse[kemasanPrim]
 
-    const kemasanPrimData = dataCpotb.find((item) => item.jenisSediaan === kemasanPrim)|| false;
-    const newObatName = namaObatExisted.map((item) => item.namaProduk !== namaProduk);
+    const kemasanPrimData = dataCpotb.find((item) => item.jenisSediaan === kemasanPrim) || false;
+    const newObatName = namaObatExisted.find((item) => item.namaProduk === namaProduk) || false;
 
     console.log(kemasanPrim);
-    console.log(kemasanPrimSelected);
+    console.log(dataCpotb);
+    console.log(namaObatExisted);
+    console.log('---------------------');
     console.log(kemasanPrimData);
-
     console.log(newObatName);
-    if (newObatName[0]) {
-      if (kemasanPrimData) {
-        const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
-        console.log(kemasanSet);
-        
-        const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
-        const randomTwoLetters = String.fromCharCode(
-          65 + Math.floor(Math.random() * 26),
-          65 + Math.floor(Math.random() * 26)
-        );
-        const id = `ot-${randomFourDigit}${randomTwoLetters}`;
-        console.log(  id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], kemasanPrimData.cpotbHash, jenisObat);
-    
-        try {
-          
-          const createObatCt = await contracts.obatTradisional.createObat(
-          id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], kemasanPrimData.cpotbHash, jenisObat);
-          
-          console.log('Receipt:', createObatCt);
-            
-          if(createObatCt){
-            MySwal.update({
-              title: "Processing your transaction...",
-              text: "This may take a moment. Hang tight! ⏳"
-            });
-          }
-    
-          contracts.obatTradisional.once("evt_obatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
-            handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);
-          });
-    
-        } catch (err) {
-          setLoader(false)
-          errAlert(err, "Error making request!");
-        }
-      } else{
-        errAlert({reason: "Unable to Create Obat"}, `${userdata.instanceName} does not have a CPOTB certification for the "${kemasanPrim}" primary packaging`);
-      }
-    } else{
+
+
+    if (newObatName) {
       errAlert({reason: "Unable to Create Obat"}, `The obat with the name "${namaProduk}" already exists. Please use a different name.`);
       
+    } else if (!kemasanPrimData || !kemasanPrimData.cpotbHash) {
+      errAlert({reason: "Unable to Create Obat"}, `${userdata.instanceName} does not have a CPOTB certification for the "${kemasanPrim}" primary packaging`);
+
+    } else {
+      const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
+      console.log(kemasanSet);
+      
+      const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
+      const randomTwoLetters = String.fromCharCode(
+        65 + Math.floor(Math.random() * 26),
+        65 + Math.floor(Math.random() * 26)
+      );
+      const id = `ot-${randomFourDigit}${randomTwoLetters}`;
+      console.log(  id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], kemasanPrimData.cpotbHash, jenisObat);
+  
+      try {
+        
+        const createObatCt = await contracts.obatTradisional.createObat(
+        id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], kemasanPrimData.cpotbHash, jenisObat);
+        
+        console.log('Receipt:', createObatCt);
+          
+        if(createObatCt){
+          MySwal.update({
+            title: "Processing your transaction...",
+            text: "This may take a moment. Hang tight! ⏳"
+          });
+        }
+  
+        contracts.obatTradisional.once("evt_obatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
+          handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);
+        });
+  
+      } catch (err) {
+        setLoader(false)
+        errAlert(err, "Error making request!");
+      }
+
+
     }
 
 
