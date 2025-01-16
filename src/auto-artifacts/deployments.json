@@ -1,6 +1,6 @@
 {
   "MainSupplyChain": {
-    "address": "0xf5059a5D33d5853360D16C683c16e67980206f36",
+    "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
     "abi": [
       {
         "inputs": [
@@ -1121,7 +1121,7 @@
     ]
   },
   "ObatTradisional": {
-    "address": "0x95401dc811bb5740090279Ba06cfA8fcF6113778",
+    "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
     "abi": [
       {
         "inputs": [
@@ -1938,7 +1938,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0x998abeb3E57409262aE5b751f60747921B33613E",
+    "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
     "abi": [
       {
         "inputs": [
@@ -2764,7 +2764,7 @@
     ]
   },
   "RoleManager": {
-    "address": "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8",
+    "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
     "abi": [
       {
         "anonymous": false,
@@ -2978,7 +2978,7 @@
     ]
   },
   "RejectManager": {
-    "address": "0x70e0bA845a1A0F2DA3359C97E0285013525FFC49",
+    "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
     "abi": [
       {
         "inputs": [

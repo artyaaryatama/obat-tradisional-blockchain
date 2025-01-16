@@ -3,7 +3,8 @@ import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
-
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig"; 
 import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -984,7 +985,7 @@ function CpotbApprove() {
         bpomInstanceAddress: userBpomCt[4]
       }
 
-    console.log(cpotbData);
+      console.log(cpotbData);
 
       const result = await client.add(JSON.stringify(cpotbData), 
         { progress: (bytes) => 
@@ -993,7 +994,7 @@ function CpotbApprove() {
 
       if (result.path) {
         console.log("IPFS Hash:", result.path);
-        approveCpotb(cpotbNumber, detailCpotb.cpotbId, detailCpotb.jenisSediaan, result.path);
+        approveCpotb(cpotbNumber, detailCpotb.cpotbId, detailCpotb.jenisSediaan, result.path, detailCpotb.factoryInstanceName);
       }
 
     } catch (error) {
@@ -1001,7 +1002,7 @@ function CpotbApprove() {
     }
   } 
 
-  const approveCpotb = async(certNumber, certTd, jenisSediaan, cpotbIpfs) => {
+  const approveCpotb = async(certNumber, certTd, jenisSediaan, cpotbIpfs, factoryInstanceName) => {
 
     const jenisMap = {
       "Cairan Obat Dalam": 0n,
@@ -1032,6 +1033,7 @@ function CpotbApprove() {
     };
 
     console.log(certNumber, certTd, jenisMap[jenisSediaan]);
+    console.log(jenisSediaan);
 
     try {
       
@@ -1042,6 +1044,9 @@ function CpotbApprove() {
       console.log(approveCt);
 
       if(approveCt){
+
+        updateCpotbFb( factoryInstanceName, jenisSediaan, approveCt.hash, 'Approved' );
+
         MySwal.update({
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
@@ -1063,6 +1068,8 @@ function CpotbApprove() {
       const rejectCt = await contracts.rejectManager.rejectedByBpom(rejectMsg, userdata.name, userdata.instanceName, id, "cpotb", jenisSediaan);
 
       if(rejectCt){
+        updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, 'Rejected'
+        );
         MySwal.update({
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
@@ -1076,6 +1083,30 @@ function CpotbApprove() {
       errAlert(error, `Can't reject CPOTB ${factoryInstanceName} dengan Jenis Sediaan ${jenisSediaan}`)
     }
   }
+
+  const updateCpotbFb = async (instanceName, jenisSediaan, cpotbHash, status) => {
+    try {
+      const collectionName = instanceName; 
+      const documentId = `[CPOTB] ${jenisSediaan}`; 
+      const docRef = doc(db, collectionName, documentId);
+
+      if(status === 'Approved'){
+        await updateDoc(docRef, {
+          "detail.approvedCpotb": cpotbHash, 
+          "detail.approvedTimestamp": Date.now(), 
+        }); 
+      } else {
+        await updateDoc(docRef, {
+          "detail.rejectedCpotb": cpotbHash, 
+          "detail.rejectedTimestamp": Date.now(), 
+        });  
+
+      }
+  
+    } catch (err) {
+      console.error("Error writing cpotb data:", err);
+    }
+  };
 
   return (
     <>

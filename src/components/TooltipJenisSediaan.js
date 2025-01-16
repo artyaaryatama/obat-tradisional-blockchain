@@ -182,6 +182,8 @@ const JenisSediaanTooltip = ({ jenisSediaan }) => {
     jenisSediaan = "Dodol/Jenang"
   } else if(jenisSediaan === 'Tablet atau Kaplet'){
     jenisSediaan = "Tablet/Kaplet"
+  } else if (jenisSediaan === 'Supositoria'){
+    jenisSediaan = 'Supositoria untuk Wasir'
   }
   const { description, source } = tooltipData[jenisSediaan] || {};
   

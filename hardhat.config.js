@@ -1,6 +1,6 @@
 require('@nomicfoundation/hardhat-ethers');
 require("@nomicfoundation/hardhat-toolbox");
-require('dotenv').config();
+// require('dotenv').config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -21,15 +21,15 @@ module.exports = {
   networks: {
     localhost: {
       // forking: {
-      //   url: `https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`, 
+      //   url: `https://sepolia.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`, 
       // },
       url: "http://127.0.0.1:8545", 
       chainId: 31337,
     },
     sepolia: {
-      url: `https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`, 
+      url: `https://sepolia.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`, 
       accounts: [
-        `0x${process.env.MY_PRIVATE_KEY}`
+        `0x${process.env.REACT_APP_MY_PRIVATE_KEY}`
       ],
     },
   }

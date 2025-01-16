@@ -42,7 +42,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/public/obat/:hash" element={<CheckObatIpfs />} />
           <Route path="/public/certificate/:hash" element={<ChechCerticateIpfs />} />
-          <Route path="/public/check-hash" element={<CheckTransaction />} />
+          <Route path="/lacak" element={<CheckTransaction />} />
           
           <Route 
             path="/error" 

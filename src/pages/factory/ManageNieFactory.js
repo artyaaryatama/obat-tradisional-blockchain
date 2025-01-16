@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig"; 
 import ReactDOM from 'react-dom/client';
 import NieStatusStepper from '../../components/StepperNie'
 import "../../styles/MainLayout.scss"
@@ -986,6 +988,7 @@ function ManageNieFactory() {
       const requestNieCt = await contracts.obatTradisional.requestNie(id, userdata.instanceName);
       
       if(requestNieCt){
+        updateObatFb(userdata.instanceName, namaObat, requestNieCt.hash)
         MySwal.update({
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
@@ -1023,6 +1026,22 @@ function ManageNieFactory() {
     }
 
   }
+
+  const updateObatFb = async (instanceName, namaProduk, obatHash ) => {
+    try {
+      const collectionName = instanceName; 
+      const documentId = `[OT] ${namaProduk}`; 
+      const docRef = doc(db, collectionName, documentId);
+
+      await updateDoc(docRef, {
+        "detail.requestNie": obatHash, 
+        "detail.requestNieTimestamp": Date.now(), 
+      }); 
+  
+    } catch (err) {
+      console.error("Error writing cpotb data:", err);
+    }
+  };
 
   return (
     <>

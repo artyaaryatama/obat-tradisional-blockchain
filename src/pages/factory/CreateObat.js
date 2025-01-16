@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig"; 
 import imgLoader from '../../assets/images/loader.svg';
 import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
@@ -291,14 +292,6 @@ function CreateObat() {
     const kemasanPrimData = dataCpotb.find((item) => item.jenisSediaan === kemasanPrim) || false;
     const newObatName = namaObatExisted.find((item) => item.namaProduk === namaProduk) || false;
 
-    console.log(kemasanPrim);
-    console.log(dataCpotb);
-    console.log(namaObatExisted);
-    console.log('---------------------');
-    console.log(kemasanPrimData);
-    console.log(newObatName);
-
-
     if (newObatName) {
       errAlert({reason: "Unable to Create Obat"}, `The obat with the name "${namaProduk}" already exists. Please use a different name.`);
       
@@ -307,13 +300,13 @@ function CreateObat() {
 
     } else {
       const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
-      console.log(kemasanSet);
       
       const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
       const randomTwoLetters = String.fromCharCode(
         65 + Math.floor(Math.random() * 26),
         65 + Math.floor(Math.random() * 26)
       );
+
       const id = `ot-${randomFourDigit}${randomTwoLetters}`;
       console.log(  id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], kemasanPrimData.cpotbHash, jenisObat);
   
@@ -325,6 +318,9 @@ function CreateObat() {
         console.log('Receipt:', createObatCt);
           
         if(createObatCt){
+
+          createObatFb(userdata.instanceName, namaProduk, createObatCt.hash)
+
           MySwal.update({
             title: "Processing your transaction...",
             text: "This may take a moment. Hang tight! ⏳"
@@ -344,6 +340,23 @@ function CreateObat() {
     }
 
 
+  };
+
+  const createObatFb = async (instanceName, namaProduk, obatHash) => {
+    try {
+      const collectionName = instanceName; 
+      const documentId = `[OT] ${namaProduk}`; 
+
+      await setDoc(doc(db, collectionName, documentId), {
+        detail: {
+          createObat: obatHash,
+          createObatTimestamp: Date.now(),
+        },
+      }, { merge: true }); 
+  
+    } catch (err) {
+      console.error("Error writing obat data:", err);
+    }
   };
 
   const handleKlaimChange = (e) => {

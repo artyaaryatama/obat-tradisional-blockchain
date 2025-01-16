@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import ReactDOM from 'react-dom/client';
-
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig"; 
 import NieStatusStepper from '../../components/StepperNie'
-
 import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -290,7 +290,7 @@ function NieApprove() {
 
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
 
-      console.log(nieStatus);
+      
 
       const detailObat = {
         obatId: id,
@@ -313,6 +313,8 @@ function NieApprove() {
         jenisObat: jenisObat
       };
 
+      console.log(detailObat.nieStatus);
+
       const kemasanKeterangan = kemasan.match(/@(.+?)\s*\(/);
 
       const timestamps = {
@@ -321,7 +323,7 @@ function NieApprove() {
         timestampNieApprove : timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): 0
       }
 
-      if(detailObat.nieStatus === 'Approved NIE'){
+      if(detailObat.nieStatus === 'Approved'){
         MySwal.fire({
           title: `Detail Obat ${detailObat.namaObat}`,
           html: (
@@ -521,7 +523,7 @@ function NieApprove() {
           }
         })
      
-      } else if(detailObat.nieStatus === 'Rejected NIE'){
+      } else if(detailObat.nieStatus === 'Rejected'){
         const detailCpotbRejected = await contracts.rejectManager.rejectedDetails(id);
 
         const [rejectMsg, bpomName, bpomInstanceName, jenisSediaanRejected, bpomAddr, timestampRejected] = detailCpotbRejected
@@ -1141,7 +1143,7 @@ function NieApprove() {
                   allowOutsideClick: false
                 })
 
-                approveNie(id, nieNum, detailObat.namaObat)
+                approveNie(id, nieNum, detailObat.namaObat, factoryInstance)
               }
             })
           
@@ -1344,7 +1346,7 @@ function NieApprove() {
                   allowOutsideClick: false
                 })
 
-                rejectNie(id, result.value.rejectMsgInput, detailObat.namaObat)
+                rejectNie(id, result.value.rejectMsgInput, detailObat.namaObat, factoryInstance)
               }
             })
           }
@@ -1357,13 +1359,14 @@ function NieApprove() {
     }
   }
 
-  const approveNie = async(id, nieNumber, namaObat) => {
+  const approveNie = async(id, nieNumber, namaObat, factoryInstance) => {
 
     try {
       const approveNieCt =  await contracts.obatTradisional.approveNie(id, nieNumber, userdata.instanceName)
       console.log(approveNieCt);
 
       if(approveNieCt){
+        updateObatFb(factoryInstance, namaObat, approveNieCt.hash, true)
         MySwal.update({
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
@@ -1379,12 +1382,13 @@ function NieApprove() {
     }
   }
 
-  const rejectNie = async(id, rejectMsg, namaObat) => {
+  const rejectNie = async(id, rejectMsg, namaObat, factoryInstance) => {
 
     try {
       const rejectCt = await contracts.rejectManager.rejectedByBpom(rejectMsg, userdata.name, userdata.instanceName, id, "nie", 0);
 
       if(rejectCt){
+        updateObatFb(factoryInstance, namaObat, rejectCt.hash, false)
         MySwal.update({
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
@@ -1399,6 +1403,30 @@ function NieApprove() {
       errAlert(error, "Can't Approve NIE");
     }
   }
+
+  const updateObatFb = async (instanceName, namaProduk, obatHash, status) => {
+    try {
+      const collectionName = instanceName; 
+      const documentId = `[OT] ${namaProduk}`; 
+      const docRef = doc(db, collectionName, documentId);
+
+      if(status){
+        await updateDoc(docRef, {
+          "detail.approvedNie": obatHash, 
+          "detail.approvedNieTimestamp": Date.now(), 
+        }); 
+      } else {
+        await updateDoc(docRef, {
+          "detail.rejectedNie": obatHash, 
+          "detail.rejectedNieTimestamp": Date.now(), 
+        });  
+
+      }
+  
+    } catch (err) {
+      console.error("Error writing cpotb data:", err);
+    }
+  };
 
   return (
     <>
