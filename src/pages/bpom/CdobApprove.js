@@ -3,7 +3,8 @@ import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
-
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig"; 
 import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -827,9 +828,10 @@ function CdobApprove() {
               ),     
               width: '620',        
               icon: 'warning',
-              showCancelButton: true,
-              confirmButtonText: 'Yes, Approve!',
-              cancelButtonText: 'Cancel',
+              showCancelButton: false,
+              showCloseButton: true,
+              confirmButtonText: 'Reject',
+              confirmButtonColor: '#E33333',
               allowOutsideClick: false,
               preConfirm: () => {
                 const rejectMsgInput = document.getElementById('rejectMsg').value;
@@ -900,7 +902,7 @@ function CdobApprove() {
       if (result.path) {
         console.log("IPFS Hash:", result.path);
         
-        approveCdob(cdobNumber, detailCdob.cdobId, detailCdob.tipePermohonan, result.path);
+        approveCdob(cdobNumber, detailCdob.cdobId, detailCdob.tipePermohonan, result.path, detailCdob.pbfName);
       }
 
     } catch (error) {
@@ -908,23 +910,27 @@ function CdobApprove() {
     }
   } 
 
-  const approveCdob = async(certNumber, certTd, tp, cdobIpfs) => {
+  const approveCdob = async(certNumber, certTd, tp, cdobIpfs, pbfName) => {
 
     const tpMap = {
-      "Obat Lain" : 0,
-      "Cold Chain Product (CCP)" : 1
+      "Obat Lain" : 0n,
+      "Cold Chain Product (CCP)" : 1n
     }; 
-
+    
+    console.log(tp);
+    
     try {
       const approveCt = await contracts.mainSupplyChain.approveCdob([certNumber, certTd, userdata.name, userdata.instanceName], cdobIpfs, tpMap[tp])
-
+      
       if(approveCt){
+        updateCdobFb(pbfName, tpMap[tp], approveCt.hash, true)
+        
         MySwal.update({
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
         });
       }
-
+      
       contracts.mainSupplyChain.once('evt_cdobApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
         handleEventCdob("Approved", bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, approveCt.hash);
       });
@@ -932,12 +938,18 @@ function CdobApprove() {
       errAlert(error, "Can't Approve CDOB")
     }
   } 
-
+  
   const rejectCdob = async(cdobId, rejectMsg, tipePermohonan, pbfName) => {
+    console.log(tipePermohonan);
+
+
     try {
       const rejectCt = await contracts.rejectManager.rejectedByBpom(rejectMsg, userdata.name, userdata.instanceName, cdobId, "cdob", tipePermohonan);
 
       if(rejectCt){
+
+        updateCdobFb(pbfName, tipePermohonan, rejectCt.hash, false)
+
         MySwal.update({
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
@@ -952,6 +964,34 @@ function CdobApprove() {
     }
   }
 
+  const updateCdobFb = async (instanceName, tipePermohonan, cdobHash, status) => {
+    const tpMap = {
+      0n: 'ObatLain',
+      1n: 'CCP'
+    }
+    
+    try {
+      const documentId = `cdob-lists`; 
+      const pbfDocRef = doc(db, instanceName, documentId);
+
+      if(status){
+        await updateDoc(pbfDocRef, {
+          [`${tpMap[tipePermohonan]}.approvedCdob`]: cdobHash,
+        [`${tpMap[tipePermohonan]}.approvedTimestamp`]: Date.now(),
+        }); 
+      } else {
+        await updateDoc(pbfDocRef, {
+          [`${tpMap[tipePermohonan]}.rejectedCdob`]: cdobHash,
+        [`${tpMap[tipePermohonan]}.rejectedTimestamp`]: Date.now(),
+        });  
+
+      }
+  
+    } catch (err) {
+      console.error("Error writing CDOB data:", err);
+    }
+  };
+
   return (
     <>
       <div id="CpotbPage" className='Layout-Menu layout-page'>
@@ -961,7 +1001,7 @@ function CdobApprove() {
         </div>
         <div className="tab-menu">
           <ul>
-            <li><button onClick={() => navigate('/cpotb-approval')}>List CDOB</button></li>
+            <li><button onClick={() => navigate('/cpotb-approval')}>List CPOTB</button></li>
             <li><button className='active' onClick={() => navigate('/cdob-approval')}>List CDOB</button></li>
           </ul>
         </div>

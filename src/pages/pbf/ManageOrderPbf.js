@@ -4,7 +4,8 @@ import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
-
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 import DataIpfsHash from '../../components/TableHash';
 import OrderStatusStepper from '../../components/StepperOrder';
 
@@ -663,7 +664,7 @@ function ManageOrderPbf() {
     }
   }
 
-  const completeOrder = async (orderId, ipfsHashes) => {
+  const completeOrder = async (orderId, ipfsHashes, namaObat, batchName, factoryInstance, pbfInstance) => {
 
     MySwal.fire({
       title:"Preparing your data",
@@ -678,7 +679,8 @@ function ManageOrderPbf() {
       const completeOrderCt = await contracts.orderManagement.completeOrderPbf(orderId, ipfsHashes)
 
       if(completeOrderCt){
-        MySwal.update({
+        updateBatchHistoryHash(factoryInstance, namaObat, batchName, completeOrderCt.hash)
+        MySwal.update({ 
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
         });
@@ -845,10 +847,36 @@ function ManageOrderPbf() {
   
       }).then((result) => {
         if(result.isConfirmed){
-          completeOrder(orderId, newIpfsHashes)
+          completeOrder(orderId, newIpfsHashes, dataObat.namaObat, batchName, dataObat.factoryInstance, dataOrder.buyerInstance)
           
         }
       })
+    }
+  }
+
+  const updateBatchHistoryHash = async(factoryInstance, namaProduk, batchName, hash) => {
+    const documentId = `[OT] ${namaProduk}`;
+    const factoryDocRef = doc(db, factoryInstance, documentId); 
+
+    try {
+      const docSnap = await getDoc(factoryDocRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+
+        if (data.batchData && data.batchData[batchName]) {
+          await updateDoc(factoryDocRef, {
+            [`batchData.${batchName}.historyHash.orderCompletedPbf`]: hash,
+            [`batchData.${batchName}.historyHash.orderCompletedPbfTimestamp`]: Date.now(),
+          });
+          console.log(`Batch ${batchName} updated successfully.`);
+        } else {
+          errAlert({ reason: `Batch ${batchName} not found in batchData!` });
+        }
+      } else {
+        errAlert({ reason: `Document ${documentId} not found!` });
+      }
+    } catch (error) {
+      errAlert(error);
     }
   }
 

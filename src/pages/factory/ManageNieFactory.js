@@ -733,11 +733,11 @@ function ManageNieFactory() {
                       <p>BPOM Instance</p> 
                     </li>
                     <li className="input">
-                      <p>{detailObat.bpomInstanceNames}
-                        {
-                        detailObat.bpomUserName? (
-                          <span className='username'>({detailObat.bpomUserName})</span>) : <span></span>                        
-                        }
+                      <p>{bpomInstanceName}
+                        {/* {
+                        bpomName? (
+                          <span className='username'>({bpomName})</span>) : <span></span>                        
+                        } */}
                       </p> 
                     </li>
                   </ul>
@@ -747,7 +747,7 @@ function ManageNieFactory() {
                       <p>BPOM Address</p> 
                     </li>
                     <li className="input">
-                      <p>{detailObat.bpomAddr}</p> 
+                      <p>{bpomAddr}</p> 
                     </li>
                   </ul>
   
@@ -1029,13 +1029,12 @@ function ManageNieFactory() {
 
   const updateObatFb = async (instanceName, namaProduk, obatHash ) => {
     try {
-      const collectionName = instanceName; 
-      const documentId = `[OT] ${namaProduk}`; 
-      const docRef = doc(db, collectionName, documentId);
+      const documentId = `[OT] ${namaProduk}`;
+      const factoryDocRef = doc(db, instanceName, documentId); 
 
-      await updateDoc(docRef, {
-        "detail.requestNie": obatHash, 
-        "detail.requestNieTimestamp": Date.now(), 
+      await updateDoc(factoryDocRef, {
+        "historyNie.requestNie": obatHash, 
+        "historyNie.requestNieTimestamp": Date.now(), 
       }); 
   
     } catch (err) {

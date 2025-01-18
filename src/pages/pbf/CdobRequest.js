@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-
+import { doc, setDoc  } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 import imgLoader from '../../assets/images/loader.svg';
 import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
@@ -189,6 +190,8 @@ function CdobRequest() {
       console.log('Receipt:', requestCdobCt);
 
       if(requestCdobCt){
+        writeCpotbFb(userdata.instanceName, tipePermohonan, requestCdobCt.hash)
+
         MySwal.update({
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
@@ -209,6 +212,23 @@ function CdobRequest() {
     setTipePermohonan(e.target.value);
     console.log("Selected value:", e.target.value);
   };
+
+  const writeCpotbFb = async (instanceName, tipePermohonan, requestCdobCtHash) => {
+    try {
+      const documentId = `cdob-lists`; 
+      const pbfDocRef = doc(db, instanceName, documentId);
+  
+      await setDoc(pbfDocRef, {
+        [`${tipePermohonan}`]: {
+          requestCdob: requestCdobCtHash,
+          requestTimestamp: Date.now(),
+        },
+      }, { merge: true }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  };
+  
 
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>

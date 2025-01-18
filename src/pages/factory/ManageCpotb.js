@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-
+import { doc, getDocs, collection  } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -174,12 +175,14 @@ function ManageCpotb() {
         factoryType: factoryType
       };
 
-      console.log(detailCpotb.cpotbIpfs);
+      console.log(detailCpotb.status);
 
       if(detailCpotb.status === 'Rejected'){
         const detailCpotbRejected = await contracts.rejectManager.rejectedDetails(id);
 
         const [rejectMsg, bpomName, bpomInstanceName, jenisSediaanRejected, bpomAddr, timestampRejected] = detailCpotbRejected
+
+        console.log(bpomInstanceName, bpomAddr)
 
         MySwal.fire({
           title: "Detail Sertifikat CPOTB",
@@ -219,7 +222,7 @@ function ManageCpotb() {
                       <p>BPOM Instance</p> 
                     </li>
                     <li className="input">
-                      <p>{detailCpotb.bpomInstance}</p> 
+                      <p>{bpomInstanceName}</p> 
                     </li>
                   </ul>
   
@@ -228,7 +231,7 @@ function ManageCpotb() {
                       <p>BPOM Address</p> 
                     </li>
                     <li className="input">
-                      <p>{detailCpotb.bpomAddr}</p> 
+                      <p>{bpomAddr}</p> 
                     </li>
                   </ul>
                   
@@ -427,6 +430,17 @@ function ManageCpotb() {
 
     } catch (e) {
       errAlert(e, "Can't retrieve data")
+    }
+  }
+
+  const retrieveCpotbDataFb = async() => {
+    try {
+      const querySnapshot = await getDocs(collection(db, `${userdata.instanceName}`));
+      querySnapshot.forEach((doc) => {
+        console.log(`${doc.id} =>`, doc.data());
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
   }
 

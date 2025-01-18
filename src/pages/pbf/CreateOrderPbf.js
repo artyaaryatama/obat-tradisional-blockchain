@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -432,10 +433,12 @@ function CreateOrderPbf() {
       console.log(checkAvailCt);
 
       if(checkAvailCt !== "") {
-
+        
         const createOrderCt = await contracts.orderManagement.createOrder("",orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, checkAvailCt);
-  
+        
         if(createOrderCt){
+          updateBatchHistoryHash(factoryInstance, namaProduk, batchName, createOrderCt.hash, tipeObat)
+
           MySwal.update({
             title: "Processing your transaction...",
             text: "This may take a moment. Hang tight! ⏳"
@@ -455,6 +458,33 @@ function CreateOrderPbf() {
       errAlert(error, "Can't make an obat order.")
     }
 
+  }
+
+  const updateBatchHistoryHash = async(factoryInstance, namaProduk, batchName, hash) => {
+    const documentId = `[OT] ${namaProduk}`;
+    const factoryDocRef = doc(db, factoryInstance, documentId); 
+
+    try {
+      const docSnap = await getDoc(factoryDocRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+  
+        if (data.batchData && data.batchData[batchName]) {
+          await updateDoc(factoryDocRef, {
+            [`batchData.${batchName}.historyHash.orderCreatedPbf`]: hash,
+            [`batchData.${batchName}.historyHash.orderCreatedPbfTimestamp`]: Date.now()
+
+          });
+          console.log(`Batch ${batchName} updated successfully.`);
+        } else {
+          errAlert({ reason: `Batch ${batchName} not found in batchData!` });
+        }
+      } else {
+        errAlert({ reason: `Document ${documentId} not found!` });
+      }
+    } catch (error) {
+      errAlert(error);
+    }
   }
 
   return (

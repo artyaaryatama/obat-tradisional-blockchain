@@ -7,6 +7,8 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 
 const MySwal = withReactContent(Swal);
 
@@ -428,7 +430,7 @@ function CreateOrderRetailer() {
             allowOutsideClick: false,
           })
 
-          orderObat(detailPastOrderCt[0], id, pbfInstance, namaProduk, obatQuantity, batchName)
+          orderObat(detailPastOrderCt[0], id, pbfInstance, namaProduk, obatQuantity, batchName, factoryInstance)
         }
       })
       
@@ -437,7 +439,7 @@ function CreateOrderRetailer() {
     }
   }
 
-  const orderObat = async (prevOrderIdPbf, id, pbfInstance, namaProduk, orderQuantity, batchName) => {
+  const orderObat = async (prevOrderIdPbf, id, pbfInstance, namaProduk, orderQuantity, batchName, factoryInstance) => {
 
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
@@ -446,13 +448,14 @@ function CreateOrderRetailer() {
     const randomNumber = Math.floor(100000 + Math.random() * 900000); 
 
     const orderId = `order-ret-${day}${month}${year}-${randomNumber}` 
-  
+    
     try {
       console.log(prevOrderIdPbf, orderId, id, batchName, namaProduk, userdata.instanceName, pbfInstance, orderQuantity);
       
       const createOrderCt = await contracts.orderManagement.createOrder(prevOrderIdPbf, orderId, id, batchName, namaProduk, userdata.instanceName, pbfInstance, orderQuantity, "");
-
+      
       if(createOrderCt){
+        updateBatchHistoryHash(factoryInstance, namaProduk, batchName, createOrderCt.hash)
         MySwal.update({
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
@@ -467,6 +470,32 @@ function CreateOrderRetailer() {
       errAlert(error, "Can't make an obat order.")
     }
 
+  }
+
+  const updateBatchHistoryHash = async(factoryInstance, namaProduk, batchName, hash) => {
+    const documentId = `[OT] ${namaProduk}`;
+    const factoryDocRef = doc(db, factoryInstance, documentId); 
+   
+    try {
+      const docSnap = await getDoc(factoryDocRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+
+        if (data.batchData && data.batchData[batchName]) {
+          await updateDoc(factoryDocRef, {
+            [`batchData.${batchName}.historyHash.orderCreatedRetailer`]: hash,
+            [`batchData.${batchName}.historyHash.orderCreatedRetailerTimestamp`]: Date.now()
+          });
+          console.log(`Batch ${batchName} updated successfully.`);
+        } else {
+          errAlert({ reason: `Batch ${batchName} not found in batchData!` });
+        }
+      } else {
+        errAlert({ reason: `Document ${documentId} not found!` });
+      }
+    } catch (error) {
+      errAlert(error);
+    }
   }
 
   return (

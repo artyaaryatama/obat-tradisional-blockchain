@@ -309,7 +309,7 @@ function CreateObat() {
 
       const id = `ot-${randomFourDigit}${randomTwoLetters}`;
       console.log(  id, merk, namaProduk, klaim, kemasanSet, komposisi, userdata.instanceName, tipeObatMap[tipeObat], kemasanPrimData.cpotbHash, jenisObat);
-  
+      console.log(kemasanPrim);
       try {
         
         const createObatCt = await contracts.obatTradisional.createObat(
@@ -319,7 +319,7 @@ function CreateObat() {
           
         if(createObatCt){
 
-          createObatFb(userdata.instanceName, namaProduk, createObatCt.hash)
+          createObatFb(userdata.instanceName, namaProduk, createObatCt.hash, kemasanPrim, tipeObat)
 
           MySwal.update({
             title: "Processing your transaction...",
@@ -342,20 +342,22 @@ function CreateObat() {
 
   };
 
-  const createObatFb = async (instanceName, namaProduk, obatHash) => {
+  const createObatFb = async (instanceName, namaProduk, obatHash, kemasanPrim, tipeObat) => {
     try {
-      const collectionName = instanceName; 
-      const documentId = `[OT] ${namaProduk}`; 
+      const documentId = `[OT] ${namaProduk}`;
+      const factoryDocRef = doc(db, instanceName, documentId); 
 
-      await setDoc(doc(db, collectionName, documentId), {
-        detail: {
+      await setDoc(factoryDocRef, {
+        jenisSediaan: `${kemasanPrim}`,
+        tipeObat: `${tipeObat}`,
+        historyNie: {
           createObat: obatHash,
           createObatTimestamp: Date.now(),
         },
       }, { merge: true }); 
   
     } catch (err) {
-      console.error("Error writing obat data:", err);
+      errAlert(err);
     }
   };
 

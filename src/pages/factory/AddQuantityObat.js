@@ -3,15 +3,14 @@ import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
-
+import { doc, updateDoc, arrayUnion   } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 import DataIpfsHash from '../../components/TableHash';
-
 import imgLoader from '../../assets/images/loader.svg';
 import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
-import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 
@@ -383,6 +382,8 @@ function AddQuantityObat() {
       const addBatchCt = await contracts.obatTradisional.addBatchProduction(dataObat.obatId, dataObat.namaProduk, batchNameObat, quantity, newIpfsHashes,  dataObat.factoryInstanceName);
 
       if(addBatchCt){
+        addBatchObatFb(userdata.instanceName, dataObat.namaProduk, addBatchCt.hash, batchNameObat, quantity)
+
         MySwal.update({
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
@@ -398,6 +399,26 @@ function AddQuantityObat() {
       errAlert(err, "Error add quantity obat!");
     }
   }
+
+  const addBatchObatFb = async (instanceName, namaProduk, hash, batchName, quantity) => {
+    try {
+      const documentId = `[OT] ${namaProduk}`;
+      const factoryDocRef = doc(db, instanceName, documentId);
+      
+      await updateDoc(factoryDocRef, {
+        [`batchData.${batchName}`]: {
+          quantity: quantity,
+          historyHash: {
+            batchCreated: hash,
+            batchCreatedTimestamp: Date.now()
+          },
+        }
+      });
+  
+    } catch (err) {
+      errAlert(err);
+    }
+  };
 
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>

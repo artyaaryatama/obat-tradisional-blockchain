@@ -4,10 +4,10 @@ import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
-
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 import DataIpfsHash from '../../components/TableHash';
 import OrderStatusStepper from '../../components/StepperOrder';
-
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -664,7 +664,7 @@ function ManageOrderFactoryPbf() {
     }
   }
 
-  const acceptOrder = async (orderId, ipfsHashes) => {
+  const acceptOrder = async (orderId, ipfsHashes, namaObat, batchName, tipeObat, pbfInstance) => {
     
     MySwal.fire({
       title:"Processing your request...",
@@ -674,13 +674,13 @@ function ManageOrderFactoryPbf() {
       showConfirmButton: false,
       allowOutsideClick: false,
     })
-
-    console.log(orderId, ipfsHashes);
+    
     try {
       const acceptOrderCt = await contracts.orderManagement.acceptOrderPbf(orderId, ipfsHashes)
       console.log(acceptOrderCt);
-
+      
       if(acceptOrderCt){
+        updateBatchHistoryHash(userdata.instanceName, namaObat, batchName, acceptOrderCt.hash , tipeObat, pbfInstance)
         MySwal.update({
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
@@ -844,11 +844,44 @@ function ManageOrderFactoryPbf() {
   
       }).then((result) => {
         if(result.isConfirmed){
-          acceptOrder(orderId, newIpfsHashes)
+          acceptOrder(orderId, newIpfsHashes, dataObat.namaObat, batchName, dataObat.tipeObat, dataOrder.buyerInstance)
         }
       })
     }
 
+  }
+
+  const updateBatchHistoryHash = async(factoryInstance, namaProduk, batchName, hash, tipeObat, pbfInstance) => {
+    const documentId = `[OT] ${namaProduk}`;
+    const factoryDocRef = doc(db, factoryInstance, documentId); 
+    const tipeObatMap = {
+      'Obat Lain': "ObatLain",
+      'Cold Chain Product': "CCP"
+    };
+
+    const tipeObats = tipeObatMap[tipeObat]
+
+    try {
+      const docSnap = await getDoc(factoryDocRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+  
+        if (data.batchData && data.batchData[batchName]) {
+          await updateDoc(factoryDocRef, {
+            [`batchData.${batchName}.historyHash.orderShippedPbf`]: hash,
+            [`batchData.${batchName}.historyHash.orderShippedPbfTimestamp`]: Date.now(),
+            [`batchData.${batchName}.pbfInstance`]:pbfInstance,
+          });
+          console.log(`Batch ${batchName} updated successfully.`);
+        } else {
+          errAlert({ reason: `Batch ${batchName} not found in batchData!` });
+        }
+      } else {
+        errAlert({ reason: `Document ${documentId} not found!` });
+      }
+    } catch (error) {
+      errAlert(error);
+    }
   }
 
   return (

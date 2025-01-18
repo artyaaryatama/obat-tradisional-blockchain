@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { doc, setDoc, getDocs, collection  } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import imgLoader from '../../assets/images/loader.svg';
 import "../../styles/MainLayout.scss";
@@ -236,7 +236,6 @@ function CpotbRequest() {
   
       contract.once("evt_cpotbRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
         handleEventCpotbRequested(_name, _userAddr, _jenisSediaan, _timestampRequest, requestCpotbCt.hash);
-        retrieveCpotbDataFb();
       });
   
     } catch (err) {
@@ -248,30 +247,19 @@ function CpotbRequest() {
 
   const writeCpotbFb = async (instanceName, jenisSediaan, requestCpotbCtHash) => {
     try {
-      const collectionName = instanceName; 
-      const documentId = `[CPOTB] ${jenisSediaan}`; 
+      const documentId = `cpotb-lists`; 
+      const factoryDocRef = doc(db, instanceName, documentId);
   
-      await setDoc(doc(db, collectionName, documentId), {
-        detail: {
+      await setDoc(factoryDocRef, {
+        [`${jenisSediaan}`]: {
           requestCpotb: requestCpotbCtHash,
           requestTimestamp: Date.now(),
         },
       }, { merge: true }); 
     } catch (err) {
-      console.error("Error writing cpotb data:", err);
+      errAlert(err);
     }
   };
-  
-  const retrieveCpotbDataFb = async() => {
-    try {
-      const querySnapshot = await getDocs(collection(db, `${userdata.instanceName}`));
-      querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} =>`, doc.data());
-      });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  }
 
   const handleOptionJenisSediaan = (e) => {;
     const selectedValue = e.target.value;

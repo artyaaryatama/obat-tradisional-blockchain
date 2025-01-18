@@ -127,7 +127,7 @@ function NieApprove() {
     loadData();
   }, [contracts])
 
-  const handleEventNieApproved = (status, namaProduk, bpomAddr, bpomInstance, detail, timestamp, txHash) => {
+  const handleEventNieApproved = (status, namaProduk, bpomAddr, bpomInstance, historyNie, timestamp, txHash) => {
 
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
   
@@ -149,7 +149,7 @@ function NieApprove() {
                 <p>NIE Number</p> 
               </li>
               <li className="input">
-                <p>{detail}</p> 
+                <p>{historyNie}</p> 
               </li>
             </ul>
             <ul>
@@ -245,7 +245,7 @@ function NieApprove() {
                 <p>Alasan Penolakan</p> 
               </li>
               <li className="input">
-                <p>{detail}</p> 
+                <p>{historyNie}</p> 
               </li>
             </ul>
             <ul className="txHash">
@@ -1326,6 +1326,7 @@ function NieApprove() {
               showCancelButton: false,
               showCloseButton: true,
               confirmButtonText: 'Reject',
+              confirmButtonColor: '#E33333',
               allowOutsideClick: false,
               preConfirm: () => {
                 const rejectMsgInput = document.getElementById('rejectMsg').value;
@@ -1406,25 +1407,24 @@ function NieApprove() {
 
   const updateObatFb = async (instanceName, namaProduk, obatHash, status) => {
     try {
-      const collectionName = instanceName; 
-      const documentId = `[OT] ${namaProduk}`; 
-      const docRef = doc(db, collectionName, documentId);
+      const documentId = `[OT] ${namaProduk}`;
+      const factoryDocRef = doc(db, instanceName, documentId);
 
       if(status){
-        await updateDoc(docRef, {
-          "detail.approvedNie": obatHash, 
-          "detail.approvedNieTimestamp": Date.now(), 
+        await updateDoc(factoryDocRef, {
+          "historyNie.approvedNie": obatHash, 
+          "historyNie.approvedNieTimestamp": Date.now(), 
         }); 
       } else {
-        await updateDoc(docRef, {
-          "detail.rejectedNie": obatHash, 
-          "detail.rejectedNieTimestamp": Date.now(), 
+        await updateDoc(factoryDocRef, {
+          "historyNie.rejectedNie": obatHash, 
+          "historyNie.rejectedNieTimestamp": Date.now(), 
         });  
 
       }
   
     } catch (err) {
-      console.error("Error writing cpotb data:", err);
+      errAlert(err);
     }
   };
 

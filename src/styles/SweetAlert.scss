@@ -94,7 +94,7 @@
 
         li.label-sm{
           // background-color: #86947d;
-          width: 18%;
+          width: 24%;
           text-align: left;
           font-weight: 600;
 
@@ -158,10 +158,14 @@
 
           .input{
             width: 72%;
-            background-color: $grey-light;
-            padding: 8px;
-            border-radius: 8px;
+            background-color: $red;
+            padding: 4px 8px;
+            border-radius: 6px;
+            p{
+              color: $white;
+            }
           }
+
         }
 
         // &.status{
@@ -292,9 +296,12 @@
     &.rejectMsg{
       .input{
         width: 72%;
-        background-color: $grey-light;
-        padding: 8px;
-        border-radius: 8px;
+        background-color: $red;
+        padding: 4px 8px;
+        border-radius: 6px;
+        p{
+          color: $white;
+        }
       }
     }
     

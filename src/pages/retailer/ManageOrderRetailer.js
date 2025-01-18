@@ -10,6 +10,8 @@ import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
@@ -740,8 +742,8 @@ function ManageOrderRetailer() {
       errAlert(e, "Can't retrieve data")
     }
   }
-
-  const completeOrder = async (orderId, ipfsHash) => {
+  
+  const completeOrder = async (orderId, ipfsHash, factoryInstance, namaProduk, batchName) => {
     MySwal.fire({
       title:"Processing your request...",
       text:"Your request is on its way. This won't take long. 🚀",
@@ -750,21 +752,27 @@ function ManageOrderRetailer() {
       showConfirmButton: false,
       allowOutsideClick: false,
     })
-
-    const completeOrderCt = await contracts.orderManagement.completeOrderRetailer(orderId, ipfsHash)
     
-    console.log(completeOrderCt);
-
-    if(completeOrderCt){
-      MySwal.update({
-        title: "Processing your transaction...",
-        text: "This may take a moment. Hang tight! ⏳"
+    try {
+      const completeOrderCt = await contracts.orderManagement.completeOrderRetailer(orderId, ipfsHash)
+      
+      console.log(completeOrderCt);
+      
+      if(completeOrderCt){
+        updateBatchHistoryHash(factoryInstance, namaProduk, batchName, completeOrderCt.hash)
+        MySwal.update({
+          title: "Processing your transaction...",
+          text: "This may take a moment. Hang tight! ⏳"
+        });
+      }
+  
+      contracts.orderManagement.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+        handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, completeOrderCt.hash);
       });
+      
+    } catch (error) {
+      errAlert(error, "Can't Complete Order")
     }
-
-    contracts.orderManagement.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
-      handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, completeOrderCt.hash);
-    });
 
   }
   
@@ -940,11 +948,40 @@ function ManageOrderRetailer() {
   
       }).then((result) => {
         if(result.isConfirmed){
-          completeOrder(orderId, newIpfsHashes)
+          completeOrder(orderId, newIpfsHashes, dataObat.factoryInstance, dataObat.namaProduk, batchName)
         }
       })
     }
 
+  }
+
+  const updateBatchHistoryHash = async(factoryInstance, namaProduk, batchName, hash) => {
+    const documentId = `[OT] ${namaProduk}`;
+    const factoryDocRef = doc(db, factoryInstance, documentId); 
+
+    try {
+      const docSnap = await getDoc(factoryDocRef);
+
+      if (docSnap.exists()) {
+
+        const data = docSnap.data();
+
+        if (data.batchData && data.batchData[batchName]) {
+          await updateDoc(factoryDocRef, {
+            [`batchData.${batchName}.historyHash.orderCompletedRetailer`]: hash,
+            [`batchData.${batchName}.historyHash.orderCompletedRetailerTimestamp`]: Date.now(),
+          });
+          console.log(`Batch ${batchName} updated successfully.`);
+        } else {
+          errAlert({ reason: `Batch ${batchName} not found in batchData!` });
+        }
+      
+      } else {
+        errAlert({ reason: `Document ${documentId} not found!` });
+      }
+    } catch (error) {
+        errAlert(error)
+    }
   }
 
   return (

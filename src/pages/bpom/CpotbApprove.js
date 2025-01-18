@@ -1045,7 +1045,7 @@ function CpotbApprove() {
 
       if(approveCt){
 
-        updateCpotbFb( factoryInstanceName, jenisSediaan, approveCt.hash, 'Approved' );
+        updateCpotbFb( factoryInstanceName, jenisSediaan, approveCt.hash, true );
 
         MySwal.update({
           title: "Processing your transaction...",
@@ -1068,8 +1068,7 @@ function CpotbApprove() {
       const rejectCt = await contracts.rejectManager.rejectedByBpom(rejectMsg, userdata.name, userdata.instanceName, id, "cpotb", jenisSediaan);
 
       if(rejectCt){
-        updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, 'Rejected'
-        );
+        updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, false);
         MySwal.update({
           title: "Processing your transaction...",
           text: "This may take a moment. Hang tight! ⏳"
@@ -1086,25 +1085,24 @@ function CpotbApprove() {
 
   const updateCpotbFb = async (instanceName, jenisSediaan, cpotbHash, status) => {
     try {
-      const collectionName = instanceName; 
-      const documentId = `[CPOTB] ${jenisSediaan}`; 
-      const docRef = doc(db, collectionName, documentId);
+      const documentId = `cpotb-lists`; 
+      const factoryDocRef = doc(db, instanceName, documentId);
 
-      if(status === 'Approved'){
-        await updateDoc(docRef, {
-          "detail.approvedCpotb": cpotbHash, 
-          "detail.approvedTimestamp": Date.now(), 
+      if(status){
+        await updateDoc(factoryDocRef, {
+          [`${jenisSediaan}.approvedCpotb`]: cpotbHash,
+          [`${jenisSediaan}.approvedTimestamp`]: Date.now(), 
         }); 
       } else {
-        await updateDoc(docRef, {
-          "detail.rejectedCpotb": cpotbHash, 
-          "detail.rejectedTimestamp": Date.now(), 
+        await updateDoc(factoryDocRef, {
+          [`${jenisSediaan}.rejectedCpotb`]: cpotbHash,
+          [`${jenisSediaan}.rejectedTimestamp`]: Date.now(),
         });  
 
       }
   
     } catch (err) {
-      console.error("Error writing cpotb data:", err);
+      errAlert(err);
     }
   };
 
