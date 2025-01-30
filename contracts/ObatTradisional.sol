@@ -3,20 +3,20 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 import "./RoleManager.sol";
-import "./MainSupplyChain.sol";
 import "./EnumsLibrary.sol";
+import "./NieManager.sol";
 import "./ObatShared.sol";
  
 contract ObatTradisional {
 
   RoleManager public roleManager;
-  MainSupplyChain public mainSupplyChain; 
   ObatShared public obatShared;
+  NieManager public nieManager;
 
-  constructor(address _roleManagerAddr, address _mainSupplyChainAddr, address _obatSharedAddr) {
+  constructor(address _roleManagerAddr, address _obatSharedAddr, address _nieManagerAddr) {
     roleManager = RoleManager(_roleManagerAddr);
-    mainSupplyChain = MainSupplyChain(_mainSupplyChainAddr);
     obatShared = ObatShared(_obatSharedAddr);
+    nieManager = NieManager(_nieManagerAddr);
   }
 
   modifier onlyFactory() { 
@@ -24,42 +24,21 @@ contract ObatTradisional {
     _;
   } 
 
-  modifier onlyPBF() {
-    require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.PBF), "Only PBF");
-    _;
-  }
-
   modifier onlyBPOM() {
     require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.BPOM), "Only BPOM");
     _;
   }
 
-  using EnumsLibrary for EnumsLibrary.NieStatus;
   using EnumsLibrary for EnumsLibrary.OrderStatus;
   using EnumsLibrary for EnumsLibrary.ObatAvailability;
   using EnumsLibrary for EnumsLibrary.Roles;
-
-  struct st_obatNie {
-    string nieNumber; 
-    EnumsLibrary.NieStatus nieStatus;   
-    uint256 timestampProduction;
-    uint256 timestampNieRequest;       
-    uint256 timestampNieApprove;  
-    string bpomInstance;      
-    address bpomAddr;
-  }
 
   struct st_obatOutputNie {
     string obatId;
     string namaProduk;
     string nieNumber;
-    EnumsLibrary.NieStatus nieStatus;
+    uint8 nieStatus;
     string factoryInstance;
-  }
-
-  struct st_obatNameApprovedNie {
-    string obatId;
-    string namaProduk;
   }
 
   struct st_obatOutputBatch {
@@ -73,31 +52,10 @@ contract ObatTradisional {
 
   string[] public allObatIds;
   
-  mapping (string => st_obatNie) public obatNieById;
-  mapping (string => st_obatNameApprovedNie[]) public obatProductNameApprovedByFactory;
-
   event evt_obatCreated(string namaProduk, uint tipeObat, string factoryInstance, address factoryAddresses);
-  event evt_nieRequested(string factoryInstance, address factoryAddr,uint timestampRequest);
-  event evt_nieApproved(string bpomInstance, address bpomAddr, string nieNumber, uint timestampApproved);
   event evt_addBatchProduction(string batchName, uint8 quantity, string namaProduk, string factoryInstance);
+  event evt_renewRejectedNie(string namaProduk, uint256 timestamp);
 
-  // status: 200ok
-  function createObatNie(
-    EnumsLibrary.NieStatus _nieStatus,
-    uint256 _timestampProuction
-  ) internal pure returns (st_obatNie memory){
-    return st_obatNie({
-      nieNumber: "",
-      nieStatus: _nieStatus,
-      timestampProduction: _timestampProuction, 
-      timestampNieRequest: 0,
-      timestampNieApprove: 0,
-      bpomInstance: "",
-      bpomAddr: address(0)
-    }); 
-  }
-
-  // status: 200ok
   function createObat(
     string memory _obatId,
     string memory _merk,
@@ -110,75 +68,84 @@ contract ObatTradisional {
     string memory _cpotbIpfs,
     string memory _jenisObat
   ) public onlyFactory {
-      require(bytes(_obatId).length > 0, "Invalid ID");
 
-      obatShared.setObatDetail(
-        _obatId,
-        _merk, 
-        _namaProduk,
-        _klaim,
-        _komposisi,
-        _kemasan,
-        _factoryInstance,
-        msg.sender,
-        _tipeObat, 
-        _cpotbIpfs,
-        _jenisObat
-      );
+    obatShared.setObatDetail(
+      _obatId,
+      _merk, 
+      _namaProduk,
+      _klaim,
+      _komposisi,
+      _kemasan,
+      _factoryInstance,
+      msg.sender,
+      _tipeObat, 
+      _cpotbIpfs,
+      _jenisObat
+    );
 
-      obatNieById[_obatId] = createObatNie(
-        EnumsLibrary.NieStatus.inLocalProduction,
-        block.timestamp
-      );
+    nieManager.createObatNie(_obatId, _factoryInstance);
 
-      allObatIds.push(_obatId);
+    allObatIds.push(_obatId);
 
     emit evt_obatCreated(_namaProduk, uint8(_tipeObat),  _factoryInstance, msg.sender);
   } 
-   
-  // status: 200ok
+
+  function renewRequestedNie(
+    string memory _obatId,
+    string memory _merk,
+    string memory _namaProduk,
+    string[] memory _klaim, 
+    string memory _kemasan,
+    string[] memory _komposisi,
+    EnumsLibrary.TipePermohonanCdob _tipeObat,
+    string memory _jenisObat
+  ) public onlyFactory {
+
+    obatShared.updateObatDetail(
+      _obatId,
+      _merk, 
+      _namaProduk,
+      _klaim,
+      _komposisi,
+      _kemasan,
+      _tipeObat, 
+      _jenisObat
+    );
+
+    nieManager.renewRequestNie(_obatId, block.timestamp);
+
+    allObatIds.push(_obatId); 
+
+    emit evt_renewRejectedNie(_namaProduk, block.timestamp);
+  } 
+  
   function getAllObat()
-      public
-      view
-      onlyBPOM
-      returns (st_obatOutputNie[] memory)
+    public
+    view
+    onlyBPOM
+    returns (st_obatOutputNie[] memory)
   {
-      uint256 totalObat = allObatIds.length;
+    uint256 totalObat = allObatIds.length;
+    st_obatOutputNie[] memory obatList = new st_obatOutputNie[](totalObat);
 
-      uint256 totalNie = 0;
-      for (uint256 i = 0; i < totalObat; i++) {
-        string memory obatId = allObatIds[i];
-        st_obatNie memory nie = obatNieById[obatId];
+    for (uint256 i = 0; i < totalObat; i++) {
+      string memory obatId = allObatIds[i];
 
-        if (nie.nieStatus != EnumsLibrary.NieStatus.inLocalProduction) {
-          totalNie++;
-        }
-      }
+      (string memory nieNumber, uint8 nieStatus) = nieManager.getNieNumberAndStatus(obatId);
+      ObatShared.st_obatDetails memory details = obatShared.getObatDetail(obatId);
 
-      st_obatOutputNie[] memory obatList = new st_obatOutputNie[](totalNie);
+      obatList[i] = st_obatOutputNie({
+        obatId: obatId,
+        namaProduk: details.namaProduk,
+        nieNumber: nieNumber, 
+        nieStatus: nieStatus,
+        factoryInstance: details.factoryInstance
+      });
+    }
 
-      uint256 index = 0;
-      for (uint256 i = 0; i < totalObat; i++) {
-          string memory obatId = allObatIds[i];
-          st_obatNie memory nie = obatNieById[obatId];
-          ObatShared.st_obatDetails memory details = obatShared.getObatDetail(obatId);
-
-          if (nie.nieStatus != EnumsLibrary.NieStatus.inLocalProduction) {
-            obatList[index] = st_obatOutputNie({
-              obatId: obatId,
-              namaProduk: details.namaProduk,
-              nieNumber: nie.nieNumber,
-              nieStatus: nie.nieStatus,
-              factoryInstance: details.factoryInstance
-            });
-            index++;
-          }
-      }
-
-      return obatList;
+    return obatList;
   }
 
-  // status: 200ok
   function countAllObatByInstance(string memory _factoryInstance)
     internal view returns (uint256){
       uint256 totalObat = allObatIds.length;
@@ -197,97 +164,44 @@ contract ObatTradisional {
 
   }
 
-  // status: 200ok
   function getAllObatByInstance (string memory _instanceName)
     public view onlyFactory returns (st_obatOutputNie[] memory){
       
       uint256 ownedObat = countAllObatByInstance(_instanceName);
 
-      st_obatOutputNie[] memory filteredObatList = new st_obatOutputNie[](ownedObat);
-      uint256 index = 0;
- 
-      for (uint i = 0; i < allObatIds.length; i++) {
-        string memory obatId = allObatIds[i];
-        
+      st_obatOutputNie[] memory obatList = new st_obatOutputNie[](ownedObat);
+
+      for (uint256 index = 0; index < ownedObat; index++) {
+        string memory obatId = allObatIds[index];
+
         ObatShared.st_obatDetails memory details =  obatShared.getObatDetail(obatId);
-        st_obatNie memory nie = obatNieById[obatId];
 
         if (keccak256(abi.encodePacked(details.factoryInstance)) == keccak256(abi.encodePacked(_instanceName))) {
 
-            filteredObatList[index] = st_obatOutputNie({
-              obatId: obatId,
+          (string memory nieNumber, uint8 nieStatus) = nieManager.getNieNumberAndStatus(obatId);
+
+            obatList[index] = st_obatOutputNie({
+              obatId: obatId, 
               namaProduk: details.namaProduk,
-              nieNumber: nie.nieNumber,
-              nieStatus: nie.nieStatus,
+              nieNumber: nieNumber, 
+              nieStatus: nieStatus,
               factoryInstance: details.factoryInstance
             });
 
-            index++;
+          index++;
         }
-    }
+      }
 
-    return filteredObatList;
+    return obatList;
   }
 
-  // status: 200ok
-  function detailObat (string memory _obatId)
-    public view returns (
-      ObatShared.st_obatDetails memory,
-      st_obatNie memory
-    ){
-      ObatShared.st_obatDetails memory obatDetail = obatShared.getObatDetail(_obatId);  
-      return (obatDetail, obatNieById[_obatId]);
-  }
-
-  // status: 200ok
-  function requestNie (
-    string memory _obatId,
-    string memory _factoryInstance
-  ) public onlyFactory { 
-
-      obatNieById[_obatId].timestampNieRequest = block.timestamp;
-      obatNieById[_obatId].nieStatus = EnumsLibrary.NieStatus.RequestedNie;
-
-      emit evt_nieRequested(_factoryInstance, msg.sender, block.timestamp );
-  }
-
-  // status: 200ok
-  function approveNie (
-    string memory _obatId,
-    string memory _nieNumber,
-    string memory _instanceName
-  ) public onlyBPOM{
-
-      obatNieById[_obatId].bpomInstance = _instanceName;
-      obatNieById[_obatId].bpomAddr = msg.sender;
-      obatNieById[_obatId].nieNumber = _nieNumber;
-      obatNieById[_obatId].timestampNieApprove = block.timestamp;
-      obatNieById[_obatId].nieStatus = EnumsLibrary.NieStatus.ApprovedNie;
-
-      ObatShared.st_obatDetails memory obatDetail = obatShared.getObatDetail(_obatId); 
-      string memory namaProduk = obatDetail.namaProduk;
-      string memory factoryInstance = obatDetail.factoryInstance;
-
-      st_obatNameApprovedNie memory obatApproved = st_obatNameApprovedNie({
-        obatId: _obatId,
-        namaProduk: namaProduk
-      });
-
-      obatProductNameApprovedByFactory[factoryInstance].push(obatApproved); 
-      emit evt_nieApproved(_instanceName, msg.sender, _nieNumber, block.timestamp);
-  }
-
-  function rejectNie(string memory _obatId) external {
-    obatNieById[_obatId].nieStatus = EnumsLibrary.NieStatus.RejectedNie;
-  }
-
-  // status: 200ok
-  function getAllObatNameApprovedNie(string memory _instanceName)
-    public view returns (st_obatNameApprovedNie[] memory){
-      return obatProductNameApprovedByFactory[_instanceName]; 
+  function detailObat (string memory _obatId) 
+    public view returns ( 
+      ObatShared.st_obatDetails memory
+    ){ 
+      return obatShared.getObatDetail(_obatId);
   }  
 
-  // status: 200ok
   function addBatchProduction(
     string memory _obatId,
     string memory _namaProduk,
@@ -306,9 +220,8 @@ contract ObatTradisional {
       _factoryInstance); 
 
     emit evt_addBatchProduction (_batchName, _obatQuantity, _namaProduk, _factoryInstance);
-
-  }
-
+  } 
+ 
   function countAllBatchReadyStock()
     internal view returns (uint256){
       uint256 totalBatchReady = 0;
@@ -334,7 +247,6 @@ contract ObatTradisional {
     return totalBatchReady;
   }
 
-  // status: 200ok
   function countAllBatchByInstance(string memory _instanceName)
     internal view returns (uint256){
       uint256 totalBatchInstance = 0;
@@ -361,7 +273,6 @@ contract ObatTradisional {
     return totalBatchInstance;
   }
 
-  // status: 200ok
   function createObatOutputBatch(
     string memory obatId,
     ObatShared.st_obatProduction memory obatBatch
@@ -374,7 +285,7 @@ contract ObatTradisional {
         statusStok: obatBatch.statusStok,
         ownerInstance: obatBatch.factoryInstance
       });
-  }
+  } 
 
   function getAllBatchProductionByInstance(string memory _instanceName)
     public view onlyFactory returns(st_obatOutputBatch[] memory){

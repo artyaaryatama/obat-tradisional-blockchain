@@ -19,8 +19,8 @@ function StockObatPbf() {
   const [dataObatReady, setDataObatReady] = useState([]);
   
   const stokStatusMap = {
-    0: "Stock Available",
-    1: "Stock Empty",
+    0: "Stock Tersedia",
+    1: "Stock Kosong",
   };
 
   const tipeObatMap = {
@@ -58,10 +58,16 @@ function StockObatPbf() {
             contractData.ObatTradisional.abi,
             signer
           );
+          const NieManager = new Contract(
+            contractData.NieManager.address, 
+            contractData.NieManager.abi, 
+            signer
+          );
 
           setContracts({
             orderManagement: orderManagementContract,
-            obatTradisional: obatTradisionalContract
+            obatTradisional: obatTradisionalContract,
+            nieManager: NieManager,
           });
         } catch (err) {
           console.error("User access denied!")
@@ -124,12 +130,10 @@ function StockObatPbf() {
       const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
       const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
       const orderObatIpfs = await contracts.orderManagement.obatIpfs(orderId);
+      const detailNieCt = await contracts.nieManager.getNieDetail(id)
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [obatDetails, obatNie] = detailObatCt;
-
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
-
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt;
 
       const [orderIdd, obatId, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = detailOrderCt
 
@@ -180,7 +184,7 @@ function StockObatPbf() {
                       </ul>
                       <ul>
                         <li className="label">
-                          <p>Factory Instance</p>
+                          <p>Nama Instansi Pabriksi Pabrik</p>
                         </li>
                         <li className="input">
                           <p>{factoryInstance}
@@ -200,7 +204,7 @@ function StockObatPbf() {
                     
                       <ul>
                         <li className="label">
-                          <p>Factory Address</p>
+                          <p>Alamat Akun Pabrik (Pengguna)</p>
                         </li>
                         <li className="input">
                           <p>{factoryAddr}</p>
@@ -209,7 +213,7 @@ function StockObatPbf() {
                     
                       <ul>
                         <li className="label">
-                          <p>PBF Instance</p>
+                          <p>Nama Instansi PBFtansi PBFtansi PBFtansi PBF</p>
                         </li>
                         <li className="input">
                           <p>{buyerUser[0]}
@@ -229,7 +233,7 @@ function StockObatPbf() {
                     
                       <ul>
                         <li className="label">
-                          <p>PBF Address</p>
+                          <p>Alamat Akun PBF (Pengguna)</p>
                         </li>
                         <li className="input">
                           <p>{buyerUser[1]}</p>
@@ -408,7 +412,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

@@ -77,12 +77,12 @@ function RegisterPage() {
     };
   
     MySwal.fire({
-      title: "Sign Up Success",
+      title: "User Sukses Terdaftar",
       html: (
         <div className='form-swal regist'>
           <ul>
             <li className="label">
-              <p>User Name</p> 
+              <p>Nama Pengguna</p> 
             </li>
             <li className="input">
               <p>{_name}</p> 
@@ -90,7 +90,7 @@ function RegisterPage() {
           </ul>
           <ul>
             <li className="label">
-              <p>User Address</p> 
+              <p>Alamat Akun Pengguna</p> 
             </li>
             <li className="input">
               <p>{_userAddr}</p> 
@@ -98,7 +98,7 @@ function RegisterPage() {
           </ul>
           <ul>
             <li className="label">
-              <p>User Instance</p> 
+              <p>Asal Instansi</p> 
             </li>
             <li className="input">
               <p>{_instanceName}</p> 
@@ -106,7 +106,7 @@ function RegisterPage() {
           </ul>
           <ul>
             <li className="label">
-              <p>User Role</p> 
+              <p>Role Pengguna</p> 
             </li>
             <li className="input">
               <p>{roles[_role]}</p> 
@@ -130,7 +130,7 @@ function RegisterPage() {
           </ul>
           <ul>
             <li className="label">
-              <p>Location</p> 
+              <p>Lokasi Instanse</p> 
             </li>
             <li className="input">
               <p>{_locationInstance}</p> 
@@ -138,7 +138,7 @@ function RegisterPage() {
           </ul>
           <ul className="txHash">
             <li className="label">
-              <p>Transaction Hash</p>
+              <p>Hash Transaksi</p>
             </li>
             <li className="input">
               <a
@@ -146,7 +146,7 @@ function RegisterPage() {
                 target="_blank"
                 rel="noreferrer"
               >
-                View Transaction on Etherscan
+                Lihat transaksi di Etherscan
               </a>
             </li>
           </ul>
@@ -157,6 +157,10 @@ function RegisterPage() {
       showCancelButton: false,
       confirmButtonText: 'Oke',
       allowOutsideClick: true,
+      didOpen: () => {
+        const actions = Swal.getActions();
+       actions.style.justifyContent = "center";
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         navigate('/login');
@@ -170,8 +174,8 @@ function RegisterPage() {
     setLoader(true)
     
     MySwal.fire({
-      title:"Please wait",
-      text: "Your registration is in progress. This will only take a moment! 🧙‍♂️🧙‍♀️",
+      title: "Harap tunggu",
+      text: "Proses pendaftaran user sedang diproses 🧙‍♂️🧙‍♀️",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
@@ -187,13 +191,14 @@ function RegisterPage() {
         registCt = await contract.registerUser(nameUpperCase, instanceName, role, locationInstance, "", nib, npwp);
       }
       console.log("Transaction receipt:", registCt);
-      console.log("Transaction hash:", registCt.hash);
+      console.log("Hash Transaksi:", registCt.hash);
 
       if(registCt){
         MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          title: "Memproses transaksi...",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
+        
       }
 
       contract.once("evt_UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
@@ -202,7 +207,7 @@ function RegisterPage() {
       
     } catch (err) {
       setLoader(false)
-      errAlert(err, "Registration failed")
+      errAlert(err, "Pendaftaran gagal")
     }
   };
 
@@ -266,7 +271,7 @@ function RegisterPage() {
             <form className="register-form" onSubmit={registerUser}>
               <input 
                 type="text" 
-                placeholder="Name" 
+                placeholder="Nama Pengguna" 
                 value={name} 
                 onChange={(e) => setName(e.target.value)} 
                 required 
@@ -274,7 +279,7 @@ function RegisterPage() {
 
               <input 
                 type="text" 
-                placeholder="Instance Name" 
+                placeholder="Nama Instansi" 
                 value={instanceName} 
                 onChange={(e) => setInstanceName(e.target.value)} 
                 required 
@@ -306,7 +311,7 @@ function RegisterPage() {
 
               <textarea 
                 type="text" 
-                placeholder="Address Instance" 
+                placeholder="Lokasi Instansi" 
                 value={locationInstance} 
                 onChange={(e) => setLocationInstance(e.target.value)} 
                 rows="3"
@@ -318,7 +323,7 @@ function RegisterPage() {
                 onChange={(e) => parseIntSelect(e.target.value)} 
                 required >
                 <option value="" disabled>Pilih role user</option>
-                <option value="0">Factory</option>
+                <option value="0">Pabrik</option>
                 <option value="1">PBF</option>
                 <option value="2">BPOM</option>
                 <option value="3">Retailer</option>
@@ -343,14 +348,14 @@ function RegisterPage() {
                   loader? (
                     <img src={imgLoader} alt="" />
                   ) : (
-                    "Sign Up"
+                    "Daftar"
                   )
                 }
               </button>
             </form>
 
             <p className="register-footer">
-              ALready have an account? <a href="/login">login here</a>
+              Sudah memiliki akun? <a href="/login">silahkan masuk disini.</a>
             </p>
 
             <div className="btn-group">
@@ -392,7 +397,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Coba Lagi',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

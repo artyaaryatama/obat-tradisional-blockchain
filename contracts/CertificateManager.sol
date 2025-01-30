@@ -110,7 +110,7 @@ contract CertificateManager {
     return cpotbCertificate.getAllCpotb();
   }
  
-  function getCpotbDetails(string memory _certId) public view onlyFactory onlyBPOM returns (CpotbCertificate.st_certificateDetails memory,
+  function getCpotbDetails(string memory _certId) public view returns (CpotbCertificate.st_certificateDetails memory,
     CpotbCertificate.st_cpotb memory) {
 
     return (cpotbCertificate.getCertDetails(_certId), cpotbCertificate.getCpotbDetails(_certId));

@@ -21,10 +21,10 @@ function NieApprove() {
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
 
   const obatStatusMap = {
-    0: "In Local Production",
-    1: "Requested",
-    2: "Approved",
-    3: "Rejected"
+    0n: "Dalam Produksi",
+    1n: "Pengajuan NIE",
+    2n: "Disetujui NIE",
+    3: "Tidak Disetujui NIE"
   };
 
   const tipeObatMap = {
@@ -57,16 +57,16 @@ function NieApprove() {
             contractData.ObatTradisional.abi, 
             signer
           );
-            
-          const RejectManager = new Contract(
-            contractData.RejectManager.address,
-            contractData.RejectManager.abi,
+
+          const NieManager = new Contract(
+            contractData.NieManager.address, 
+            contractData.NieManager.abi, 
             signer
           );
           
           setContracts({
             obatTradisional: ObatTradisional,
-            rejectManager: RejectManager
+            nieManager: NieManager
           });
             
         } catch (err) {
@@ -133,7 +133,7 @@ function NieApprove() {
   
     if (status === 'Approved') {
       MySwal.fire({
-        title: "Success Approve NIE",
+        title: "Sukses Menyetujui NIE",
         html: (
           <div className='form-swal'>
             <ul>
@@ -154,7 +154,7 @@ function NieApprove() {
             </ul>
             <ul>
               <li className="label">
-                <p>BPOM Instance</p> 
+                <p>Nama Instansi BPOM</p> 
               </li>
               <li className="input">
                 <p>{bpomInstance}</p> 
@@ -162,7 +162,7 @@ function NieApprove() {
             </ul>
             <ul>
               <li className="label">
-                <p>BPOM Address</p> 
+                <p>Alamat Akun BPOM (Pengguna)</p> 
               </li>
               <li className="input">
                 <p>{bpomAddr}</p> 
@@ -178,7 +178,7 @@ function NieApprove() {
             </ul>
             <ul className="txHash">
               <li className="label">
-                <p>Transaction Hash</p>
+                <p>Hash Transaksi</p>
               </li>
               <li className="input">
                 <a
@@ -186,7 +186,7 @@ function NieApprove() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  View Transaction on Etherscan
+                  Lihat transaksi di Etherscan
                 </a>
               </li>
             </ul>
@@ -197,6 +197,10 @@ function NieApprove() {
         showCancelButton: false,
         confirmButtonText: 'Oke',
         allowOutsideClick: true,
+        didOpen: () => {
+          const actions = Swal.getActions();
+          actions.style.justifyContent = "center";
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           window.location.reload()
@@ -205,7 +209,7 @@ function NieApprove() {
       
     } else {
       MySwal.fire({
-        title: "NIE Rejected",
+        title: "Pengajuan NIE ditolak",
         html: (
           <div className='form-swal'>
             <ul>
@@ -218,7 +222,7 @@ function NieApprove() {
             </ul>
             <ul>
               <li className="label">
-                <p>BPOM Instance</p> 
+                <p>Nama Instansi BPOM</p> 
               </li>
               <li className="input">
                 <p>{bpomInstance}</p> 
@@ -226,7 +230,7 @@ function NieApprove() {
             </ul>
             <ul>
               <li className="label">
-                <p>BPOM Address</p> 
+                <p>Alamat Akun BPOM (Pengguna)</p> 
               </li>
               <li className="input">
                 <p>{bpomAddr}</p> 
@@ -250,7 +254,7 @@ function NieApprove() {
             </ul>
             <ul className="txHash">
               <li className="label">
-                <p>Transaction Hash</p>
+                <p>Hash Transaksi</p>
               </li>
               <li className="input">
                 <a
@@ -258,7 +262,7 @@ function NieApprove() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  View Transaction on Etherscan
+                  Lihat transaksi di Etherscan
                 </a>
               </li>
             </ul>
@@ -269,6 +273,10 @@ function NieApprove() {
         showCancelButton: false,
         confirmButtonText: 'Oke',
         allowOutsideClick: true,
+        didOpen: () => {
+          const actions = Swal.getActions();
+          actions.style.justifyContent = "center";
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           window.location.reload()
@@ -283,14 +291,11 @@ function NieApprove() {
     
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
+      const detailNieCt = await contracts.nieManager.getNieDetail(id)
+      let rejectMsg;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [obatDetails, obatNie] = detailObatCt;
-
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash,  cdobHash, jenisObat] = obatDetails;
-
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
-
-      
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstancee, bpomInstance, bpomAddr] = detailNieCt;
 
       const detailObat = {
         obatId: id,
@@ -299,11 +304,12 @@ function NieApprove() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        tipeProduk: "Obat Tradisional", 
         nieStatus: obatStatusMap[nieStatus], 
-        produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
-        nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
-        nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampProduction: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        timestampNieRequest: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
+        timestampNieApprove:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampNieReject:  timestampNieRejected ? new Date(Number(timestampNieRejected) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampNieRenewRequest:  timestampNieRenewRequest ? new Date(Number(timestampNieRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
         nieNumber: nieNumber ? nieNumber : "-",
         factoryAddr: factoryAddr,
         factoryInstanceName: factoryInstance,
@@ -313,8 +319,6 @@ function NieApprove() {
         jenisObat: jenisObat
       };
 
-      console.log(detailObat.nieStatus);
-
       const kemasanKeterangan = kemasan.match(/@(.+?)\s*\(/);
 
       const timestamps = {
@@ -323,7 +327,7 @@ function NieApprove() {
         timestampNieApprove : timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): 0
       }
 
-      if(detailObat.nieStatus === 'Approved'){
+      if(detailObat.nieStatus === 'Disetujui NIE'){
         MySwal.fire({
           title: `Detail Obat ${detailObat.namaObat}`,
           html: (
@@ -433,25 +437,68 @@ function NieApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>Tanggal Pengajuan NIE</p> 
+                      <p>Tanggal Produksi</p>
                     </li>
                     <li className="input">
-                      <p>{detailObat.nieRequestDate}</p> 
+                      <p>{detailObat.timestampProduction}</p> 
                     </li>
                   </ul>
 
                   <ul>
                     <li className="label">
-                      <p>Tanggal Disertifikasi NIE</p> 
+                      <p>Tanggal Pengajuan NIE</p>
                     </li>
                     <li className="input">
-                      <p>{detailObat.nieApprovalDate}</p> 
+                      <p>{detailObat.timestampNieRequest}</p> 
+                    </li>
+                  </ul>
+
+                  {detailObat.timestampNieReject !== '-'?
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Penolakan NIE</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailObat.timestampNieReject}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  {rejectMsg?
+                    <ul>
+                      <li className="label">
+                        <p>Alasan Penolakan</p>
+                      </li>
+                      <li className="input">
+                        <p>{rejectMsg}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  {detailObat.timestampNieRenewRequest !== '-'?
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang NIE</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailObat.timestampNieRenewRequest}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Disetujui NIE</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.timestampNieApprove}</p> 
                     </li>
                   </ul>
 
                   <ul>
                     <li className="label">
-                      <p>Factory Instance</p>
+                      <p>Nama Instansi Pabrik</p>
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryInstanceName}
@@ -471,7 +518,7 @@ function NieApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>Factory Address</p> 
+                      <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryAddr}</p> 
@@ -480,7 +527,7 @@ function NieApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>BPOM Instance</p> 
+                      <p>Nama Instansi BPOM</p> 
                     </li>
                     <li className="input">
                       <p>{detailObat.bpomInstanceNames}
@@ -494,7 +541,7 @@ function NieApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>BPOM Address</p> 
+                      <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailObat.bpomAddr}</p> 
@@ -503,9 +550,9 @@ function NieApprove() {
 
                 </div>
 
-                <div className="container-stepper">
+                {/* <div className="container-stepper">
                   <div id="stepperOrder"></div>
-                </div>
+                </div> */}
               </div>
             
             </div>
@@ -514,24 +561,22 @@ function NieApprove() {
           showCloseButton: true,
           showConfirmButton: false,
           showCancelButton: false,
-          didOpen: () => {
-            const stepperOrder = document.getElementById('stepperOrder');
-            const root = ReactDOM.createRoot(stepperOrder);
-            root.render( 
-              <NieStatusStepper nieStatus={parseInt(nieStatus)} timestamps={timestamps} />
-            )
-          }
+          // didOpen: () => {
+          //   const stepperOrder = document.getElementById('stepperOrder');
+          //   const root = ReactDOM.createRoot(stepperOrder);
+          //   root.render( 
+          //     <NieStatusStepper nieStatus={parseInt(nieStatus)} timestamps={timestamps} />
+          //   )
+          // }
         })
      
-      } else if(detailObat.nieStatus === 'Rejected'){
-        const detailCpotbRejected = await contracts.rejectManager.rejectedDetails(id);
-
-        const [rejectMsg, bpomName, bpomInstanceName, jenisSediaanRejected, bpomAddr, timestampRejected] = detailCpotbRejected
+      } else if(detailObat.nieStatus === 'Tidak Disetujui NIE'){
+        rejectMsg = await contracts.NieManager.getRejectMsgNie(id);
 
         const newTimestamps = {
           timestampProduction : timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : 0,
           timestampNieRequest :timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : 0,
-          timestampNieReject : timestampRejected ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): 0
+          timestampNieReject : timestampNieRejected ? new Date(Number(timestampNieRejected) * 1000).toLocaleDateString('id-ID', options): 0 
         }
  
         MySwal.fire({
@@ -633,36 +678,56 @@ function NieApprove() {
                     </li>
                   </ul>
 
-                  <ul className='rejectMsg'>
+                  <ul>
+                      <li className="label">
+                        <p>Alasan Penolakan</p>
+                      </li>
+                      <li className="input">
+                        <p>{rejectMsg}</p> 
+                      </li>
+                    </ul> 
+
+                  <ul>
                     <li className="label">
-                      <p>Alasan Penolakan</p> 
+                      <p>Tanggal Produksi</p>
                     </li>
                     <li className="input">
-                      <p>{rejectMsg}</p> 
+                      <p>{detailObat.timestampProduction}</p> 
                     </li>
                   </ul>
 
                   <ul>
                     <li className="label">
-                      <p>Tanggal Pengajuan NIE</p> 
+                      <p>Tanggal Pengajuan NIE</p>
                     </li>
                     <li className="input">
-                      <p>{detailObat.nieRequestDate}</p> 
+                      <p>{detailObat.timestampNieRequest}</p> 
                     </li>
                   </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Penolakan NIE</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailObat.timestampNieReject}</p> 
+                      </li>
+                    </ul> 
+
+                  {detailObat.timestampNieRenewRequest !== '-'?
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang NIE</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailObat.timestampNieRenewRequest}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
 
                   <ul>
                     <li className="label">
-                      <p>Tanggal Penolakan NIE</p> 
-                    </li>
-                    <li className="input">
-                    <p>{ new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options)}</p> 
-                    </li>
-                  </ul>
-
-                  <ul>
-                    <li className="label">
-                      <p>Factory Instance</p>
+                      <p>Nama Instansi Pabrik</p>
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryInstanceName}
@@ -682,7 +747,7 @@ function NieApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>Factory Address</p> 
+                      <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryAddr}</p> 
@@ -691,7 +756,7 @@ function NieApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>BPOM Instance</p> 
+                      <p>Nama Instansi BPOM</p> 
                     </li>
                     <li className="input">
                       <p>{detailObat.bpomInstanceNames}
@@ -705,7 +770,7 @@ function NieApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>BPOM Address</p> 
+                      <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailObat.bpomAddr}</p> 
@@ -714,9 +779,9 @@ function NieApprove() {
 
                 </div>
 
-                <div className="container-stepper">
+                {/* <div className="container-stepper">
                   <div id="stepperOrder"></div>
-                </div>
+                </div> */}
               </div>
             
             </div>
@@ -725,13 +790,13 @@ function NieApprove() {
           showCloseButton: true,
           showConfirmButton: false,
           showCancelButton: false,
-          didOpen: () => {
-            const stepperOrder = document.getElementById('stepperOrder');
-            const root = ReactDOM.createRoot(stepperOrder);
-            root.render( 
-              <NieStatusStepper nieStatus={parseInt(nieStatus)} timestamps={newTimestamps} />
-            )
-          }
+          // didOpen: () => {
+          //   const stepperOrder = document.getElementById('stepperOrder');
+          //   const root = ReactDOM.createRoot(stepperOrder);
+          //   root.render( 
+          //     <NieStatusStepper nieStatus={parseInt(nieStatus)} timestamps={newTimestamps} />
+          //   )
+          // }
         })
       } else{
         MySwal.fire({
@@ -843,25 +908,68 @@ function NieApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>Tanggal Pengajuan NIE</p> 
+                      <p>Tanggal Produksi</p>
                     </li>
                     <li className="input">
-                      <p>{detailObat.nieRequestDate}</p> 
+                      <p>{detailObat.timestampProduction}</p> 
                     </li>
                   </ul>
 
                   <ul>
                     <li className="label">
-                      <p>Tanggal Disertifikasi NIE</p> 
+                      <p>Tanggal Pengajuan NIE</p>
                     </li>
                     <li className="input">
-                      <p>{detailObat.nieApprovalDate}</p> 
+                      <p>{detailObat.timestampNieRequest}</p> 
+                    </li>
+                  </ul>
+
+                  {detailObat.timestampNieReject !== '-'?
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Penolakan NIE</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailObat.timestampNieReject}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  {rejectMsg?
+                    <ul>
+                      <li className="label">
+                        <p>Alasan Penolakan</p>
+                      </li>
+                      <li className="input">
+                        <p>{rejectMsg}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  {detailObat.timestampNieRenewRequest !== '-'?
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang NIE</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailObat.timestampNieRenewRequest}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Disetujui NIE</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.timestampNieApprove}</p> 
                     </li>
                   </ul>
 
                   <ul>
                     <li className="label">
-                      <p>Factory Instance</p>
+                      <p>Nama Instansi Pabrik</p>
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryInstanceName}
@@ -881,7 +989,7 @@ function NieApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>Factory Address</p> 
+                      <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryAddr}</p> 
@@ -890,7 +998,7 @@ function NieApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>BPOM Instance</p> 
+                      <p>Nama Instansi BPOM</p> 
                     </li>
                     <li className="input">
                       <p>{detailObat.bpomInstanceNames}
@@ -904,7 +1012,7 @@ function NieApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>BPOM Address</p> 
+                      <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailObat.bpomAddr}</p> 
@@ -913,9 +1021,9 @@ function NieApprove() {
 
                 </div>
 
-                <div className="container-stepper">
+                {/* <div className="container-stepper">
                   <div id="stepperOrder"></div>
-                </div>
+                </div> */}
               </div>
             
             </div>
@@ -923,16 +1031,16 @@ function NieApprove() {
           width: '1020',
           showCloseButton: true,
           showCancelButton: false,
-          confirmButtonText: 'Approve',
           showDenyButton: true,
-          denyButtonText: 'Reject ',
-          didOpen: () => {
-            const stepperOrder = document.getElementById('stepperOrder');
-            const root = ReactDOM.createRoot(stepperOrder);
-            root.render( 
-              <NieStatusStepper nieStatus={parseInt(nieStatus)} timestamps={timestamps} />
-            );
-          }
+          confirmButtonText: 'Approve',
+          denyButtonText: 'Reject',
+          // didOpen: () => { 
+          //   const stepperOrder = document.getElementById('stepperOrder');
+          //   const root = ReactDOM.createRoot(stepperOrder);
+          //   root.render( 
+          //     <NieStatusStepper nieStatus={parseInt(nieStatus)} timestamps={timestamps} />
+          //   );
+          // }
         }).then((result) => {
           
           if(result.isConfirmed){
@@ -961,7 +1069,7 @@ function NieApprove() {
                     <div className="col col3">
                       <ul>
                         <li className="label">
-                          <label htmlFor="factoryAddr">Factory Instance</label>
+                          <label htmlFor="factoryAddr">Nama Instansi Pabrik</label>
                         </li>
                         <li className="input">
                           <input
@@ -993,7 +1101,7 @@ function NieApprove() {
 
                       <ul>
                         <li className="label">
-                          <label htmlFor="factoryAddr">Factory Address</label>
+                          <label htmlFor="factoryAddr">Alamat Akun Pabrik (Pengguna)</label>
                         </li>
                         <li className="input">
                           <input
@@ -1075,7 +1183,7 @@ function NieApprove() {
                           <input
                             type="text"
                             id="tipeProduk"
-                            value={detailObat.tipeProduk}
+                            value={detailObat.tipeObat}
                             readOnly
                           />
                         </li>
@@ -1129,19 +1237,20 @@ function NieApprove() {
               ),
               width: '820',
               showCancelButton: true,
-              confirmButtonText: 'Yes, Approve!',
+              confirmButtonText: 'Setujui',
+              cancelButtonText: 'Batal',
               allowOutsideClick: false,
             }).then((result) => {
               if(result.isConfirmed){
 
                 MySwal.fire({
-                  title:"Processing your request...",
-                  text:"Your request is on its way. This won't take long. 🚀",
+                  title: "Memproses Permintaan...",
+                  text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
                   icon: 'info',
                   showCancelButton: false,
                   showConfirmButton: false,
-                  allowOutsideClick: false
-                })
+                  allowOutsideClick: false,
+                });
 
                 approveNie(id, nieNum, detailObat.namaObat, factoryInstance)
               }
@@ -1149,14 +1258,14 @@ function NieApprove() {
           
           } else if(result.isDenied){
             MySwal.fire({
-              title: "Reject NIE",
+              title: "Tolak Pengajuan NIE",
               html: (
                 <div className='form-swal form'>
                   <div className="row row--obat">
                     <div className="col col3">
                       <ul>
                         <li className="label">
-                          <label htmlFor="factoryAddr">Factory Instance</label>
+                          <label htmlFor="factoryAddr">Nama Instansi Pabrik</label>
                         </li>
                         <li className="input">
                           <input
@@ -1188,7 +1297,7 @@ function NieApprove() {
 
                       <ul>
                         <li className="label">
-                          <label htmlFor="factoryAddr">Factory Address</label>
+                          <label htmlFor="factoryAddr">Alamat Akun Pabrik (Pengguna)</label>
                         </li>
                         <li className="input">
                           <input
@@ -1256,7 +1365,7 @@ function NieApprove() {
                           <input
                             type="text"
                             id="tipeProduk"
-                            value={detailObat.tipeProduk}
+                            value={detailObat.tipeObat}
                             readOnly
                           />
                         </li>
@@ -1306,14 +1415,27 @@ function NieApprove() {
 
                       <ul>
                         <li className="label">
-                          <label htmlFor="rejectMsg">Alasan Reject</label>
+                          <label htmlFor="rejectReason">Alasan Reject</label>
                         </li>
                         <li className="input">
-                          <textarea 
-                            type="text" 
-                            id="rejectMsg"
+                          <select id="rejectReason" required onChange={(e) => handleRejectReasonChange(e)}>
+                            <option value="">Pilih alasan</option>
+                            <option value="Dokumen Teknis tidak lengkap">Dokumen Teknis tidak lengkap</option>
+                            <option value="Dokumen Administratif tidak lengkap">Dokumen Administratif tidak lengkap</option>
+                            <option value="Lainnya">Other (specify manually)</option>
+                          </select>
+                        </li>
+                      </ul>
+
+                      <ul id="customRejectMsgWrapper" style={{ display: 'none' }}>
+                        <li className="label">
+                          <label htmlFor="customRejectMsg">Specify Reason</label>
+                        </li>
+                        <li className="input">
+                          <textarea
+                            id="customRejectMsg"
                             rows="3"
-                            required
+                            placeholder="Masukkan alasan manual di sini"
                           />
                         </li>
                       </ul>
@@ -1323,29 +1445,36 @@ function NieApprove() {
                 </div>
               ),
               width: '820',
-              showCancelButton: false,
+              showCancelButton: true,
               showCloseButton: true,
-              confirmButtonText: 'Reject',
-              confirmButtonColor: '#E33333',
+              confirmButtonText: 'Tolak',
+              cancelButtonText: 'Batal',
               allowOutsideClick: false,
               preConfirm: () => {
-                const rejectMsgInput = document.getElementById('rejectMsg').value;
-                if (!rejectMsgInput) {
-                  Swal.showValidationMessage('Alasan Reject is required!');
+                const rejectReason = document.getElementById('rejectReason').value;
+                const customRejectMsg = document.getElementById('customRejectMsg').value;
+
+                if (!rejectReason) {
+                  Swal.showValidationMessage('Pilih alasan reject!');
+                } else if (rejectReason === 'Lainnya' && !customRejectMsg.trim()) {
+                  Swal.showValidationMessage('Masukkan alasan manual jika memilih "Lainnya"!');
                 }
-                return { rejectMsgInput };
+
+                return {
+                  rejectReason: rejectReason === 'Lainnya' ? customRejectMsg : rejectReason,
+                };
               },
             }).then((result) => {
               if(result.isConfirmed){
 
                 MySwal.fire({
-                  title:"Processing your request...",
-                  text:"Your request is on its way. This won't take long. 🚀",
+                  title: "Memproses Permintaan...",
+                  text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
                   icon: 'info',
                   showCancelButton: false,
                   showConfirmButton: false,
-                  allowOutsideClick: false
-                })
+                  allowOutsideClick: false,
+                });
 
                 rejectNie(id, result.value.rejectMsgInput, detailObat.namaObat, factoryInstance)
               }
@@ -1360,21 +1489,30 @@ function NieApprove() {
     }
   }
 
+  function handleRejectReasonChange(e) {
+    const customMsgWrapper = document.getElementById('customRejectMsgWrapper');
+    if (e.target.value === 'Lainnya') {
+      customMsgWrapper.style.display = 'flex';
+    } else {
+      customMsgWrapper.style.display = 'none';
+    }
+  }
+
   const approveNie = async(id, nieNumber, namaObat, factoryInstance) => {
 
+    console.log(id, nieNumber, userdata.instanceName);
     try {
-      const approveNieCt =  await contracts.obatTradisional.approveNie(id, nieNumber, userdata.instanceName)
-      console.log(approveNieCt);
+      const approveNieCt =  await contracts.nieManager.approveNie(id, nieNumber, userdata.instanceName)
 
       if(approveNieCt){
         updateObatFb(factoryInstance, namaObat, approveNieCt.hash, true)
         MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          title: "Memproses transaksi...",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
       }
 
-      contracts.obatTradisional.on('evt_nieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
+      contracts.nieManager.on('evt_nieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
         handleEventNieApproved("Approved", namaObat, _instanceAddr, _instanceName, _nieNumber, _timestampApprove, approveNieCt.hash)
       });
 
@@ -1386,22 +1524,22 @@ function NieApprove() {
   const rejectNie = async(id, rejectMsg, namaObat, factoryInstance) => {
 
     try {
-      const rejectCt = await contracts.rejectManager.rejectedByBpom(rejectMsg, userdata.name, userdata.instanceName, id, "nie", 0);
+      const rejectCt = await contracts.nieManager.rejectNie(id, userdata.instanceName, rejectMsg);
 
       if(rejectCt){
         updateObatFb(factoryInstance, namaObat, rejectCt.hash, false)
         MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          title: "Memproses transaksi...",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
       }
 
-      contracts.rejectManager.on('evt_nieRejected',  (_instanceName, _instanceAddr, _timestampRejected, _rejectMsg) => {
+      contracts.nieManager.on('evt_nieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
         handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, rejectCt.hash)
       });
 
     } catch (error) {
-      errAlert(error, "Can't Approve NIE");
+      errAlert(error, "Can't Reject NIE");
     }
   }
 
@@ -1442,7 +1580,7 @@ function NieApprove() {
                 {dataObat.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.obatId)}>{item.namaProduk}</button>
-                    <p>Factory Instance: {item.factoryInstance}</p>
+                    <p>Nama Instansi Pabrik: {item.factoryInstance}</p>
                     <p>
                       { item.nieNumber !== null ? `NIE Number : ${item.nieNumber}` : "NIE Number: Not Available"}
                     </p>
@@ -1474,7 +1612,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

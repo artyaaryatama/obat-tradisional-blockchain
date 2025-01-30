@@ -43,7 +43,6 @@ contract CpotbCertificate is BaseCertificate {
   mapping (string => st_cpotb) public cpotbDataById;
   mapping(string => st_approvedCert[]) public approvedTipePermohonanByFactory;
 
-
   function requestCpotb(
     string memory _certId,
     string memory _factoryName,

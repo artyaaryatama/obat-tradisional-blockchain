@@ -183,7 +183,7 @@ function StockObatRetailer() {
 
                       <ul>
                         <li className="label">
-                          <p>Factory Instance</p>
+                          <p>Nama Instansi Pabrik</p>
                         </li>
                         <li className="input">
                           <p>{factoryInstance}
@@ -203,7 +203,7 @@ function StockObatRetailer() {
                     
                       <ul>
                         <li className="label">
-                          <p>Factory Address</p>
+                          <p>Alamat Akun Pabrik (Pengguna)</p>
                         </li>
                         <li className="input">
                           <p>{factoryAddr}</p>
@@ -212,7 +212,7 @@ function StockObatRetailer() {
 
                       <ul>
                         <li className="label">
-                          <p>PBF Instance</p>
+                          <p>Nama Instansi PBF</p>
                         </li>
                         <li className="input">
                           <p>{sellerUser[0]}
@@ -232,7 +232,7 @@ function StockObatRetailer() {
                     
                       <ul>
                         <li className="label">
-                          <p>PBF Address</p>
+                          <p>Alamat Akun PBF (Pengguna)</p>
                         </li>
                         <li className="input">
                           <p>{sellerUser[1]}</p>
@@ -241,7 +241,7 @@ function StockObatRetailer() {
                     
                       <ul>
                         <li className="label">
-                          <p>Retailer Instance</p>
+                          <p>Nama Instansi Retailer</p>
                         </li>
                         <li className="input">
                           <p>{buyerUser[0]}</p>
@@ -250,7 +250,7 @@ function StockObatRetailer() {
                     
                       <ul>
                         <li className="label">
-                          <p>Retailer Instance</p>
+                          <p>Nama Instansi Retailer</p>
                         </li>
                         <li className="input">
                           <p>{buyerUser[1]}</p>
@@ -433,7 +433,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

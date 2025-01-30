@@ -27,10 +27,10 @@ function CdobApprove() {
   };
 
   const statusMap = {
-    0: "Pending",
-    1: "Approved",
-    2: "Rejected",
-    3: "Renew Requested",
+    0: "Dalam Proses",
+    1: "Disetujui",
+    2: "Tidak Disetujui",
+    3: "Pengajuan Ulang",
   };
 
   const options = {
@@ -132,9 +132,9 @@ function CdobApprove() {
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
   
     // detail can be the cpotb number or rejectMsg
-    if(status === 'Approved'){
+    if(status === 'Disetujui'){
       MySwal.fire({
-        title: "Success Approve CDOB",
+        title: "Sukses Menyetujui CDOB",
         html: (
           <div className='form-swal'>
             <ul>
@@ -147,7 +147,7 @@ function CdobApprove() {
             </ul>
             <ul>
               <li className="label">
-                <p>BPOM Instance</p> 
+                <p>Nama Instansi BPOM</p> 
               </li>
               <li className="input">
                 <p>{bpomInstance}</p> 
@@ -155,7 +155,7 @@ function CdobApprove() {
             </ul>
             <ul>
               <li className="label">
-                <p>BPOM Address</p> 
+                <p>Alamat Akun BPOM (Pengguna)</p> 
               </li>
               <li className="input">
                 <p>{bpomAddr}</p> 
@@ -163,7 +163,7 @@ function CdobApprove() {
             </ul>
             <ul>
               <li className="label">
-                <p>Tanggal Penyetujuan</p> 
+                <p>Tanggal Disetujui</p> 
               </li>
               <li className="input">
                 <p>{formattedTimestamp}</p> 
@@ -179,7 +179,7 @@ function CdobApprove() {
             </ul>
             <ul className="txHash">
               <li className="label">
-                <p>Transaction Hash</p>
+                <p>Hash Transaksi</p>
               </li>
               <li className="input">
                 <a
@@ -187,7 +187,7 @@ function CdobApprove() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  View Transaction on Etherscan
+                  Lihat transaksi di Etherscan
                 </a>
               </li>
             </ul>
@@ -198,6 +198,10 @@ function CdobApprove() {
         showCancelButton: false,
         confirmButtonText: 'Oke',
         allowOutsideClick: true,
+        didOpen: () => {
+          const actions = Swal.getActions();
+          actions.style.justifyContent = "center";
+      }
       }).then((result) => {
         if (result.isConfirmed) {
           window.location.reload();
@@ -205,12 +209,12 @@ function CdobApprove() {
       });
     } else {
       MySwal.fire({
-        title: "CDOB Rejected",
+        title: "Pengajuan CDOB Ditolak",
         html: (
           <div className='form-swal'>
             <ul>
               <li className="label">
-                <p>BPOM Instance</p> 
+                <p>Nama Instansi BPOM</p> 
               </li>
               <li className="input">
                 <p>{bpomInstance}</p> 
@@ -218,7 +222,7 @@ function CdobApprove() {
             </ul>
             <ul>
               <li className="label">
-                <p>BPOM Address</p> 
+                <p>Alamat Akun BPOM (Pengguna)</p> 
               </li>
               <li className="input">
                 <p>{bpomAddr}</p> 
@@ -250,7 +254,7 @@ function CdobApprove() {
             </ul>
             <ul className="txHash">
               <li className="label">
-                <p>Transaction Hash</p>
+                <p>Hash Transaksi</p>
               </li>
               <li className="input">
                 <a
@@ -258,7 +262,7 @@ function CdobApprove() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  View Transaction on Etherscan
+                  Lihat transaksi di Etherscan
                 </a>
               </li>
             </ul>
@@ -269,6 +273,10 @@ function CdobApprove() {
         showCancelButton: false,
         confirmButtonText: 'Oke',
         allowOutsideClick: true,
+        didOpen: () => {
+          const actions = Swal.getActions();
+          actions.style.justifyContent = "center";
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           window.location.reload();
@@ -318,7 +326,7 @@ function CdobApprove() {
         pbfNPWP: detailUserPbfCt[7]
       };
 
-      if(detailCdob.status === 'Approved'){
+      if(detailCdob.status === 'Disetujui'){
         MySwal.fire({
           title: "Detail Sertifikat CDOB",
           html: (
@@ -327,7 +335,7 @@ function CdobApprove() {
                 <div className="col">
                   <ul>
                     <li className="label">
-                      <p>PBF Instance</p>
+                      <p>Nama Instansi PBF</p>
                     </li>
                     <li className="input">
                       <p>{detailCdob.pbfName}</p>
@@ -336,7 +344,7 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>PBF Address</p> 
+                      <p>Alamat Akun PBF (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.pbfAddr}</p> 
@@ -363,7 +371,7 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Instance</p> 
+                      <p>Nama Instansi BPOM</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.bpomInstance}</p> 
@@ -372,10 +380,25 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Address</p> 
+                      <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.bpomAddr}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>IPFS CDOB</p> 
+                    </li>
+                    <li className="input">
+                      <a
+                        href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Liat data CDOB di IPFS
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
                     </li>
                   </ul>
                 </div>
@@ -470,9 +493,10 @@ function CdobApprove() {
           ),
           width: '620',
           showCancelButton: false,
-          showCloseButton: true
+          showCloseButton: true,
+          showConfirmButton: false,
         })
-      } else if (detailCdob.status === 'Rejected'){
+      } else if (detailCdob.status === 'Tidak Disetujui'){
         MySwal.fire({
           title: "Detail Sertifikat CDOB",
           html: (
@@ -481,7 +505,7 @@ function CdobApprove() {
               <div className="col">
                   <ul>
                     <li className="label">
-                      <p>PBF Instance</p>
+                      <p>Nama Instansi PBF</p>
                     </li>
                     <li className="input">
                       <p>{detailCdob.pbfName}</p>
@@ -490,7 +514,7 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>PBF Address</p> 
+                      <p>Alamat Akun PBF (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.pbfAddr}</p> 
@@ -517,7 +541,7 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Instance</p> 
+                      <p>Nama Instansi BPOM</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.bpomInstance}</p> 
@@ -526,7 +550,7 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Address</p> 
+                      <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.bpomAddr}</p> 
@@ -607,14 +631,14 @@ function CdobApprove() {
         })
       } else{
         MySwal.fire({
-          title: "Approve Sertifikat CDOB",
+          title: "Setujui Pengajuan CDOB",
           html: (
             <div className='form-swal'>
               <div className="row">
                 <div className="col">
                   <ul>
                     <li className="label">
-                      <p>PBF Instance</p>
+                      <p>Nama Instansi PBF</p>
                     </li>
                     <li className="input">
                       <p>{detailCdob.pbfName}</p>
@@ -623,7 +647,7 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>PBF Address</p> 
+                      <p>Alamat Akun PBF (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.pbfAddr}</p> 
@@ -650,7 +674,7 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Instance</p> 
+                      <p>Nama Instansi BPOM</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.bpomInstance}</p> 
@@ -659,7 +683,7 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Address</p> 
+                      <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.bpomAddr}</p> 
@@ -739,9 +763,9 @@ function CdobApprove() {
           width: '620',
           showCloseButton: true,
           showCancelButton: false,
-          confirmButtonText: 'Approve',
+          confirmButtonText: 'Setujui',
           showDenyButton: true,
-          denyButtonText: 'Reject'
+          denyButtonText: 'Tolak'
         }).then((result) => {
   
           if(result.isConfirmed){
@@ -753,14 +777,14 @@ function CdobApprove() {
             const cdobNumber = `CDOB${randomDigits1}/S1-${randomDigits2}/${month}/${year}`;
             
             MySwal.fire({
-              title: 'Approve Pengajuan Sertifikat CDOB',
+              title: 'Setujui Pengajuan CDOB',
               html: (
                 <div className="form-swal form">
                   <div className="row">
                     <div className="col">
                       <ul>
                         <li className="label">
-                          <label htmlFor="pbfName">PBF Instance</label>
+                          <label htmlFor="pbfName">Nama Instansi PBF</label>
                         </li>
                         <li className="input">
                           <input
@@ -774,7 +798,7 @@ function CdobApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="pbfAddr">PBF Address</label>
+                          <label htmlFor="pbfAddr">Alamat Akun PBF (Pengguna)</label>
                         </li>
                         <li className="input">
                           <input
@@ -814,7 +838,7 @@ function CdobApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="bpomInstance">BPOM Instance</label>
+                          <label htmlFor="bpomInstance">Nama Instansi BPOM</label>
                         </li>
                         <li className="input">
                           <input
@@ -828,7 +852,7 @@ function CdobApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="bpomAddr">BPOM Address</label>
+                          <label htmlFor="bpomAddr">Alamat Akun BPOM (Pengguna)</label>
                         </li>
                         <li className="input">
                           <input
@@ -876,20 +900,20 @@ function CdobApprove() {
               width: '620',       
               icon: 'warning',
               showCancelButton: true,
-              confirmButtonText: 'Yes, Approve!',
-              cancelButtonText: 'Cancel',
+              cancelButtonText: 'Batal',
+              confirmButtonText: 'Setujui',
               allowOutsideClick: false,
             }).then((result) => {
 
               if (result.isConfirmed) {
                 MySwal.fire({
-                  title:"Processing your request...",
-                  text:"Your request is on its way. This won't take long. 🚀",
+                  title: "Memproses Permintaan...",
+                  text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
                   icon: 'info',
                   showCancelButton: false,
                   showConfirmButton: false,
-                  allowOutsideClick: false
-                })
+                  allowOutsideClick: false,
+                });
 
                 generateIpfs(cdobNumber, detailCdob)
               }
@@ -903,7 +927,7 @@ function CdobApprove() {
                     <div className="col">
                       <ul>
                         <li className="label">
-                          <label htmlFor="pbfName">PBF Instance</label>
+                          <label htmlFor="pbfName">Nama Instansi PBF</label>
                         </li>
                         <li className="input">
                           <input
@@ -917,7 +941,7 @@ function CdobApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="pbfAddr">PBF Address</label>
+                          <label htmlFor="pbfAddr">Alamat Akun PBF (Pengguna)</label>
                         </li>
                         <li className="input">
                           <input
@@ -931,7 +955,7 @@ function CdobApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="bpomInstance">BPOM Instance</label>
+                          <label htmlFor="bpomInstance">Nama Instansi BPOM</label>
                         </li>
                         <li className="input">
                           <input
@@ -945,7 +969,7 @@ function CdobApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="bpomAddr">BPOM Address</label>
+                          <label htmlFor="bpomAddr">Alamat Akun BPOM (Pengguna)</label>
                         </li>
                         <li className="input">
                           <input
@@ -1006,10 +1030,10 @@ function CdobApprove() {
               ),     
               width: '720',        
               icon: 'warning',
-              showCancelButton: false,
+              showCancelButton: true,
+              cancelButtonText: 'Batal',
               showCloseButton: true,
               confirmButtonText: 'Reject',
-              confirmButtonColor: '#E33333',
               allowOutsideClick: false,
               preConfirm: () => {
               const rejectReason = document.getElementById('rejectReason').value;
@@ -1029,13 +1053,13 @@ function CdobApprove() {
 
               if (result.isConfirmed) {
                 MySwal.fire({
-                  title:"Processing your request...",
-                  text:"Your request is on its way. This won't take long. 🚀",
+                  title: "Menyimpan sertifikat ke IPFS",
+                  text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳",
                   icon: 'info',
                   showCancelButton: false,
                   showConfirmButton: false,
-                  allowOutsideClick: false
-                })
+                  allowOutsideClick: false,
+                });
 
                 rejectCdob(id, result.value.rejectReason, tipePermohonan, detailCdob.pbfName)
               }
@@ -1068,6 +1092,11 @@ function CdobApprove() {
     const date = new Date();
     const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
     
+    MySwal.update({
+      title: "Memproses Permintaan...",
+      text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
+    });
+
     try {
 
       const userPbfCt = await contracts.roleManager.getUserData(detailCdob.pbfAddr)
@@ -1080,6 +1109,8 @@ function CdobApprove() {
         timestampApprove: formattedDate,
         senderInstance: detailCdob.pbfName,
         senderAddress: detailCdob.pbfAddr,
+        senderNIB: detailCdob.pbfNIB,
+        senderNPWP: detailCdob.pbfNPWP,
         senderInstanceAddress: userPbfCt[4],
         bpomInstance: userdata.instanceName,
         bpomAddress: userdata.address,
@@ -1120,8 +1151,8 @@ function CdobApprove() {
         updateCdobFb(pbfName, tpMap[tp], approveCt.hash, true)
         
         MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          title: "Memproses transaksi...",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
       }
       
@@ -1143,8 +1174,8 @@ function CdobApprove() {
         updateCdobFb(pbfName, tipePermohonan, rejectCt.hash, false)
 
         MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          title: "Memproses transaksi...",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
       }
 
@@ -1236,7 +1267,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

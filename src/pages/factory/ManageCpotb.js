@@ -48,10 +48,10 @@ function ManageCpotb() {
   };
 
   const statusMap = {
-    0: "Pending",
-    1: "Approved",
-    2: "Rejected",
-    3: "Renew Requested",
+    0: "Dalam Proses",
+    1: "Disetujui",
+    2: "Penolakan",
+    3: "Pengajuan Ulang",
   };
 
   const options = {
@@ -78,13 +78,7 @@ function ManageCpotb() {
             contractData.CertificateManager.abi, 
             signer
           );
-            
-          const RejectManager = new Contract(
-            contractData.RejectManager.address,
-            contractData.RejectManager.abi,
-            signer
-          );
-
+    
           const RoleManager = new Contract(
             contractData.RoleManager.address,
             contractData.RoleManager.abi,
@@ -93,7 +87,6 @@ function ManageCpotb() {
           
           setContracts({
             certificateManager: CertificateManager,
-            rejectManager: RejectManager,
             roleManager: RoleManager
           });
         } catch (err) {
@@ -166,7 +159,7 @@ function ManageCpotb() {
         <div className='form-swal'>
           <ul>
             <li className="label">
-              <p>Factory Instance</p> 
+              <p>Nama Instansi Pabrik</p>
             </li>
             <li className="input">
               <p>{_name}</p> 
@@ -174,7 +167,7 @@ function ManageCpotb() {
           </ul>
           <ul>
             <li className="label">
-              <p>Factory Address</p> 
+              <p>Alamat Akun Pabrik (Pengguna)</p> 
             </li>
             <li className="input">
               <p>{_userAddr}</p> 
@@ -198,7 +191,7 @@ function ManageCpotb() {
           </ul>
           <ul className="txHash">
             <li className="label">
-              <p>Transaction Hash</p>
+              <p>Hash Transaksi</p>
             </li>
             <li className="input">
               <a
@@ -206,7 +199,7 @@ function ManageCpotb() {
                 target="_blank"
                 rel="noreferrer"
               >
-                View Transaction on Etherscan
+                Lihat transaksi di Etherscan
               </a>
             </li>
           </ul>
@@ -217,6 +210,10 @@ function ManageCpotb() {
       showCancelButton: false,
       confirmButtonText: 'Oke',
       allowOutsideClick: true,
+      didOpen: () => {
+        const actions = Swal.getActions();
+       actions.style.justifyContent = "center";
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         window.location.reload();
@@ -285,7 +282,7 @@ function ManageCpotb() {
                   <div className="col">
                     <ul>
                       <li className="label">
-                        <p>Factory Instance</p>
+                        <p>Nama Instansi Pabrik</p>
                       </li>
                       <li className="input">
                         <p>{detailCpotb.factoryName} </p>
@@ -294,7 +291,7 @@ function ManageCpotb() {
   
                     <ul>
                       <li className="label">
-                        <p>Factory Address</p> 
+                        <p>Alamat Akun Pabrik (Pengguna)</p> 
                       </li>
                       <li className="input">
                         <p>{detailCpotb.factoryAddr}</p> 
@@ -328,7 +325,7 @@ function ManageCpotb() {
     
                     <ul>
                       <li className="label">
-                        <p>BPOM Instance</p> 
+                        <p>Nama Instansi BPOM</p> 
                       </li>
                       <li className="input">
                         <p>{detailCpotb.bpomInstance}</p> 
@@ -337,7 +334,7 @@ function ManageCpotb() {
     
                     <ul>
                       <li className="label">
-                        <p>BPOM Address</p> 
+                        <p>Alamat Akun BPOM (Pengguna)</p> 
                       </li>
                       <li className="input">
                         <p>{detailCpotb.bpomAddr}</p> 
@@ -427,7 +424,7 @@ function ManageCpotb() {
                   <div className="col">
                     <ul>
                       <li className="label">
-                        <p>Factory Instance</p>
+                        <p>Nama Instansi Pabrik</p>
                       </li>
                       <li className="input">
                         <p>{detailCpotb.factoryName} </p>
@@ -436,7 +433,7 @@ function ManageCpotb() {
   
                     <ul>
                       <li className="label">
-                        <p>Factory Address</p> 
+                        <p>Alamat Akun Pabrik (Pengguna)</p> 
                       </li>
                       <li className="input">
                         <p>{detailCpotb.factoryAddr}</p> 
@@ -470,7 +467,7 @@ function ManageCpotb() {
     
                     <ul>
                       <li className="label">
-                        <p>BPOM Instance</p> 
+                        <p>Nama Instansi BPOM</p> 
                       </li>
                       <li className="input">
                         <p>{detailCpotb.bpomInstance}</p> 
@@ -479,7 +476,7 @@ function ManageCpotb() {
     
                     <ul>
                       <li className="label">
-                        <p>BPOM Address</p> 
+                        <p>Alamat Akun BPOM (Pengguna)</p> 
                       </li>
                       <li className="input">
                         <p>{detailCpotb.bpomAddr}</p> 
@@ -585,7 +582,7 @@ function ManageCpotb() {
                         </ul>
                         <ul>
                         <li className="label">
-                          <label htmlFor="factoryInstanceName">Factory Instance</label>
+                          <label htmlFor="factoryInstanceName">Nama Instansi Pabrik</label>
                         </li>
                         <li className="input">
                           <input
@@ -669,7 +666,7 @@ function ManageCpotb() {
                 <div className="col">
                   <ul>
                     <li className="label">
-                      <p>Factory Instance</p>
+                      <p>Nama Instansi Pabrik</p>
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryName}</p>
@@ -702,7 +699,7 @@ function ManageCpotb() {
   
                   <ul>
                     <li className="label">
-                      <p>Factory Address</p> 
+                      <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryAddr}</p> 
@@ -711,7 +708,7 @@ function ManageCpotb() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Instance</p> 
+                      <p>Nama Instansi BPOM</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.bpomInstance}</p> 
@@ -720,7 +717,7 @@ function ManageCpotb() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Address</p> 
+                      <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.bpomAddr}</p> 
@@ -739,7 +736,7 @@ function ManageCpotb() {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            View CPOTB on IPFS
+                            Liat data CPOTB di IPFS
                             <i class="fa-solid fa-arrow-up-right-from-square"></i>
                           </a>
                         </li>
@@ -855,8 +852,8 @@ function ManageCpotb() {
         writeCpotbFb( userdata.instanceName, jenisSediaanMap[jenisSediaan], renewRequestCpotbCt.hash );
 
         MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          title: "Memproses transaksi...",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
       }
   
@@ -895,7 +892,7 @@ function ManageCpotb() {
             <div className="btn">
               <button className='btn-menu' onClick={() => navigate('/request-cpotb')}>
                 <i className="fa-solid fa-plus"></i>
-                Add new data
+                Tambah data baru
               </button>
             </div>
           </div>
@@ -906,7 +903,7 @@ function ManageCpotb() {
                   <li key={index}>
                     <button className='title' onClick={() => getDetailCpotb(item.cpotbId)}>{item.jenisSediaan}</button>
                     <p>
-                      { item.cpotbNumber !== null ? `CPOTB Number: ${item.cpotbNumber}` : "CPOTB Number: Tidak Tersedia"}
+                      { item.cpotbNumber !== null ? `Nomor CPOTB: ${item.cpotbNumber}` : "Nomor CPOTB: Tidak Tersedia"}
                     </p>
                     <button className={`statusPengajuan ${item.status}`}>
                       {item.status}
@@ -936,7 +933,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

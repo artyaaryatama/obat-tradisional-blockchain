@@ -85,6 +85,9 @@
       .row--obat ul li.input, .row--obat ul li.label-sm{
         width: 100%;
       }
+      .row--obat ul.status li.input{
+        // width: auto;
+      }
     }
   }
 
@@ -179,27 +182,27 @@
               padding: 8px 12px;
               border-radius: 6px;
 
-              &.In, &.Placed, &.Empty, &.Pending, &.Requested{
+              &.Dalam, &.Diajukan, &.Empty{
                 background-color: $grey;
                 color: $white;
               }
               
-              &.Shipped, &.Renew{
+              &.Dikirim{
                 background-color: $yellow;
                 color: $black;
               }
   
-              &.Approved, &.Completed{
+              &.Disetujui, &.Selesai{
                 background-color: $green;
                 color: $white;
               }
               
-              &.Rejected{
+              &.Penolakan{
                 background-color: $red;
                 color: $white;
               }
               
-              &.Available{
+              &.Available, &.Requested.NIE, &.Pengajuan{
                 background-color: $blue;
                 color: $white;
               }
@@ -319,9 +322,17 @@
     
           li.input{
             width: 100%;
+            padding-top: 4px;
 
             span.linked{
               margin-left: 8px;
+            }
+          }
+
+          &.status{
+            li.input{
+              width: auto;
+              padding-top: 2px;
             }
           }
         }
@@ -423,12 +434,13 @@
       }
       
       &.label-1{
-        width: 16%;
+        width: 22%;
       }
 
       &.input{
         text-align: left;
         font-size: 12px;
+        padding-top: 4px;
 
         a{
           color: $black;
@@ -507,6 +519,12 @@
   }
 }
 
+div:where(.swal2-container) div:where(.swal2-actions){
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  padding: 0 20px;
+}
 // main modal style
 div:where(.swal2-container) div:where(.swal2-popup) {
   border-radius: 10px;

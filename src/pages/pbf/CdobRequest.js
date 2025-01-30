@@ -88,7 +88,7 @@ function CdobRequest() {
         <div className='form-swal'>
           <ul>
             <li className="label">
-              <p>PBF Instance</p> 
+              <p>Nama Instansi PBF</p> 
             </li>
             <li className="input">
               <p>{_instanceName}</p> 
@@ -96,7 +96,7 @@ function CdobRequest() {
           </ul>
           <ul>
             <li className="label">
-              <p>PBF Address</p> 
+              <p>Alamat Akun PBF (Pengguna)</p> 
             </li>
             <li className="input">
               <p>{_userAddr}</p> 
@@ -120,7 +120,7 @@ function CdobRequest() {
           </ul>
           <ul className="txHash">
             <li className="label">
-              <p>Transaction Hash</p>
+              <p>Hash Transaksi</p>
             </li>
             <li className="input">
               <a
@@ -128,7 +128,7 @@ function CdobRequest() {
                 target="_blank"
                 rel="noreferrer"
               >
-                View Transaction on Etherscan
+                Lihat transaksi di Etherscan
               </a>
             </li>
           </ul>
@@ -139,6 +139,10 @@ function CdobRequest() {
       showCancelButton: false,
       confirmButtonText: 'Oke',
       allowOutsideClick: true,
+      didOpen: () => {
+        const actions = Swal.getActions();
+       actions.style.justifyContent = "center";
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         navigate('/cdob');
@@ -155,19 +159,19 @@ function CdobRequest() {
     console.log(userdata.address);
 
     if (!tipePermohonan) {
-      errAlert(0, "Please select a valid Tipe Permohonan")
+      errAlert(0, "Harap memilih Tipe Permohonan yang sesuai")
       setLoader(false)
       return;
     }
 
     MySwal.fire({
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
+      title: "Memproses Permintaan...",
+      text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
       allowOutsideClick: false,
-    })
+    });;
 
     const tp = {
       "ObatLain": 0n,
@@ -193,8 +197,8 @@ function CdobRequest() {
         writeCpotbFb(userdata.instanceName, tipePermohonan, requestCdobCt.hash)
 
         MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          title: "Memproses transaksi...",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
       }
 
@@ -294,7 +298,7 @@ function CdobRequest() {
             loader? (
               <img src={imgLoader} alt="" />
             ) : (
-              "Add new request"
+              "Kirim Pengajuan CDOB"
             )
           }
             </button>
@@ -316,7 +320,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

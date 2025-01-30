@@ -15,6 +15,8 @@ function CheckCertificateIpfs() {
   const [senderAddr, setSenderAddr] = useState("");
   const [bpomInstance, setBpomInstance] = useState("");
   const [bpomAddr, setBpomAddr] = useState("");
+  const [nib, setNib] = useState("");
+  const [npwp, setNpwp] = useState("");
   const [bpomInstanceAddress, setBpomInstanceAddress] = useState("");
   const [senderInstanceAddress, setSenderInstanceAddress] = useState("");
   const [factoryType, setFactoryType] = useState("");
@@ -53,6 +55,8 @@ function CheckCertificateIpfs() {
       setBpomInstanceAddress(certData.bpomInstanceAddress);
       setSenderInstanceAddress(certData.senderInstanceAddress);
       setFactoryType(certData.factoryType);
+      setNpwp(certData.senderNPWP);
+      setNib(certData.senderNIB);
     };
 
     getDetailData();
@@ -65,7 +69,7 @@ function CheckCertificateIpfs() {
         <span>{factoryType}</span>
       </li>
       <li className="info-item">
-        <span className="label">Factory Address</span>
+        <span className="label">Alamat Akun Pabrik (Pengguna)</span>
         <span>{senderInstanceAddress}</span>
       </li>
     </>
@@ -73,7 +77,7 @@ function CheckCertificateIpfs() {
 
   const renderCdobDetails = () => (
     <li className="info-item">
-      <span className="label">PBF Address</span>
+      <span className="label">Alamat Akun PBF (Pengguna)</span>
       <span>{senderInstanceAddress}</span>
     </li>
   );
@@ -96,22 +100,30 @@ function CheckCertificateIpfs() {
         <span>{timestampReq}</span>
       </li>
       <li className="info-item">
-        <span className="label">Tanggal Penyetujuan</span>
+        <span className="label">Tanggal Disetujui</span>
         <span>{timestampApp}</span>
       </li>
       <li className="info-item">
-        <span className="label">{certName === "CPOTB" ? "Factory Instance" : "PBF Instance"}</span>
+        <span className="label">{certName === "CPOTB" ? "Nama Instansi Pabrik" : "Nama Instansi PBF"}</span>
         <span>{senderInstance}</span>
         <span className='addr'>({senderAddr})</span>
       </li>
+      <li className="info-item">
+        <span className="label">{certName === "CPOTB" ? "NIB Pabrik" : "NIB PBF"}</span>
+        <span>{nib}</span>
+      </li>
+      <li className="info-item">
+        <span className="label">{certName === "CPOTB" ? "NPWP Pabrik" : "NPWP PBF"}</span>
+        <span>{npwp}</span>
+      </li>
       {certName === "CPOTB" ? renderCpotbDetails() : renderCdobDetails()}
       <li className="info-item">
-        <span className="label">BPOM Instance</span>
+        <span className="label">Nama Instansi BPOM</span>
         <span>{bpomInstance}</span>
         <span className='addr'>({bpomAddr})</span>
       </li>
       <li className="info-item">
-        <span className="label">BPOM Address</span>
+        <span className="label">Alamat Akun BPOM (Pengguna)</span>
         <span>{bpomInstanceAddress}</span>
       </li>
     </>

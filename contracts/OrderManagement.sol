@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./RoleManager.sol";
 import "./ObatTradisional.sol";
-import "./MainSupplyChain.sol";
+import "./CdobCertificate.sol";
 import "./EnumsLibrary.sol";
 import "./ObatShared.sol";
  
@@ -12,13 +12,13 @@ contract OrderManagement {
   ObatTradisional public obatTradisional;
   RoleManager public roleManager;
   ObatShared public obatShared;
-  MainSupplyChain public mainSupplyChain; 
+  CdobCertificate public cdobCertificate;
  
-  constructor(address _obatTradisionalAddr, address _roleManagerAddr, address _obatSharedAddr, address _mainSupplyChainAddr) {
+  constructor(address _obatTradisionalAddr, address _roleManagerAddr, address _obatSharedAddr, address _cdobCertificateAddr) {
     roleManager = RoleManager(_roleManagerAddr);
     obatTradisional = ObatTradisional(_obatTradisionalAddr);
     obatShared = ObatShared(_obatSharedAddr);
-    mainSupplyChain = MainSupplyChain(_mainSupplyChainAddr);
+    cdobCertificate = CdobCertificate(_cdobCertificateAddr);
   }
 
   modifier onlyRole(EnumsLibrary.Roles role) {
@@ -97,21 +97,6 @@ contract OrderManagement {
     });
 
     orderTimestampByOrderId[_orderId] = newTimestamp;
-  }
-
-  function pbfAvailableToBuy( 
-    string memory _pbfName,
-    uint8 _tipeObat
-  ) public view returns (string memory ipfsCert) {
-    MainSupplyChain.st_approvedCert[] memory approvedCdob = mainSupplyChain.approvedTipePermohonanCdob(_pbfName); 
-
-    for (uint i=0; i < approvedCdob.length; i++) {
-      if (approvedCdob[i].tipePermohonan == _tipeObat) {
-        return approvedCdob[i].ipfsCert; 
-      }
-    } 
-
-    return ""; 
   }
 
   // status: 200ok

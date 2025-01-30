@@ -50,10 +50,10 @@ function CpotbApprove() {
   };
 
   const statusMap = {
-    0: "Pending",
-    1: "Approved",
-    2: "Rejected",
-    3: "Renew Requested",
+    0: "Dalam Proses",
+    1: "Disetujui",
+    2: "Tidak Disetujui",
+    3: "Pengajuan Ulang",
   };
 
   const options = {
@@ -87,17 +87,10 @@ function CpotbApprove() {
             signer
           );
 
-          // const RejectManager = new Contract(
-          //   contractData.RejectManager.address,
-          //   contractData.RejectManager.abi,
-          //   signer
-          // );
-
-        setContracts({
-          certificateManager: CertificateManager,
-          roleManager: RoleManager,
-          // rejectManager: RejectManager
-        });
+          setContracts({
+            certificateManager: CertificateManager,
+            roleManager: RoleManager,
+          });
 
         } catch (err) {
           console.error("User access denied!");
@@ -164,14 +157,14 @@ function CpotbApprove() {
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
     
     // detail can be the cpotb number or rejectMsg
-    if(status === 'Approved'){
+    if(status === 'Disetujui'){
       MySwal.fire({
         title: "Success Approve CPOTB",
         html: (
           <div className='form-swal'>
             <ul>
               <li className="label">
-                <p>CPOTB Number</p> 
+                <p>Nomor CPOTB</p> 
               </li>
               <li className="input">
                 <p>{detail}</p> 
@@ -179,7 +172,7 @@ function CpotbApprove() {
             </ul>
             <ul>
               <li className="label">
-                <p>BPOM Instance</p> 
+                <p>Nama Instansi BPOM</p> 
               </li>
               <li className="input">
                 <p>{bpomInstance}</p> 
@@ -187,7 +180,7 @@ function CpotbApprove() {
             </ul>
             <ul>
               <li className="label">
-                <p>BPOM Address</p> 
+                <p>Alamat Akun BPOM (Pengguna)</p> 
               </li>
               <li className="input">
                 <p>{bpomAddr}</p> 
@@ -195,7 +188,7 @@ function CpotbApprove() {
             </ul>
             <ul>
               <li className="label">
-                <p>Tanggal Penyetujuan</p> 
+                <p>Tanggal Disetujui</p> 
               </li>
               <li className="input">
                 <p>{formattedTimestamp}</p> 
@@ -211,7 +204,7 @@ function CpotbApprove() {
             </ul>
             <ul className="txHash">
               <li className="label">
-                <p>Transaction Hash</p>
+                <p>Hash Transaksi</p>
               </li>
               <li className="input">
                 <a
@@ -219,7 +212,7 @@ function CpotbApprove() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  View Transaction on Etherscan
+                  Lihat transaksi di Etherscan
                 </a>
               </li>
             </ul>
@@ -230,6 +223,10 @@ function CpotbApprove() {
         showCancelButton: false,
         confirmButtonText: 'Oke',
         allowOutsideClick: true,
+        didOpen: () => {
+          const actions = Swal.getActions();
+          actions.style.justifyContent = "center";
+      }
       }).then((result) => {
         if (result.isConfirmed) {
           window.location.reload();
@@ -242,7 +239,7 @@ function CpotbApprove() {
           <div className='form-swal'>
             <ul>
               <li className="label">
-                <p>BPOM Instance</p> 
+                <p>Nama Instansi BPOM</p> 
               </li>
               <li className="input">
                 <p>{bpomInstance}</p> 
@@ -250,7 +247,7 @@ function CpotbApprove() {
             </ul>
             <ul>
               <li className="label">
-                <p>BPOM Address</p> 
+                <p>Alamat Akun BPOM (Pengguna)</p> 
               </li>
               <li className="input">
                 <p>{bpomAddr}</p> 
@@ -282,7 +279,7 @@ function CpotbApprove() {
             </ul>
             <ul className="txHash">
               <li className="label">
-                <p>Transaction Hash</p>
+                <p>Hash Transaksi</p>
               </li>
               <li className="input">
                 <a
@@ -290,7 +287,7 @@ function CpotbApprove() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  View Transaction on Etherscan
+                  Lihat transaksi di Etherscan
                 </a>
               </li>
             </ul>
@@ -361,7 +358,7 @@ function CpotbApprove() {
       const rejectMsg = await contracts.certificateManager.getRejectMsgCpotb(id);
       console.log(rejectMsg);
 
-      if(detailCpotb.status === 'Approved'){
+      if(detailCpotb.status === 'Disetujui'){
         MySwal.fire({
           title: "Detail Sertifikat CPOTB",
           html: (
@@ -370,7 +367,7 @@ function CpotbApprove() {
                 <div className="col">
                   <ul>
                     <li className="label">
-                      <p>Factory Instance</p>
+                      <p>Nama Instansi Pabrik</p>
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryInstanceName} </p>
@@ -379,7 +376,7 @@ function CpotbApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>Factory Address</p> 
+                      <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryAddr}</p> 
@@ -388,7 +385,7 @@ function CpotbApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Instance</p> 
+                      <p>Nama Instansi BPOM</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.bpomInstance}</p> 
@@ -397,7 +394,7 @@ function CpotbApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Address</p> 
+                      <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.bpomAddr}</p> 
@@ -414,7 +411,7 @@ function CpotbApprove() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        View CPOTB on IPFS
+                        Liat data CPOTB di IPFS
                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                     </li>
@@ -512,7 +509,7 @@ function CpotbApprove() {
           showCancelButton: false,
           showConfirmButton: false
         })
-      } else if(detailCpotb.status === 'Rejected'){
+      } else if(detailCpotb.status === 'Tidak Disetujui'){
         MySwal.fire({
           title: "Detail Sertifikat CPOTB",
           html: (
@@ -521,7 +518,7 @@ function CpotbApprove() {
                 <div className="col">
                   <ul>
                     <li className="label">
-                      <p>Factory Instance</p>
+                      <p>Nama Instansi Pabrik</p>
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryInstanceName} </p>
@@ -530,7 +527,7 @@ function CpotbApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>Factory Address</p> 
+                      <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryAddr}</p> 
@@ -564,7 +561,7 @@ function CpotbApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Instance</p> 
+                      <p>Nama Instansi BPOM</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.bpomInstance}</p> 
@@ -573,7 +570,7 @@ function CpotbApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Address</p> 
+                      <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.bpomAddr}</p> 
@@ -654,14 +651,14 @@ function CpotbApprove() {
 
       } else{
         MySwal.fire({
-          title: "Approve Sertifikat CPOTB",
+          title: "Setujui Pengajuan CPOTB",
           html: (
             <div className='form-swal'>
               <div className="row">
                 <div className="col">
                   <ul>
                     <li className="label">
-                      <p>Factory Instance</p>
+                      <p>Nama Instansi Pabrik</p>
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryInstanceName} </p>
@@ -670,7 +667,7 @@ function CpotbApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>Factory Address</p> 
+                      <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryAddr}</p> 
@@ -704,7 +701,7 @@ function CpotbApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Instance</p> 
+                      <p>Nama Instansi BPOM</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.bpomInstance}</p> 
@@ -713,7 +710,7 @@ function CpotbApprove() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Address</p> 
+                      <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.bpomAddr}</p> 
@@ -820,9 +817,9 @@ function CpotbApprove() {
           width: '620',
           showCloseButton: true,
           showCancelButton: false,
-          confirmButtonText: 'Approve',
+          confirmButtonText: 'Setujui',
           showDenyButton: true,
-          denyButtonText: 'Reject'
+          denyButtonText: 'Tolak'
         }).then((result) => {
   
           if(result.isConfirmed){
@@ -832,14 +829,14 @@ function CpotbApprove() {
             const cpotbNumber = `${prefix}.${day}.${randomString}`
             
             MySwal.fire({
-              title: 'Approve Pengajuan Sertifikat CPOTB',
+              title: 'Setujui Pengajuan Sertifikat CPOTB',
               html: (
                 <div className="form-swal form">
                   <div className="row">
                     <div className="col">
                       <ul>
                         <li className="label">
-                          <label htmlFor="factoryInstanceName">Factory Instance</label>
+                          <label htmlFor="factoryInstanceName">Nama Instansi Pabrik</label>
                         </li>
                         <li className="input">
                           <input
@@ -853,7 +850,7 @@ function CpotbApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="factoryAddr">Factory Address</label>
+                          <label htmlFor="factoryAddr">Alamat Akun Pabrik (Pengguna)</label>
                         </li>
                         <li className="input">
                           <input
@@ -880,7 +877,7 @@ function CpotbApprove() {
 
                       <ul>
                         <li className="label">
-                          <label htmlFor="bpomInstance">BPOM Instance</label>
+                          <label htmlFor="bpomInstance">Nama Instansi BPOM</label>
                         </li>
                         <li className="input">
                           <input
@@ -894,7 +891,7 @@ function CpotbApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="bpomAddr">BPOM Address</label>
+                          <label htmlFor="bpomAddr">Alamat Akun BPOM (Pengguna)</label>
                         </li>
                         <li className="input">
                           <input
@@ -910,7 +907,7 @@ function CpotbApprove() {
                     <div className="col">
                       <ul>
                         <li className="label">
-                          <label htmlFor="cpotbNumber">CPOTB Number</label>
+                          <label htmlFor="cpotbNumber">Nomor CPOTB</label>
                         </li>
                         <li className="input">
                           <input
@@ -942,22 +939,23 @@ function CpotbApprove() {
               width: '660',       
               icon: 'warning',
               showCancelButton: true,
-              confirmButtonText: 'Yes, Approve!',
+              confirmButtonText: 'Setujui',
               confirmButtonColor: '#4CBE53',
-              cancelButtonText: 'Cancel',
+              cancelButtonText: 'Batal',
               allowOutsideClick: false,
             }).then((result) => {
 
               if(result.isConfirmed){
 
                 MySwal.fire({
-                  title:"Processing your request...",
-                  text:"Your request is on its way. This won't take long. 🚀",
+                  title: "Menyimpan sertifikat ke IPFS",
+                  text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳",
                   icon: 'info',
                   showCancelButton: false,
                   showConfirmButton: false,
-                  allowOutsideClick: false
-                })
+                  allowOutsideClick: false,
+                });
+                
 
                 generateIpfs(cpotbNumber, detailCpotb)
               }
@@ -972,7 +970,7 @@ function CpotbApprove() {
                     <div className="col reject">
                       <ul>
                         <li className="label">
-                          <label htmlFor="factoryInstanceName">Factory Instance</label>
+                          <label htmlFor="factoryInstanceName">Nama Instansi Pabrik</label>
                         </li>
                         <li className="input">
                           <input
@@ -986,7 +984,7 @@ function CpotbApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="factoryAddr">Factory Address</label>
+                          <label htmlFor="factoryAddr">Alamat Akun Pabrik (Pengguna)</label>
                         </li>
                         <li className="input">
                           <input
@@ -1000,7 +998,7 @@ function CpotbApprove() {
 
                       <ul>
                         <li className="label">
-                          <label htmlFor="bpomInstance">BPOM Instance</label>
+                          <label htmlFor="bpomInstance">Nama Instansi BPOM</label>
                         </li>
                         <li className="input">
                           <input
@@ -1014,7 +1012,7 @@ function CpotbApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="bpomAddr">BPOM Address</label>
+                          <label htmlFor="bpomAddr">Alamat Akun BPOM (Pengguna)</label>
                         </li>
                         <li className="input">
                           <input
@@ -1105,13 +1103,13 @@ function CpotbApprove() {
               if(result.isConfirmed){
 
                 MySwal.fire({
-                  title:"Processing your request...",
-                  text:"Your request is on its way. This won't take long. 🚀",
+                  title: "Memproses Permintaan...",
+                  text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
                   icon: 'info',
                   showCancelButton: false,
                   showConfirmButton: false,
-                  allowOutsideClick: false
-                })
+                  allowOutsideClick: false,
+                });
 
                 rejectCpotb(id, result.value.rejectReason, jenisSediaan, detailCpotb.factoryInstanceName)
               }
@@ -1209,12 +1207,16 @@ function CpotbApprove() {
 
     console.log(userdata.address);
     console.log(detailCpotb.factoryAddr);
+
+    MySwal.update({
+      title: "Memproses Permintaan...",
+      text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
+    });
     
     try {
       
       const userFactoryCt = await contracts.roleManager.getUserData(detailCpotb.factoryAddr)
       const userBpomCt = await contracts.roleManager.getUserData(userdata.address)
-  
 
       const cpotbData = {
         certName: "CPOTB",
@@ -1225,6 +1227,8 @@ function CpotbApprove() {
         senderInstance: detailCpotb.factoryInstanceName,
         senderAddress: detailCpotb.factoryAddr,
         factoryType: detailCpotb.factoryType,
+        senderNIB: detailCpotb.factoryNIB,
+        senderNPWP: detailCpotb.factoryNPWP,
         senderInstanceAddress: userFactoryCt[2],
         bpomInstance: userdata.instanceName,
         bpomAddress: userdata.address,
@@ -1239,7 +1243,10 @@ function CpotbApprove() {
       );
 
       if (result.path) {
-        console.log("IPFS Hash:", result.path);
+        MySwal.update({
+          title: "Mempersiapkan transaksi..",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+        });
         approveCpotb(cpotbNumber, detailCpotb.cpotbId, detailCpotb.jenisSediaan, result.path, detailCpotb.factoryInstanceName);
       }
 
@@ -1294,8 +1301,8 @@ function CpotbApprove() {
         updateCpotbFb( factoryInstanceName, jenisSediaan, approveCt.hash, true );
 
         MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          title: "Memproses transaksi...",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
       }
 
@@ -1316,8 +1323,8 @@ function CpotbApprove() {
       if(rejectCt){
         updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, false);
         MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          title: "Memproses transaksi...",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
       }
 
@@ -1373,7 +1380,7 @@ function CpotbApprove() {
                   <li key={index}>
                     <button className='title' onClick={() => getDetailCpotb(item.cpotbId)}>{item.factoryInstance}: {item.jenisSediaan}</button>
                     <p>
-                      { item.cpotbNumber !== null ? `CPOTB Number: ${item.cpotbNumber}` : "CPOTB Number: Tidak Tersedia"}
+                      { item.cpotbNumber !== null ? `Nomor CPOTB: ${item.cpotbNumber}` : "Nomor CPOTB: Tidak Tersedia"}
                     </p>
                     <button className={`statusPengajuan ${item.status}`}>
                       {item.status}
@@ -1403,7 +1410,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

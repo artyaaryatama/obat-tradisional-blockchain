@@ -302,10 +302,10 @@ function CheckTransaction() {
           <b>Batch Quantity:</b> {batchData.quantity || "Not Available"} Obat
         </p>
         <p>
-          <b>PBF Instance:</b> {batchData.pbfInstance || "Not Available"}
+          <b>Nama Instansi PBF:</b> {batchData.pbfInstance || "Not Available"}
         </p>
         <p>
-          <b>Retailer Instance:</b>{" "}
+          <b>Nama Instansi Retailer:</b>{" "}
           {batchData.retailerInstance ? batchData.retailerInstance : "Not Available"}
         </p>
       </div>

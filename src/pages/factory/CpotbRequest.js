@@ -166,12 +166,12 @@ function CpotbRequest() {
     const formattedTimestamp = new Date(Number(_timestampRequest) * 1000).toLocaleDateString('id-ID', options)
 
     MySwal.fire({
-      title: "Success Request CPOTB",
+      title: "Sukses Mengajukan CPOTB",
       html: (
         <div className='form-swal'>
           <ul>
             <li className="label">
-              <p>Factory Instance</p> 
+              <p>Nama Instansi Pabrik</p>
             </li>
             <li className="input">
               <p>{_name}</p> 
@@ -179,7 +179,7 @@ function CpotbRequest() {
           </ul>
           <ul>
             <li className="label">
-              <p>Factory Address</p> 
+              <p>Alamat Akun Pengguna</p> 
             </li>
             <li className="input">
               <p>{_userAddr}</p> 
@@ -203,7 +203,7 @@ function CpotbRequest() {
           </ul>
           <ul className="txHash">
             <li className="label">
-              <p>Transaction Hash</p>
+              <p>Hash Transaksi</p>
             </li>
             <li className="input">
               <a
@@ -211,7 +211,7 @@ function CpotbRequest() {
                 target="_blank"
                 rel="noreferrer"
               >
-                View Transaction on Etherscan
+                Lihat transaksi di Etherscan
               </a>
             </li>
           </ul>
@@ -222,6 +222,10 @@ function CpotbRequest() {
       showCancelButton: false,
       confirmButtonText: 'Oke',
       allowOutsideClick: true,
+      didOpen: () => {
+        const actions = Swal.getActions();
+        actions.style.justifyContent = "center";
+    }
     }).then((result) => {
       if (result.isConfirmed) {
         navigate('/cpotb');
@@ -245,19 +249,19 @@ function CpotbRequest() {
     const jenisSediaanInt = parseInt(jenisSediaan)
 
     if (jenisSediaanInt === "" || isNaN(jenisSediaanInt)) {
-      errAlert(0, "Please select a valid Jenis Sediaan");
+      errAlert(0, "Harap memilih Jenis Sediaan yang sesuai dengan Usaha Industri Farmasi");
       setLoader(false);
       return;
     }
 
     MySwal.fire({
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
+      title: "Memproses Permintaan...",
+      text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
       allowOutsideClick: false,
-    })
+    });
 
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
@@ -275,8 +279,8 @@ function CpotbRequest() {
         writeCpotbFb( userdata.instanceName, jenisSediaanMap[jenisSediaan], requestCpotbCt.hash );
 
         MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          title: "Memproses transaksi...",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
       }
   
@@ -394,7 +398,7 @@ function CpotbRequest() {
             loader? (
               <img src={imgLoader} alt="" />
             ) : (
-              "Add new request"
+              "Kirim Pengajuan CPOTB"
             )
           }
             </button>
@@ -416,7 +420,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

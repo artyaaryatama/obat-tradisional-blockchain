@@ -26,21 +26,15 @@ function ManageOrderRetailer() {
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObatOrder, setDataObatOrder] = useState([]);
 
-  const obatStatusMap = {
-    0: "In Local Production",
-    1: "Requested NIE",
-    2: "Approved NIE"
-  };
-
   const tipeObatMap = {
     0n: "Obat Lain",
     1n: "Cold Chain Product"
   };
 
   const orderStatusMap = {
-    0: "Order Placed",
-    1: "Order Shipped",
-    2: "Order Completed"
+    0n: "Order Diajukan",
+    1n: "Order Dikirim",
+    2n: "Order Selesai"
   };
 
   const options = {
@@ -79,10 +73,17 @@ function ManageOrderRetailer() {
             signer
           );
 
+          const NieManager = new Contract(
+            contractData.NieManager.address, 
+            contractData.NieManager.abi, 
+            signer
+          );
+
           setContracts({
             orderManagement: orderManagementContract,
             obatTradisional: obatTradisionalContract,
-            roleManager: RoleManager
+            roleManager: RoleManager,
+            nieManager: NieManager,
           });
         } catch (err) {
           console.error("User access denied!")
@@ -153,7 +154,7 @@ function ManageOrderRetailer() {
     const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
   
     MySwal.fire({
-      title: "Order Completed Successfully!",
+      title: "Sukses Menyelesaikan Order!",
       html: (
         <div className='form-swal'>
           <ul>
@@ -166,7 +167,7 @@ function ManageOrderRetailer() {
           </ul>
           <ul>
           <li className="label">
-            <p>Batch Name</p> 
+            <p>Nama Batch</p> 
           </li>
           <li className="input">
             <p>{_batchName}</p> 
@@ -182,7 +183,7 @@ function ManageOrderRetailer() {
           </ul>
           <ul>
             <li className="label">
-              <p>Retailer Instance</p> 
+              <p>Nama Instansi Retailer</p> 
             </li>
             <li className="input">
               <p>{_buyerInstance}</p> 
@@ -190,7 +191,7 @@ function ManageOrderRetailer() {
           </ul>
           <ul>
             <li className="label">
-              <p>PBF Instance</p> 
+              <p>Nama Instansi PBF</p> 
             </li>
             <li className="input">
               <p>{_sellerInstance}</p> 
@@ -198,7 +199,7 @@ function ManageOrderRetailer() {
           </ul>
           <ul>
             <li className="label">
-              <p>Timestamp Order Completed</p> 
+              <p>Tanggal order selesai</p> 
             </li>
             <li className="input">
               <p>{timestamp}</p> 
@@ -206,7 +207,7 @@ function ManageOrderRetailer() {
           </ul>
           <ul className="txHash">
             <li className="label">
-              <p>Transaction Hash</p>
+              <p>Hash Transaksi</p>
             </li>
             <li className="input">
               <a
@@ -214,7 +215,7 @@ function ManageOrderRetailer() {
                 target="_blank"
                 rel="noreferrer"
               >
-                View Transaction on Etherscan
+                Lihat transaksi di Etherscan
               </a>
             </li>
           </ul>
@@ -225,6 +226,10 @@ function ManageOrderRetailer() {
       showCancelButton: false,
       confirmButtonText: 'Oke',
       allowOutsideClick: true,
+      didOpen: () => {
+        const actions = Swal.getActions();
+       actions.style.justifyContent = "center";
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         window.location.reload()
@@ -240,12 +245,10 @@ function ManageOrderRetailer() {
       const detailOrderPrevCt = await contracts.orderManagement.detailOrder(prevOrderId);
       const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
       const orderObatIpfs = await contracts.orderManagement.obatIpfs(orderId);
+      const detailNieCt = await contracts.nieManager.getNieDetail(id)
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [obatDetails, obatNie] = detailObatCt;
-
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
-
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt;
 
       const [orderIdProduk, obatIdProduk, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = detailOrderCt;
 
@@ -261,7 +264,7 @@ function ManageOrderRetailer() {
         kemasan: kemasan,
         komposisi: komposisi,
         tipeProduk: "Obat Tradisional", 
-        nieStatus: obatStatusMap[nieStatus], 
+        nieStatus: "Disetujui NIE", 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
@@ -328,7 +331,7 @@ function ManageOrderRetailer() {
                         <div className="group">
                           <ul>
                             <li className="label">
-                              <p>Factory Instance</p>
+                              <p>Nama Instansi Pabrik</p>
                             </li>
                             <li className="input">
                               <p>{factoryInstance}
@@ -348,7 +351,7 @@ function ManageOrderRetailer() {
                         
                           <ul>
                             <li className="label">
-                              <p>Factory Address</p>
+                              <p>Alamat Akun Pabrik (Pengguna)</p>
                             </li>
                             <li className="input">
                               <p>{factoryAddr}</p>
@@ -359,7 +362,7 @@ function ManageOrderRetailer() {
                       
                         <ul>
                           <li className="label">
-                            <p>PBF Instance</p>
+                            <p>Nama Instansi PBF</p>
                           </li>
                           <li className="input">
                             <p>{prevBuyerInstance}
@@ -379,7 +382,7 @@ function ManageOrderRetailer() {
                       
                         <ul>
                           <li className="label">
-                            <p>PBF Address</p>
+                            <p>Alamat Akun PBF (Pengguna)</p>
                           </li>
                           <li className="input">
                             <p>{prevBuyerAddr}</p>
@@ -505,7 +508,8 @@ function ManageOrderRetailer() {
           ),
           width: '1220',
           showCancelButton: true,
-          confirmButtonText: 'Complete Order',
+          cancelButtonText: 'Batal',
+          confirmButtonText: 'Selesaikan Order',
           didOpen: () => {
             const stepperOrder = document.getElementById('stepperOrder');
             const root = ReactDOM.createRoot(stepperOrder);
@@ -550,7 +554,7 @@ function ManageOrderRetailer() {
 
                         <ul>
                           <li className="label">
-                            <p>Factory Instance</p>
+                            <p>Nama Instansi Pabrik</p>
                           </li>
                           <li className="input">
                             <p>{factoryInstance}
@@ -570,7 +574,7 @@ function ManageOrderRetailer() {
                       
                         <ul>
                           <li className="label">
-                            <p>Factory Address</p>
+                            <p>Alamat Akun Pabrik (Pengguna)</p>
                           </li>
                           <li className="input">
                             <p>{factoryAddr}</p>
@@ -579,7 +583,7 @@ function ManageOrderRetailer() {
                       
                         <ul>
                           <li className="label">
-                            <p>PBF Instance</p>
+                            <p>Nama Instansi PBF</p>
                           </li>
                           <li className="input">
                             <p>{prevBuyerInstance}
@@ -599,7 +603,7 @@ function ManageOrderRetailer() {
                       
                         <ul>
                           <li className="label">
-                            <p>PBF Address</p>
+                            <p>Alamat Akun PBF (Pengguna)</p>
                           </li>
                           <li className="input">
                             <p>{prevBuyerAddr}</p>
@@ -745,13 +749,13 @@ function ManageOrderRetailer() {
   
   const completeOrder = async (orderId, ipfsHash, factoryInstance, namaProduk, batchName) => {
     MySwal.fire({
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
+      title: "Memproses Permintaan...",
+      text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
       allowOutsideClick: false,
-    })
+    });
     
     try {
       const completeOrderCt = await contracts.orderManagement.completeOrderRetailer(orderId, ipfsHash)
@@ -761,8 +765,8 @@ function ManageOrderRetailer() {
       if(completeOrderCt){
         updateBatchHistoryHash(factoryInstance, namaProduk, batchName, completeOrderCt.hash)
         MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          title: "Memproses transaksi...",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
       }
   
@@ -836,7 +840,11 @@ function ManageOrderRetailer() {
             bpomAddressInstance: userBpomCt[4],
             tipeObat: dataObat.tipeObat,
             jenisObat: dataObat.jenisObat,
-            factoryType:  userFactoryCt[5]
+            factoryType:  userFactoryCt[5],
+            nibFactory: userFactoryCt[6],
+            npwpFactory: userFactoryCt[7],
+            nibBpom: userBpomCt[6],
+            npwpBpom: userBpomCt[7],
           },
           dataOrderPbf: {
             orderQuantity: parseInt(prevOrderPbfCt[4]),
@@ -848,7 +856,9 @@ function ManageOrderRetailer() {
             targetAddress: prevOrderPbfCt[6][1],
             timestampOrder: pbfTimestampOrder,
             timestampShipped: pbfTimestampShipped,
-            timestampComplete: pbfTimestampCompleted
+            timestampComplete: pbfTimestampCompleted,
+            NpwpPbf:userPbfCt[6],
+            NibPbf:userPbfCt[7],
           },
           dataOrderRetailer: {
             orderQuantity: dataOrder.orderQuantity,
@@ -860,7 +870,9 @@ function ManageOrderRetailer() {
             targetAddress: dataOrder.sellerAddress,
             timestampOrder: timestamps.timestampOrder,
             timestampShipped: timestamps.timestampShipped,
-            timestampComplete: timestamps.timestampComplete
+            timestampComplete: timestamps.timestampComplete,
+            NpwpRetailer:userRetailerCt[6],
+            NibRetailer:userRetailerCt[7],
           }
         };
         
@@ -906,7 +918,7 @@ function ManageOrderRetailer() {
 
                 <ul>
                   <li className="label label-1">
-                    <p>PBF Instance</p> 
+                    <p>Nama Instansi PBF</p> 
                   </li>
                   <li className="input input-1">
                     <p>{dataOrder.sellerInstance}</p> 
@@ -915,7 +927,7 @@ function ManageOrderRetailer() {
   
                 <ul>
                   <li className="label label-1">
-                    <p>Retailer Instance</p> 
+                    <p>Nama Instansi Retailer</p> 
                   </li>
                   <li className="input input-1">
                     <p>{dataOrder.buyerInstance}</p> 
@@ -943,7 +955,8 @@ function ManageOrderRetailer() {
         ),
         width: '820',
         showCancelButton: true,
-        confirmButtonText: 'Confirm Obat',
+        cancelButtonText: 'Batal',
+        confirmButtonText: 'Konfirmasi Order Obat',
         allowOutsideClick: false,
   
       }).then((result) => {
@@ -1037,7 +1050,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

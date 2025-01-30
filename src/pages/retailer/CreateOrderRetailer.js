@@ -61,9 +61,16 @@ function CreateOrderRetailer() {
             signer
           );
 
+          const NieManager = new Contract(
+            contractData.NieManager.address, 
+            contractData.NieManager.abi, 
+            signer
+          );
+
           setContracts({
             orderManagement: orderManagementContract,
-            obatTradisional: obatTradisionalContract
+            obatTradisional: obatTradisionalContract,
+            nieManager: NieManager,
           });
         } catch (err) {
           console.error("User access denied!")
@@ -123,7 +130,7 @@ function CreateOrderRetailer() {
     const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
   
     MySwal.fire({
-      title: "Order Created Successfully!",
+      title: "Sukses Mengajukan Order!",
       html: (
         <div className='form-swal'>
           <ul>
@@ -136,7 +143,7 @@ function CreateOrderRetailer() {
           </ul>
           <ul>
             <li className="label">
-              <p>Batch Name</p> 
+              <p>Nama Batch</p> 
             </li>
             <li className="input">
               <p>{_batchName}</p> 
@@ -152,7 +159,7 @@ function CreateOrderRetailer() {
           </ul>
           <ul>
             <li className="label">
-              <p>Retailer Instance</p> 
+              <p>Nama Instansi Retailer</p> 
             </li>
             <li className="input">
               <p>{_buyerInstance}</p> 
@@ -160,7 +167,7 @@ function CreateOrderRetailer() {
           </ul>
           <ul>
             <li className="label">
-              <p>PBF Instance</p> 
+              <p>Nama Instansi PBF</p> 
             </li>
             <li className="input">
               <p>{_sellerInstance}</p> 
@@ -168,7 +175,7 @@ function CreateOrderRetailer() {
           </ul>
           <ul>
             <li className="label">
-              <p>Timestamp Order</p> 
+              <p>Tanggal Pengajuan Order</p> 
             </li>
             <li className="input">
               <p>{timestamp}</p> 
@@ -176,7 +183,7 @@ function CreateOrderRetailer() {
           </ul>
           <ul className="txHash">
             <li className="label">
-              <p>Transaction Hash</p>
+              <p>Hash Transaksi</p>
             </li>
             <li className="input">
               <a
@@ -184,7 +191,7 @@ function CreateOrderRetailer() {
                 target="_blank"
                 rel="noreferrer"
               >
-                View Transaction on Etherscan
+                Lihat transaksi di Etherscan
               </a>
             </li>
           </ul>
@@ -195,6 +202,10 @@ function CreateOrderRetailer() {
       showCancelButton: false,
       confirmButtonText: 'Oke',
       allowOutsideClick: true,
+      didOpen: () => {
+        const actions = Swal.getActions();
+       actions.style.justifyContent = "center";
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         navigate('/retailer-orders')
@@ -208,16 +219,14 @@ function CreateOrderRetailer() {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailBatchCt = await contracts.obatTradisional.detailBatchProduction(id, batchName);
       const detailPastOrderCt = await contracts.orderManagement.detailOrder(prevOrderId);
-
-      const [obatDetails, obatNie] = detailObatCt;
-
+      const detailNieCt = await contracts.nieManager.getNieDetail(id)
+      
       const [dataObat, obatIpfs] = detailBatchCt
-
       const [statusStok, namaProduct, batchNamee, obatQuantity, factoryInstancee] = dataObat
+      
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
-
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt;
 
       const [pbfInstance, pbfAddr] = detailPastOrderCt[5]
 
@@ -354,7 +363,7 @@ function CreateOrderRetailer() {
 
                   <ul>
                     <li className="label">
-                      <p>Factory Instance</p>
+                      <p>Nama Instansi Pabrik</p>
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryInstanceName}
@@ -374,7 +383,7 @@ function CreateOrderRetailer() {
 
                   <ul>
                     <li className="label">
-                      <p>Factory Address</p>
+                      <p>Alamat Akun Pabrik (Pengguna)</p>
                     </li>
                     <li className="input">
                       <p>{detailObat.factoryAddr}</p>
@@ -383,7 +392,7 @@ function CreateOrderRetailer() {
 
                   <ul>
                     <li className="label">
-                      <p>PBF Instance</p>
+                      <p>Nama Instansi PBF</p>
                     </li>
                     <li className="input">
                       <p>{pbfInstance}
@@ -403,7 +412,7 @@ function CreateOrderRetailer() {
 
                   <ul>
                     <li className="label">
-                      <p>PBF Address</p>
+                      <p>Alamat Akun PBF (Pengguna)</p>
                     </li>
                     <li className="input">
                       <p>{pbfAddr}</p>
@@ -416,6 +425,7 @@ function CreateOrderRetailer() {
         ),
         width: '620',
         showCancelButton: true,
+        cancelButtonText: 'Batal',
         confirmButtonText: 'Order Obat',
       }).then((result) => {
 
@@ -457,8 +467,8 @@ function CreateOrderRetailer() {
       if(createOrderCt){
         updateBatchHistoryHash(factoryInstance, namaProduk, batchName, createOrderCt.hash)
         MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          title: "Memproses transaksi...",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
       }
 
@@ -555,7 +565,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

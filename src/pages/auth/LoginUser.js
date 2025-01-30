@@ -109,9 +109,9 @@ function LoginPage() {
         console.log(userdata);
 
         MySwal.fire({
-          title: "Login Success",
+          title: "Login  Berhasil",
           html: `<div>
-                  <p>Please wait a moment, we are redirecting you to the page <span>&#127939;</span></p>
+                  <p>Harap tunggu sebentar, Anda sedang dialihkan ke halaman yang dituju <span>&#127939;</span></p>
                 </div>`,
           timer: 2000,
           icon: 'success',
@@ -135,7 +135,7 @@ function LoginPage() {
         });
         
       } else {
-        errAlert({reason: "Username not recognized"}, "Please ensure the username is correct and try again.")
+        errAlert({reason: "Nama Pengguna tidak ditemukan"}, "Harap masukan nama pengguna yang sesuai")
         setLoader(false);
       }
       
@@ -189,7 +189,7 @@ function LoginPage() {
           <form className="register-form" onSubmit={loginUser}>
             <input 
               type="text" 
-              placeholder="Name" 
+              placeholder="Nama Pengguna" 
               value={name} 
               onChange={(e) => setName(e.target.value)} 
               required 
@@ -216,7 +216,7 @@ function LoginPage() {
           </form>
 
           <p className="register-footer">
-            Don't have an account? <a href="/register">Sign Up here</a>
+            Belum punya akun? <a href="/register">Silahkan daftar disini.</a>
           </p>
 
           <div className="btn-group">
@@ -257,7 +257,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg);

@@ -174,28 +174,28 @@
               border-radius: 30px;
             }
 
-            &.In, &.Placed, &.Empty, &.Pending, &.Requested{
+            &.Dalam, &.Diajukan, &.Kosong{
               background-color: $grey;
               color: $white;
             }
+
+            &.Pengajuan.NIE, &.Pengajuan, &.Tersedia{
+              background-color: $blue;
+              color: $white;
+            }
             
-            &.Shipped, &.Renew{
+            &.Dikirim, &.Renew{
               background-color: $yellow;
               color: $black;
             }
 
-            &.Approved, &.Completed{
+            &.Disetujui, &.Selesai{
               background-color: $green;
               color: $white;
             }
             
-            &.Rejected{
+            &.Penolakan{
               background-color: $red;
-              color: $white;
-            }
-            
-            &.Available{
-              background-color: $blue;
               color: $white;
             }
             

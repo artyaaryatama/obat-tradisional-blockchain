@@ -180,7 +180,7 @@ function CreateObat() {
     };
 
     MySwal.fire({
-      title: "Success Create Obat Tradisonal",
+      title: "Sukses Membuat data Obat Tradisonal",
       html: (
         <div className='form-swal'>
           <ul>
@@ -201,7 +201,7 @@ function CreateObat() {
           </ul>
           <ul>
             <li className="label">
-              <p>Factory Instance</p> 
+              <p>Nama Instansi Pabrik</p> 
             </li>
             <li className="input">
               <p>{_factoryInstanceName}</p> 
@@ -209,7 +209,7 @@ function CreateObat() {
           </ul>
           <ul>
             <li className="label">
-              <p>Factory Address</p> 
+              <p>Alamat Akun Pabrik (Pengguna)</p> 
             </li>
             <li className="input">
               <p>{_factoryAddr}</p> 
@@ -217,7 +217,7 @@ function CreateObat() {
           </ul>
           <ul className="txHash">
             <li className="label">
-              <p>Transaction Hash</p>
+              <p>Hash Transaksi</p>
             </li>
             <li className="input">
               <a
@@ -225,7 +225,7 @@ function CreateObat() {
                 target="_blank"
                 rel="noreferrer"
               >
-                View Transaction on Etherscan
+                Lihat transaksi di Etherscan
               </a>
             </li>
           </ul>
@@ -236,6 +236,10 @@ function CreateObat() {
       showCancelButton: false,
       confirmButtonText: 'Oke',
       allowOutsideClick: true,
+      didOpen: () => {
+        const actions = Swal.getActions();
+       actions.style.justifyContent = "center";
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         navigate('/obat');
@@ -272,13 +276,13 @@ function CreateObat() {
     }
 
     MySwal.fire({
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
+      title: "Memproses Permintaan...",
+      text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
       allowOutsideClick: false,
-    })
+    });
 
     const tipeObatMap = {
       "ObatLain" : 0n,
@@ -350,8 +354,8 @@ function CreateObat() {
           createObatFb(userdata.instanceName, namaProduk, createObatCt.hash, kemasanPrim, tipeObat)
 
           MySwal.update({
-            title: "Processing your transaction...",
-            text: "This may take a moment. Hang tight! ⏳"
+            title: "Memproses transaksi...",
+            text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
           });
         }
   
@@ -515,7 +519,7 @@ function CreateObat() {
                   onChange= {(e) => setJenisObat(e.target.value)}
                   required
                 >
-                  <option value="" disabled>Select Jenis Obat</option>
+                  <option value="" disabled>Pilih Jenis Obat</option>
                   <option value="Jamu">Jamu</option>
                   <option value="OHT">Obat Herbal Terstandar (OHT)</option>
                   <option value="Fitofarmaka">Fitofarmaka</option>
@@ -540,7 +544,7 @@ function CreateObat() {
                   onChange= {(e) => setTipeObat(e.target.value)}
                   required
                 > 
-                  <option value="" disabled>Select Tipe Obat</option>
+                  <option value="" disabled>Pilih Tipe Obat</option>
                   <option value="CCP">Cold Chain Product</option>
                   <option value="ObatLain">Obat Lain</option>
                 </select>
@@ -581,7 +585,7 @@ function CreateObat() {
                 onChange={(e) => setKemasanPrim(e.target.value)}
                 required
               >
-                <option value="" disabled>Select Kemasan Obat Primer</option>
+                <option value="" disabled>Pilih Kemasan Obat Primer</option>
                 {filteredJenisSediaan.map(({ key, label }) => (
                   <option key={key} value={label}>
                     {label}
@@ -688,7 +692,7 @@ function CreateObat() {
             loader? (
               <img src={imgLoader} alt="" />
             ) : (
-              "Add new request"
+              "Buat Obat"
             )
           }
             </button>
@@ -712,7 +716,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

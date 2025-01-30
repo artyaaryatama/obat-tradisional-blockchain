@@ -18,13 +18,6 @@ function CreateOrderPbf() {
 
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
-  
-
-  const obatStatusMap = {
-    0: "In Local Production",
-    1: "Requested NIE",
-    2: "Approved NIE"
-  };
 
   const tipeObatMap = {
     0n: "Obat Lain",
@@ -56,15 +49,28 @@ function CreateOrderPbf() {
             contractData.OrderManagement.abi,
             signer
           );
+          const CertificateManager = new Contract(
+            contractData.CertificateManager.address,
+            contractData.CertificateManager.abi,
+            signer
+          );
           const obatTradisionalContract = new Contract(
             contractData.ObatTradisional.address,
             contractData.ObatTradisional.abi,
+            signer
+          );
+
+          const NieManager = new Contract(
+            contractData.NieManager.address, 
+            contractData.NieManager.abi, 
             signer
           );
           
           setContracts({
             orderManagement: orderManagementContract,
             obatTradisional: obatTradisionalContract,
+            nieManager: NieManager,
+            certificateManager: CertificateManager
           });
         } catch (err) {
           console.error("User access denied!")
@@ -121,7 +127,7 @@ function CreateOrderPbf() {
     const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
   
     MySwal.fire({
-      title: "Order Created Successfully",
+      title: "Sukses membuat order",
       html: (
         <div className='form-swal'>
           <ul>
@@ -150,7 +156,7 @@ function CreateOrderPbf() {
           </ul>
           <ul>
             <li className="label">
-              <p>PBF Instance</p> 
+              <p>Nama Instansi PBFtansi PBF</p> 
             </li>
             <li className="input">
               <p>{_buyerInstance}</p> 
@@ -158,7 +164,7 @@ function CreateOrderPbf() {
           </ul>
           <ul>
             <li className="label">
-              <p>Factory Instance</p> 
+              <p>Nama Instansi Pabrik</p> 
             </li>
             <li className="input">
               <p>{_sellerInstance}</p> 
@@ -174,7 +180,7 @@ function CreateOrderPbf() {
           </ul>
           <ul className="txHash">
             <li className="label">
-              <p>Transaction Hash</p>
+              <p>Hash Transaksi</p>
             </li>
             <li className="input">
               <a
@@ -182,7 +188,7 @@ function CreateOrderPbf() {
                 target="_blank"
                 rel="noreferrer"
               >
-                View Transaction on Etherscan
+                Lihat transaksi di Etherscan
               </a>
             </li>
           </ul>
@@ -193,6 +199,10 @@ function CreateOrderPbf() {
       showCancelButton: false,
       confirmButtonText: 'Oke',
       allowOutsideClick: true,
+      didOpen: () => {
+        const actions = Swal.getActions();
+        actions.style.justifyContent = "center";
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         navigate('/pbf-orders')
@@ -206,18 +216,17 @@ function CreateOrderPbf() {
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailBatchCt = await contracts.obatTradisional.detailBatchProduction(id, batchName)
+      const detailNieCt = await contracts.nieManager.getNieDetail(id)
 
       console.log(detailBatchCt);
-
-      const [obatDetails, obatNie] = detailObatCt;
 
       const [dataObat, obatIpfs] = detailBatchCt
 
       const [statusStok, namaProduct, batchNamee, obatQuantity, factoryInstancee] = dataObat
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt;
 
       const detailObat = {
         obatId: id,
@@ -226,7 +235,7 @@ function CreateOrderPbf() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        nieStatus: obatStatusMap[nieStatus], 
+        nieStatus: "Disetujui NIE", 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
@@ -359,7 +368,7 @@ function CreateOrderPbf() {
 
                     <ul>
                       <li className="label">
-                        <p>Factory Instance</p>
+                        <p>Nama Instansi Pabrik</p>
                       </li>
                       <li className="input">
                         <p>{detailObat.factoryInstanceName}
@@ -379,7 +388,7 @@ function CreateOrderPbf() {
 
                     <ul>
                       <li className="label">
-                        <p>Factory Address</p>
+                        <p>Alamat Akun Pabrik (Pengguna)</p>
                       </li>
                       <li className="input">
                         <p>{detailObat.factoryAddr}</p>
@@ -392,7 +401,8 @@ function CreateOrderPbf() {
         ),
         width: '620',
         showCancelButton: true,
-        confirmButtonText: 'Order Obat',
+        confirmButtonText: 'Pengajuan Order Obat',
+        cancelButtonText: 'Batal',
       }).then((result) => {
 
         if(result.isConfirmed){
@@ -425,23 +435,20 @@ function CreateOrderPbf() {
 
     const orderId = `order-pbf-${day}${month}${year}-${randomNumber}` 
   
+    const pbfCdobHash = await checkAvailCdob(userdata.instanceName, tipeObat)
     try {
-      console.log(orderId, id, namaProduk, factoryInstance, userdata.instanceName, orderQuantity);
+      console.log(pbfCdobHash);
 
-      const checkAvailCt = await contracts.orderManagement.pbfAvailableToBuy(userdata.instanceName, tipeObat);
-
-      console.log(checkAvailCt);
-
-      if(checkAvailCt !== "") {
+      if(pbfCdobHash) {
         
-        const createOrderCt = await contracts.orderManagement.createOrder("",orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, checkAvailCt);
+        const createOrderCt = await contracts.orderManagement.createOrder("",orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdobHash[5]);
         
         if(createOrderCt){
           updateBatchHistoryHash(factoryInstance, namaProduk, batchName, createOrderCt.hash, tipeObat)
 
           MySwal.update({
             title: "Processing your transaction...",
-            text: "This may take a moment. Hang tight! ⏳"
+            text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
           });
         }
   
@@ -455,7 +462,26 @@ function CreateOrderPbf() {
 
 
     } catch (error) {
-      errAlert(error, "Can't make an obat order.")
+      errAlert(error, "Gagal mengajukan order")
+    }
+  }
+
+
+  const checkAvailCdob = async(pbfInstance, tipePermohonan) => {
+    console.log(pbfInstance, tipePermohonan);
+
+    try {
+      const listAllCt = await contracts.certificateManager.getCdobByInstance(pbfInstance);
+      const isMatch = listAllCt.find(item => item[3] === tipePermohonan);
+      console.log(isMatch);
+      if(isMatch){
+        return isMatch
+      } else{
+        return false
+      }
+      
+    } catch (error) {
+      errAlert(error, "Gagal mengakses data CDOB")
     }
 
   }
@@ -511,7 +537,7 @@ function CreateOrderPbf() {
                       <h5>{item.namaProduk}</h5>
                       <p>Batch Name : {item.batchName}</p>
                       <p>Stok tersedia: {item.obatQuantity} Obat</p>
-                      <p>Factory Instance: {item.factoryInstanceName}</p>
+                      <p>Nama Instansi Pabrik: {item.factoryInstanceName}</p>
 
                     </div>
                     <div className="order">
@@ -546,7 +572,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

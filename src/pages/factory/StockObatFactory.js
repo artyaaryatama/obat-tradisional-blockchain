@@ -314,8 +314,9 @@ function StockObatFactory() {
           </div>
         ),
         width: '1220',
-        showCancelButton: true,
+        showCancelButton: false,
         showConfirmButton: false,
+        showCloseButton: true,
       })
       
     } catch (e) {
@@ -342,7 +343,7 @@ function StockObatFactory() {
             <div className="btn">
               <button className='btn-menu' onClick={() => navigate('/add-quantity-obat')}>
                 <i className="fa-solid fa-plus"></i>
-                Add new data
+                Tambah data baru
               </button>
             </div>
           </div>
@@ -384,7 +385,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

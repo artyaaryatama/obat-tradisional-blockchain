@@ -62,8 +62,15 @@ function AddQuantityObat() {
             signer
           );
 
+          const NieManager = new Contract(
+            contractData.NieManager.address, 
+            contractData.NieManager.abi, 
+            signer
+          );
+
           setContracts({
             roleManager: RoleManager,
+            nieManager: NieManager,
             obatTradisional: obatTradisionalContract
           });
         } catch (err) {
@@ -95,7 +102,7 @@ function AddQuantityObat() {
     const loadObatDataAvailable = async () => {
       if(contracts) {
         try {
-          const listObatNameCt = await contracts.obatTradisional.getAllObatNameApprovedNie(userdata.instanceName);
+          const listObatNameCt = await contracts.obatTradisional.getAllObatByInstance(userdata.instanceName);
 
           console.log(listObatNameCt);
 
@@ -127,11 +134,10 @@ function AddQuantityObat() {
     loadObatDataAvailable()
   }, [contracts])
 
-
   const handleEventAddBatchProduction = (_batchName, _obatQuantity, _namaProduk, _factoryInstance, txHash) => {
       
     MySwal.fire({
-        title: `Success Add Batch Production`,
+        title: `Sukses menambahkan stok obat`,
         html: (
           <div className='form-swal'>
             <ul>
@@ -144,7 +150,7 @@ function AddQuantityObat() {
             </ul>
             <ul>
               <li className="label">
-                <p>Batch Name</p> 
+                <p>Nama Batch</p> 
               </li>
               <li className="input">
                 <p>{_batchName}</p> 
@@ -152,7 +158,7 @@ function AddQuantityObat() {
             </ul>
             <ul>
               <li className="label">
-                <p>Obat Quantity</p> 
+                <p>Total Stok Obat</p> 
               </li>
               <li className="input">
                 <p>{_obatQuantity.toString()} Obat</p> 
@@ -160,7 +166,7 @@ function AddQuantityObat() {
             </ul>
             <ul>
               <li className="label">
-                <p>Factory Instance</p> 
+                <p>Nama Instansi Pabriksi Pabrik</p> 
               </li>
               <li className="input">
                 <p>{_factoryInstance}</p> 
@@ -168,7 +174,7 @@ function AddQuantityObat() {
             </ul>
             <ul className="txHash">
             <li className="label">
-              <p>Transaction Hash</p>
+              <p>Hash Transaksi</p>
             </li>
             <li className="input">
               <a
@@ -176,7 +182,7 @@ function AddQuantityObat() {
                 target="_blank"
                 rel="noreferrer"
               >
-                View Transaction on Etherscan
+                Lihat transaksi di Etherscan
               </a>
             </li>
           </ul>
@@ -187,6 +193,10 @@ function AddQuantityObat() {
         showCancelButton: false,
         confirmButtonText: 'Oke',
         allowOutsideClick: true,
+        didOpen: () => {
+          const actions = Swal.getActions();
+          actions.style.justifyContent = "center";
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           navigate('/obat-available-factory')
@@ -198,37 +208,39 @@ function AddQuantityObat() {
     e.preventDefault();
 
     MySwal.fire({
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
+      title: "Memproses Permintaan...",
+      text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
       allowOutsideClick: false,
-    })
+    });
 
     const selectedObat = dataObatAvail.filter(item => item.namaProduk === namaProduk)
 
     const id = selectedObat[0].obatId;
 
     const detailObatCt = await contracts.obatTradisional.detailObat(id);
+    const detailNieCt = await contracts.nieManager.getNieDetail(id)
+    // const rejectMsg = await contracts.NieManager.getRejectMsgNie(id);
 
-    const [obatDetails, obatNie] = detailObatCt;
+    const [merk, namaObat, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-    const [merk, namaProduct, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
-
-    const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+    const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstancee, bpomInstance, bpomAddr] = detailNieCt;
     console.log(cpotbHash);
     
     const detailObat = {
       obatId: id,
       merk: merk,
-      namaProduk: namaProduct,
+      namaProduk: namaObat,
       klaim: klaim,
       kemasan: kemasan,
       komposisi: komposisi,
       produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
       nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
       nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+      nieRejectDate:  timestampNieRejected ? new Date(Number(timestampNieRejected) * 1000).toLocaleDateString('id-ID', options): "-",
+      nieRenewRequestDate:  timestampNieRenewRequest ? new Date(Number(timestampNieRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
       nieNumber: nieNumber ? nieNumber : "-",
       factoryAddr: factoryAddr,
       factoryInstanceName: factoryInstance,
@@ -238,7 +250,6 @@ function AddQuantityObat() {
       jenisObat: jenisObat
     };
 
-    console.log(detailObat);
     generateIpfs(detailObat, parseInt(quantityObat), batchName, cpotbHash)
   };
 
@@ -253,6 +264,8 @@ function AddQuantityObat() {
 
     const userFactoryCt = await contracts.roleManager.getUserData(dataObat.factoryAddr);
     const userBpomCt = await contracts.roleManager.getUserData(dataObat.bpomAddr);
+
+    console.log(userFactoryCt);
 
     for (let i = 0; i < quantity; i++) {
       const obat = {
@@ -276,6 +289,10 @@ function AddQuantityObat() {
           nieApprovalDate: dataObat.nieApprovalDate,
           bpomAddr: dataObat.bpomAddr,
           bpomInstanceName: dataObat.bpomInstanceName,
+          nibFactory: userFactoryCt[6],
+          npwpFactory: userFactoryCt[7],
+          nibBpom: userBpomCt[6],
+          npwpBpom: userBpomCt[7],
           bpomAddressInstance: userBpomCt[4],
           jenisObat: dataObat.jenisObat
         }
@@ -350,11 +367,15 @@ function AddQuantityObat() {
         ),
         width: '820',
         showCancelButton: true,
-        confirmButtonText: 'Confirm Obat',
-        allowOutsideClick: false,
-  
+        confirmButtonText: 'Konfirmasi Kuantitas Obat',
+        cancelButtonText: "Batal",
+        allowOutsideClick: false
       }).then((result) => {
         if(result.isConfirmed){
+          MySwal.update({
+            title: "Mempersiapkan transaksi...",
+            text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+          });
           addQuantity(dataObat, batchNameObat, quantityObat, newIpfsHashes)
         }
       })
@@ -365,13 +386,13 @@ function AddQuantityObat() {
   const addQuantity = async (dataObat, batchNameObat, quantityObat, newIpfsHashes) => {
 
     MySwal.fire({
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
+      title: "Memproses Permintaan...",
+      text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
       allowOutsideClick: false,
-    })
+    });
 
     
     try {
@@ -385,8 +406,8 @@ function AddQuantityObat() {
         addBatchObatFb(userdata.instanceName, dataObat.namaProduk, addBatchCt.hash, batchNameObat, quantity)
 
         MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          title: "Memproses transaksi...",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
       }
 
@@ -423,7 +444,7 @@ function AddQuantityObat() {
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>
       <div className="title-menu">
-        <h1>Add Batch Production Obat Tradisional</h1>
+        <h1>Penambahan Stok Obat Tradisional</h1>
       </div>
       
       <div className='container-form'>
@@ -440,7 +461,7 @@ function AddQuantityObat() {
 
           <ul>
             <li className="label">
-              <label htmlFor="batchName">Batch Name Obat</label>
+              <label htmlFor="batchName">nama Batch Obat</label>
             </li>
             <li className="input">
               <input type="text" name="batchName" value={batchName} readOnly />
@@ -449,7 +470,7 @@ function AddQuantityObat() {
 
           <ul>
             <li className="label">
-              <label htmlFor="namaProduk">Nama Produk</label>
+              <label htmlFor="namaProduk">Nama Obat</label>
             </li>
             <li className="input">
               <div className="input-group">
@@ -460,7 +481,7 @@ function AddQuantityObat() {
                   onChange= {(e) => setNamaProduk(e.target.value)}
                   required
                 >
-                  <option value="" disabled>Pilih Nama Obat</option>
+                  <option value="" disabled>Pilih Obat</option>
                   {dataObatAvail.map((item) => (
                     <option key={item.namaProduk} value={item.namaProduk}>
                       {item.namaProduk}
@@ -473,7 +494,7 @@ function AddQuantityObat() {
 
           <ul>
             <li className="label">
-              <label htmlFor="quantity">Total Quantity</label>
+              <label htmlFor="quantity">Total Stok</label>
             </li>
             <li className="input">
               <div className="input-group">
@@ -484,7 +505,7 @@ function AddQuantityObat() {
                   onChange= {(e) => setQuantityObat(e.target.value)}
                   required
                 >
-                  <option value="" disabled>Pilih Quantity Obat</option>
+                  <option value="" disabled>Pilih Jumlah Stok Obat</option>
                   <option value="1">1 Obat</option>
                   <option value="5">5 Obat</option>
                   <option value="50">50 Obat</option>
@@ -500,7 +521,7 @@ function AddQuantityObat() {
             loader? (
               <img src={imgLoader} alt="" />
             ) : (
-              "Add Quantity Obat"
+              "Tambah Stok Obat"
             )
           }
           </button>
@@ -523,7 +544,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

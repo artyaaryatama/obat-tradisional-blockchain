@@ -25,10 +25,10 @@ function ManageCdob() {
   };
 
   const statusMap = {
-    0: "Pending",
-    1: "Approved",
-    2: "Rejected",
-    3: "Renew Requested",
+    0: "Dalam Proses",
+    1: "Disetujui",
+    2: "Tidak Disetujui",
+    3: "Pengajuan Ulang",
   };
 
   const options = {
@@ -135,7 +135,7 @@ function ManageCdob() {
         <div className='form-swal'>
           <ul>
             <li className="label">
-              <p>BPOM Instance</p> 
+              <p>Nama Instansi BPOM</p> 
             </li>
             <li className="input">
               <p>{bpomInstance}</p> 
@@ -143,7 +143,7 @@ function ManageCdob() {
           </ul>
           <ul>
             <li className="label">
-              <p>BPOM Address</p> 
+              <p>Alamat Akun BPOM (Pengguna)</p> 
             </li>
             <li className="input">
               <p>{bpomAddr}</p> 
@@ -167,7 +167,7 @@ function ManageCdob() {
           </ul>
           <ul className="txHash">
             <li className="label">
-              <p>Transaction Hash</p>
+              <p>Hash Transaksi</p>
             </li>
             <li className="input">
               <a
@@ -175,7 +175,7 @@ function ManageCdob() {
                 target="_blank"
                 rel="noreferrer"
               >
-                View Transaction on Etherscan
+                Lihat transaksi di Etherscan
               </a>
             </li>
           </ul>
@@ -235,7 +235,7 @@ function ManageCdob() {
 
       console.log(detailCdob.timestampApprove);
 
-      if(detailCdob.status === 'Rejected'){
+      if(detailCdob.status === 'Tidak Disetujui'){
 
         MySwal.fire({
           title: "Detail Sertifikat CDOB",
@@ -245,7 +245,7 @@ function ManageCdob() {
                 <div className="col">
                   <ul>
                     <li className="label">
-                      <p>PBF Instance</p>
+                      <p>Nama Instansi PBF</p>
                     </li>
                     <li className="input">
                       <p>{detailCdob.pbfName}</p>
@@ -254,7 +254,7 @@ function ManageCdob() {
   
                   <ul>
                     <li className="label">
-                      <p>PBF Address</p> 
+                      <p>Alamat Akun PBF (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.pbfAddr}</p> 
@@ -281,7 +281,7 @@ function ManageCdob() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Instance</p> 
+                      <p>Nama Instansi BPOM</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.bpomInstance}</p> 
@@ -290,7 +290,7 @@ function ManageCdob() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Address</p> 
+                      <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.bpomAddr}</p> 
@@ -394,7 +394,7 @@ function ManageCdob() {
                       </ul>
                       <ul>
                       <li className="label">
-                        <label htmlFor="factoryInstanceName">PBF Instance</label>
+                        <label htmlFor="factoryInstanceName">Nama Instansi PBF</label>
                       </li>
                       <li className="input">
                         <input
@@ -474,7 +474,7 @@ function ManageCdob() {
               <div className="col">
                   <ul>
                     <li className="label">
-                      <p>PBF Instance</p>
+                      <p>Nama Instansi PBF</p>
                     </li>
                     <li className="input">
                       <p>{detailCdob.pbfName}</p>
@@ -483,7 +483,7 @@ function ManageCdob() {
   
                   <ul>
                     <li className="label">
-                      <p>PBF Address</p> 
+                      <p>Alamat Akun PBF (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.pbfAddr}</p> 
@@ -510,7 +510,7 @@ function ManageCdob() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Instance</p> 
+                      <p>Nama Instansi BPOM</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.bpomInstance}</p> 
@@ -519,7 +519,7 @@ function ManageCdob() {
   
                   <ul>
                     <li className="label">
-                      <p>BPOM Address</p> 
+                      <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.bpomAddr}</p> 
@@ -636,8 +636,8 @@ function ManageCdob() {
         writeCpotbFb( userdata.instanceName, tipePermohonanMap[tipePermohonanMap], renewRequestCdobCt.hash );
 
         MySwal.update({
-          title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          title: "Memproses transaksi...",
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
       }
   
@@ -677,7 +677,7 @@ function ManageCdob() {
             <div className="btn">
               <button className='btn-menu' onClick={() => navigate('/request-cdob')}>
                 <i className="fa-solid fa-plus"></i>
-                Add new data
+                Tambah data baru
               </button>
             </div>
           </div>
@@ -718,7 +718,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

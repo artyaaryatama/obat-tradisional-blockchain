@@ -39,6 +39,16 @@ function CheckObatIpfs() {
   const [factoryAddressInstance, setFactoryAddressInstance] = useState("");
   const [pbfInstanceAddress, setPbfInstanceAddress] = useState("");
   const [retailerInstanceAddress, setRetailerInstanceAddress] = useState("");
+  const [retailerNPWP, setRetailerNPWP] = useState("");
+  const [pbfNPWP, setPBFNPWP] = useState("");
+  const [factoryNPWP, setFactoryNPWP] = useState("");
+  const [bpomNPWP, setBPOMNPWP] = useState("");
+  const [retailerNib, setRetailerNib] = useState("");
+  const [pbfNib, setPBFNib] = useState("");
+  const [factoryNib, setFactoryNib] = useState("");
+  const [bpomNib, setBPOMNib] = useState("");
+
+
 
   useEffect(() => {
     document.title = "Check Obat Tradisional"; 
@@ -82,7 +92,11 @@ function CheckObatIpfs() {
         factoryAddressInstance: obatData.dataObat.factoryAddressInstance, 
         bpomAddressInstance: obatData.dataObat.bpomAddressInstance,
         tipeObat: obatData.dataObat.tipeObat,
-        jenisObat: obatData.dataObat.jenisObat
+        jenisObat: obatData.dataObat.jenisObat,
+        nibFactory :obatData.dataObat.nibFactory,
+        npwpFactory :obatData.dataObat.npwpFactory,
+        nibBpom :obatData.dataObat.nibBpom,
+        npwpBpom :obatData.dataObat.npwpBpom,
       };
 
       if (detailObat.factoryType === "UMOT"){
@@ -116,6 +130,8 @@ function CheckObatIpfs() {
         }
         console.log(detailOrderPbf);
         setDetailOrderPbf(detailOrderPbf)
+        setPBFNPWP(obatData.dataOrderPbf.NpwpPbf)
+        setPBFNib(obatData.dataOrderPbf.NibPbf)
         setCdobHash(obatData.cdobHash)
         setPbfInstanceAddress(obatData.dataOrderPbf.pbfInstanceAddress)
       }
@@ -131,8 +147,10 @@ function CheckObatIpfs() {
           targetAddress : obatData.dataOrderRetailer.targetAddress,
           timestampOrder: obatData.dataOrderRetailer.timestampOrder,
           timestampShipped: obatData.dataOrderRetailer.timestampShipped,
-          timestampComplete: obatData.dataOrderRetailer.timestampComplete ?  obatData.dataOrderRetailer.timestampComplete : "-" 
+          timestampComplete: obatData.dataOrderRetailer.timestampComplete ?  obatData.dataOrderRetailer.timestampComplete : "-",
         }
+        setRetailerNPWP(obatData.dataOrderRetailer.NpwpRetailer)
+        setRetailerNib(obatData.dataOrderRetailer.NibRetailer)
         setRetailerInstanceAddress(obatData.dataOrderRetailer.retailerInstanceAddress)
         setDetailOrderRetailer(detailOrderRetailer)
       }
@@ -156,6 +174,10 @@ function CheckObatIpfs() {
       setStatusNie(detailObat.nieStatus);
       setCpotbHash(obatData.cpotbHash);
       setBpomAddressInstance(detailObat.bpomAddressInstance);
+      setBPOMNPWP(detailObat.npwpBpom)
+      setFactoryNPWP(detailObat.npwpFactory)
+      setFactoryNib(detailObat.nibFactory)
+      setBPOMNib(detailObat.nibBpom)
       setFactoryAddressInstance(detailObat.factoryAddressInstance);
     }
 
@@ -254,7 +276,7 @@ function CheckObatIpfs() {
                       </div>
                     </li>
                     <li className="info-item">
-                      <span className="label">Factory Instance</span>
+                      <span className="label">Nama Instansi Pabriksi Pabrik</span>
                       <span>{factoryInstanceName}</span>
                       <span className='addr'> ({factoryAddr})</span>
                       <span className='linked'>
@@ -270,11 +292,21 @@ function CheckObatIpfs() {
                     </li>
 
                     <li className="info-item">
-                      <span className="label">Factory Type</span>
+                      <span className="label">NIB Pabrik</span>
+                      <span className='address'>{factoryNib}</span>
+                    </li>
+
+                    <li className="info-item">
+                      <span className="label">NPWP Pabrik</span>
+                      <span className='address'>{factoryNPWP}</span>
+                    </li>
+
+                    <li className="info-item">
+                      <span className="label">Jenis Usaha Farmasi</span>
                       <span className='address'>{factoryType}</span>
                     </li>
                     <li className="info-item">
-                      <span className="label">Factory Address</span>
+                      <span className="label">Alamat Akun Pabrik (Pengguna)</span>
                       <span className='address'>{factoryAddressInstance}</span>
                     </li>
                   </ul>
@@ -303,13 +335,21 @@ function CheckObatIpfs() {
                       <span>{nieApprovalDate}</span>
                     </li>
                     <li className="info-item">
-                      <span className="label">BPOM Instance</span>
+                      <span className="label">Nama Instansi BPOM</span>
                       <span>{bpomInstanceName}</span>
                       <span className='addr'>({bpomAddr})</span>
                     </li>
                     <li className="info-item">
-                      <span className="label">BPOM Address</span>
+                      <span className="label">Alamat Akun BPOM (Pengguna)</span>
                       <span>{bpomAddressInstance}</span>
+                    </li>
+                    <li className="info-item">
+                      <span className="label">NIB BPOM</span>
+                      <span>{bpomNib}</span>
+                    </li>
+                    <li className="info-item">
+                      <span className="label">NPWP BPOM</span>
+                      <span>{bpomNPWP}</span>
                     </li>
                   </ul>
                 </div>
@@ -327,7 +367,7 @@ function CheckObatIpfs() {
                     <div className="list-detail">
                       <ul className="info-list">
                         <li className="info-item">
-                          <span className="label">PBF Instance</span>
+                          <span className="label">Nama Instansi PBF</span>
                           <span>{detailOrderPbf.senderInstanceName}</span>
                           <span className='addr'>({detailOrderPbf.senderAddress})</span>
                           <span className='linked'>
@@ -342,8 +382,16 @@ function CheckObatIpfs() {
                           </span>
                         </li>
                         <li className="info-item">
-                          <span className="label">PBF Address</span>
+                          <span className="label">Alamat Akun PBF (Pengguna)</span>
                           <span>{pbfInstanceAddress}</span>
+                        </li>
+                        <li className="info-item">
+                          <span className="label">NIB PBF</span>
+                          <span>{pbfNib}</span>
+                        </li>
+                        <li className="info-item">
+                          <span className="label">NPWP PBF</span>
+                          <span>{pbfNPWP}</span>
                         </li>
                         <li className="info-item">
                           <span className="label">instance Factory</span>
@@ -383,16 +431,24 @@ function CheckObatIpfs() {
                     <div className="list-detail">
                       <ul className="info-list">
                         <li className="info-item">
-                          <span className="label">Retailer Instance</span>
+                          <span className="label">Nama Instansi Retailer</span>
                           <span>{detailOrderRetailer.senderInstanceName}</span>
                           <span className='addr'>({detailOrderRetailer.senderAddress})</span>
                         </li>
                         <li className="info-item">
-                          <span className="label">Retailer Address</span>
+                          <span className="label">Alamat Akun Retailer (Pengguna)</span>
                           <span>{retailerInstanceAddress}</span>
                         </li>
                         <li className="info-item">
-                          <span className="label">PBF Instance</span>
+                          <span className="label">NIB Retailer</span>
+                          <span>{retailerNib}</span>
+                        </li>
+                        <li className="info-item">
+                          <span className="label">NPWP Retailer</span>
+                          <span>{retailerNPWP}</span>
+                        </li>
+                        <li className="info-item">
+                          <span className="label">Nama Instansi PBF</span>
                           <span>{detailOrderRetailer.targetInstanceName}</span>
                           <span className='addr'>({detailOrderRetailer.targetAddress})</span>
                         </li>

@@ -26,16 +26,10 @@ function ManageOrderPbf() {
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataOrder, setDataOrder] = useState([]);
 
-  const obatStatusMap = {
-    0: "In Local Production",
-    1: "Requested NIE",
-    2: "Approved NIE"
-  };
-
   const orderStatusMap = {
-    0n: "Order Placed",
-    1n: "Order Shipped",
-    2n: "Order Completed"
+    0n: "Order Diajukan",
+    1n: "Order Dikirim",
+    2n: "Order Selesai"
   };
 
   const tipeObatMap = {
@@ -80,10 +74,17 @@ function ManageOrderPbf() {
             signer
           );
 
+          const NieManager = new Contract(
+            contractData.NieManager.address, 
+            contractData.NieManager.abi, 
+            signer
+          );
+
           setContracts({
             orderManagement: orderManagementContract,
             obatTradisional: obatTradisionalContract,
             roleManager: RoleManager,
+            nieManager: NieManager,
           });
         } catch (err) {
           console.error("User access denied!")
@@ -143,7 +144,7 @@ function ManageOrderPbf() {
     const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
   
     MySwal.fire({
-      title: "Order Completed Successfully!",
+      title: "Sukses Menyelesaikan Order!",
       html: (
         <div className='form-swal'>
           <ul>
@@ -156,7 +157,7 @@ function ManageOrderPbf() {
           </ul>
           <ul>
             <li className="label">
-              <p>Batch Name</p> 
+              <p>Nama Batch</p> 
             </li>
             <li className="input">
               <p>{_batchName}</p> 
@@ -172,7 +173,7 @@ function ManageOrderPbf() {
           </ul>
           <ul>
             <li className="label">
-              <p>PBF Instance</p> 
+              <p>Nama Instansi PBF</p> 
             </li>
             <li className="input">
               <p>{_buyerInstance}</p> 
@@ -180,7 +181,7 @@ function ManageOrderPbf() {
           </ul>
           <ul>
             <li className="label">
-              <p>Factory Instance</p> 
+              <p>Nama Instansi Pabrik</p> 
             </li>
             <li className="input">
               <p>{_sellerInstance}</p> 
@@ -188,7 +189,7 @@ function ManageOrderPbf() {
           </ul>
           <ul>
             <li className="label">
-              <p>Timestamp Accept Order</p> 
+              <p>Tanggal order selesai</p> 
             </li>
             <li className="input">
               <p>{timestamp}</p> 
@@ -196,7 +197,7 @@ function ManageOrderPbf() {
           </ul>
           <ul className="txHash">
             <li className="label">
-              <p>Transaction Hash</p>
+              <p>Hash Transaksi</p>
             </li>
             <li className="input">
               <a
@@ -204,7 +205,7 @@ function ManageOrderPbf() {
                 target="_blank"
                 rel="noreferrer"
               >
-                View Transaction on Etherscan
+                Lihat transaksi di Etherscan
               </a>
             </li>
           </ul>
@@ -215,6 +216,10 @@ function ManageOrderPbf() {
       showCancelButton: false,
       confirmButtonText: 'Oke',
       allowOutsideClick: true,
+      didOpen: () => {
+        const actions = Swal.getActions();
+       actions.style.justifyContent = "center";
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         window.location.reload()
@@ -229,12 +234,10 @@ function ManageOrderPbf() {
       const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
       const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
       const orderObatIpfs = await contracts.orderManagement.obatIpfs(orderId);
+      const detailNieCt = await contracts.nieManager.getNieDetail(id)
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [obatDetails, obatNie] = detailObatCt;
-
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
-
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt;
 
       const [orderIdd, obatId, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = detailOrderCt
 
@@ -246,9 +249,8 @@ function ManageOrderPbf() {
         namaObat: namaProduk,
         klaim: klaim,
         kemasan: kemasan,
-        komposisi: komposisi,
-        tipeProduk: "Obat Tradisional", 
-        nieStatus: obatStatusMap[nieStatus], 
+        komposisi: komposisi, 
+        nieStatus: "Disetujui NIE", 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
@@ -339,7 +341,7 @@ function ManageOrderPbf() {
 
                         <ul>
                           <li className="label">
-                            <p>Factory Instance</p>
+                            <p>Nama Instansi Pabrik</p>
                           </li>
                           <li className="input">
                             <p>{factoryInstance}
@@ -359,7 +361,7 @@ function ManageOrderPbf() {
 
                         <ul>
                           <li className="label">
-                            <p>Factory Address</p>
+                            <p>Alamat Akun Pabrik (Pengguna)</p>
                           </li>
                           <li className="input">
                             <p>{factoryAddr}</p>
@@ -458,7 +460,8 @@ function ManageOrderPbf() {
           ),
           width: '1220',
           showCancelButton: true,
-          confirmButtonText: 'Complete Order',
+          cancelButtonText: 'Batal',
+          confirmButtonText: 'Selesaikan Order',
           didOpen: () => {
             const stepperOrder = document.getElementById('stepperOrder');
             const root = ReactDOM.createRoot(stepperOrder);
@@ -529,7 +532,7 @@ function ManageOrderPbf() {
 
                         <ul>
                           <li className="label">
-                            <p>Factory Instance</p>
+                            <p>Nama Instansi Pabrik</p>
                           </li>
                           <li className="input">
                             <p>{factoryInstance}
@@ -549,7 +552,7 @@ function ManageOrderPbf() {
 
                         <ul>
                           <li className="label">
-                            <p>Factory Address</p>
+                            <p>Alamat Akun Pabrik (Pengguna)</p>
                           </li>
                           <li className="input">
                             <p>{factoryAddr}</p>
@@ -682,7 +685,7 @@ function ManageOrderPbf() {
         updateBatchHistoryHash(factoryInstance, namaObat, batchName, completeOrderCt.hash)
         MySwal.update({ 
           title: "Processing your transaction...",
-          text: "This may take a moment. Hang tight! ⏳"
+          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
         });
       }
 
@@ -739,7 +742,7 @@ function ManageOrderPbf() {
           factoryAddressInstance: userFactoryCt[4],
           factoryType:  userFactoryCt[5],
           nieNumber: dataObat.nieNumber,
-          obatStatus: "NIE Approved",
+          obatStatus: "NIE Disetujui",
           nieRequestDate: dataObat.nieRequestDate,
           nieApprovalDate: dataObat.nieApprovalDate,
           bpomAddr: dataObat.bpomAddr,
@@ -747,13 +750,19 @@ function ManageOrderPbf() {
           bpomAddressInstance: userBpomCt[4],
           jenisObat: dataObat.jenisObat,
           tipeObat: dataObat.tipeObat,
+          nibFactory: userFactoryCt[6],
+          npwpFactory: userFactoryCt[7],
+          nibBpom: userBpomCt[6],
+          npwpBpom: userBpomCt[7],
         },
         dataOrderPbf: {
           orderQuantity: dataOrder.orderQuantity,
           senderInstanceName: dataOrder.buyerInstance,
           senderAddress: dataOrder.buyerAddress,
           pbfInstanceAddress: userPbfCt[4],
-          statusOrder : "Order Completed",
+          NpwpPbf:userPbfCt[6],
+          NibPbf:userPbfCt[7],
+          statusOrder : "Order telah selesai",
           targetInstanceName : dataOrder.sellerInstance,
           targetAddress: userdata.address,
           timestampOrder: timestamps.timestampOrder,
@@ -805,7 +814,7 @@ function ManageOrderPbf() {
   
                 <ul>
                   <li className="label label-1">
-                    <p>Factory Instance</p> 
+                    <p>Nama Instansi Pabrik</p> 
                   </li>
                   <li className="input input-1">
                     <p>{dataOrder.sellerInstance}</p> 
@@ -814,7 +823,7 @@ function ManageOrderPbf() {
   
                 <ul>
                   <li className="label label-1">
-                    <p>PBF Instance</p> 
+                    <p>Nama Instansi PBF</p> 
                   </li>
                   <li className="input input-1">
                     <p>{dataOrder.buyerInstance}</p> 
@@ -842,7 +851,8 @@ function ManageOrderPbf() {
         ),
         width: '820',
         showCancelButton: true,
-        confirmButtonText: 'Confirm Obat',
+        cancelButtonText: 'Batal',
+        confirmButtonText: 'Konfirmasi Order Obat',
         allowOutsideClick: false,
   
       }).then((result) => {
@@ -932,7 +942,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Try Again',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

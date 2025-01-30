@@ -66,7 +66,6 @@ contract ObatShared {
   mapping (string => st_obatRetailer) public obatRetailerBatchName;
   mapping (string => string[]) public obatIpfsbyBatchName;
 
-  // status: 200ok
   function setObatDetail(
     string memory _obatId,
     string memory _merk,
@@ -97,7 +96,25 @@ contract ObatShared {
       });
   }
 
-  // status: 200ok
+  function updateObatDetail(
+    string memory _obatId,
+    string memory _merk,
+    string memory _namaProduk,
+    string[] memory _klaim,
+    string[] memory _komposisi,
+    string memory _kemasan,
+    EnumsLibrary.TipePermohonanCdob _tipeObat,
+    string memory _jenisObat
+  ) external {
+      obatDetailsById[_obatId].namaProduk = _namaProduk;
+      obatDetailsById[_obatId].merk = _merk;
+      obatDetailsById[_obatId].klaim = _klaim;
+      obatDetailsById[_obatId].komposisi = _komposisi;
+      obatDetailsById[_obatId].kemasan = _kemasan;
+      obatDetailsById[_obatId].tipeObat = _tipeObat;
+      obatDetailsById[_obatId].jenisObat = _jenisObat;
+  }
+
   function getObatDetail(string memory _obatId)
     external
     view
@@ -114,7 +131,6 @@ contract ObatShared {
       obatDetailsById[_obatId].cdobHash= _cdobHash; 
   } 
 
-  // status: 200ok
   function addBatchProduction(
     string memory _obatId,
     string memory _namaProduk,
@@ -140,7 +156,6 @@ contract ObatShared {
       obatProductionById[_obatId].push(newBatch); 
   }
 
-  // status: 200ok
   function getObatProduction(string memory _obatId)
     external
     view
@@ -179,7 +194,6 @@ contract ObatShared {
     }
   }
 
-  // status: 200ok
   function addObatPbf (
     string memory _obatId,
     string memory _orderId,
@@ -210,7 +224,6 @@ contract ObatShared {
     obatPbfBatchName[_batchName] = newObatPbf;
   } 
 
-  // status: 200ok
   function getAllObatPbfByInstance(string memory _pbfInstance)
     external view returns (st_obatOutputStock[] memory) {
       uint256 count = 0;
@@ -253,7 +266,6 @@ contract ObatShared {
     return obatInstance;
   }
 
-  // status: 200ok
   function getAllObatPbfReadyStock()
     external view returns (st_obatOutputStock[] memory) {
       uint256 count = 0;
@@ -291,7 +303,6 @@ contract ObatShared {
     return obatReady;
   }
 
-  // status: 200ok
   function updateObatPbf(
     string memory _batchName,
     string[] memory _obatIpfs
@@ -305,7 +316,6 @@ contract ObatShared {
     }
   }
 
-  // status: 200ok
   function addObatRetailer (
     string memory _obatId,
     string memory _orderId,
@@ -336,7 +346,6 @@ contract ObatShared {
     obatRetailerBatchName[_batchName] = newObatRetailer;
   } 
 
-  // status: 200ok
   function getAllObatRetailerByInstance(string memory _retailerInstance)
     external view returns (st_obatOutputStock[] memory) {
       uint256 count = 0;
