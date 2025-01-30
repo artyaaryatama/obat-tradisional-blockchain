@@ -43,8 +43,8 @@ function CdobRequest() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const contr = new Contract(
-            contractData.MainSupplyChain.address, 
-            contractData.MainSupplyChain.abi, 
+            contractData.CertificateManager.address, 
+            contractData.CertificateManager.abi, 
             signer
           );
             
@@ -186,7 +186,7 @@ function CdobRequest() {
 
     try {
       const tipePermohonanInt = tp[tipePermohonan]
-      const requestCdobCt = await contract.requestCdob([id, userdata.name, userdata.instanceName], tipePermohonanInt);
+      const requestCdobCt = await contract.requestCdob([id, userdata.name, userdata.instanceName, userdata.address], tipePermohonanInt);
       console.log('Receipt:', requestCdobCt);
 
       if(requestCdobCt){
@@ -198,7 +198,7 @@ function CdobRequest() {
         });
       }
 
-      contract.once("evt_cdobRequested", (_instanceName, _userAddr, _tipePermohonan, _timestampRequest) => {
+      contract.once("evt_certRequested", (_instanceName, _userAddr, _tipePermohonan, _timestampRequest) => {
         handleEventCdobRequested(_instanceName, _userAddr, _tipePermohonan, _timestampRequest, requestCdobCt.hash);
       });
 
@@ -251,6 +251,22 @@ function CdobRequest() {
             </li>
             <li className="input">
               <input type="text" name="instanceName" value={userdata.instanceName} disabled />
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <label htmlFor="instanceName">NIB PBF</label>
+            </li>
+            <li className="input">
+              <input type="text" name="instanceName" value={userdata.nib} disabled />
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <label htmlFor="instanceName">NPWP PBF</label>
+            </li>
+            <li className="input">
+              <input type="text" name="instanceName" value={userdata.npwp} disabled />
             </li>
           </ul>
           <ul>

@@ -3,7 +3,7 @@ import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
-import { doc, updateDoc, arrayUnion   } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import DataIpfsHash from '../../components/TableHash';
 import imgLoader from '../../assets/images/loader.svg';

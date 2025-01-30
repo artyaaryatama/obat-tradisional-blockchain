@@ -232,4 +232,56 @@
     }
 
   }
+
+  button{
+    &.view{
+      @include btnUniversal($white, $blue);
+
+      i{
+        margin-right: 8px;
+      }
+    }
+    &.copy{
+      @include btnUniversal($white, $purple);
+
+      i{
+        margin-right: 8px;
+      }
+    }
+  }
+
+  p{
+    b{
+      margin-right: 10px
+    }
+  }
+
+  select{
+    @include selectForm($white);
+    margin: 10px 0 0 0;
+  }
+
+  table, th, td{
+    border: solid 1px $grey;
+  }
+
+  table {
+    width: 100%; /* Optional: to set the width of the table */
+    border-collapse: collapse; /* Optional: to remove gaps between table borders */
+  }
+  
+  th, td {
+    text-align: center; /* Centers the text horizontally */
+    vertical-align: middle; /* Centers the text vertically */
+    padding: 10px; /* Optional: adds padding inside the cells for better spacing */
+  }
+  
+  tr {
+    text-align: center; /* Aligns all rows in the table */
+  }
+  td button {
+    margin: 5px; /* Adds space around each button */
+  }
+  
+  
 }

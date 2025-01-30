@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { doc, getDocs, collection  } from "firebase/firestore";
+import { doc, updateDoc  } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
@@ -50,7 +50,8 @@ function ManageCpotb() {
   const statusMap = {
     0: "Pending",
     1: "Approved",
-    2: "Rejected"
+    2: "Rejected",
+    3: "Renew Requested",
   };
 
   const options = {
@@ -72,9 +73,9 @@ function ManageCpotb() {
       try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const MainSupplyChain = new Contract(
-            contractData.MainSupplyChain.address, 
-            contractData.MainSupplyChain.abi, 
+          const CertificateManager = new Contract(
+            contractData.CertificateManager.address, 
+            contractData.CertificateManager.abi, 
             signer
           );
             
@@ -83,10 +84,17 @@ function ManageCpotb() {
             contractData.RejectManager.abi,
             signer
           );
+
+          const RoleManager = new Contract(
+            contractData.RoleManager.address,
+            contractData.RoleManager.abi,
+            signer
+          );
           
           setContracts({
-            mainSupplyChain: MainSupplyChain,
-            rejectManager: RejectManager
+            certificateManager: CertificateManager,
+            rejectManager: RejectManager,
+            roleManager: RoleManager
           });
         } catch (err) {
           console.error("User access denied!")
@@ -117,25 +125,28 @@ function ManageCpotb() {
       if (contracts) {
         try {
           console.log(userdata.instanceName);
-          const listAllCt = await contracts.mainSupplyChain.getListAllCertificateByInstance(userdata.instanceName);
+          const listAllCt = await contracts.certificateManager.getCpotbByInstance(userdata.instanceName);
           console.log(listAllCt);
-          const reconstructedData = listAllCt.map((item, index) => {
+          const reconstructedData = listAllCt.map((item) => {
+            const cpotbId = item[0]; 
+            let cpotbNumber = item[1] || 'TBA'; 
 
-            let cpotbNumber = item[1] ? item[1] : 'TBA';
-
-            if(item[5] === 2n){
-              cpotbNumber= null
+            if (item[4] === 2n) {
+              cpotbNumber = null;
             }
+          
             return {
-              cpotbId: item[0], 
+              cpotbId: cpotbId,
               cpotbNumber: cpotbNumber,
-              factoryName: item[2],
-              jenisSediaan: jenisSediaanMap[item[4]],
-              status: statusMap[item[5]],
+              factoryInstance: item[2],
+              jenisSediaan: jenisSediaanMap[item[3]],
+              status: statusMap[item[4]]
             };
-          })
-
+          });
+          
+          // Update state with reconstructed data
           setDataCpotb(reconstructedData);
+          
   
         } catch (error) {
           console.error("Error loading data: ", error);
@@ -146,156 +157,508 @@ function ManageCpotb() {
     loadData();
   }, [contracts]);
 
+  const handleEventCpotbRenewRequested = (_name, _userAddr, _jenisSediaan, _timestampRequest, txHash) => {
+    const formattedTimestamp = new Date(Number(_timestampRequest) * 1000).toLocaleDateString('id-ID', options)
+
+    MySwal.fire({
+      title: "Success Request CPOTB",
+      html: (
+        <div className='form-swal'>
+          <ul>
+            <li className="label">
+              <p>Factory Instance</p> 
+            </li>
+            <li className="input">
+              <p>{_name}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Factory Address</p> 
+            </li>
+            <li className="input">
+              <p>{_userAddr}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Jenis Sediaan</p> 
+            </li>
+            <li className="input">
+              <p>{jenisSediaanMap[_jenisSediaan]}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Tanggal Pengajuan</p> 
+            </li>
+            <li className="input">
+              <p>{formattedTimestamp}</p> 
+            </li>
+          </ul>
+          <ul className="txHash">
+            <li className="label">
+              <p>Transaction Hash</p>
+            </li>
+            <li className="input">
+              <a
+                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View Transaction on Etherscan
+              </a>
+            </li>
+          </ul>
+        </div>
+      ),
+      icon: 'success',
+      width: '560',
+      showCancelButton: false,
+      confirmButtonText: 'Oke',
+      allowOutsideClick: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.reload();
+      }
+    });
+  }
+
   const getDetailCpotb = async (id) => {
     
     console.log(id);
 
     try {
-      const detailCpotbCt = await contracts.mainSupplyChain.detailCpotb(id);
-      console.log(detailCpotbCt);
+      const detailCpotbCt = await contracts.certificateManager.getCpotbDetails(id);
+      const detailUserFactoryCt = await contracts.roleManager.getUserData(userdata.address);
+      let typeFactory;
+      console.log(detailUserFactoryCt);
+ 
+      const [certDetails, cpotbDetails] = detailCpotbCt;     
 
-      const [cpotbId, cpotbNumber, cpotbDetail, jenisSediaan, factoryType] = detailCpotbCt
+      const [cpotbId, cpotbNumber, jenisSediaan, factoryType] = cpotbDetails;
 
-      const [status, timestampRequest, timestampApprove, sender, bpom, cpotbIpfs] = cpotbDetail
+      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, factory, bpom, cpotbIpfs] = certDetails;
+
+      const rejectMsg = await contracts.certificateManager.getRejectMsgCpotb(id);
+      console.log(timestampRenewRequest);
+
+      if (factoryType === "UMOT") {
+        typeFactory = "Usaha Mikro Obat Tradisional (UMOT)"
+      } else if (factoryType === "UKOT") {
+        typeFactory = "Usaha Kecil Obat Tradisional (UKOT)"
+      } else if (factoryType === "IOT") {
+        typeFactory = "Industri Obat Tradisional (IOT)"
+      }
 
       const detailCpotb = {
         cpotbId: cpotbId,
         cpotbNumber: cpotbNumber ? cpotbNumber : "-",
-        senderName: sender[0],
-        factoryAddr: sender[1],
-        factoryName: sender[2],
+        senderName: factory[0],
+        factoryAddr: factory[2],
+        factoryName: factory[1],
         jenisSediaan: jenisSediaanMap[jenisSediaan], 
         status: statusMap[status], 
         timestampRequest: new Date(Number(timestampRequest) * 1000).toLocaleDateString('id-ID', options),
-        timestampApprove: Number(timestampApprove) > 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampApprove: Number(timestampApprove) !== 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampRenewRequest: parseInt(timestampRenewRequest) !== 0 ? new Date(Number(timestampRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
         bpomName : bpom[0] ? bpom[0] : "-",
-        bpomInstance: bpom[2] ? bpom[2] : "-",
-        bpomAddr: bpom[1] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
+        bpomInstance: bpom[1] ? bpom[1] : "-",
+        bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
         cpotbIpfs: cpotbIpfs ? cpotbIpfs : "-",
-        factoryType: factoryType
+        factoryType: typeFactory,
+        factoryNIB: detailUserFactoryCt[6],
+        factoryNPWP: detailUserFactoryCt[7]
       };
 
       console.log(detailCpotb.status);
 
       if(detailCpotb.status === 'Rejected'){
-        const detailCpotbRejected = await contracts.rejectManager.rejectedDetails(id);
 
-        const [rejectMsg, bpomName, bpomInstanceName, jenisSediaanRejected, bpomAddr, timestampRejected] = detailCpotbRejected
-
-        console.log(bpomInstanceName, bpomAddr)
-
-        MySwal.fire({
-          title: "Detail Sertifikat CPOTB",
-          html: (
-            <div className='form-swal'>
-              <div className="row">
-                <div className="col">
-                  <ul>
-                    <li className="label">
-                      <p>Factory Instance</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailCpotb.factoryName} </p>
-                    </li>
-                  </ul>
+        if(rejectMsg.includes("Jenis sediaan")) {
+          MySwal.fire({
+            title: "Detail Sertifikat CPOTB",
+            html: (
+              <div className='form-swal'>
+                <div className="row">
+                  <div className="col">
+                    <ul>
+                      <li className="label">
+                        <p>Factory Instance</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.factoryName} </p>
+                      </li>
+                    </ul>
   
-                  <ul>
-                    <li className="label">
-                      <p>Factory Type</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCpotb.factoryType}</p> 
-                    </li>
-                  </ul>
-
-                  <ul>
-                    <li className="label">
-                      <p>Factory Address</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCpotb.factoryAddr}</p> 
-                    </li>
-                  </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Factory Address</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.factoryAddr}</p> 
+                      </li>
+                    </ul>
   
-                  <ul>
-                    <li className="label">
-                      <p>BPOM Instance</p> 
-                    </li>
-                    <li className="input">
-                      <p>{bpomInstanceName}</p> 
-                    </li>
-                  </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Jenis Industri Farmasi</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.factoryType}</p>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>NIB Pabrik</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.factoryNIB}</p>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>NPWP Pabrik</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.factoryNPWP}</p>
+                      </li>
+                    </ul>
+    
+                    <ul>
+                      <li className="label">
+                        <p>BPOM Instance</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.bpomInstance}</p> 
+                      </li>
+                    </ul>
+    
+                    <ul>
+                      <li className="label">
+                        <p>BPOM Address</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.bpomAddr}</p> 
+                      </li>
+                    </ul>
+                    
+                  </div>
+    
+                  <div className="col">
+                    <ul className='status'>
+                      <li className="label">
+                        <p>Status Sertifikasi</p>
+                      </li>
+                      <li className="input">
+                        <p className={detailCpotb.status}>{detailCpotb.status}</p>
+                      </li>
+                    </ul>
+    
+                    <ul className='rejectMsg'>
+                      <li className="label">
+                        <p>Alasan Penolakan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{rejectMsg}</p> 
+                      </li>
+                    </ul>
   
-                  <ul>
-                    <li className="label">
-                      <p>BPOM Address</p> 
-                    </li>
-                    <li className="input">
-                      <p>{bpomAddr}</p> 
-                    </li>
-                  </ul>
-                  
+                    <ul>
+                      <li className="label">
+                        <p>Jenis Sediaan</p>
+                      </li>
+                      <li className="input colJenisSediaan">
+                        <p>{detailCpotb.jenisSediaan}</p> 
+                        <JenisSediaanTooltip
+                          jenisSediaan={detailCpotb.jenisSediaan}
+                          />
+                      </li>
+                    </ul>
+    
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.timestampRequest}</p> 
+                      </li>
+                    </ul>
+    
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Ditolak</p> 
+                      </li>
+                      <li className="input">
+                        <p>{ new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options)}</p> 
+                      </li>
+                    </ul>
+                    {timestampRenewRequest?
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang</p> 
+                      </li>
+                      <li className="input">
+                        <p>{ detailCpotb.timestampRenewRequest}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                    
+                    }
+  
+  
+                  </div>
                 </div>
-  
-                <div className="col">
-                  <ul className='status'>
-                    <li className="label">
-                      <p>Status Sertifikasi</p>
-                    </li>
-                    <li className="input">
-                      <p className={detailCpotb.status}>{detailCpotb.status}</p>
-                    </li>
-                  </ul>
-  
-                  <ul className='rejectMsg'>
-                    <li className="label">
-                      <p>Alasan Penolakan</p> 
-                    </li>
-                    <li className="input">
-                      <p>{rejectMsg}</p> 
-                    </li>
-                  </ul>
-
-                  <ul>
-                    <li className="label">
-                      <p>Jenis Sediaan</p>
-                    </li>
-                    <li className="input colJenisSediaan">
-                      <p>{detailCpotb.jenisSediaan}</p> 
-                      <JenisSediaanTooltip
-                        jenisSediaan={detailCpotb.jenisSediaan}
-                      />
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Pengajuan</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCpotb.timestampRequest}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Ditolak</p> 
-                    </li>
-                    <li className="input">
-                      <p>{ new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options)}</p> 
-                    </li>
-                  </ul>
-
-                </div>
+              
               </div>
-            
-            </div>
-          ),
-          width: '620',
-          showCloseButton: true,
-          showCancelButton: false,
-          showConfirmButton: false
-        })
+            ),
+            width: '620',
+            showCloseButton: true,
+            showCancelButton: false,
+            showConfirmButton: false,
+          })
+        } else{
+          MySwal.fire({
+            title: "Detail Sertifikat CPOTB",
+            html: (
+              <div className='form-swal'>
+                <div className="row">
+                  <div className="col">
+                    <ul>
+                      <li className="label">
+                        <p>Factory Instance</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.factoryName} </p>
+                      </li>
+                    </ul>
+  
+                    <ul>
+                      <li className="label">
+                        <p>Factory Address</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.factoryAddr}</p> 
+                      </li>
+                    </ul>
+  
+                    <ul>
+                      <li className="label">
+                        <p>Jenis Industri Farmasi</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.factoryType}</p>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>NIB Pabrik</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.factoryNIB}</p>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>NPWP Pabrik</p>
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.factoryNPWP}</p>
+                      </li>
+                    </ul>
+    
+                    <ul>
+                      <li className="label">
+                        <p>BPOM Instance</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.bpomInstance}</p> 
+                      </li>
+                    </ul>
+    
+                    <ul>
+                      <li className="label">
+                        <p>BPOM Address</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.bpomAddr}</p> 
+                      </li>
+                    </ul>
+                    
+                  </div>
+    
+                  <div className="col">
+                    <ul className='status'>
+                      <li className="label">
+                        <p>Status Sertifikasi</p>
+                      </li>
+                      <li className="input">
+                        <p className={detailCpotb.status}>{detailCpotb.status}</p>
+                      </li>
+                    </ul>
+    
+                    <ul className='rejectMsg'>
+                      <li className="label">
+                        <p>Alasan Penolakan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{rejectMsg}</p> 
+                      </li>
+                    </ul>
+  
+                    <ul>
+                      <li className="label">
+                        <p>Jenis Sediaan</p>
+                      </li>
+                      <li className="input colJenisSediaan">
+                        <p>{detailCpotb.jenisSediaan}</p> 
+                        <JenisSediaanTooltip
+                          jenisSediaan={detailCpotb.jenisSediaan}
+                          />
+                      </li>
+                    </ul>
+    
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.timestampRequest}</p> 
+                      </li>
+                    </ul>
+    
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Ditolak</p> 
+                      </li>
+                      <li className="input">
+                        <p>{ new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options)}</p> 
+                      </li>
+                    </ul>
+                    {timestampRenewRequest?
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang</p> 
+                      </li>
+                      <li className="input">
+                        <p>{ detailCpotb.timestampRenewRequest}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                    
+                    }
+  
+  
+                  </div>
+                </div>
+              
+              </div>
+            ),
+            width: '620',
+            showCloseButton: true,
+            showCancelButton: false,
+            showConfirmButton: true,
+            confirmButtonText: 'Pengajuan Ulang CPOTB',
+          }).then((result) => {
+            const today = new Date();
+            const formattedDate = today.toLocaleDateString('id-ID', options);
+            if (result.isConfirmed) {
+              MySwal.fire({
+                title: "Pengajuan Ulang Sertifikat CPOTB",
+                html: (
+                  <div className='form-swal form'>
+                    <div className="row">
+                      <div className="col reject">
+                        <ul>
+                        <li className="label">
+                            <label htmlFor="factoryInstanceName">Tanggal Pengajuan Ulang</label>
+                          </li>
+                          <li className="input">
+                            <input
+                              type="text"
+                              id="factoryInstanceName"
+                              value={formattedDate}
+                              readOnly
+                            />
+                          </li>
+                        </ul>
+                        <ul>
+                        <li className="label">
+                          <label htmlFor="factoryInstanceName">Factory Instance</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="factoryInstanceName"
+                            value={detailCpotb.factoryName}
+                            readOnly
+                          />
+                        </li>
+                        </ul>
+                        <ul>
+                          <li className="label">
+                            <label htmlFor="factoryInstanceName">Jenis Sediaan</label>
+                          </li>
+                          <li className="input select">
+                          <select
+                            id="jenisSediaanDropdown"
+                            className="form-select"
+                            >
+                            <option value="" disabled>
+                              Pilih Jenis Sediaan
+                            </option>
+                            {Object.entries(jenisSediaanMap).map(([key, value]) => (
+                              <option key={key} value={key}>
+                                {value}
+                              </option>
+                            ))}
+                          </select>
+                          <JenisSediaanTooltip
+                            jenisSediaan={detailCpotb.jenisSediaan}
+                          />
+                          </li>
+                        </ul>
+      
+                      </div>
+                    </div>
+                  
+                  </div>
+                ),
+                width: '620',
+                showCloseButton: true,
+                showCancelButton: false,
+                showConfirmButton: true,
+                confirmButtonText: 'Pengajuan Ulang CPOTB',
+                preConfirm: async () => {
+                  const jenisSediaan = document.getElementById("jenisSediaanDropdown").value;
+                if (!jenisSediaan) {
+                  MySwal.showValidationMessage("Pilih Jenis Sediaan!");
+                }
+  
+                return jenisSediaan;
+                }
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+                  console.log("Pengajuan ulang dengan data:", result.value);
+  
+                  MySwal.fire({
+                    title:"Processing your request...",
+                    text:"Your request is on its way. This won't take long. 🚀",
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                  })
+  
+                  renewRequestCpotb(id, parseInt(result.value));
+                  
+                }
+              })
+            }
+          })
+        }
+
 
       } else {
         MySwal.fire({
@@ -314,10 +677,26 @@ function ManageCpotb() {
                   </ul>
                   <ul>
                     <li className="label">
-                      <p>Factory Type</p>
+                      <p>Jenis Industri Farmasi</p>
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryType}</p>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>NIB Pabrik</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryNIB}</p>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>NPWP Pabrik</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryNPWP}</p>
                     </li>
                   </ul>
   
@@ -408,6 +787,39 @@ function ManageCpotb() {
                     </li>
                   </ul>
   
+                  {timestampRejected? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Penolakan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.timestampRejected}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  {rejectMsg? 
+                    <ul className='rejectMsg'>
+                      <li className="label">
+                        <p>Alasan Penolakan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{rejectMsg}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  {timestampRenewRequest? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.timestampRenewRequest}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
                   <ul>
                     <li className="label">
                       <p>Tanggal Disertifikasi</p> 
@@ -416,6 +828,7 @@ function ManageCpotb() {
                       <p>{detailCpotb.timestampApprove}</p> 
                     </li>
                   </ul>
+                  
                 </div>
               </div>
             
@@ -433,16 +846,42 @@ function ManageCpotb() {
     }
   }
 
-  const retrieveCpotbDataFb = async() => {
+  const renewRequestCpotb = async (id, jenisSediaan) => {
     try {
-      const querySnapshot = await getDocs(collection(db, `${userdata.instanceName}`));
-      querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} =>`, doc.data());
+      const renewRequestCpotbCt = await contracts.certificateManager.renewCpotb([id, userdata.name, userdata.instanceName, userdata.address], jenisSediaan);
+      console.log('Receipt:', renewRequestCpotbCt);
+  
+      if(renewRequestCpotbCt){
+        writeCpotbFb( userdata.instanceName, jenisSediaanMap[jenisSediaan], renewRequestCpotbCt.hash );
+
+        MySwal.update({
+          title: "Processing your transaction...",
+          text: "This may take a moment. Hang tight! ⏳"
+        });
+      }
+  
+      contracts.certificateManager.once("evt_certRenewRequest", (_name, _userAddr, _jenisSediaan, _timestampRenew) => {
+        handleEventCpotbRenewRequested(_name, _userAddr, _jenisSediaan, _timestampRenew, renewRequestCpotbCt.hash);
       });
-    } catch (error) {
-      console.error("Error fetching data:", error);
+  
+    } catch (err) {
+      errAlert(err, "Error making request!");
     }
   }
+
+  const writeCpotbFb = async (instanceName, jenisSediaan, cpotbHash) => {
+    try {
+      const documentId = `cpotb-lists`; 
+      const factoryDocRef = doc(db, instanceName, documentId);
+
+      await updateDoc(factoryDocRef, {
+        [`${jenisSediaan}.renewRequestCpotb`]: cpotbHash,
+        [`${jenisSediaan}.renewRequestTimestamp`]: Date.now(), 
+      }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  };
 
   return (
     <>
@@ -467,7 +906,7 @@ function ManageCpotb() {
                   <li key={index}>
                     <button className='title' onClick={() => getDetailCpotb(item.cpotbId)}>{item.jenisSediaan}</button>
                     <p>
-                      { item.cpotbNumber !== null ? `CPOTB Number : ${item.cpotbNumber}` : "Not Available"}
+                      { item.cpotbNumber !== null ? `CPOTB Number: ${item.cpotbNumber}` : "CPOTB Number: Tidak Tersedia"}
                     </p>
                     <button className={`statusPengajuan ${item.status}`}>
                       {item.status}

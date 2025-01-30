@@ -21,6 +21,20 @@
         }
       }
     }
+    
+    &.reject-form{
+      ul{
+        li{
+          &.label{
+            width: 16%;
+          }
+          &.input{
+            width: 84%;
+          }
+        }
+      }
+
+    }
   }
 
   .stok{
@@ -154,15 +168,54 @@
         padding-bottom: 4px;
         flex-direction: row;
 
+        &.status{
+          .input{
+            p{
+              background-color: $grey-light;
+              padding: 4px 8px;
+              color: $black;
+              font-size: 12px;
+              font-weight: 600;
+              padding: 8px 12px;
+              border-radius: 6px;
+
+              &.In, &.Placed, &.Empty, &.Pending, &.Requested{
+                background-color: $grey;
+                color: $white;
+              }
+              
+              &.Shipped, &.Renew{
+                background-color: $yellow;
+                color: $black;
+              }
+  
+              &.Approved, &.Completed{
+                background-color: $green;
+                color: $white;
+              }
+              
+              &.Rejected{
+                background-color: $red;
+                color: $white;
+              }
+              
+              &.Available{
+                background-color: $blue;
+                color: $white;
+              }
+            }
+          }
+        }
         &.rejectMsg{
 
           .input{
             width: 72%;
-            background-color: $red;
+            background-color: $grey-light;
             padding: 4px 8px;
             border-radius: 6px;
+            margin-left: 14px;
             p{
-              color: $white;
+              color: $black;
             }
           }
 
@@ -222,6 +275,26 @@
         }
       }
 
+      &.reject{
+        ul{
+          li{
+            select{
+              margin: 0;
+              background-color: transparent;
+              border: solid 1px $grey;
+            }
+
+            textarea{
+              width: -webkit-fill-available;
+            }
+          }
+        }
+        li.select{
+          display: flex;
+          align-items: center;
+        }
+      }
+
       &.col1{
         width: 40%;
 
@@ -236,6 +309,7 @@
               background-color: $grey-light;
               padding: 8px;
               border-radius: 8px;
+              margin-left: 14px;
             }
           }
 
@@ -296,11 +370,12 @@
     &.rejectMsg{
       .input{
         width: 72%;
-        background-color: $red;
+        background-color: $grey-light;
         padding: 4px 8px;
         border-radius: 6px;
+        margin-left: 14px;
         p{
-          color: $white;
+          color: $black;
         }
       }
     }
@@ -335,7 +410,7 @@
       &.label{
         font-weight: 600;
         text-align: left;
-        width: 28%;
+        width: 32%;
         
         label{
           font-size: 13px;
@@ -376,7 +451,7 @@
 
         input{
           @include inputForm($black);
-          width: 100%;
+          // width: 100%;
           padding: 6px 10px;
           font-size: 13px;   
           

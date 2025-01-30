@@ -174,8 +174,14 @@
               border-radius: 30px;
             }
 
-            &.Pending, &.Requested, &.Shipped{
+            &.In, &.Placed, &.Empty, &.Pending, &.Requested{
+              background-color: $grey;
+              color: $white;
+            }
+            
+            &.Shipped, &.Renew{
               background-color: $yellow;
+              color: $black;
             }
 
             &.Approved, &.Completed{
@@ -193,10 +199,6 @@
               color: $white;
             }
             
-            &.In, &.Placed, &.Empty{
-              background-color: $grey;
-              color: $white;
-            }
           }
 
           p{

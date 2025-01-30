@@ -13,6 +13,30 @@ async function main() {
     const deployedObatShared = await ObatShared.deploy();
     await deployedObatShared.waitForDeployment();
     console.log("ObatShared deployed to:", deployedObatShared.target);
+    
+    // Deploy CpotbCertificate
+    const CpotbCertificate = await hre.ethers.getContractFactory("CpotbCertificate");
+    const deployedCpotbCertificate = await CpotbCertificate.deploy();
+    await deployedCpotbCertificate.waitForDeployment();
+    console.log("CpotbCertificate deployed to:", deployedCpotbCertificate.target);
+
+    // Deploy CdobCertificate
+    const CdobCertificate = await hre.ethers.getContractFactory("CdobCertificate");
+    const deployedCdobCertificate = await CdobCertificate.deploy();
+    await deployedCdobCertificate.waitForDeployment();
+    console.log("CdobCertificate deployed to:", deployedCdobCertificate.target);
+    
+    // // Deploy ObatShared
+    // const BaseCertificate = await hre.ethers.getContractFactory("BaseCertificate");
+    // const deployedBaseCertificate = await ObatShared.deploy();
+    // await deployedBaseCertificate.waitForDeployment();
+    // console.log("BaseCertificate deployed to:", deployedBaseCertificate.target);
+    
+    // Deploy CertificateManager
+    const CertificateManager = await hre.ethers.getContractFactory("CertificateManager");
+    const deployedCertificateManager = await CertificateManager.deploy(deployedRoleManager.target, deployedCpotbCertificate.target, deployedCdobCertificate.target);
+    await deployedCertificateManager.waitForDeployment();
+    console.log("CertificateManager deployed to:", deployedCertificateManager.target);
 
     // Deploy MainSupplyChain
     const MainSupplyChain = await hre.ethers.getContractFactory("MainSupplyChain");
@@ -60,6 +84,10 @@ async function main() {
             address: deployedRejectManager.target,
             abi: (await hre.artifacts.readArtifact("RejectManager")).abi
 
+        },
+        CertificateManager: {
+            address: deployedCertificateManager.target,
+            abi: (await hre.artifacts.readArtifact("CertificateManager")).abi
         }
 
     };

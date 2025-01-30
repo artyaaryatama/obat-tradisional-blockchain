@@ -19,6 +19,8 @@ function RegisterPage() {
   const [name, setName] = useState("");
   const [instanceName, setInstanceName] = useState("");
   // const [userAddr, setUserAddr] = useState("");
+  const [nib, setNib] = useState("");
+  const [npwp, setNpwp] = useState("");
   const [role, setRole] = useState("");
   const [locationInstance, setLocationInstance] = useState("");
   const [factoryType, setFactoryType] = useState("")
@@ -27,7 +29,6 @@ function RegisterPage() {
     document.title = "Sign Up"; 
   }, []);
 
-  // connect wallet
   useEffect(() => {
     async function connectWallet() {
       if (window.ethereum) {
@@ -67,7 +68,7 @@ function RegisterPage() {
     };
   }, []);
 
-  const handleEventUserRegister = (_userAddr,_name, _instanceName, _role, _locationInstance, txHash) => {
+  const handleEventUserRegister = (_userAddr,_name, _instanceName, _role, _locationInstance, _nib, _npwp, txHash) => {
     const roles = {
       0n: "Factory",
       1n: "PBF",
@@ -109,6 +110,22 @@ function RegisterPage() {
             </li>
             <li className="input">
               <p>{roles[_role]}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>NPWP</p> 
+            </li>
+            <li className="input">
+              <p>{_npwp}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>NIB</p> 
+            </li>
+            <li className="input">
+              <p>{_nib}</p> 
             </li>
           </ul>
           <ul>
@@ -165,9 +182,9 @@ function RegisterPage() {
       const nameUpperCase = name.toUpperCase()
       let registCt;
       if(factoryType){
-        registCt = await contract.registerUser(nameUpperCase, instanceName, role, locationInstance, factoryType);
+        registCt = await contract.registerUser(nameUpperCase, instanceName, role, locationInstance, factoryType, nib, npwp);
       } else {
-        registCt = await contract.registerUser(nameUpperCase, instanceName, role, locationInstance, "");
+        registCt = await contract.registerUser(nameUpperCase, instanceName, role, locationInstance, "", nib, npwp);
       }
       console.log("Transaction receipt:", registCt);
       console.log("Transaction hash:", registCt.hash);
@@ -179,8 +196,8 @@ function RegisterPage() {
         });
       }
 
-      contract.once("evt_UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance) => {
-        handleEventUserRegister(_userAddr, _name, _instanceName, _role, _locationInstance, registCt.hash);
+      contract.once("evt_UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
+        handleEventUserRegister(_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp, registCt.hash);
       });
       
     } catch (err) {
@@ -197,6 +214,8 @@ function RegisterPage() {
       setRole(parseInt(0))
       setName('Factory ABC')
       // setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+      setNib('1111111111')
+      setNpwp('11.111.111.1-111.111')
       setLocationInstance("Jl. Ini Alamat Factory PT. Budi Pekerti, Jakarta Selatan")
       // setUserAddr("0x6142E74121ADE0de3BEC1641e0318dBcCFcDe06A")
       
@@ -204,6 +223,8 @@ function RegisterPage() {
       setInstanceName('PT. Mangga Arum')
       setRole(parseInt(1))
       setName('PBF DEF') 
+      setNib('2222222222')
+      setNpwp('22.222.222.2-222.222')
       // setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
       setLocationInstance("Jl. Ini Alamat PBF PT. Mangga Arum, Jakarta Selatan")
       // setUserAddr("0x97CB6400E271e65150B2330ad27f213a4C9c31af")
@@ -212,6 +233,8 @@ function RegisterPage() {
       setInstanceName('BPOM Makassar')
       setRole(parseInt(2))
       setName('BPOM GHI') 
+      setNib('3333333333')
+      setNpwp('33.333.333.3-333.333')
       // setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
       setLocationInstance("Jl. Ini Alamat BPOM Makassar, Makassar")
       // setUserAddr('0xcbcD762c3C27212937314C1D46072a214346F2F3')
@@ -220,6 +243,8 @@ function RegisterPage() {
       setInstanceName('Apotek Sejahtera')
       setRole(parseInt(3))
       setName('Retailer JKL') 
+      setNib('4444444444')
+      setNpwp('44.444.444.4-444.444')
       // setUserAddr('0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65')
       setLocationInstance("Jl. Ini Alamat Apotek Sejahtera, Jakarta Selatan")
       // setUserAddr('0xA3cE1983150Fade27518DF467a99a74FB4082dDa')
@@ -230,11 +255,6 @@ function RegisterPage() {
     const a = parseInt(opt);
     setRole(a);
   }
-
-  const formattedAddress = (addr) => {
-    if (!addr) return "";
-    return `${addr.slice(0, 16)}...${addr.slice(-14)}`;
-  };
 
   return (
     <>
@@ -257,6 +277,22 @@ function RegisterPage() {
                 placeholder="Instance Name" 
                 value={instanceName} 
                 onChange={(e) => setInstanceName(e.target.value)} 
+                required 
+              />
+
+              <input 
+                type="text" 
+                placeholder="Nomor NIB" 
+                value={nib} 
+                onChange={(e) => setNib(e.target.value)} 
+                required 
+              />
+
+              <input 
+                type="text" 
+                placeholder="Nomor NPWP " 
+                value={npwp} 
+                onChange={(e) => setNpwp(e.target.value)} 
                 required 
               />
               

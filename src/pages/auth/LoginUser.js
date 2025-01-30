@@ -74,7 +74,7 @@ function LoginPage() {
       const loginCt = await contract.loginUser();
       console.log('loginCt', loginCt);
       
-      const [userName, instanceName, userAddr, role, location, factoryType] = loginCt;
+      const [userName, instanceName, userAddr, role, location, factoryType, nib, npwp] = loginCt;
       
       if (nameUpperCase === userName && signer.address === userAddr) {
         console.log('role pas login',{role, userAddr});
@@ -88,7 +88,9 @@ function LoginPage() {
             instanceName: instanceName,
             role: role.toString(),
             location: location,
-            factoryType: factoryType
+            factoryType: factoryType,
+            nib: nib,
+            npwp: npwp
           }
 
         } else {
@@ -97,7 +99,9 @@ function LoginPage() {
             name: userName,
             instanceName: instanceName,
             role: role.toString(),
-            location: location
+            location: location,
+            nib: nib,
+            npwp: npwp
           }
   
         }

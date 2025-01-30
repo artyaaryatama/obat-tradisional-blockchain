@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+import { validateObat } from '../public/ValidateObat';
 
 const MySwal = withReactContent(Swal);
 
@@ -34,7 +35,6 @@ function CreateObat() {
   const [namaObatExisted, setNamaObatExisted] = useState([])
   const [jenisObat, setJenisObat] = useState("")
   const [filteredJenisSediaan, setFilteredJenisSediaan] = useState([]);
-
 
   const klaimValue = klaim.join("\n");
 
@@ -82,10 +82,10 @@ function CreateObat() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-;
-          const MainSupplyChain = new Contract(
-            contractData.MainSupplyChain.address,
-            contractData.MainSupplyChain.abi,
+
+          const CertificateManager = new Contract(
+            contractData.CertificateManager.address,
+            contractData.CertificateManager.abi,
             signer
           );
 
@@ -96,7 +96,7 @@ function CreateObat() {
           );
             
         setContracts({
-          mainSupplyChain: MainSupplyChain,
+          certificateManager: CertificateManager,
           obatTradisional: ObatTradisional
         });
         } catch (err) {
@@ -129,13 +129,15 @@ function CreateObat() {
       if(contracts) {
         try {
           console.log(userdata.instanceName);
-          const listAllCt = await contracts.mainSupplyChain.getListAllCertificateByInstance(userdata.instanceName);
-          const reconstructedData = listAllCt.map((item, index) => {
+          const listAllCt = await contracts.certificateManager.getCpotbByInstance(userdata.instanceName);
+          const reconstructedData = listAllCt.map((item) => {
+          
             return {
-              cpotbHash: item[6],
-              jenisSediaan: jenisSediaanMap[item[4]]
+              cpotbId: item[0],
+              cpotbHash: item[5],
+              jenisSediaan: jenisSediaanMap[item[3]]
             };
-          })
+          });
 
           const listAllObatCt = await contracts.obatTradisional.getAllObatByInstance(userdata.instanceName);
           const reconstructedDataNama = listAllObatCt.map((item, index) => {
@@ -157,6 +159,7 @@ function CreateObat() {
           setNamaObatExisted(reconstructedDataNama);
 
           setDataCpotb(reconstructedData);
+          console.log(listAllCt);
 
         } catch (error) {
           errAlert(error, "Error loading data.")
@@ -242,8 +245,31 @@ function CreateObat() {
     setLoader(false)
   }
 
+  const validateForm = () => {
+    const obatData = {
+      namaProduk,
+      komposisi
+    };
+    const result = validateObat(obatData);
+
+    if (result.message === "Validation Failed") {
+      MySwal.fire({
+        title: result.title,
+        text: result.reason,
+        icon: "error",
+        confirmButtonText: "Ok"
+      });
+      return false;
+    }
+    return true;
+  };
+
   const createObat = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
 
     MySwal.fire({
       title:"Processing your request...",
@@ -291,6 +317,8 @@ function CreateObat() {
 
     const kemasanPrimData = dataCpotb.find((item) => item.jenisSediaan === kemasanPrim) || false;
     const newObatName = namaObatExisted.find((item) => item.namaProduk === namaProduk) || false;
+
+    console.log(kemasanPrimData);
 
     if (newObatName) {
       errAlert({reason: "Unable to Create Obat"}, `The obat with the name "${namaProduk}" already exists. Please use a different name.`);
@@ -422,6 +450,10 @@ function CreateObat() {
 
     console.log(`Removing index ${index}. Current state:`, komposisi);
 
+  };
+
+  const handleAddProhibitedIngredient = () => {
+    setKomposisi([...komposisi, "Abri Precatorii Semen"]);
   };
 
   return (
@@ -631,7 +663,9 @@ function CreateObat() {
                         <button type="button" onClick={() => removeField(index)}><i className="fa-solid fa-trash"></i></button>
                       )}
                       <button type="button" onClick={addField}><i className="fa-solid fa-plus"></i></button>
-
+                      <button type="button" className="add-prohibited" onClick={handleAddProhibitedIngredient}>
+                        Add Prohibited Ingredient
+                      </button>
                     </div>
                     
                   </div>

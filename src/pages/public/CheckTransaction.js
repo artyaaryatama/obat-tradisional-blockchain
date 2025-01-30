@@ -28,7 +28,7 @@ function CheckTransaction() {
   };
 
   const formatTimestamp = (timestamp) => {
-    if (!timestamp) return "N/A";
+    if (!timestamp) return "Not Available";
     return new Date(Number(timestamp)).toLocaleDateString("id-ID", options);
   };
 
@@ -139,6 +139,7 @@ function CheckTransaction() {
         }
       } else {
         console.warn("No pbfInstance available for batch:", batchName);
+        cdobData = {};
       }
   
       setSelectedBatch({
@@ -174,11 +175,12 @@ function CheckTransaction() {
     }
   };
   
-
   const renderTable = (data, title) => {
     const sortedData = Object.entries(data).sort(
-      ([, a], [, b]) => Number(a.timestamp || 0) - Number(b.timestamp || 0) // Sort by timestamp
+      ([, a], [, b]) => Number(a.timestamp || 0) - Number(b.timestamp || 0)
     );
+  
+    const allDataUnavailable = sortedData.every(([_, value]) => value.timestamp === undefined);
   
     return (
       <div>
@@ -193,25 +195,42 @@ function CheckTransaction() {
             </tr>
           </thead>
           <tbody>
-            {sortedData.map(([key, value]) => (
-              <tr key={key}>
-                <td>{key}</td>
-                <td>{formatTimestamp(value.timestamp)}</td>
-                <td>{value.hash || "N/A"}</td>
-                <td>
-                  <button onClick={() => navigator.clipboard.writeText(value.hash || "N/A")}>
-                    Copy Hash
-                  </button>
-                  <button
-                    onClick={() =>
-                      value.hash && window.open(`https://etherscan.io/tx/${value.hash}`, "_blank")
-                    }
-                  >
-                    View on Etherscan
-                  </button>
+            {allDataUnavailable ? (
+              <tr>
+                <td colSpan="4" style={{ textAlign: "center" }}>
+                  Data not available
                 </td>
               </tr>
-            ))}
+            ) : (
+              sortedData.map(([key, value]) => (
+                <tr key={key}>
+                  <td>{key}</td>
+                  <td>
+                    {value.timestamp !== undefined
+                      ? formatTimestamp(value.timestamp)
+                      : "Data not available"}
+                  </td>
+                  <td>{value.hash || "Not Available"}</td>
+                  <td>
+                    <button className="copy"
+                      onClick={() =>
+                        navigator.clipboard.writeText(value.hash || "Not Available")
+                      }
+                    >
+                      Copy Hash
+                    </button>
+                    <button className="view"
+                      onClick={() =>
+                        value.hash &&
+                        window.open(`https://etherscan.io/tx/${value.hash}`, "_blank")
+                      }
+                    >
+                      View on Etherscan
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -220,7 +239,6 @@ function CheckTransaction() {
   
   
   const renderBatchTable = (batchData) => {
-    // Define a mapping for batch keys to their display names
     const keyDisplayMap = {
       orderCreatedRetailer: "Order Created by Retailer",
       orderShippedRetailer: "Order Shipped to Retailer",
@@ -231,7 +249,6 @@ function CheckTransaction() {
       batchCreated: "Batch Created",
     };
   
-    // Filter out keys containing 'Timestamp'
     const filteredBatchData = Object.entries(batchData.historyHash || {}).filter(
       ([key]) => !key.toLowerCase().includes("timestamp")
     );
@@ -262,12 +279,12 @@ function CheckTransaction() {
                 <tr key={key}>
                   <td>{displayKey}</td>
                   <td>{formatTimestamp(batchData.historyHash[timestampKey])}</td>
-                  <td>{value || "N/A"}</td>
+                  <td>{value || "Not Available"}</td>
                   <td>
-                    <button onClick={() => navigator.clipboard.writeText(value || "N/A")}>
+                    <button className="copy" onClick={() => navigator.clipboard.writeText(value || "Not Available")}>
                       Copy Hash
                     </button>
-                    <button
+                    <button className="view"
                       onClick={() =>
                         value && window.open(`https://etherscan.io/tx/${value}`, "_blank")
                       }
@@ -282,23 +299,19 @@ function CheckTransaction() {
         </table>
         <div className="batch-summary">
         <p>
-          <b>PBF Instance:</b> {batchData.pbfInstance || "N/A"}
+          <b>Batch Quantity:</b> {batchData.quantity || "Not Available"} Obat
+        </p>
+        <p>
+          <b>PBF Instance:</b> {batchData.pbfInstance || "Not Available"}
         </p>
         <p>
           <b>Retailer Instance:</b>{" "}
-          {batchData.retailerInstance ? batchData.retailerInstance : "N/A"}
-        </p>
-        <p>
-          <b>Batch Quantity:</b> {batchData.quantity || "N/A"}
+          {batchData.retailerInstance ? batchData.retailerInstance : "Not Available"}
         </p>
       </div>
       </div>
     );
   };
-  
-  
-  
-
 
   return (
     <div id="publicObat" className="txHash">
@@ -309,7 +322,7 @@ function CheckTransaction() {
         <div className="data-obat">
           <div className="section">
             <div className="form-container">
-              <h1>Check Transaction Hash</h1>
+              <h1>Check Transaction</h1>
               <form
                 className="register-form"
                 onSubmit={(e) => {
@@ -351,8 +364,8 @@ function CheckTransaction() {
               <div className="document-details">
                 <h3>General Details</h3>
                 {renderTable(documentDetails.historyNie, "History NIE")}
-                <p><b>Jenis Sediaan:</b> {documentDetails.jenisSediaan || "N/A"}</p>
-                <p><b>Tipe Obat:</b> {documentDetails.tipeObat || "N/A"}</p>
+                <p><b>Jenis Sediaan:</b> {documentDetails.jenisSediaan || "Not Available"}</p>
+                <p><b>Tipe Obat:</b> {documentDetails.tipeObat || "Not Available"}</p>
 
                 {documentDetails.batchNames.length > 0 && (
                   <>

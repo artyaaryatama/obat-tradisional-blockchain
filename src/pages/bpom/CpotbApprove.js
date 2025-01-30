@@ -52,7 +52,8 @@ function CpotbApprove() {
   const statusMap = {
     0: "Pending",
     1: "Approved",
-    2: "Rejected"
+    2: "Rejected",
+    3: "Renew Requested",
   };
 
   const options = {
@@ -74,9 +75,9 @@ function CpotbApprove() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const MainSupplyChain = new Contract(
-            contractData.MainSupplyChain.address,
-            contractData.MainSupplyChain.abi,
+          const CertificateManager = new Contract(
+            contractData.CertificateManager.address,
+            contractData.CertificateManager.abi,
             signer
           );
 
@@ -86,16 +87,16 @@ function CpotbApprove() {
             signer
           );
 
-          const RejectManager = new Contract(
-            contractData.RejectManager.address,
-            contractData.RejectManager.abi,
-            signer
-          );
+          // const RejectManager = new Contract(
+          //   contractData.RejectManager.address,
+          //   contractData.RejectManager.abi,
+          //   signer
+          // );
 
         setContracts({
-          mainSupplyChain: MainSupplyChain,
+          certificateManager: CertificateManager,
           roleManager: RoleManager,
-          rejectManager: RejectManager
+          // rejectManager: RejectManager
         });
 
         } catch (err) {
@@ -127,22 +128,22 @@ function CpotbApprove() {
     const getAllCpotb = async () => {
       if(contracts){
         try {
-          const listAllCpotb = await contracts.mainSupplyChain.getListAllCpotb()
-          console.log(listAllCpotb);
+          const listAllCpotb = await contracts.certificateManager.getAllCpotb()
 
           const reconstructedData = listAllCpotb.map((item) => {
-            let cpotbNumber = item[1] ? item[1] : 'TBA';
+            const cpotbId = item[0]; 
+            let cpotbNumber = item[1] || 'TBA'; 
 
-            if(item[5] === 2n){
-              cpotbNumber= null
+            if (item[4] === 2n) {
+              cpotbNumber = null;
             }
-
+          
             return {
-              cpotbId: item[0],  
+              cpotbId: cpotbId,
               cpotbNumber: cpotbNumber,
-              factoryInstanceName: item[2], 
-              jenisSediaan: jenisSediaanMap[item[4]],
-              status: statusMap[item[5]],
+              factoryInstance: item[2],
+              jenisSediaan: jenisSediaanMap[item[3]],
+              status: statusMap[item[4]]
             };
           })
 
@@ -158,7 +159,7 @@ function CpotbApprove() {
     getAllCpotb()
   }, [contracts])
 
-  const handleEventCpotb = (status, bpomAddr, bpomInstance, jenisSediaan, detail, timestamp, txHash) => {
+  const handleEventCpotb = (status, bpomInstance, bpomAddr, jenisSediaan, detail, timestamp, txHash) => {
 
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
     
@@ -313,28 +314,52 @@ function CpotbApprove() {
     console.log(id); 
     
     try {
-      const detailCpotbCt = await contracts.mainSupplyChain.detailCpotb(id);
+      const detailCpotbCt = await contracts.certificateManager.getCpotbDetails(id);
+      let typeFactory;
+      
+      const [certDetails, cpotbDetails] = detailCpotbCt; 
+      
+      const [cpotbId, cpotbNumber, jenisSediaan, factoryType] = cpotbDetails;
+      console.log(cpotbDetails);
+      
+      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, sender, bpom, cpotbIpfs] = certDetails;
+      
+      const detailUserFactoryCt = await contracts.roleManager.getUserData(sender[2]);
 
-      const [cpotbId, cpotbNumber, cpotbDetail, jenisSediaan, factoryType ] = detailCpotbCt
-
-      const [status, timestampRequest, timestampApprove, sender, bpom, cpotbIpfs] = cpotbDetail
+      if (factoryType === "UMOT") {
+        typeFactory = "Usaha Mikro Obat Tradisional (UMOT)"
+      } else if (factoryType === "UKOT") {
+        typeFactory = "Usaha Kecil Obat Tradisional (UKOT)"
+      } else if (factoryType === "IOT") {
+        typeFactory = "Industri Obat Tradisional (IOT)"
+      }
 
       const detailCpotb = {
         cpotbId: cpotbId,
-        cpotbNumber: cpotbNumber ? cpotbNumber : "(TBA)",
+        cpotbNumber: cpotbNumber ? cpotbNumber : "-",
         factoryUserName: sender[0],
-        factoryAddr: sender[1],
-        factoryInstanceName: sender[2],
+        factoryAddr: sender[2],
+        factoryInstanceName: sender[1],
         jenisSediaan: jenisSediaanMap[jenisSediaan], 
         status: statusMap[status], 
         timestampRequest: new Date(Number(timestampRequest) * 1000).toLocaleDateString('id-ID', options),
         timestampApprove: Number(timestampApprove) > 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampRenewRequest: parseInt(timestampRenewRequest) !== 0 ? new Date(Number(timestampRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
         bpomUserName : bpom[0] ? bpom[0] : "-",
-        bpomInstance: bpom[2] ? bpom[2] : "-",
-        bpomAddr: bpom[1] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
+        bpomInstance: bpom[1] ? bpom[1] : "-",
+        bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
         cpotbIpfs: cpotbIpfs ? cpotbIpfs : "-",
-        factoryType: factoryType
+        factoryType: typeFactory,
+        factoryNIB: detailUserFactoryCt[6],
+        factoryNPWP: detailUserFactoryCt[7]
       };
+
+      const eligbleFactory = checkEligible(factoryType, parseInt(jenisSediaan));
+      console.log(eligbleFactory);
+
+      const rejectMsg = await contracts.certificateManager.getRejectMsgCpotb(id);
+      console.log(rejectMsg);
 
       if(detailCpotb.status === 'Approved'){
         MySwal.fire({
@@ -349,15 +374,6 @@ function CpotbApprove() {
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryInstanceName} </p>
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Factory Type</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCpotb.factoryType}</p> 
                     </li>
                   </ul>
 
@@ -444,6 +460,39 @@ function CpotbApprove() {
                       <p>{detailCpotb.timestampRequest}</p> 
                     </li>
                   </ul>
+                  {timestampRejected? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Penolakan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.timestampRejected}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  {rejectMsg? 
+                    <ul className='rejectMsg'>
+                      <li className="label">
+                        <p>Alasan Penolakan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{rejectMsg}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  {timestampRenewRequest? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.timestampRenewRequest}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
   
                   <ul>
                     <li className="label">
@@ -464,10 +513,6 @@ function CpotbApprove() {
           showConfirmButton: false
         })
       } else if(detailCpotb.status === 'Rejected'){
-        const detailCpotbRejected = await contracts.rejectManager.rejectedDetails(id);
-
-        const [rejectMsg, bpomName, bpomInstanceName, jenisSediaanRejected, bpomAddr, timestampRejected] = detailCpotbRejected
-
         MySwal.fire({
           title: "Detail Sertifikat CPOTB",
           html: (
@@ -482,15 +527,6 @@ function CpotbApprove() {
                       <p>{detailCpotb.factoryInstanceName} </p>
                     </li>
                   </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Factory Type</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCpotb.factoryType}</p> 
-                    </li>
-                  </ul>
 
                   <ul>
                     <li className="label">
@@ -500,13 +536,38 @@ function CpotbApprove() {
                       <p>{detailCpotb.factoryAddr}</p> 
                     </li>
                   </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Jenis Industri Farmasi</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryType}</p>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>NIB Pabrik</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryNIB}</p>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>NPWP Pabrik</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryNPWP}</p>
+                    </li>
+                  </ul>
   
                   <ul>
                     <li className="label">
                       <p>BPOM Instance</p> 
                     </li>
                     <li className="input">
-                      <p>{bpomInstanceName}</p> 
+                      <p>{detailCpotb.bpomInstance}</p> 
                     </li>
                   </ul>
   
@@ -515,10 +576,9 @@ function CpotbApprove() {
                       <p>BPOM Address</p> 
                     </li>
                     <li className="input">
-                      <p>{bpomAddr}</p> 
+                      <p>{detailCpotb.bpomAddr}</p> 
                     </li>
                   </ul>
-                  
                 </div>
   
                 <div className="col">
@@ -537,6 +597,17 @@ function CpotbApprove() {
                     </li>
                     <li className="input">
                       <p>{rejectMsg}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Nomor CPOTB</p>
+                    </li>
+                    <li className="input">
+                      <p>{
+                          detailCpotb.cpotbNumber === '-'? 
+                          'Tidak Tersedia' : detailCpotb.cpotbNumber 
+                        }</p> 
                     </li>
                   </ul>
 
@@ -593,19 +664,10 @@ function CpotbApprove() {
                       <p>Factory Instance</p>
                     </li>
                     <li className="input">
-                      <p>{detailCpotb.factoryInstanceName}</p>
+                      <p>{detailCpotb.factoryInstanceName} </p>
                     </li>
                   </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Factory Type</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCpotb.factoryType}</p> 
-                    </li>
-                  </ul>
-  
+
                   <ul>
                     <li className="label">
                       <p>Factory Address</p> 
@@ -614,8 +676,33 @@ function CpotbApprove() {
                       <p>{detailCpotb.factoryAddr}</p> 
                     </li>
                   </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Jenis Industri Farmasi</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryType}</p>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>NIB Pabrik</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryNIB}</p>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>NPWP Pabrik</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.factoryNPWP}</p>
+                    </li>
+                  </ul>
   
-                  {/* <ul>
+                  <ul>
                     <li className="label">
                       <p>BPOM Instance</p> 
                     </li>
@@ -631,7 +718,7 @@ function CpotbApprove() {
                     <li className="input">
                       <p>{detailCpotb.bpomAddr}</p> 
                     </li>
-                  </ul> */}
+                  </ul>
                 </div>
   
                 <div className="col">
@@ -645,7 +732,7 @@ function CpotbApprove() {
                     </li>
                   </ul>
   
-                  {/* <ul>
+                  <ul>
                     <li className="label">
                       <p>Nomor CPOTB</p>
                       <label htmlFor="nomorCpotb"></label>
@@ -653,7 +740,7 @@ function CpotbApprove() {
                     <li className="input">
                       <p>{detailCpotb.cpotbNumber}</p> 
                     </li>
-                  </ul> */}
+                  </ul>
   
                   <ul>
                     <li className="label">
@@ -666,13 +753,54 @@ function CpotbApprove() {
                       />
                     </li>
                   </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.timestampRequest}</p> 
+                      </li>
+                    </ul> 
   
+                  {timestampRejected? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Penolakan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.timestampRejected}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  {rejectMsg? 
+                    <ul className='rejectMsg'>
+                      <li className="label">
+                        <p>Alasan Penolakan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{rejectMsg}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  {timestampRenewRequest? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.timestampRenewRequest}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
                   <ul>
                     <li className="label">
-                      <p>Tanggal Pengajuan</p> 
+                      <p>Tanggal Disertifikasi</p> 
                     </li>
                     <li className="input">
-                      <p>{detailCpotb.timestampRequest}</p> 
+                      <p>{detailCpotb.timestampApprove}</p> 
                     </li>
                   </ul>
   
@@ -732,6 +860,19 @@ function CpotbApprove() {
                             type="text"
                             id="factoryAddr"
                             value={detailCpotb.factoryAddr}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="factoryAddr">Jenis Usaha Industri</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            value={detailCpotb.factoryType}
                             readOnly
                           />
                         </li>
@@ -822,12 +963,13 @@ function CpotbApprove() {
               }
             })
           } else if (result.isDenied){
+
             MySwal.fire({
-              title: 'Reject Pengajuan Sertifikat CPOTB',
+              title: 'Tolak Pengajuan Sertifikat CPOTB',
               html: (
-                <div className="form-swal form">
+                <div className="form-swal form reject-form">
                   <div className="row">
-                    <div className="col">
+                    <div className="col reject">
                       <ul>
                         <li className="label">
                           <label htmlFor="factoryInstanceName">Factory Instance</label>
@@ -886,14 +1028,34 @@ function CpotbApprove() {
               
                       <ul>
                         <li className="label">
-                          <label htmlFor="rejectMsg">Alasan Reject</label>
+                          <label htmlFor="rejectReason">Alasan Reject</label>
                         </li>
                         <li className="input">
-                          <textarea 
-                            type="text" 
-                            id="rejectMsg"
+                          <select id="rejectReason" required onChange={(e) => handleRejectReasonChange(e)}>
+                            <option value="">Pilih alasan</option>
+                            {
+                              eligbleFactory !== true ? 
+                              <option value={eligbleFactory}>
+                                {eligbleFactory} 
+                              </option>
+                                : null
+                            }
+                            <option value="Dokumen Teknis tidak lengkap">Dokumen Teknis tidak lengkap</option>
+                            <option value="Dokumen Administratif tidak lengkap">Dokumen Administratif tidak lengkap</option>
+                            <option value="Lainnya">Other (specify manually)</option>
+                          </select>
+                        </li>
+                      </ul>
+
+                      <ul id="customRejectMsgWrapper" style={{ display: 'none' }}>
+                        <li className="label">
+                          <label htmlFor="customRejectMsg">Specify Reason</label>
+                        </li>
+                        <li className="input">
+                          <textarea
+                            id="customRejectMsg"
                             rows="3"
-                            required
+                            placeholder="Masukkan alasan manual di sini"
                           />
                         </li>
                       </ul>
@@ -917,7 +1079,7 @@ function CpotbApprove() {
                   </div>
                 </div>
               ),     
-              width: '660',       
+              width: '820',       
               icon: 'warning',
               showCancelButton: false,
               showCloseButton: true,
@@ -925,11 +1087,18 @@ function CpotbApprove() {
               confirmButtonColor: '#E33333',
               allowOutsideClick: false,
               preConfirm: () => {
-                const rejectMsgInput = document.getElementById('rejectMsg').value;
-                if (!rejectMsgInput) {
-                  Swal.showValidationMessage('Alasan Reject is required!');
+                const rejectReason = document.getElementById('rejectReason').value;
+                const customRejectMsg = document.getElementById('customRejectMsg').value;
+
+                if (!rejectReason) {
+                  Swal.showValidationMessage('Pilih alasan reject!');
+                } else if (rejectReason === 'Lainnya' && !customRejectMsg.trim()) {
+                  Swal.showValidationMessage('Masukkan alasan manual jika memilih "Lainnya"!');
                 }
-                return { rejectMsgInput };
+
+                return {
+                  rejectReason: rejectReason === 'Lainnya' ? customRejectMsg : rejectReason,
+                };
               },
             }).then((result) => {
               
@@ -944,7 +1113,7 @@ function CpotbApprove() {
                   allowOutsideClick: false
                 })
 
-                rejectCpotb(id, result.value.rejectMsgInput, jenisSediaan, detailCpotb.factoryInstanceName)
+                rejectCpotb(id, result.value.rejectReason, jenisSediaan, detailCpotb.factoryInstanceName)
               }
             })
           }
@@ -957,6 +1126,79 @@ function CpotbApprove() {
     }
   }
 
+  function checkEligible(factoryType, jenisSediaanId) {
+    const jenisSediaanMap = {
+      0: "Cairan Obat Dalam",
+      1: "Rajangan",
+      2: "Serbuk",
+      3: "Serbuk Instan",
+      4: "Efervesen",
+      5: "Pil",
+      6: "Kapsul",
+      7: "Kapsul Lunak",
+      8: "Tablet atau Kaplet",
+      9: "Granul",
+      10: "Pastiles",
+      11: "Dodol atau Jenang",
+      12: "Film Strip",
+      13: "Cairan Obat Luar",
+      14: "Losio",
+      15: "Parem",
+      16: "Salep",
+      17: "Krim",
+      18: "Gel",
+      19: "Serbuk Obat Luar",
+      20: "Tapel",
+      21: "Pilis",
+      22: "Plaster atau Koyok",
+      23: "Supositoria",
+      24: "Rajangan Obat Luar",
+    };
+  
+    const usahaSediaanMapping = {
+      UMOT: [1, 13, 15, 20, 21],
+      UKOT: [
+        0, 1, 2, 3, 5, 6, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24,
+      ],
+      IOT: [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+        22, 23, 24,
+      ],
+    };
+  
+    if (!Object.keys(jenisSediaanMap).includes(String(jenisSediaanId))) {
+      return `Jenis sediaan dengan ID ${jenisSediaanId} tidak valid. Mohon periksa kembali.`;
+    }
+  
+    const allowedJenisSediaan = usahaSediaanMapping[factoryType] || [];
+  
+    if (allowedJenisSediaan.includes(jenisSediaanId)) {
+      return true; 
+    }
+  
+    const eligibleFactoryTypes = Object.keys(usahaSediaanMapping).filter((key) =>
+      usahaSediaanMapping[key].includes(jenisSediaanId)
+    );
+
+    let factoryTypesString = eligibleFactoryTypes.join(', ');
+
+    if (eligibleFactoryTypes.length > 1) {
+      const lastCommaIndex = factoryTypesString.lastIndexOf(','); 
+      factoryTypesString = `${factoryTypesString.substring(0, lastCommaIndex)} dan ${factoryTypesString.substring(lastCommaIndex + 2)}`;
+    }
+  
+    return `Jenis sediaan ${jenisSediaanMap[jenisSediaanId]} hanya diperuntukkan untuk jenis industri farmasi ${factoryTypesString}`; 
+  }
+  
+  function handleRejectReasonChange(e) {
+    const customMsgWrapper = document.getElementById('customRejectMsgWrapper');
+    if (e.target.value === 'Lainnya') {
+      customMsgWrapper.style.display = 'flex';
+    } else {
+      customMsgWrapper.style.display = 'none';
+    }
+  }
+  
   const generateIpfs = async (cpotbNumber, detailCpotb) => {
 
     console.log(detailCpotb);
@@ -965,10 +1207,14 @@ function CpotbApprove() {
     const date = new Date();
     const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
 
+    console.log(userdata.address);
+    console.log(detailCpotb.factoryAddr);
+    
     try {
-
+      
       const userFactoryCt = await contracts.roleManager.getUserData(detailCpotb.factoryAddr)
       const userBpomCt = await contracts.roleManager.getUserData(userdata.address)
+  
 
       const cpotbData = {
         certName: "CPOTB",
@@ -979,10 +1225,10 @@ function CpotbApprove() {
         senderInstance: detailCpotb.factoryInstanceName,
         senderAddress: detailCpotb.factoryAddr,
         factoryType: detailCpotb.factoryType,
-        senderInstanceAddress: userFactoryCt[4],
+        senderInstanceAddress: userFactoryCt[2],
         bpomInstance: userdata.instanceName,
         bpomAddress: userdata.address,
-        bpomInstanceAddress: userBpomCt[4]
+        bpomInstanceAddress: userBpomCt[2]
       }
 
       console.log(cpotbData);
@@ -1037,8 +1283,8 @@ function CpotbApprove() {
 
     try {
       
-      const approveCt = await contracts.mainSupplyChain.approveCpotb(
-        [certNumber, certTd, userdata.name, userdata.instanceName], 
+      const approveCt = await contracts.certificateManager.approveCpotb(
+        [certNumber, certTd, userdata.name, userdata.instanceName, userdata.address], 
         cpotbIpfs,
         jenisMap[jenisSediaan])
       console.log(approveCt);
@@ -1053,7 +1299,7 @@ function CpotbApprove() {
         });
       }
 
-      contracts.mainSupplyChain.on('evt_cpotbApproved',  (bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove) => {
+      contracts.certificateManager.on('evt_certApproved',  (bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove) => {
         handleEventCpotb("Approved", bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove, approveCt.hash);
       });
     } catch (error) {
@@ -1062,10 +1308,10 @@ function CpotbApprove() {
   }
 
   const rejectCpotb = async(id, rejectMsg, jenisSediaan, factoryInstanceName) => {
-    console.log(rejectMsg);
+    console.log(id);
 
     try {
-      const rejectCt = await contracts.rejectManager.rejectedByBpom(rejectMsg, userdata.name, userdata.instanceName, id, "cpotb", jenisSediaan);
+      const rejectCt = await contracts.certificateManager.rejectCpotb( id, rejectMsg, userdata.name, userdata.instanceName, userdata.address, jenisSediaan);
 
       if(rejectCt){
         updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, false);
@@ -1075,7 +1321,7 @@ function CpotbApprove() {
         });
       }
 
-      contracts.rejectManager.once("evt_cpotbRejected", (_instanceName, _instanceAddr, _jenisSediaan, timestampRejected, _rejectMsg) => {
+      contracts.certificateManager.once("evt_certRejected", (_instanceName, _instanceAddr, _jenisSediaan, timestampRejected, _rejectMsg) => {
         handleEventCpotb( "Rejected", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, timestampRejected, rejectCt.hash);
       });
     } catch (error) {
@@ -1110,7 +1356,7 @@ function CpotbApprove() {
     <>
       <div id="CpotbPage" className='Layout-Menu layout-page'>
         <div className="title-menu">
-          <h1>Data Sertifikat CPOTB</h1>
+          <h1>Data Pengajuan Sertifikat CPOTB</h1>
           <p>Dikelola oleh {userdata.instanceName}</p>
         </div>
         <div className="tab-menu">
@@ -1125,9 +1371,9 @@ function CpotbApprove() {
               <ul>
                 {dataCpotb.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailCpotb(item.cpotbId)}>{item.factoryInstanceName}: {item.jenisSediaan}</button>
+                    <button className='title' onClick={() => getDetailCpotb(item.cpotbId)}>{item.factoryInstance}: {item.jenisSediaan}</button>
                     <p>
-                      { item.cpotbNumber !== null ? `CPOTB Number : ${item.cpotbNumber}` : "Not Available"}
+                      { item.cpotbNumber !== null ? `CPOTB Number: ${item.cpotbNumber}` : "CPOTB Number: Tidak Tersedia"}
                     </p>
                     <button className={`statusPengajuan ${item.status}`}>
                       {item.status}

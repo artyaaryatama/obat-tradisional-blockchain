@@ -17,10 +17,11 @@ function CpotbRequest() {
   const [contract, setContract] = useState();
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata'))
-
+  const [dataCpotb, setDataCpotb] = useState([]);
   const [jenisSediaan, setJenisSediaan] = useState(""); 
   const [filteredJenisSediaan, setFilteredJenisSediaan] = useState([]);
   const [loader, setLoader] = useState(false)
+  const [factoryType, setFactoryType] = useState("")
 
   const today = new Date();
   const options = {
@@ -79,8 +80,8 @@ function CpotbRequest() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const contr = new Contract(
-            contractData.MainSupplyChain.address, 
-            contractData.MainSupplyChain.abi, 
+            contractData.CertificateManager.address, 
+            contractData.CertificateManager.abi, 
             signer
           );
             
@@ -110,6 +111,15 @@ function CpotbRequest() {
   }, []);
 
   useEffect(() => {
+
+    if (userdata.factoryType === "UMOT") {
+      setFactoryType("Usaha Mikro Obat Tradisional (UMOT)")
+    } else if (userdata.factoryType === "UKOT") {
+      setFactoryType("Usaha Kecil Obat Tradisional (UKOT)")
+    } else if (userdata.factoryType === "IOT") {
+      setFactoryType("Industri Obat Tradisional (IOT)")
+    }
+
     if (userdata.factoryType && usahaSediaanMapping[userdata.factoryType]) {
       const filtered = usahaSediaanMapping[userdata.factoryType].map((key) => ({
         key: key.toString(),
@@ -121,7 +131,36 @@ function CpotbRequest() {
     } else {
       setFilteredJenisSediaan([]);
     }
-  }, [userdata.factoryType]);
+
+    const fetchDataCpotb = async () => {
+      if(contract) { 
+        try {
+          console.log(userdata.instanceName);
+          const listAllCt = await contract.getCpotbByInstance(userdata.instanceName);
+          console.log(listAllCt);
+          const reconstructedData = listAllCt.map((item) => {
+          
+            if(item[3] === 0) {
+              
+            }
+            return { 
+              jenisSediaan: item[3].toString(),
+            };
+          });
+  
+          setDataCpotb(reconstructedData);
+          console.log(reconstructedData);
+  
+        } catch (error) {
+          errAlert(error, "Error loading data.")
+        }
+      }
+
+    }
+
+    fetchDataCpotb()
+
+  }, [userdata.factoryType, contract]);
 
   const handleEventCpotbRequested = (_name, _userAddr, _jenisSediaan, _timestampRequest, txHash) => {
     const formattedTimestamp = new Date(Number(_timestampRequest) * 1000).toLocaleDateString('id-ID', options)
@@ -192,6 +231,13 @@ function CpotbRequest() {
     setLoader(false)
   }
 
+  const checkExistingCpotb = (jenisSediaan) => {
+    const found = dataCpotb.find((item) => item.jenisSediaan === jenisSediaanMap[jenisSediaan]);
+
+    console.log(jenisSediaan);
+    console.log(found);
+  }
+
   const mountData = async (e) => {
     e.preventDefault();
 
@@ -220,9 +266,9 @@ function CpotbRequest() {
     const randomNumber = Math.floor(100000 + Math.random() * 900000); 
 
     const id = `cpotb-${day}${month}${year}-${randomNumber}` 
-
+    checkExistingCpotb(jenisSediaan)
     try {
-      const requestCpotbCt = await contract.requestCpotb([id, userdata.name, userdata.instanceName], parseInt(jenisSediaan), userdata.factoryType);
+      const requestCpotbCt = await contract.requestCpotb([id, userdata.name, userdata.instanceName, userdata.address], parseInt(jenisSediaan), userdata.factoryType);
       console.log('Receipt:', requestCpotbCt);
   
       if(requestCpotbCt){
@@ -234,7 +280,7 @@ function CpotbRequest() {
         });
       }
   
-      contract.once("evt_cpotbRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
+      contract.once("evt_certRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
         handleEventCpotbRequested(_name, _userAddr, _jenisSediaan, _timestampRequest, requestCpotbCt.hash);
       });
   
@@ -268,7 +314,6 @@ function CpotbRequest() {
     console.log("Selected Jenis Sediaan (uint8):", parseInt(selectedValue));
   };
 
-
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>
       <div className="title-menu">
@@ -294,6 +339,30 @@ function CpotbRequest() {
           </ul>
           <ul>
             <li className="label">
+              <label htmlFor="instanceName">Jenis Industri Farmasi</label>
+            </li>
+            <li className="input">
+              <input type="text" name="instanceName" value={factoryType} disabled />
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <label htmlFor="instanceName">NIB Pabrik</label>
+            </li>
+            <li className="input">
+              <input type="text" name="instanceName" value={userdata.nib} disabled />
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <label htmlFor="instanceName">NPWP Pabrik</label>
+            </li>
+            <li className="input">
+              <input type="text" name="instanceName" value={userdata.npwp} disabled />
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
               <label htmlFor="jenisSediaan">Jenis Sediaan</label>
             </li>
             <li className="input col">
@@ -304,7 +373,12 @@ function CpotbRequest() {
                 className='jenisSediaan'
               >
                 <option value="" disabled>Select Jenis Sediaan</option>
-                {filteredJenisSediaan.map(({ key, label }) => (
+                {/* {filteredJenisSediaan.map(({ key, label }) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))} */}
+                {Object.entries(jenisSediaanMap).map(([key, label]) => (
                   <option key={key} value={key}>
                     {label}
                   </option>

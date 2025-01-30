@@ -29,7 +29,8 @@ function CdobApprove() {
   const statusMap = {
     0: "Pending",
     1: "Approved",
-    2: "Rejected"
+    2: "Rejected",
+    3: "Renew Requested",
   };
 
   const options = {
@@ -51,9 +52,9 @@ function CdobApprove() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const MainSupplyChain = new Contract(
-            contractData.MainSupplyChain.address,
-            contractData.MainSupplyChain.abi,
+          const CertificateManager = new Contract(
+            contractData.CertificateManager.address,
+            contractData.CertificateManager.abi,
             signer
           );
 
@@ -62,16 +63,9 @@ function CdobApprove() {
             contractData.RoleManager.abi,
             signer
           );
-            
-          const RejectManager = new Contract(
-            contractData.RejectManager.address,
-            contractData.RejectManager.abi,
-            signer
-          );
           
           setContracts({
-            mainSupplyChain: MainSupplyChain,
-            rejectManager: RejectManager,
+            certificateManager: CertificateManager,
             roleManager: RoleManager
           });
         } catch (err) {
@@ -103,21 +97,23 @@ function CdobApprove() {
     const getAllCdob = async () => {
       if(contracts){
         try {
-          const listAllCdob = await contracts.mainSupplyChain.getListAllCdob()
+          const listAllCdob = await contracts.certificateManager.getAllCdob()
           console.log(listAllCdob);
 
           const reconstructedData = listAllCdob.map((item) => {
-            let cdobNumber = item[1] ? item[1] : 'TBA';
+            const cdobId = item[0]; 
+            let cdobNumber = item[1] || 'TBA'; 
 
-            if(item[5] === 2n){
-              cdobNumber= null
+            if (item[4] === 2n) {
+              cdobNumber = null;
             }
+          
             return {
-              cdobId: item[0],  
+              cdobId: cdobId,
               cdobNumber: cdobNumber,
-              pbfName: item[2], 
-              tipePermohonan: tipePermohonanMap[item[4]],
-              status: statusMap[item[5]],
+              pbfName: item[2],
+              tipePermohonan: tipePermohonanMap[item[3]],
+              status: statusMap[item[4]]
             };
           })
   
@@ -285,28 +281,41 @@ function CdobApprove() {
   const getDetailCdob = async (id) => {
     
     console.log(id); 
+    let rejectMsg;
     
     try {
-      const detailCdobCt = await contracts.mainSupplyChain.detailCdob(id);
+      const detailCdobCt = await contracts.certificateManager.getCdobDetails(id);
 
-      const [cdobId, cdobNumber, cdobDetail, tipePermohonan] = detailCdobCt
+      const[certDetails, cdobData] = detailCdobCt 
 
-      const [status, timestampRequest, timestampApprove, sender, bpom, cdobIpfs] = cdobDetail
+      const [cdobId, cdobNumber, tipePermohonan] = cdobData
+
+      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, pbf, bpom, cdobIpfs] = certDetails
+
+      const detailUserPbfCt = await contracts.roleManager.getUserData(pbf[2]);
+      if (timestampRejected !== 0n) {
+        const rejectMsgCt = await contracts.certificateManager.getRejectMsgCdob(id);
+        rejectMsg = rejectMsgCt; 
+      }  
 
       const detailCdob = {
         cdobId: cdobId,
-        cdobNumber: cdobNumber ? cdobNumber : "(TBA)",
-        pbfUserName: sender[0],
-        pbfAddr: sender[1],
-        pbfName: sender[2],
+        cdobNumber: cdobNumber ? cdobNumber : "-",
+        pbfUserName: pbf[0],
+        pbfName: pbf[1],
+        pbfAddr: pbf[2],
         tipePermohonan: tipePermohonanMap[tipePermohonan], 
         status: statusMap[status], 
         timestampRequest: new Date(Number(timestampRequest) * 1000).toLocaleDateString('id-ID', options),
         timestampApprove: Number(timestampApprove) > 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampRenewRequest: parseInt(timestampRenewRequest) !== 0 ? new Date(Number(timestampRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
         bpomName : bpom[0] ? bpom[0] : "-",
-        bpomInstance: bpom[2] ? bpom[2] : "-",
-        bpomAddr: bpom[1] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
-        cdobIpfs: cdobIpfs ? cdobIpfs : "-"
+        bpomInstance: bpom[1] ? bpom[1] : "-",
+        bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
+        cdobIpfs: cdobIpfs ? cdobIpfs : "-",
+        pbfNIB: detailUserPbfCt[6],
+        pbfNPWP: detailUserPbfCt[7]
       };
 
       if(detailCdob.status === 'Approved'){
@@ -336,6 +345,24 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
+                      <p>NIB PBF</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.pbfNIB}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>NPWP PBF</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.pbfNPWP}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
                       <p>BPOM Instance</p> 
                     </li>
                     <li className="input">
@@ -351,26 +378,10 @@ function CdobApprove() {
                       <p>{detailCdob.bpomAddr}</p> 
                     </li>
                   </ul>
-
-                  <ul>
-                    <li className="label">
-                      <p>IPFS CDOB</p> 
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View CDOB on IPFS
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>
                 </div>
   
                 <div className="col">
-                  <ul>
+                  <ul className='status'>
                     <li className="label">
                       <p>Status Sertifikasi</p>
                       <label htmlFor="statusCpotb"></label>
@@ -410,6 +421,39 @@ function CdobApprove() {
                       <p>{detailCdob.timestampRequest}</p> 
                     </li>
                   </ul>
+                  {timestampRejected? 
+                      <ul>
+                        <li className="label">
+                          <p>Tanggal Penolakan</p> 
+                        </li>
+                        <li className="input">
+                          <p>{detailCdob.timestampRejected}</p> 
+                        </li>
+                      </ul> 
+                      : <div></div>
+                    }
+                  {rejectMsg? 
+                    <ul className='rejectMsg'>
+                      <li className="label">
+                        <p>Alasan Penolakan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{rejectMsg}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  {timestampRenewRequest? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampRenewRequest}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
   
                   <ul>
                     <li className="label">
@@ -426,20 +470,15 @@ function CdobApprove() {
           ),
           width: '620',
           showCancelButton: false,
-          confirmButtonText: 'Ok',
+          showCloseButton: true
         })
       } else if (detailCdob.status === 'Rejected'){
-
-        const detailCpotbRejected = await contracts.rejectManager.rejectedDetails(id);
-
-        const [rejectMsg, bpomName, bpomInstanceName, jenisSediaanRejected, bpomAddr, timestampRejected] = detailCpotbRejected
-
         MySwal.fire({
           title: "Detail Sertifikat CDOB",
           html: (
             <div className='form-swal'>
               <div className="row">
-                <div className="col">
+              <div className="col">
                   <ul>
                     <li className="label">
                       <p>PBF Instance</p>
@@ -460,10 +499,28 @@ function CdobApprove() {
   
                   <ul>
                     <li className="label">
+                      <p>NIB PBF</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.pbfNIB}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>NPWP PBF</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.pbfNPWP}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
                       <p>BPOM Instance</p> 
                     </li>
                     <li className="input">
-                      <p>{bpomInstanceName}</p> 
+                      <p>{detailCdob.bpomInstance}</p> 
                     </li>
                   </ul>
   
@@ -472,13 +529,13 @@ function CdobApprove() {
                       <p>BPOM Address</p> 
                     </li>
                     <li className="input">
-                      <p>{bpomAddr}</p> 
+                      <p>{detailCdob.bpomAddr}</p> 
                     </li>
                   </ul>
                 </div>
   
                 <div className="col">
-                  <ul>
+                  <ul className='status'>
                     <li className="label">
                       <p>Status Sertifikasi</p>
                       <label htmlFor="statusCpotb"></label>
@@ -526,6 +583,19 @@ function CdobApprove() {
                       <p>{ new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options)}</p> 
                     </li>
                   </ul>
+
+                  {timestampRenewRequest?
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Pengajuan Ulang</p> 
+                    </li>
+                    <li className="input">
+                      <p>{ detailCdob.timestampRenewRequest}</p> 
+                    </li>
+                  </ul> 
+                  : <div></div>
+                  
+                  }
                 </div>
               </div>
             
@@ -533,7 +603,7 @@ function CdobApprove() {
           ),
           width: '620',
           showCancelButton: false,
-          confirmButtonText: 'Ok',
+          showCloseButton: true
         })
       } else{
         MySwal.fire({
@@ -560,12 +630,48 @@ function CdobApprove() {
                     </li>
                   </ul>
   
+                  <ul>
+                    <li className="label">
+                      <p>NIB PBF</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.pbfNIB}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>NPWP PBF</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.pbfNPWP}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Instance</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.bpomInstance}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>BPOM Address</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.bpomAddr}</p> 
+                    </li>
+                  </ul>
                 </div>
   
                 <div className="col">
-                  <ul>
+                  <ul className='status'>
                     <li className="label">
                       <p>Status Sertifikasi</p>
+                      <label htmlFor="statusCpotb"></label>
                     </li>
                     <li className="input">
                       <p className={detailCdob.status}>{detailCdob.status}</p>
@@ -592,6 +698,39 @@ function CdobApprove() {
                       <p>{detailCdob.timestampRequest}</p> 
                     </li>
                   </ul>
+                  {timestampRejected? 
+                      <ul>
+                        <li className="label">
+                          <p>Tanggal Penolakan</p> 
+                        </li>
+                        <li className="input">
+                          <p>{detailCdob.timestampRejected}</p> 
+                        </li>
+                      </ul> 
+                      : <div></div>
+                    }
+                  {timestampRenewRequest? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampRenewRequest}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  {rejectMsg? 
+                    <ul className='rejectMsg'>
+                      <li className="label">
+                        <p>Alasan Penolakan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{rejectMsg}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
                 </div>
               </div>
             
@@ -642,6 +781,32 @@ function CdobApprove() {
                             type="text"
                             id="pbfAddr"
                             value={detailCdob.pbfAddr}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="pbfAddr">NIB PBF</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="pbfAddr"
+                            value={detailCdob.pbfNIB}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="pbfAddr">NPWP PBF</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="pbfAddr"
+                            value={detailCdob.pbfNPWP}
                             readOnly
                           />
                         </li>
@@ -731,7 +896,7 @@ function CdobApprove() {
             })
           } else if (result.isDenied){
             MySwal.fire({
-              title: 'Reject Pengajuan Sertifikat CDOB',
+              title: 'Tolak Pengajuan Sertifikat CDOB',
               html: (
                 <div className="form-swal form">
                   <div className="row">
@@ -794,14 +959,27 @@ function CdobApprove() {
 
                       <ul>
                         <li className="label">
-                          <label htmlFor="rejectMsg">Alasan Reject</label>
+                          <label htmlFor="rejectReason">Alasan Reject</label>
                         </li>
                         <li className="input">
-                          <textarea 
-                            type="text" 
-                            id="rejectMsg"
+                          <select id="rejectReason" required onChange={(e) => handleRejectReasonChange(e)}>
+                            <option value="">Pilih alasan</option>
+                            <option value="Dokumen Teknis tidak lengkap">Dokumen Teknis tidak lengkap</option>
+                            <option value="Dokumen Administratif tidak lengkap">Dokumen Administratif tidak lengkap</option>
+                            <option value="Other">Other (specify manually)</option>
+                          </select>
+                        </li>
+                      </ul>
+
+                      <ul id="customRejectMsgWrapper" style={{ display: 'none' }}>
+                        <li className="label">
+                          <label htmlFor="customRejectMsg">Specify Reason</label>
+                        </li>
+                        <li className="input">
+                          <textarea
+                            id="customRejectMsg"
                             rows="3"
-                            required
+                            placeholder="Masukkan alasan manual di sini"
                           />
                         </li>
                       </ul>
@@ -826,7 +1004,7 @@ function CdobApprove() {
                   </div>
                 </div>
               ),     
-              width: '620',        
+              width: '720',        
               icon: 'warning',
               showCancelButton: false,
               showCloseButton: true,
@@ -834,12 +1012,19 @@ function CdobApprove() {
               confirmButtonColor: '#E33333',
               allowOutsideClick: false,
               preConfirm: () => {
-                const rejectMsgInput = document.getElementById('rejectMsg').value;
-                if (!rejectMsgInput) {
-                  Swal.showValidationMessage('Alasan Reject is required!');
-                }
-                return { rejectMsgInput };
-              },
+              const rejectReason = document.getElementById('rejectReason').value;
+              const customRejectMsg = document.getElementById('customRejectMsg').value;
+
+              if (!rejectReason) {
+                Swal.showValidationMessage('Pilih alasan reject!');
+              } else if (rejectReason === 'Other' && !customRejectMsg.trim()) {
+                Swal.showValidationMessage('Masukkan alasan manual jika memilih "Lainnya"!');
+              }
+
+              return {
+                rejectReason: rejectReason === 'Other' ? customRejectMsg : rejectReason,
+              };
+            },
             }).then((result) => {
 
               if (result.isConfirmed) {
@@ -852,7 +1037,7 @@ function CdobApprove() {
                   allowOutsideClick: false
                 })
 
-                rejectCdob(id, result.value.rejectMsgInput, tipePermohonan, detailCdob.pbfName)
+                rejectCdob(id, result.value.rejectReason, tipePermohonan, detailCdob.pbfName)
               }
             })
             
@@ -863,6 +1048,15 @@ function CdobApprove() {
 
     } catch (e) {
       errAlert(e, "Can't retrieve data")
+    }
+  }
+
+  function handleRejectReasonChange(e) {
+    const customMsgWrapper = document.getElementById('customRejectMsgWrapper');
+    if (e.target.value === 'Other') {
+      customMsgWrapper.style.display = 'flex';
+    } else {
+      customMsgWrapper.style.display = 'none';
     }
   }
 
@@ -920,7 +1114,7 @@ function CdobApprove() {
     console.log(tp);
     
     try {
-      const approveCt = await contracts.mainSupplyChain.approveCdob([certNumber, certTd, userdata.name, userdata.instanceName], cdobIpfs, tpMap[tp])
+      const approveCt = await contracts.certificateManager.approveCdob([certNumber, certTd, userdata.name, userdata.instanceName, userdata.address], cdobIpfs, tpMap[tp])
       
       if(approveCt){
         updateCdobFb(pbfName, tpMap[tp], approveCt.hash, true)
@@ -931,7 +1125,7 @@ function CdobApprove() {
         });
       }
       
-      contracts.mainSupplyChain.once('evt_cdobApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
+      contracts.certificateManager.once('evt_certApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
         handleEventCdob("Approved", bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, approveCt.hash);
       });
     } catch (error) {
@@ -940,14 +1134,12 @@ function CdobApprove() {
   } 
   
   const rejectCdob = async(cdobId, rejectMsg, tipePermohonan, pbfName) => {
-    console.log(tipePermohonan);
-
+    console.log(rejectMsg, tipePermohonan);
 
     try {
-      const rejectCt = await contracts.rejectManager.rejectedByBpom(rejectMsg, userdata.name, userdata.instanceName, cdobId, "cdob", tipePermohonan);
+      const rejectCt = await contracts.certificateManager.rejectCdob( cdobId, rejectMsg, userdata.name, userdata.instanceName, userdata.address, tipePermohonan);
 
       if(rejectCt){
-
         updateCdobFb(pbfName, tipePermohonan, rejectCt.hash, false)
 
         MySwal.update({
@@ -956,8 +1148,8 @@ function CdobApprove() {
         });
       }
 
-      contracts.rejectManager.once("evt_cdobRejected", (_instanceName, _instanceAddr, _jenisSediaan, timestampRejected, _rejectMsg) => {
-        handleEventCdob( "Rejected", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, timestampRejected, rejectCt.hash);
+      contracts.certificateManager.once("evt_certRejected", (_instanceName, _instanceAddr, _tipePermohonan, timestampRejected, _rejectMsg) => {
+        handleEventCdob( "Rejected", _instanceAddr, _instanceName, _tipePermohonan, _rejectMsg, timestampRejected, rejectCt.hash);
       });
     } catch (error) {
       errAlert(error, `Can't reject CDOB ${pbfName} dengan Tipe Permohonan ${tipePermohonan}`)
@@ -996,7 +1188,7 @@ function CdobApprove() {
     <>
       <div id="CpotbPage" className='Layout-Menu layout-page'>
         <div className="title-menu">
-          <h1>Data Sertifikat CDOB</h1>
+          <h1>Data Pengajuan Sertifikat CDOB</h1>
           <p>Dikelola oleh {userdata.instanceName}</p>
         </div>
         <div className="tab-menu">
