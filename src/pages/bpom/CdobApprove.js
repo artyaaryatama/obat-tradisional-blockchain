@@ -27,7 +27,7 @@ function CdobApprove() {
   };
 
   const statusMap = {
-    0: "Dalam Proses",
+    0: "Dalam Proses Pengajuan",
     1: "Disetujui",
     2: "Tidak Disetujui",
     3: "Pengajuan Ulang",
@@ -907,8 +907,8 @@ function CdobApprove() {
 
               if (result.isConfirmed) {
                 MySwal.fire({
-                  title: "Memproses Permintaan...",
-                  text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
+                  title: "Menunggu koneksi Metamask...",
+                  text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
                   icon: 'info',
                   showCancelButton: false,
                   showConfirmButton: false,
@@ -1054,7 +1054,7 @@ function CdobApprove() {
               if (result.isConfirmed) {
                 MySwal.fire({
                   title: "Menyimpan sertifikat ke IPFS",
-                  text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳",
+                  text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳",
                   icon: 'info',
                   showCancelButton: false,
                   showConfirmButton: false,
@@ -1093,8 +1093,8 @@ function CdobApprove() {
     const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
     
     MySwal.update({
-      title: "Memproses Permintaan...",
-      text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
+      title: "Menunggu koneksi Metamask...",
+      text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
     });
 
     try {
@@ -1152,12 +1152,12 @@ function CdobApprove() {
         
         MySwal.update({
           title: "Memproses transaksi...",
-          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
       
       contracts.certificateManager.once('evt_certApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
-        handleEventCdob("Approved", bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, approveCt.hash);
+        handleEventCdob("Disetujui", bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, approveCt.hash);
       });
     } catch (error) {
       errAlert(error, "Can't Approve CDOB")
@@ -1175,15 +1175,15 @@ function CdobApprove() {
 
         MySwal.update({
           title: "Memproses transaksi...",
-          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
 
       contracts.certificateManager.once("evt_certRejected", (_instanceName, _instanceAddr, _tipePermohonan, timestampRejected, _rejectMsg) => {
-        handleEventCdob( "Rejected", _instanceAddr, _instanceName, _tipePermohonan, _rejectMsg, timestampRejected, rejectCt.hash);
+        handleEventCdob( "Tidak Disetujui", _instanceAddr, _instanceName, _tipePermohonan, _rejectMsg, timestampRejected, rejectCt.hash);
       });
     } catch (error) {
-      errAlert(error, `Can't reject CDOB ${pbfName} dengan Tipe Permohonan ${tipePermohonan}`)
+      errAlert(error, `Gagal menolak pengajuan CDOB ${pbfName} dengan Tipe Permohonan ${tipePermohonan}`)
     }
   }
 
@@ -1267,7 +1267,7 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again',
+    confirmButtonText: 'Coba Lagi',
     didOpen: () => {
       const actions = Swal.getActions();
       actions.style.justifyContent = "center";

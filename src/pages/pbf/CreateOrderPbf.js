@@ -408,8 +408,8 @@ function CreateOrderPbf() {
         if(result.isConfirmed){
 
           MySwal.fire({
-            title:"Processing your request...",
-            text:"Your request is on its way. This won't take long. 🚀",
+            title:"Memproses transaksi...",
+            text:"Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
             icon: 'info',
             showCancelButton: false,
             showConfirmButton: false,
@@ -448,7 +448,7 @@ function CreateOrderPbf() {
 
           MySwal.update({
             title: "Processing your transaction...",
-            text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+            text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
           });
         }
   
@@ -572,7 +572,7 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again',
+    confirmButtonText: 'Coba Lagi',
     didOpen: () => {
       const actions = Swal.getActions();
       actions.style.justifyContent = "center";

@@ -196,7 +196,7 @@ function RegisterPage() {
       if(registCt){
         MySwal.update({
           title: "Memproses transaksi...",
-          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
         
       }

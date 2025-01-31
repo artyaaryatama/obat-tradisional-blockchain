@@ -50,7 +50,7 @@ function CpotbApprove() {
   };
 
   const statusMap = {
-    0: "Dalam Proses",
+    0: "Dalam Proses Pengajuan",
     1: "Disetujui",
     2: "Tidak Disetujui",
     3: "Pengajuan Ulang",
@@ -159,7 +159,7 @@ function CpotbApprove() {
     // detail can be the cpotb number or rejectMsg
     if(status === 'Disetujui'){
       MySwal.fire({
-        title: "Success Approve CPOTB",
+        title: "Sukses Menyetujui CPOTB",
         html: (
           <div className='form-swal'>
             <ul>
@@ -234,7 +234,7 @@ function CpotbApprove() {
       });
     } else {
       MySwal.fire({
-        title: "CPOTB Rejected",
+        title: "CPOTB Ditolak",
         html: (
           <div className='form-swal'>
             <ul>
@@ -949,7 +949,7 @@ function CpotbApprove() {
 
                 MySwal.fire({
                   title: "Menyimpan sertifikat ke IPFS",
-                  text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳",
+                  text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳",
                   icon: 'info',
                   showCancelButton: false,
                   showConfirmButton: false,
@@ -1040,14 +1040,14 @@ function CpotbApprove() {
                             }
                             <option value="Dokumen Teknis tidak lengkap">Dokumen Teknis tidak lengkap</option>
                             <option value="Dokumen Administratif tidak lengkap">Dokumen Administratif tidak lengkap</option>
-                            <option value="Lainnya">Other (specify manually)</option>
+                            <option value="Lainnya">Input Manual</option>
                           </select>
                         </li>
                       </ul>
 
                       <ul id="customRejectMsgWrapper" style={{ display: 'none' }}>
                         <li className="label">
-                          <label htmlFor="customRejectMsg">Specify Reason</label>
+                          <label htmlFor="customRejectMsg">Alasan Reject Detail</label>
                         </li>
                         <li className="input">
                           <textarea
@@ -1079,11 +1079,11 @@ function CpotbApprove() {
               ),     
               width: '820',       
               icon: 'warning',
-              showCancelButton: false,
+              showCancelButton: true,
               showCloseButton: true,
-              confirmButtonText: 'Reject',
-              confirmButtonColor: '#E33333',
+              confirmButtonText: 'Tolak',
               allowOutsideClick: false,
+              cancelButtonText: 'Batal',
               preConfirm: () => {
                 const rejectReason = document.getElementById('rejectReason').value;
                 const customRejectMsg = document.getElementById('customRejectMsg').value;
@@ -1103,8 +1103,8 @@ function CpotbApprove() {
               if(result.isConfirmed){
 
                 MySwal.fire({
-                  title: "Memproses Permintaan...",
-                  text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
+                  title: "Menunggu koneksi Metamask...",
+                  text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
                   icon: 'info',
                   showCancelButton: false,
                   showConfirmButton: false,
@@ -1209,8 +1209,8 @@ function CpotbApprove() {
     console.log(detailCpotb.factoryAddr);
 
     MySwal.update({
-      title: "Memproses Permintaan...",
-      text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
+      title: "Mengunggah data CPOTB ke IPFS...",
+      text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi IPFS Anda. 🚀",
     });
     
     try {
@@ -1245,7 +1245,7 @@ function CpotbApprove() {
       if (result.path) {
         MySwal.update({
           title: "Mempersiapkan transaksi..",
-          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
         approveCpotb(cpotbNumber, detailCpotb.cpotbId, detailCpotb.jenisSediaan, result.path, detailCpotb.factoryInstanceName);
       }
@@ -1302,12 +1302,12 @@ function CpotbApprove() {
 
         MySwal.update({
           title: "Memproses transaksi...",
-          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
 
       contracts.certificateManager.on('evt_certApproved',  (bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove) => {
-        handleEventCpotb("Approved", bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove, approveCt.hash);
+        handleEventCpotb("Disetujui", bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove, approveCt.hash);
       });
     } catch (error) {
       errAlert(error, "Can't Approve CPOTB")
@@ -1324,15 +1324,15 @@ function CpotbApprove() {
         updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, false);
         MySwal.update({
           title: "Memproses transaksi...",
-          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
 
       contracts.certificateManager.once("evt_certRejected", (_instanceName, _instanceAddr, _jenisSediaan, timestampRejected, _rejectMsg) => {
-        handleEventCpotb( "Rejected", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, timestampRejected, rejectCt.hash);
+        handleEventCpotb( "Tidak Disetujui", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, timestampRejected, rejectCt.hash);
       });
     } catch (error) {
-      errAlert(error, `Can't reject CPOTB ${factoryInstanceName} dengan Jenis Sediaan ${jenisSediaan}`)
+      errAlert(error, `Gagal menolak pengajuan CPOTB ${factoryInstanceName} dengan Jenis Sediaan ${jenisSediaan}`)
     }
   }
 
@@ -1410,7 +1410,7 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again',
+    confirmButtonText: 'Coba Lagi',
     didOpen: () => {
       const actions = Swal.getActions();
       actions.style.justifyContent = "center";

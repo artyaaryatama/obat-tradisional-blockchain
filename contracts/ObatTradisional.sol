@@ -171,8 +171,10 @@ contract ObatTradisional {
 
       st_obatOutputNie[] memory obatList = new st_obatOutputNie[](ownedObat);
 
-      for (uint256 index = 0; index < ownedObat; index++) {
-        string memory obatId = allObatIds[index];
+      uint256 index = 0;
+
+      for (uint256 i = 0; i < ownedObat; i++) {
+        string memory obatId = allObatIds[i];
 
         ObatShared.st_obatDetails memory details =  obatShared.getObatDetail(obatId);
 

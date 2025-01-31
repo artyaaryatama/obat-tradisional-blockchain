@@ -1244,8 +1244,8 @@ function NieApprove() {
               if(result.isConfirmed){
 
                 MySwal.fire({
-                  title: "Memproses Permintaan...",
-                  text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
+                  title: "Menunggu koneksi Metamask...",
+                  text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
                   icon: 'info',
                   showCancelButton: false,
                   showConfirmButton: false,
@@ -1468,8 +1468,8 @@ function NieApprove() {
               if(result.isConfirmed){
 
                 MySwal.fire({
-                  title: "Memproses Permintaan...",
-                  text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
+                  title: "Menunggu koneksi Metamask...",
+                  text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀ask Anda. 🚀",
                   icon: 'info',
                   showCancelButton: false,
                   showConfirmButton: false,
@@ -1508,7 +1508,7 @@ function NieApprove() {
         updateObatFb(factoryInstance, namaObat, approveNieCt.hash, true)
         MySwal.update({
           title: "Memproses transaksi...",
-          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
 
@@ -1530,7 +1530,7 @@ function NieApprove() {
         updateObatFb(factoryInstance, namaObat, rejectCt.hash, false)
         MySwal.update({
           title: "Memproses transaksi...",
-          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
 
@@ -1612,7 +1612,7 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again',
+    confirmButtonText: 'Coba Lagi',
     didOpen: () => {
       const actions = Swal.getActions();
       actions.style.justifyContent = "center";

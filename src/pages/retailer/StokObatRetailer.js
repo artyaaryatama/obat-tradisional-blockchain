@@ -433,7 +433,7 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again',
+    confirmButtonText: 'Coba Lagi',
     didOpen: () => {
       const actions = Swal.getActions();
       actions.style.justifyContent = "center";

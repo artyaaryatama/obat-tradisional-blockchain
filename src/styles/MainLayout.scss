@@ -194,7 +194,7 @@
               color: $white;
             }
             
-            &.Penolakan{
+            &.Penolakan,  &.Tidak.Disetujui{
               background-color: $red;
               color: $white;
             }

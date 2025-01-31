@@ -48,9 +48,9 @@ function ManageCpotb() {
   };
 
   const statusMap = {
-    0: "Dalam Proses",
+    0: "Dalam Proses Pengajuan",
     1: "Disetujui",
-    2: "Penolakan",
+    2: "Tidak Disetujui",
     3: "Pengajuan Ulang",
   };
 
@@ -154,7 +154,7 @@ function ManageCpotb() {
     const formattedTimestamp = new Date(Number(_timestampRequest) * 1000).toLocaleDateString('id-ID', options)
 
     MySwal.fire({
-      title: "Success Request CPOTB",
+      title: "Sukses Mengajukan Ulang CPOTB",
       html: (
         <div className='form-swal'>
           <ul>
@@ -271,7 +271,7 @@ function ManageCpotb() {
 
       console.log(detailCpotb.status);
 
-      if(detailCpotb.status === 'Rejected'){
+      if(detailCpotb.status === 'Tidak Disetujui'){
 
         if(rejectMsg.includes("Jenis sediaan")) {
           MySwal.fire({
@@ -640,8 +640,8 @@ function ManageCpotb() {
                   console.log("Pengajuan ulang dengan data:", result.value);
   
                   MySwal.fire({
-                    title:"Processing your request...",
-                    text:"Your request is on its way. This won't take long. 🚀",
+                    title:"Memproses transaksi...",
+                    text:"Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
                     icon: 'info',
                     showCancelButton: false,
                     showConfirmButton: false,
@@ -853,7 +853,7 @@ function ManageCpotb() {
 
         MySwal.update({
           title: "Memproses transaksi...",
-          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
   
@@ -933,7 +933,7 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again',
+    confirmButtonText: 'Coba Lagi',
     didOpen: () => {
       const actions = Swal.getActions();
       actions.style.justifyContent = "center";

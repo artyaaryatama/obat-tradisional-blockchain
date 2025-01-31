@@ -1,6 +1,6 @@
 {
   "ObatTradisional": {
-    "address": "0xCace1b78160AE76398F486c8a18044da0d66d86D",
+    "address": "0xD42912755319665397FF090fBB63B1a31aE87Cee",
     "abi": [
       {
         "inputs": [
@@ -623,7 +623,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0xD5ac451B0c50B9476107823Af206eD814a2e2580",
+    "address": "0xfcDB4564c18A9134002b9771816092C9693622e3",
     "abi": [
       {
         "inputs": [
@@ -1410,57 +1410,6 @@
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_pbfName",
-            "type": "string"
-          }
-        ],
-        "name": "pbfAvailableToBuy",
-        "outputs": [
-          {
-            "components": [
-              {
-                "internalType": "string",
-                "name": "certId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "certNumber",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "instanceName",
-                "type": "string"
-              },
-              {
-                "internalType": "uint8",
-                "name": "tipePermohonan",
-                "type": "uint8"
-              },
-              {
-                "internalType": "enum EnumsLibrary.StatusCertificate",
-                "name": "status",
-                "type": "uint8"
-              },
-              {
-                "internalType": "string",
-                "name": "certHash",
-                "type": "string"
-              }
-            ],
-            "internalType": "struct CdobCertificate.st_certificateList[]",
-            "name": "",
-            "type": "tuple[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
         "inputs": [],
         "name": "roleManager",
         "outputs": [
@@ -1476,7 +1425,7 @@
     ]
   },
   "RoleManager": {
-    "address": "0x5c74c94173F05dA1720953407cbb920F3DF9f887",
+    "address": "0x6F6f570F45833E249e27022648a26F4076F48f78",
     "abi": [
       {
         "anonymous": false,
@@ -1732,7 +1681,7 @@
     ]
   },
   "CertificateManager": {
-    "address": "0x18E317A7D70d8fBf8e6E893616b52390EbBdb629",
+    "address": "0x976fcd02f7C4773dd89C309fBF55D5923B4c98a1",
     "abi": [
       {
         "inputs": [
@@ -2704,7 +2653,7 @@
     ]
   },
   "NieManager": {
-    "address": "0x4b6aB5F819A515382B0dEB6935D793817bB4af28",
+    "address": "0x19cEcCd6942ad38562Ee10bAfd44776ceB67e923",
     "abi": [
       {
         "inputs": [

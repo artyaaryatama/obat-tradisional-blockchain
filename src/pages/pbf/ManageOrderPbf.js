@@ -671,7 +671,7 @@ function ManageOrderPbf() {
 
     MySwal.fire({
       title:"Preparing your data",
-      text:"Your request is on its way. This won't take long. 🚀",
+      text:"Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
@@ -685,7 +685,7 @@ function ManageOrderPbf() {
         updateBatchHistoryHash(factoryInstance, namaObat, batchName, completeOrderCt.hash)
         MySwal.update({ 
           title: "Processing your transaction...",
-          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
 
@@ -702,7 +702,7 @@ function ManageOrderPbf() {
   const generateIpfs = async(dataObat, dataOrder, timestamps, orderId, batchName, cpotbHash, cdobHash) => {
     MySwal.fire({
       title:"Preparing your data",
-      text:"Your request is on its way. This won't take long. 🚀",
+      text:"Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
@@ -942,7 +942,7 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again',
+    confirmButtonText: 'Coba Lagi',
     didOpen: () => {
       const actions = Swal.getActions();
       actions.style.justifyContent = "center";

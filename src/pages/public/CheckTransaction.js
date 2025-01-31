@@ -63,7 +63,7 @@ function CheckTransaction() {
       setDocumentDetails(null);
     } catch (error) {
       console.error("Error fetching data:", error);
-      showAlert("Error", "Failed to fetch documents. Please try again.", "error");
+      showAlert("Error", "Gagal mengakses data transaksi.", "error");
     }
   };
 
@@ -101,7 +101,7 @@ function CheckTransaction() {
       }
     } catch (error) {
       console.error("Error fetching document details:", error);
-      showAlert("Error", "Failed to fetch document details. Please try again.", "error");
+      showAlert("Error", "Gagal mengakses data transaksi.", "error");
     }
   };
   
@@ -170,8 +170,8 @@ function CheckTransaction() {
         quantity: quantity
       });
     } catch (error) {
-      console.error("Error fetching batch details:", error);
-      showAlert("Error", "Failed to fetch batch details. Please try again.", "error");
+      console.error("Gagal mengakses data transaksi.", error);
+      showAlert("Error", "", "error");
     }
   };
   

@@ -696,8 +696,8 @@ function ManageOrderPbfRetailer() {
   const acceptOrder = async (orderId, ipfsHashes, instanceName, namaProduk, batchName, retailerInstance) => {
     
     MySwal.fire({
-      title: "Memproses Permintaan...",
-      text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
+      title: "Menunggu koneksi Metamask...",
+      text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
@@ -712,7 +712,7 @@ function ManageOrderPbfRetailer() {
         updateBatchHistoryHash(instanceName, namaProduk, batchName, acceptOrderCt.hash, retailerInstance)
         MySwal.update({
           title: "Memproses transaksi...",
-          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
 
@@ -729,8 +729,8 @@ function ManageOrderPbfRetailer() {
   
   const generateIpfs = async(prevOrderId, dataObat, dataOrder, timestamps, orderId, batchName, cpotbHash, cdobHash) => {
     MySwal.fire({ 
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
+      title:"Memproses transaksi...",
+      text:"Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀iksa koneksi Metamask Anda. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
@@ -994,7 +994,7 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again',
+    confirmButtonText: 'Coba Lagi',
     didOpen: () => {
       const actions = Swal.getActions();
       actions.style.justifyContent = "center";

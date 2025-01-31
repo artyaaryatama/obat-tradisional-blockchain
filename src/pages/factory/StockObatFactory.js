@@ -14,27 +14,19 @@ import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 const MySwal = withReactContent(Swal);
 
 function StockObatFactory() {
-  const [contract, setContract] = useState();
+  const [contracts, setContracts] = useState([]);
   const navigate = useNavigate();
 
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
-  
-
   const stokStatusMap = {
-    0: "Stock Available",
-    1: "Stock Empty",
+    0: "Stock Tersedia",
+    1: "Stock Kosong",
   };
 
   const tipeObatMap = {
     0n: "Obat Lain",
     1n: "Cold Chain Product"
-  };
-
-  const obatStatusMap = {
-    0: "In Local Production",
-    1: "Requested NIE",
-    2: "Approved NIE"
   };
 
   const options = {
@@ -56,13 +48,21 @@ function StockObatFactory() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const contr = new Contract(
-            contractData.ObatTradisional.address, 
-            contractData.ObatTradisional.abi, 
+          const obatTradisionalContract = new Contract(
+            contractData.ObatTradisional.address,
+            contractData.ObatTradisional.abi,
             signer
           );
-            
-          setContract(contr);
+          const NieManager = new Contract(
+            contractData.NieManager.address, 
+            contractData.NieManager.abi, 
+            signer
+          );
+
+          setContracts({
+            obatTradisional: obatTradisionalContract,
+            nieManager: NieManager,
+          });
         } catch (err) {
           console.error("User access denied!")
           errAlert(err, "User access denied!")
@@ -89,10 +89,10 @@ function StockObatFactory() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (contract && userdata.instanceName) {
+      if (contracts && userdata.instanceName) {
         try {
 
-          const listProducedObatCt = await contract.getAllBatchProductionByInstance(userdata.instanceName);
+          const listProducedObatCt = await contracts.obatTradisional.getAllBatchProductionByInstance(userdata.instanceName);
           
           console.log(listProducedObatCt);
           const reconstructedData = listProducedObatCt.map((item) => {
@@ -114,21 +114,17 @@ function StockObatFactory() {
     };
   
     loadData();
-  }, [contract, userdata.instanceName]);
+  }, [contracts, userdata.instanceName]);
 
   const getDetailObat = async (id, batchName) => {
 
     try {
-      const detailObatCt = await contract.detailObat(id);
-      const detailBatchCt = await contract.detailBatchProduction(id, batchName);
+      const detailObatCt = await contracts.obatTradisional.detailObat(id);
+      const detailBatchCt = await contracts.obatTradisional.detailBatchProduction(id, batchName);
+      const detailNieCt = await contracts.nieManager.getNieDetail(id)
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [obatDetails, obatNie] = detailObatCt;
-
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
-
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
-
-      console.log(cpotbHash);
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt;
 
       const [dataObat, obatIpfs] = detailBatchCt
 
@@ -141,7 +137,7 @@ function StockObatFactory() {
         klaim: klaim,
         kemasan: kemasan,
         komposisi: komposisi,
-        nieStatus: obatStatusMap[nieStatus], 
+        nieStatus: "NIE Disetujui", 
         produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
         nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
@@ -385,7 +381,7 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again',
+    confirmButtonText: 'Coba Lagi',
     didOpen: () => {
       const actions = Swal.getActions();
       actions.style.justifyContent = "center";

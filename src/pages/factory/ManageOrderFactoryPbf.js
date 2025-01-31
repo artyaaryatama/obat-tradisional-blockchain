@@ -667,8 +667,8 @@ function ManageOrderFactoryPbf() {
   const acceptOrder = async (orderId, ipfsHashes, namaObat, batchName, tipeObat, pbfInstance) => {
     
     MySwal.fire({
-      title: "Memproses Permintaan...",
-      text: "Permintaan Anda sedang diproses. Ini tidak akan memakan waktu lama. 🚀",
+      title: "Menunggu koneksi Metamask...",
+      text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
@@ -683,7 +683,7 @@ function ManageOrderFactoryPbf() {
         updateBatchHistoryHash(userdata.instanceName, namaObat, batchName, acceptOrderCt.hash , tipeObat, pbfInstance)
         MySwal.update({
           title: "Memproses transaksi...",
-          text: "Proses ini mungkin memerlukan sedikit waktu. Harap tunggu. ⏳"
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
 
@@ -699,8 +699,8 @@ function ManageOrderFactoryPbf() {
   
   const generateIpfs = async(dataObat, dataOrder, timestamps, orderId, batchName, cpotbHash, cdobHash) => {
     MySwal.fire({ 
-      title:"Processing your request...",
-      text:"Your request is on its way. This won't take long. 🚀",
+      title:"Memproses transaksi...",
+      text:"Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
@@ -758,7 +758,7 @@ function ManageOrderFactoryPbf() {
           pbfInstanceAddress: userPbfCt[4],
           NpwpPbf:userPbfCt[6],
           NibPbf:userPbfCt[7],
-          statusOrder : "Order dalam proses pengiriman",
+          statusOrder : "Order Dalam Proses Pengajuan pengiriman",
           targetInstanceName : dataOrder.sellerInstance,
           targetAddress: userdata.address,
           timestampOrder: timestamps.timestampOrder,
@@ -942,7 +942,7 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again',
+    confirmButtonText: 'Coba Lagi',
     didOpen: () => {
       const actions = Swal.getActions();
       actions.style.justifyContent = "center";

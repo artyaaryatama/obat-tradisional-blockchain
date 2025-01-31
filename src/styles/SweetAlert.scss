@@ -26,10 +26,10 @@
       ul{
         li{
           &.label{
-            width: 16%;
+            width: 22%;
           }
           &.input{
-            width: 84%;
+            width: 78%;
           }
         }
       }
@@ -197,7 +197,7 @@
                 color: $white;
               }
               
-              &.Penolakan{
+              &.Penolakan,  &.Tidak.Disetujui{
                 background-color: $red;
                 color: $white;
               }
