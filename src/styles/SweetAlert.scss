@@ -91,6 +91,46 @@
     }
   }
 
+  .row2{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+
+    .col{
+      width: 100%;
+
+      &.doku{
+        width: 64%;
+        background-color: $grey-light;
+        padding: 10px;
+        border-radius: 4px;
+        h5{
+          font-size: 14px;
+          color: $black;
+          text-align: justify;
+          margin-bottom: 10px;
+        }
+
+        ul{
+          flex-direction: column;
+
+          li.label{
+            width: 100%;
+          }
+        }
+      }
+
+      ul{
+        align-items: flex-start;
+
+        li.label{
+          width: 26%;
+        }
+      }
+    }
+  }
+
   .row1{
     display: flex;
     justify-content: space-between;
@@ -166,8 +206,21 @@
       // width: 49%;
       width: 100%;
 
+      &.doku{
+        background-color: $grey-light;
+        padding: 10px;
+        border-radius: 4px;
+        h5{
+          font-size: 14px;
+          color: $black;
+          text-align: justify;
+          margin-bottom: 10px;
+        }
+      }
+
       ul{
-        align-items: flex-start;
+        // align-items: flex-start;
+        // display: inline-table;
         padding-bottom: 4px;
         flex-direction: row;
 
@@ -381,12 +434,19 @@
     &.rejectMsg{
       .input{
         width: 72%;
-        background-color: $grey-light;
+        background-color: #b6191924;
         padding: 4px 8px;
         border-radius: 6px;
-        margin-left: 14px;
+        margin-left: 0;
         p{
-          color: $black;
+          color: $red;
+          font-weight: 600;
+        }
+      }
+
+      &.evt{
+        input{
+          margin-left: 14px;
         }
       }
     }
@@ -440,7 +500,7 @@
       &.input{
         text-align: left;
         font-size: 12px;
-        padding-top: 4px;
+        // padding-top: 4px;
 
         a{
           color: $black;
@@ -459,6 +519,10 @@
         select{
           @include selectForm($grey-light);
           width: 100%;
+
+          &#rejectReason{
+            margin: 0;
+          }
         }
 
         input{
@@ -491,7 +555,6 @@
       &.input-1{
         width: 76%;
       }
-
       
       &.select{
 

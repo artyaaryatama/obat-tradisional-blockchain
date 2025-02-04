@@ -1,0 +1,415 @@
+import { useEffect, useState } from 'react';
+import { BrowserProvider, Contract } from "ethers";
+import contractData from '../../auto-artifacts/deployments.json';
+import { useNavigate } from 'react-router-dom';
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig"; 
+import { create } from 'ipfs-http-client';
+import imgLoader from '../../assets/images/loader.svg';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import './../../styles/SweetAlert.scss';
+
+const MySwal = withReactContent(Swal);
+const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
+
+function CdobRenewRequest() {
+  const [contracts, setContracts] = useState({});
+  const navigate = useNavigate();
+  const userdata = JSON.parse(sessionStorage.getItem('userdata'));
+  const idCdob = JSON.parse(sessionStorage.getItem('idCdob'))
+  const [dokumen, setDokumen] = useState({
+    ipfsSuratPermohonanCdob: null,
+    ipfsBuktiPembayaran: null,
+    ipfsSuratIzinCdob: null,
+    ipfsDenahBangunanPbf: null,
+    ipfsStrukturOrganisasi: null,
+    ipfsDaftarPeralatan: null,
+    ipfsDaftarPersonalia: null,
+    ipfsEksekutifQualityManagement: null,
+    ipfsSuratIzinApoteker: null,
+    ipfsDokumenSelfAssesment: null
+  });
+  // buat tampung ipfs baru
+  const [updateFileIpfs, setUpdateFileIpfs] = useState([])
+  const [loader, setLoader] = useState(false);
+  const [rejectMsg, setRejectMsg] = useState("");
+  const tipePermohonanMap = {
+    0: "Obat Lain",
+    1: "Cold Chain Product (CCP)"
+  };
+  
+  const today = new Date();
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short'
+  };
+  const formattedDate = today.toLocaleDateString('id-ID', options);
+
+  useEffect(() => {
+    async function connectWallet() {
+      if (window.ethereum) {
+        const provider = new BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const contract = new Contract(
+          contractData.CertificateManager.address, 
+          contractData.CertificateManager.abi, 
+          signer
+        );
+        setContracts({ certificateManager: contract });
+      } else {
+        console.error("MetaMask is not installed");
+      }
+    }
+    connectWallet();
+  }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      if (!contracts.certificateManager) return;
+      
+      const idCdob = JSON.parse(sessionStorage.getItem('idCdob'));
+      if (!idCdob) return;
+
+      const detailCdobCt = await contracts.certificateManager.getCdobDetails(idCdob);
+      const rejectMsgCt = await contracts.certificateManager.getRejectMsgCdob(idCdob);
+      const [suratPermohonan, buktiPembayaran] = detailCdobCt[2];
+      const [suratIzinCdob, denah, strukturOrganisasi, daftarPersonalia, daftarPeralatan, eksekutifQualityManagement, suratIzinApoteker, dokumenSelfAsses] = detailCdobCt[3];
+
+      setRejectMsg(rejectMsgCt);
+      setDokumen({
+        ipfsSuratPermohonanCdob: suratPermohonan,
+        ipfsBuktiPembayaran: buktiPembayaran,
+        ipfsSuratIzinCdob: suratIzinCdob,
+        ipfsDenahBangunanPbf: denah,
+        ipfsStrukturOrganisasi: strukturOrganisasi,
+        ipfsDaftarPeralatan: daftarPeralatan,
+        ipfsDaftarPersonalia: daftarPersonalia,
+        ipfsEksekutifQualityManagement: eksekutifQualityManagement,
+        ipfsSuratIzinApoteker: suratIzinApoteker,
+        ipfsDokumenSelfAssesment: dokumenSelfAsses
+      });
+
+    };
+    loadData();
+  }, [contracts]);
+
+  const handleEventCdobRenewRequested = (bpomInstance, bpomAddr, timestamp, txHash) => {
+
+    const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
+  
+    // detail can be the cpotb number or rejectMsg
+    MySwal.fire({
+      title: "Success Renew Request CDOB",
+      html: (
+        <div className='form-swal'>
+          <ul>
+            <li className="label">
+              <p>Nama Instansi BPOM</p> 
+            </li>
+            <li className="input">
+              <p>{bpomInstance}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Alamat Akun BPOM (Pengguna)</p> 
+            </li>
+            <li className="input">
+              <p>{bpomAddr}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Tanggal Pengajuan Ulang</p> 
+            </li>
+            <li className="input">
+              <p>{formattedTimestamp}</p> 
+            </li>
+          </ul>
+          <ul className="txHash">
+            <li className="label">
+              <p>Hash Transaksi</p>
+            </li>
+            <li className="input">
+              <a
+                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Lihat transaksi di Etherscan
+              </a>
+            </li>
+          </ul>
+        </div>
+      ),
+      icon: 'success',
+      width: '560',
+      showCancelButton: false,
+      confirmButtonText: 'Oke',
+      allowOutsideClick: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.reload();
+      }
+    });
+  }
+
+  const handleFileChange = (e, key) => {
+    const file = e.target.files[0];
+    if (!file || file.type !== "application/pdf") {
+      MySwal.fire({
+        title: 'Harap upload file PDF',
+        icon: 'error',
+        confirmButtonText: 'Coba Lagi'
+      });
+      return;
+    }
+
+    console.log(key);
+
+    setDokumen(prev => ({
+      ...prev,
+      [key]: file
+    }));
+
+    setUpdateFileIpfs(prev => [...prev, key]);
+
+  };
+
+  const uploadToIPFS = async (file) => {
+    if (!file) return null;
+    try {
+      const result = await client.add(file);
+      console.log(result);
+      return result.path;  
+    } catch (error) {
+      console.error("Upload failed:", error);
+      MySwal.fire({
+        title: 'Gagal mengunggah file ke IPFS',
+        icon: 'error',
+        confirmButtonText: 'Coba Lagi'
+      });
+      return null;
+    }
+  };
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoader(true);
+    console.log(dokumen);
+    const uploadedHashes = {};
+    
+    for (const key of updateFileIpfs) {  
+      const file = dokumen[key];
+      if (file instanceof File) {
+
+        try {
+          const hash = await uploadToIPFS(file);
+          if (hash) {
+            uploadedHashes[key] = hash;
+          }
+          
+        } catch (error) {
+          MySwal.fire({
+            title: 'Gagal mengunggah dokumen ke IPFS.',
+            text: error,
+            icon: 'error',
+            confirmButtonText: 'Coba Lagi',
+          });
+        }
+      }
+    }
+    
+    console.log(uploadedHashes);
+    let updatedDokumen;
+    if (Object.keys(uploadedHashes).length > 0) {
+      setDokumen(prev => {
+        updatedDokumen = { ...prev };
+        updateFileIpfs.forEach(item => {
+          if (uploadedHashes[item]) {
+            updatedDokumen[item] = uploadedHashes[item]; 
+          }
+        });
+  
+        return updatedDokumen;
+      });
+    }
+    
+    MySwal.fire({
+      title: 'Data Pengajuan Ulang CDOB',
+      html: (
+        <div className='form-swal'>
+          <div className="row">
+            {Object.entries(uploadedHashes).map(([key, hash]) => (
+              <div key={key} className="file-item">
+                <strong>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</strong>: 
+                <a
+                  href={`http://localhost:8080/ipfs/${hash}`}  // Using CID to create the link
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Lihat dokumen
+                  <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+      showCancelButton: true,
+      confirmButtonText: 'Konfirmasi Pengajuan',
+      cancelButtonText: 'Batal',
+      allowOutsideClick: false
+    }).then(result => {
+      if (result.isConfirmed) {
+        console.log(updatedDokumen);
+        MySwal.fire({
+          title: "Menunggu koneksi Metamask...",
+          text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+          icon: 'info',
+          showCancelButton: false,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+        });
+        renewRequestCdob(updatedDokumen)
+      }
+    });
+    setLoader(false);
+  };
+
+  const renewRequestCdob = async (hashDocs) => {
+    try {
+      const renewRequestCdobCt = await contracts.certificateManager.renewCdob(
+        [idCdob, userdata.name, userdata.instanceName, userdata.address], 
+        [hashDocs.ipfsSuratPermohonanCdob, hashDocs.ipfsBuktiPembayaran],
+        [hashDocs.ipfsSuratIzinCdob, hashDocs.ipfsDenahBangunanPbf, hashDocs.ipfsStrukturOrganisasi, hashDocs.ipfsDaftarPersonalia, hashDocs.ipfsDaftarPeralatan, hashDocs.ipfsEksekutifQualityManagement, hashDocs.ipfsSuratIzinApoteker, hashDocs.ipfsDokumenSelfAssesment]
+      );
+
+      console.log('Receipt:', renewRequestCdobCt);
+  
+      if(renewRequestCdobCt){
+        writeCpotbFb( userdata.instanceName, tipePermohonanMap[tipePermohonanMap], renewRequestCdobCt.hash );
+
+        MySwal.update({
+          title: "Memproses transaksi...",
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
+        });
+      }
+  
+      contracts.certificateManager.once("evt_certRenewRequest", (_instance, _userAddr, _timestampRenew) => {
+        handleEventCdobRenewRequested(_instance, _userAddr, _timestampRenew, renewRequestCdobCt.hash);
+      });
+  
+    } catch (err) {
+      errAlert(err, "Error making request!");
+    }
+  }
+
+  const writeCpotbFb = async (instanceName, tipePermohonanMap, cdobHash) => {
+    try {
+      const documentId = `cdob-lists`; 
+      const pbfDocRef = doc(db, instanceName, documentId);
+
+      await updateDoc(pbfDocRef, {
+        [`${tipePermohonanMap}.RenewRequestCdob`]: cdobHash,
+      [`${tipePermohonanMap}.RenewRequestTimestamp`]: Date.now(),
+      });
+    } catch (err) {
+      errAlert(err);
+    }
+  };
+
+
+  return (
+    <div id="CpotbPage" className='Layout-Menu layout-page'>
+      <div className="title-menu">
+        <h1>Pengajuan Ulang Sertifikat CDOB</h1>
+      </div>
+      <div className='container-form pengajuan-ulang'>
+        <form onSubmit={handleSubmit}>
+          <ul>
+            <li className="label"><label>Tanggal Pengajuan Ulang</label></li>
+            <li className="input"><p>{formattedDate}</p></li>
+          </ul>
+          <ul>
+            <li className="label"><label>Alasan Penolakan CDOB</label></li>
+            <li className="input reject"><p>{rejectMsg}</p></li>
+          </ul>
+
+          <div className="doku">
+            <h5>Dokumen Administrasi</h5>
+            {['ipfsSuratPermohonanCdob', 'ipfsBuktiPembayaran'].map((key) => (
+              <ul key={key}>
+                <li className="label">
+                  <label>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</label>
+                </li>
+                <li className="input">
+                  <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />
+                  {dokumen[key] && (
+                    <a href={`http://localhost:8080/ipfs/${dokumen[key]}`} target="_blank" rel="noopener noreferrer">
+                      Lihat {key.replace('ipfs', '')}
+                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                  )}
+                </li>
+              </ul>
+            ))}
+          </div>
+          <div className="doku">
+            <h5>Dokumen Teknis</h5>
+            {['ipfsSuratIzinCdob', 'ipfsDenahBangunanPbf', 'ipfsStrukturOrganisasi', 'ipfsDaftarPersonalia', 'ipfsDaftarPeralatan', 'ipfsEksekutifQualityManagement', 'ipfsSuratIzinApoteker', 'ipfsDokumenSelfAssesment'].map((key) => (
+              <ul key={key}>
+                <li className="label">
+                  <label>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</label>
+                </li>
+                <li className="input">
+                  <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />
+                  {dokumen[key] && (
+                    <a href={`http://localhost:8080/ipfs/${dokumen[key]}`} target="_blank" rel="noopener noreferrer">
+                      Lihat {key.replace('ipfs', '')}
+                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                  )}
+                </li>
+              </ul>
+            ))}
+          </div>
+
+          <button type="submit" disabled={loader}>
+            {loader ? <img src={imgLoader} alt="loading..." /> : "Kirim Pengajuan Ulang CDOB"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function errAlert(err, customMsg){
+  
+  const errorObject = {
+    message: err.reason || err.message || customMsg || "Unknown error",
+    data: err.data || {},
+    transactionHash: err.transactionHash || null
+  };
+  
+  MySwal.fire({
+    title: errorObject.message,
+    text: customMsg,
+    icon: 'error',
+    confirmButtonText: 'Coba Lagi',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
+  });
+
+  console.error(customMsg)
+  console.error(errorObject);
+}
+
+export default CdobRenewRequest;

@@ -224,6 +224,11 @@
       flex-direction: column;
       align-content: flex-start;
 
+      h5{
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
       ul{
         @include list();
         justify-items: center;
@@ -257,10 +262,26 @@
               margin: 0;
               color: $black;
             }
+
+            a{
+              color: $black;
+              text-decoration: none;
+              &:hover{
+                color: $blue;
+                text-decoration: underline;
+              }
+              i{
+                margin-left: 6px;
+              }
+            }
             
         
             input{
               @include inputForm($black);
+              &:hover{
+                cursor: pointer;
+                background-color: darken(#f2f3f59e, 14%);
+              }
             }
             
             textarea{
@@ -325,6 +346,12 @@
   
           }
 
+          &.reject{
+            p{
+              color: $black;
+            }
+          }
+
           &.col{
             display: flex;
             align-items: center
@@ -345,6 +372,27 @@
 
       button.auto-filled{
         @include btnUniversal($white, $grey, 4px);
+      }
+    }
+
+    &.pengajuan-ulang{
+      form{
+        ul{
+          li{
+            flex-direction: column;
+            &.input{
+              // background-color: wheat;
+              // display: flex;
+              // width: 100%;
+
+              a{
+                font-size: 12px;
+                font-style: italic;
+                margin: 3px 0 0 3px;
+              }
+            }
+          }
+        }
       }
     }
   }

@@ -306,7 +306,7 @@ function AddQuantityObat() {
 
         newIpfsHashes.push(result.path); 
       } catch (error) {
-        errAlert(error, "Can't upload Data Obat to IPFS."); 
+        errAlert(error, "Tidak bisa mengunggah data obat ke IPFS."); 
         break;
       }
     }

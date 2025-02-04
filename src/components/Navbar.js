@@ -38,7 +38,7 @@ function Navbar() {
                 )}
                 {userRole === '1' && (
                   <>
-                    <li className={currentPath === '/cdob' || currentPath === '/request-cdob' ? 'active' : ''}>
+                    <li className={currentPath === '/cdob' || currentPath === '/request-cdob' || currentPath === '/renew-request-cdob' ? 'active' : ''}>
                       <Link to="/cdob">CDOB</Link>
                     </li>
                     <li className={currentPath === '/pbf-orders' || currentPath=== '/create-pbf-order' || currentPath === '/obat-available-pbf' ? 'active' : ''}>

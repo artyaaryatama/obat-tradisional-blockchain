@@ -14,6 +14,22 @@ contract CdobCertificate is BaseCertificate {
     uint8 tipePermohonan;
   }
 
+  struct st_dokumenAdministrasi {
+    bytes32 suratPermohonanIpfs;
+    bytes32 buktiPembayaranPajakIpfs;
+  }
+
+  struct st_dokumenTeknis {
+    bytes32 suratIzinCdobIpfs; 
+    bytes32 denahIpfs;
+    bytes32 strukturOrganisasi;
+    bytes32 daftarPersonalia;
+    bytes32 daftarPeralatan;
+    bytes32 eksekutifQualityManagement;
+    bytes32 suratIzinApotekerIpfs; 
+    bytes32 dokumenSelfAssesmentIpfs; 
+  }
+
   struct st_certificateList {
     string certId;
     string certNumber; 
@@ -34,34 +50,41 @@ contract CdobCertificate is BaseCertificate {
   st_certificateList[] public allCdobData;
 
   mapping (string => st_cdob) public cdobDataById;
+  mapping (string => st_dokumenAdministrasi) public dokuAdminById;
+  mapping (string => st_dokumenTeknis) public dokuTeknisById;
 
   function requestCdob(
     string memory _certId,
     string memory _pbfName,
     string memory _pbfInstance,
     address _pbfAddr,
-    uint8 _tipePermohonanCdob
+    uint8 _tipePermohonanCdob,
+    st_dokumenAdministrasi memory dokuAdmin,
+    st_dokumenTeknis memory dokuTeknis
   ) public {
 
-      st_userCertificate memory userFactory = createUserCertificate(_pbfName, _pbfAddr, _pbfInstance);
-      st_userCertificate memory userBpom = createUserCertificate("", address(0), "");
-  
-      createCertificateDetails(userFactory, userBpom, _certId);  
+    st_userCertificate memory userFactory = createUserCertificate(_pbfName, _pbfAddr, _pbfInstance);
+    st_userCertificate memory userBpom = createUserCertificate("", address(0), "");
 
-      cdobDataById[_certId] = st_cdob({ 
-        cdobId: _certId,
-        cdobNumber: "",  
-        tipePermohonan: _tipePermohonanCdob
-      });
+    createCertificateDetails(userFactory, userBpom, _certId);  
+ 
+    cdobDataById[_certId] = st_cdob({ 
+      cdobId: _certId,
+      cdobNumber: "",  
+      tipePermohonan: _tipePermohonanCdob
+    });
 
-      allCdobData.push(st_certificateList({
-        certId: _certId,
-        certNumber: "",
-        instanceName: _pbfInstance,
-        tipePermohonan: _tipePermohonanCdob,
-        status: EnumsLibrary.StatusCertificate.Requested, 
-        certHash: ""
-      }));
+    allCdobData.push(st_certificateList({
+      certId: _certId,
+      certNumber: "",
+      instanceName: _pbfInstance,
+      tipePermohonan: _tipePermohonanCdob,
+      status: EnumsLibrary.StatusCertificate.Requested, 
+      certHash: ""
+    }));
+
+    dokuAdminById[_certId] = dokuAdmin;
+    dokuTeknisById[_certId] = dokuTeknis; 
   }
 
   function approveCdob(
@@ -109,16 +132,17 @@ contract CdobCertificate is BaseCertificate {
 
   function renewRequestCdob(
     string memory _certId, 
-    uint8 _tipePermohonanCdob
+    st_dokumenAdministrasi memory newDokuAdmin,
+    st_dokumenTeknis memory newDokuTeknis
   ) public {
 
     updateRenewDetails(_certId);  
-    cdobDataById[_certId].tipePermohonan = _tipePermohonanCdob;
      
     for (uint i = 0; i < allCdobData.length; i++) {
       if (keccak256(abi.encodePacked(allCdobData[i].certId)) == keccak256(abi.encodePacked(_certId))) {
         allCdobData[i].status = EnumsLibrary.StatusCertificate.RenewRequest; 
-        allCdobData[i].tipePermohonan = _tipePermohonanCdob;  
+        dokuAdminById[allCdobData[i].certId] = newDokuAdmin;
+        dokuTeknisById[allCdobData[i].certId] = newDokuTeknis;
       }  
     }
   }
@@ -169,8 +193,12 @@ contract CdobCertificate is BaseCertificate {
   } 
 
   function getCdobDetails(string memory _certId) 
-    public view returns (st_cdob memory) {
-    return cdobDataById[_certId];  
+    public view returns (
+      st_cdob memory, 
+      st_dokumenAdministrasi memory, 
+      st_dokumenTeknis memory
+    ) {
+    return (cdobDataById[_certId], dokuAdminById[_certId], dokuTeknisById[_certId]);  
   } 
 
   function getRejectsMsg(string memory _certId) 

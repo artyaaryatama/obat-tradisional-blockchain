@@ -6,6 +6,7 @@ import ManageCpotb from './pages/factory/ManageCpotb';
 import ManageCdob from './pages/pbf/ManageCdob';
 import CpotbRequest from './pages/factory/CpotbRequest';
 import CdobRequest from './pages/pbf/CdobRequest';
+import CdobRenewRequest from './pages/pbf/CdobRenewRequest';
 import CpotbApprove from './pages/bpom/CpotbApprove';
 import CdobApprove from './pages/bpom/CdobApprove';
 import NieApprove from './pages/bpom/NieApprove';
@@ -30,6 +31,7 @@ import ErrorPage from './pages/error/Error';
 import CheckObatIpfs from './pages/public/CheckObat';
 import ChechCerticateIpfs from './pages/public/CheckCertificate';
 import CheckTransaction from './pages/public/CheckTransaction';
+
 
 function App() {
   return (
@@ -160,6 +162,17 @@ function App() {
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
                 <CdobRequest />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/renew-request-cdob" 
+            element={
+              <ProtectedRoute allowedRoles={['1']}>
+                <Navbar />
+                <CdobRenewRequest />
                 <Footer />
               </ProtectedRoute>
             } 

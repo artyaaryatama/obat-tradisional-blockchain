@@ -159,7 +159,7 @@ function CpotbApprove() {
     // detail can be the cpotb number or rejectMsg
     if(status === 'Disetujui'){
       MySwal.fire({
-        title: "Sukses Menyetujui CPOTB",
+        title: "Pengajuan CPOTB disetujui",
         html: (
           <div className='form-swal'>
             <ul>
@@ -234,7 +234,7 @@ function CpotbApprove() {
       });
     } else {
       MySwal.fire({
-        title: "CPOTB Ditolak",
+        title: "Pengajuan CPOTB Ditolak",
         html: (
           <div className='form-swal'>
             <ul>
@@ -1251,7 +1251,7 @@ function CpotbApprove() {
       }
 
     } catch (error) {
-      errAlert(error, "Can't upload Data Obat to IPFS."); 
+      errAlert(error, "Tidak bisa mengunggah data obat ke IPFS."); 
     }
   } 
 
