@@ -156,7 +156,7 @@ function ManageOrderRetailer() {
     MySwal.fire({
       title: "Sukses Menyelesaikan Order!",
       html: (
-        <div className='form-swal'>
+        <div className='form-swal event'>
           <ul>
             <li className="label">
               <p>Nama Produk</p> 
@@ -183,7 +183,7 @@ function ManageOrderRetailer() {
           </ul>
           <ul>
             <li className="label">
-              <p>Nama Instansi Retailer</p> 
+              <p>Nama Instansi Retail</p> 
             </li>
             <li className="input">
               <p>{_buyerInstance}</p> 
@@ -248,7 +248,7 @@ function ManageOrderRetailer() {
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
 
       const [orderIdProduk, obatIdProduk, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = detailOrderCt;
 
@@ -510,6 +510,9 @@ function ManageOrderRetailer() {
           showCancelButton: true,
           cancelButtonText: 'Batal',
           confirmButtonText: 'Selesaikan Order',
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
           didOpen: () => {
             const stepperOrder = document.getElementById('stepperOrder');
             const root = ReactDOM.createRoot(stepperOrder);
@@ -731,6 +734,9 @@ function ManageOrderRetailer() {
           showCancelButton: false,
           showCloseButton: true,
           showConfirmButton: false,
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
           didOpen: () => {
             const stepperOrder = document.getElementById('stepperOrder');
             const root = ReactDOM.createRoot(stepperOrder);
@@ -927,7 +933,7 @@ function ManageOrderRetailer() {
   
                 <ul>
                   <li className="label label-1">
-                    <p>Nama Instansi Retailer</p> 
+                    <p>Nama Instansi Retail</p> 
                   </li>
                   <li className="input input-1">
                     <p>{dataOrder.buyerInstance}</p> 

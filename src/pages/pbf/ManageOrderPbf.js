@@ -146,7 +146,7 @@ function ManageOrderPbf() {
     MySwal.fire({
       title: "Sukses Menyelesaikan Order!",
       html: (
-        <div className='form-swal'>
+        <div className='form-swal event'>
           <ul>
             <li className="label">
               <p>Nama Produk</p> 
@@ -237,7 +237,7 @@ function ManageOrderPbf() {
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
 
       const [orderIdd, obatId, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = detailOrderCt
 
@@ -462,6 +462,9 @@ function ManageOrderPbf() {
           showCancelButton: true,
           cancelButtonText: 'Batal',
           confirmButtonText: 'Selesaikan Order',
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
           didOpen: () => {
             const stepperOrder = document.getElementById('stepperOrder');
             const root = ReactDOM.createRoot(stepperOrder);
@@ -653,6 +656,9 @@ function ManageOrderPbf() {
           showCancelButton: false,
           showCloseButton: true,
           showConfirmButton: false,
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
           didOpen: () => {
             const stepperOrder = document.getElementById('stepperOrder');
             const root = ReactDOM.createRoot(stepperOrder);

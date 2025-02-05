@@ -105,13 +105,33 @@ function AddQuantityObat() {
           const listObatNameCt = await contracts.obatTradisional.getAllObatByInstance(userdata.instanceName);
 
           console.log(listObatNameCt);
+          const filteredData = listObatNameCt.filter((item) => item[2] !== '');
 
-          const reconstructedData = listObatNameCt.map((item) => {
+          const reconstructedData = filteredData.map((item) => {
+            console.log(item);
             return {
               obatId: item[0],
               namaProduk: item[1]
             }
           })
+
+          // const reconstructedData = listObatNameCt.map((item) => {
+          //   console.log(item);
+
+          //   if (item[2] !== '') {
+          //     console.log(item[1]);
+          //     return {
+          //       obatId: item[0],
+          //       namaProduk: item[1]
+          //     }
+          //   } else {
+          //     return false
+          //   }
+          // })
+
+          // if(!reconstructedData){
+          //   errAlert({reason: `Pabrik ${userdata.instanceName} tidak memiliki obat dengan NIE yang terdaftar.`})
+          // }
 
           setDataObatAvail(reconstructedData)
 
@@ -139,7 +159,7 @@ function AddQuantityObat() {
     MySwal.fire({
         title: `Sukses menambahkan stok obat`,
         html: (
-          <div className='form-swal'>
+          <div className='form-swal event'>
             <ul>
               <li className="label">
                 <p>Nama Produk</p> 
@@ -166,7 +186,7 @@ function AddQuantityObat() {
             </ul>
             <ul>
               <li className="label">
-                <p>Nama Instansi Pabriksi Pabrik</p> 
+                <p>Nama Instansi Pabrik</p> 
               </li>
               <li className="input">
                 <p>{_factoryInstance}</p> 
@@ -208,8 +228,8 @@ function AddQuantityObat() {
     e.preventDefault();
 
     MySwal.fire({
-      title: "Menunggu koneksi Metamask...",
-      text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+      title: "Mengunggah Data Obat ke IPFS...",
+      text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi IPFS Anda. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
@@ -217,8 +237,8 @@ function AddQuantityObat() {
     });
 
     const selectedObat = dataObatAvail.filter(item => item.namaProduk === namaProduk)
-
     const id = selectedObat[0].obatId;
+    console.log(id);
 
     const detailObatCt = await contracts.obatTradisional.detailObat(id);
     const detailNieCt = await contracts.nieManager.getNieDetail(id)
@@ -226,7 +246,7 @@ function AddQuantityObat() {
 
     const [merk, namaObat, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-    const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstancee, bpomInstance, bpomAddr] = detailNieCt;
+    const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstancee, bpomInstance, bpomAddr] = detailNieCt[0];
     console.log(cpotbHash);
     
     const detailObat = {
@@ -461,7 +481,7 @@ function AddQuantityObat() {
 
           <ul>
             <li className="label">
-              <label htmlFor="batchName">nama Batch Obat</label>
+              <label htmlFor="batchName">Nama Batch Obat</label>
             </li>
             <li className="input">
               <input type="text" name="batchName" value={batchName} readOnly />

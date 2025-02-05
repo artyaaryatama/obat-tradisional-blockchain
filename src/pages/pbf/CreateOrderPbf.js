@@ -129,7 +129,7 @@ function CreateOrderPbf() {
     MySwal.fire({
       title: "Sukses membuat order",
       html: (
-        <div className='form-swal'>
+        <div className='form-swal event'>
           <ul>
             <li className="label">
               <p>Nama Produk</p> 
@@ -156,7 +156,7 @@ function CreateOrderPbf() {
           </ul>
           <ul>
             <li className="label">
-              <p>Nama Instansi PBFtansi PBF</p> 
+              <p>Nama Instansi PBF</p> 
             </li>
             <li className="input">
               <p>{_buyerInstance}</p> 
@@ -226,7 +226,7 @@ function CreateOrderPbf() {
 
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
 
       const detailObat = {
         obatId: id,

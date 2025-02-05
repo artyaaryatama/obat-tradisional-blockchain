@@ -132,7 +132,7 @@ function CreateOrderRetailer() {
     MySwal.fire({
       title: "Sukses Mengajukan Order!",
       html: (
-        <div className='form-swal'>
+        <div className='form-swal event'>
           <ul>
             <li className="label">
               <p>Nama Produk</p> 
@@ -159,7 +159,7 @@ function CreateOrderRetailer() {
           </ul>
           <ul>
             <li className="label">
-              <p>Nama Instansi Retailer</p> 
+              <p>Nama Instansi Retail</p> 
             </li>
             <li className="input">
               <p>{_buyerInstance}</p> 

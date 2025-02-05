@@ -153,7 +153,7 @@ function ManageOrderPbfRetailer() {
     MySwal.fire({
      title: "Sukses Mengirimkan Order!",
       html: (
-        <div className='form-swal'>
+        <div className='form-swal event'>
           <ul>
             <li className="label">
               <p>Nama Produk</p> 
@@ -180,7 +180,7 @@ function ManageOrderPbfRetailer() {
           </ul>
           <ul>
             <li className="label">
-              <p>Nama Instansi Retailer</p> 
+              <p>Nama Instansi Retail</p> 
             </li>
             <li className="input">
               <p>{_buyerInstance}</p> 
@@ -241,7 +241,7 @@ function ManageOrderPbfRetailer() {
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
 
       const [orderIdProduk, obatIdProduk, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder, prevOrderId] = detailOrderCt;
 
@@ -366,7 +366,7 @@ function ManageOrderPbfRetailer() {
 
                         <ul>
                           <li className="label">
-                            <p>Nama Instansi Retailer</p>
+                            <p>Nama Instansi Retail</p>
                           </li>
                           <li className="input">
                             <p>{detailOrder.buyerInstance}</p>
@@ -375,7 +375,7 @@ function ManageOrderPbfRetailer() {
 
                         <ul>
                           <li className="label">
-                            <p>Alamat Akun Retailer (Pengguna)</p>
+                            <p>Alamat Akun Retail (Pengguna)</p>
                           </li>
                           <li className="input">
                             <p>{detailOrder.buyerAddress}</p>
@@ -476,6 +476,9 @@ function ManageOrderPbfRetailer() {
           showCancelButton: true,
           cancelButtonText: 'Batal',
           confirmButtonText: 'Terima Order',
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
           didOpen: async () => {
 
             const stepperOrder = document.getElementById('stepperOrder');
@@ -568,7 +571,7 @@ function ManageOrderPbfRetailer() {
 
                         <ul>
                           <li className="label">
-                            <p>Nama Instansi Retailer</p>
+                            <p>Nama Instansi Retail</p>
                           </li>
                           <li className="input">
                             <p>{detailOrder.buyerInstance}</p>
@@ -577,7 +580,7 @@ function ManageOrderPbfRetailer() {
 
                         <ul>
                           <li className="label">
-                            <p>Alamat Akun Retailer (Pengguna)</p>
+                            <p>Alamat Akun Retail (Pengguna)</p>
                           </li>
                           <li className="input">
                             <p>{detailOrder.buyerAddress}</p>
@@ -677,6 +680,9 @@ function ManageOrderPbfRetailer() {
           showCancelButton: false,
           showCloseButton: true,
           showConfirmButton: false,
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
           didOpen: () => {
             const stepperOrder = document.getElementById('stepperOrder');
             const root = ReactDOM.createRoot(stepperOrder);
@@ -722,7 +728,7 @@ function ManageOrderPbfRetailer() {
 
       
     } catch (error) {
-      errAlert(error, "Can't Accept Order")
+      errAlert(error, "Tidak dapat menyetujui order.")
     }
 
   }
@@ -875,7 +881,7 @@ function ManageOrderPbfRetailer() {
   
                 <ul>
                   <li className="label label-1">
-                    <p>Nama Instansi Retailer</p> 
+                    <p>Nama Instansi Retail</p> 
                   </li>
                   <li className="input input-1">
                     <p>{dataOrder.buyerInstance}</p> 
