@@ -25,7 +25,8 @@ function ManageNieFactory() {
     0n: "Dalam Produksi",
     1n: "Pengajuan NIE",
     2n: "Disetujui NIE",
-    3: "Tidak Disetujui NIE"
+    3n: "Tidak Disetujui NIE",
+    4n: "Pengajuan Ulang"
   };
 
   const tipeObatMap = {
@@ -127,78 +128,6 @@ function ManageNieFactory() {
     
     loadData();
   }, [contracts]);
-
-  const handleEventNieRequsted = (namaProduk, factoryAddr, factoryInstance, timestamp, txHash) =>{
-
-    const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
-    
-    MySwal.fire({
-      title: "Sukses Mengajukan NIE",
-      html: (
-        <div className='form-swal'>
-          <ul>
-            <li className="label">
-              <p>Nama Produk</p> 
-            </li>
-            <li className="input">
-              <p>{namaProduk}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <p>Nama Instansi Pabrik</p> 
-            </li>
-            <li className="input">
-              <p>{factoryInstance}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <p>Alamat Akun Pabrik (Pengguna)</p> 
-            </li>
-            <li className="input">
-              <p>{factoryAddr}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <p>Tanggal Pengajuan</p> 
-            </li>
-            <li className="input">
-              <p>{formattedTimestamp}</p> 
-            </li>
-          </ul>
-          <ul className="txHash">
-            <li className="label">
-              <p>Hash Transaksi</p>
-            </li>
-            <li className="input">
-              <a
-                href={`https://sepolia.etherscan.io/tx/${txHash}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Lihat transaksi di Etherscan
-              </a>
-            </li>
-          </ul>
-        </div>
-      ),
-      icon: 'success',
-      width: '560',
-      showCancelButton: false,
-      confirmButtonText: 'Oke',
-      allowOutsideClick: true,
-      didOpen: () => {
-        const actions = Swal.getActions();
-        actions.style.justifyContent = "center";
-      }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.reload()
-      }
-    });
-  }
 
   const getDetailObat = async (id) => {
 
@@ -1503,28 +1432,6 @@ function ManageNieFactory() {
     }
   }
 
-  const requestNie = async(id, namaObat) => {
-
-    try {
-      const requestNieCt = await contracts.nieManager.requestNie(id);
-      
-      if(requestNieCt){
-        updateObatFb(userdata.instanceName, namaObat, requestNieCt.hash)
-        MySwal.update({
-          title: "Memproses transaksi...",
-          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
-        });
-      }
-
-      contracts.nieManager.once("evt_nieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
-        handleEventNieRequsted(namaObat, _factoryAddr, _factoryInstance,_timestampRequestNie, requestNieCt.hash)
-      });
-      
-    } catch (error) {
-      errAlert(error, "Can't Request NIE.")
-    }
-  }
-
   const autoFilledCreateObat = async(id, name) => {
 
     try {
@@ -1547,21 +1454,6 @@ function ManageNieFactory() {
     }
 
   }
-
-  const updateObatFb = async (instanceName, namaProduk, obatHash ) => {
-    try {
-      const documentId = `[OT] ${namaProduk}`;
-      const factoryDocRef = doc(db, instanceName, documentId); 
-
-      await updateDoc(factoryDocRef, {
-        "historyNie.requestNie": obatHash, 
-        "historyNie.requestNieTimestamp": Date.now(), 
-      }); 
-  
-    } catch (err) {
-      console.error("Error writing cpotb data:", err);
-    }
-  };
 
   return (
     <>

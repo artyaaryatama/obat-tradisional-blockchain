@@ -24,7 +24,8 @@ function NieApprove() {
     0n: "Dalam Produksi",
     1n: "Pengajuan NIE",
     2n: "Disetujui NIE",
-    3: "Tidak Disetujui NIE"
+    3n: "Tidak Disetujui NIE",
+    4n: "Pengajuan Ulang"
   };
 
   const tipeObatMap = {

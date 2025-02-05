@@ -247,7 +247,6 @@ function NieRenewRequest() {
       console.log(hashDocs);
       const renewRequestNieCt = await contracts.nieManager.renewRequestNie(
         obatData.obatId,
-        1738775194n,
         [hashDocs.MasterFormula,
           hashDocs.SuratKuasa,
           hashDocs.SuratPernyataan,
