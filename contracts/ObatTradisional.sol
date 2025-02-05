@@ -90,34 +90,35 @@ contract ObatTradisional {
     emit evt_obatCreated(_namaProduk, uint8(_tipeObat),  _factoryInstance, msg.sender);
   } 
 
-  function renewRequestedNie(
-    string memory _obatId,
-    string memory _merk,
-    string memory _namaProduk,
-    string[] memory _klaim, 
-    string memory _kemasan,
-    string[] memory _komposisi,
-    EnumsLibrary.TipePermohonanCdob _tipeObat,
-    string memory _jenisObat
-  ) public onlyFactory {
+  // function renewRequestedNie(
+  //   string memory _obatId,
+  //   string memory _merk,
+  //   string memory _namaProduk,
+  //   string[] memory _klaim, 
+  //   string memory _kemasan,
+  //   string[] memory _komposisi,
+  //   EnumsLibrary.TipePermohonanCdob _tipeObat,
+  //   string memory _jenisObat,
+  //   NieManager.st_dokumenIpfs memory _newDoku
+  // ) public onlyFactory {
 
-    obatShared.updateObatDetail(
-      _obatId,
-      _merk, 
-      _namaProduk,
-      _klaim,
-      _komposisi,
-      _kemasan,
-      _tipeObat, 
-      _jenisObat
-    );
+  //   obatShared.updateObatDetail(
+  //     _obatId,
+  //     _merk, 
+  //     _namaProduk,
+  //     _klaim,
+  //     _komposisi,
+  //     _kemasan,
+  //     _tipeObat, 
+  //     _jenisObat
+  //   );
 
-    nieManager.renewRequestNie(_obatId, block.timestamp);
+  //   nieManager.renewRequestNie(_obatId, block.timestamp, _newDoku);
 
-    allObatIds.push(_obatId); 
+  //   allObatIds.push(_obatId); 
 
-    emit evt_renewRejectedNie(_namaProduk, block.timestamp);
-  } 
+  //   emit evt_renewRejectedNie(_namaProduk, block.timestamp);
+  // } 
   
   function getAllObat()
     public

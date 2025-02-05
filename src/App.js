@@ -7,6 +7,8 @@ import ManageCdob from './pages/pbf/ManageCdob';
 import CpotbRequest from './pages/factory/CpotbRequest';
 import CpotbRenewRequest from './pages/factory/CpotbRenewRequest';
 import CdobRequest from './pages/pbf/CdobRequest';
+import NieRequest from './pages/factory/NieRequest';
+import NieRenewRequest from './pages/factory/NieRenewRequest';
 import CdobRenewRequest from './pages/pbf/CdobRenewRequest';
 import CpotbApprove from './pages/bpom/CpotbApprove';
 import CdobApprove from './pages/bpom/CdobApprove';
@@ -108,6 +110,28 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <ManageNieFactory />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/request-nie" 
+            element={
+              <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
+                <NieRequest />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/renew-request-nie" 
+            element={
+              <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
+                <NieRenewRequest />
                 <Footer />
               </ProtectedRoute>
             } 

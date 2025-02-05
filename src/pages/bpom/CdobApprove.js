@@ -1510,10 +1510,12 @@ function CdobApprove() {
               width: '720',        
               icon: 'warning',
               showCancelButton: true,
-              cancelButtonText: 'Batal',
               showCloseButton: true,
-              confirmButtonText: 'Reject',
+              confirmButtonText: 'Tolak',
+              confirmButtonColor: '#E33333',
+              cancelButtonColor: '#A6A6A6',
               allowOutsideClick: false,
+              cancelButtonText: 'Batal',
               preConfirm: () => {
               const rejectReason = document.getElementById('rejectReason').value;
               const customRejectMsg = document.getElementById('customRejectMsg').value;

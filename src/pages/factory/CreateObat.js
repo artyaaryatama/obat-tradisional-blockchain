@@ -73,7 +73,7 @@ function CreateObat() {
   };
 
   useEffect(() => {
-    document.title = "Create Obat Tradisional"; 
+    document.title = "Produksi Obat Tradisional"; 
   }, []);
 
   useEffect(() => {
@@ -325,10 +325,10 @@ function CreateObat() {
     console.log(kemasanPrimData);
 
     if (newObatName) {
-      errAlert({reason: "Unable to Create Obat"}, `The obat with the name "${namaProduk}" already exists. Please use a different name.`);
+      errAlert({reason: "Tidak dapat memproduksi obat tradisional"}, `Obat Tradisonal dengan "${namaProduk}" sudah diproduksi. Harap input nama obat tradisonal lain.`);
       
     } else if (!kemasanPrimData || !kemasanPrimData.cpotbHash) {
-      errAlert({reason: "Unable to Create Obat"}, `${userdata.instanceName} does not have a CPOTB certification for the "${kemasanPrim}" primary packaging`);
+      errAlert({reason: "Tidak dapat memproduksi obat tradisional"}, `${userdata.instanceName} tidak memiliki sertifikasi CPOTB "${kemasanPrim}"`);
 
     } else {
       const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
@@ -367,11 +367,7 @@ function CreateObat() {
         setLoader(false)
         errAlert(err, "Error making request!");
       }
-
-
     }
-
-
   };
 
   const createObatFb = async (instanceName, namaProduk, obatHash, kemasanPrim, tipeObat) => {

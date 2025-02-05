@@ -96,24 +96,24 @@ contract ObatShared {
       });
   }
 
-  function updateObatDetail(
-    string memory _obatId,
-    string memory _merk,
-    string memory _namaProduk,
-    string[] memory _klaim,
-    string[] memory _komposisi,
-    string memory _kemasan,
-    EnumsLibrary.TipePermohonanCdob _tipeObat,
-    string memory _jenisObat
-  ) external {
-      obatDetailsById[_obatId].namaProduk = _namaProduk;
-      obatDetailsById[_obatId].merk = _merk;
-      obatDetailsById[_obatId].klaim = _klaim;
-      obatDetailsById[_obatId].komposisi = _komposisi;
-      obatDetailsById[_obatId].kemasan = _kemasan;
-      obatDetailsById[_obatId].tipeObat = _tipeObat;
-      obatDetailsById[_obatId].jenisObat = _jenisObat;
-  }
+  // function updateObatDetail(
+  //   string memory _obatId,
+  //   string memory _merk,
+  //   string memory _namaProduk,
+  //   string[] memory _klaim,
+  //   string[] memory _komposisi,
+  //   string memory _kemasan,
+  //   EnumsLibrary.TipePermohonanCdob _tipeObat,
+  //   string memory _jenisObat
+  // ) external {
+  //     obatDetailsById[_obatId].namaProduk = _namaProduk;
+  //     obatDetailsById[_obatId].merk = _merk;
+  //     obatDetailsById[_obatId].klaim = _klaim;
+  //     obatDetailsById[_obatId].komposisi = _komposisi;
+  //     obatDetailsById[_obatId].kemasan = _kemasan;
+  //     obatDetailsById[_obatId].tipeObat = _tipeObat;
+  //     obatDetailsById[_obatId].jenisObat = _jenisObat;
+  // }
 
   function getObatDetail(string memory _obatId)
     external

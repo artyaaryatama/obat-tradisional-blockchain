@@ -1,6 +1,6 @@
 {
   "ObatTradisional": {
-    "address": "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+    "address": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
     "abi": [
       {
         "inputs": [
@@ -560,126 +560,6 @@
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "_obatId",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_merk",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_namaProduk",
-            "type": "string"
-          },
-          {
-            "internalType": "string[]",
-            "name": "_klaim",
-            "type": "string[]"
-          },
-          {
-            "internalType": "string",
-            "name": "_kemasan",
-            "type": "string"
-          },
-          {
-            "internalType": "string[]",
-            "name": "_komposisi",
-            "type": "string[]"
-          },
-          {
-            "internalType": "enum EnumsLibrary.TipePermohonanCdob",
-            "name": "_tipeObat",
-            "type": "uint8"
-          },
-          {
-            "internalType": "string",
-            "name": "_jenisObat",
-            "type": "string"
-          },
-          {
-            "components": [
-              {
-                "internalType": "string",
-                "name": "masterFormula",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "suratKuasa",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "suratPernyataan",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "komposisiProduk",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "caraPembuatanProduk",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "sertifikatAnalisaBahanBaku",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "sertifikatAnalisaProdukJadi",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "spesifikasiProdukJadi",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "spesifikasiKemasan",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "sistemPenomoranBets",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "hasilUjiStabilitas",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "desainKemasan",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "dataPendukungKeamanan",
-                "type": "string"
-              }
-            ],
-            "internalType": "struct NieManager.st_dokumenIpfs",
-            "name": "_newDoku",
-            "type": "tuple"
-          }
-        ],
-        "name": "renewRequestedNie",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
         "inputs": [],
         "name": "roleManager",
         "outputs": [
@@ -695,7 +575,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0x4A679253410272dd5232B3Ff7cF5dbB88f295319",
+    "address": "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
     "abi": [
       {
         "inputs": [
@@ -1497,7 +1377,7 @@
     ]
   },
   "RoleManager": {
-    "address": "0x68B1D87F95878fE05B998F19b66F4baba5De1aed",
+    "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
     "abi": [
       {
         "anonymous": false,
@@ -1753,7 +1633,7 @@
     ]
   },
   "CertificateManager": {
-    "address": "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
+    "address": "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
     "abi": [
       {
         "inputs": [
@@ -3018,7 +2898,7 @@
     ]
   },
   "NieManager": {
-    "address": "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
+    "address": "0x68B1D87F95878fE05B998F19b66F4baba5De1aed",
     "abi": [
       {
         "inputs": [
@@ -3096,6 +2976,18 @@
       {
         "anonymous": false,
         "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "factoryInstance",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "factoryAddr",
+            "type": "address"
+          },
           {
             "indexed": false,
             "internalType": "uint256",

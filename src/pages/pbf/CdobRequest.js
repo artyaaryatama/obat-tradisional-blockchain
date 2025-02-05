@@ -96,7 +96,7 @@ function CdobRequest() {
     MySwal.fire({
       title: "Pengajuan Sertifikat CDOB Berhasil",
       html: (
-        <div className='form-swal'>
+        <div className='form-swal event'>
           <ul>
             <li className="label">
               <p>Nama Instansi PBF</p> 
@@ -202,7 +202,7 @@ function CdobRequest() {
         title: `Konfirmasi data pengajuan CDOB`,
         html: `
             <div class="form-swal">
-                <div class="row row--obat">
+                <div class="row row--obat table-like">
                     <div class="col">
                         <ul>
                             <li class="label label-2"><p>Nama PBF</p></li>
@@ -222,15 +222,14 @@ function CdobRequest() {
                               <ul>
                                 <li class="label label-2"><p>${docName}</p></li>
                                 <li class="input input-2">
-                                  <p>
-                                    ${hash !== "Gagal Upload" 
-                                      ? `<a href="http://localhost:8080/ipfs/${hash}" target="_blank">
-                                       Lihat dokumen ↗ (${hash})
-                                      </a>` 
+                                ${hash !== "Gagal Upload" 
+                                  ? `<a href="http://localhost:8080/ipfs/${hash}" target="_blank">
+                                   Lihat dokumen ↗ (${hash})
+                                  </a>` 
 
 
-                                      : `<span style="color: red;">${hash}</span>`}
-                                  </p>
+                                  : `<span style="color: red;">${hash}</span>`}
+                                 
                                 </li>
                               </ul>
                                 `)
@@ -242,7 +241,7 @@ function CdobRequest() {
         `,
         width: '760',
         showCancelButton: true,
-        confirmButtonText: 'Konfirmasi data pengajuan CDOB',
+        confirmButtonText: 'Konfirmasi pengajuan CDOB',
         cancelButtonText: "Batal",
         allowOutsideClick: false
       }).then((result) => {

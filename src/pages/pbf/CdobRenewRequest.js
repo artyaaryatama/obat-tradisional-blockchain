@@ -240,7 +240,7 @@ function CdobRenewRequest() {
     }
     
     MySwal.fire({
-      title: 'Data Pengajuan Ulang CDOB',
+      title: 'Dokumen Pengajuan Ulang CDOB',
       html: (
         <div className='form-swal'>
           <div className="row">
@@ -322,7 +322,6 @@ function CdobRenewRequest() {
       errAlert(err);
     }
   };
-
 
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>

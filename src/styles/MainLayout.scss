@@ -224,9 +224,16 @@
       flex-direction: column;
       align-content: flex-start;
 
+      .doku{
+        border-top: solid 2px $grey-light;
+        padding-top: 20px;
+    
+      }
+
       h5{
         margin-bottom: 10px;
-        font-size: 16px;
+        font-size: 18px;
+        font-weight: 900;
       }
 
       ul{
@@ -243,6 +250,7 @@
 
           label{
             font-size: 14px;
+            font-weight: 600;
             color: $black;
           }
         }
@@ -255,6 +263,11 @@
             display: flex;
             align-items: flex-start;
             
+            p{
+              font-size: 14px;
+              color: $black;
+            }
+
             select{
               @include selectForm($white);
               border: solid 1px $grey;
@@ -374,26 +387,27 @@
         @include btnUniversal($white, $grey, 4px);
       }
     }
+  }
 
-    &.pengajuan-ulang{
-      form{
-        ul{
-          li{
-            flex-direction: column;
-            &.input{
-              // background-color: wheat;
-              // display: flex;
-              // width: 100%;
+  .pengajuan-ulang{
+    form{
+      ul{
+        li{
+          flex-direction: column;
+          &.input{
+            // background-color: wheat;
+            // display: flex;
+            // width: 100%;
 
-              a{
-                font-size: 12px;
-                font-style: italic;
-                margin: 3px 0 0 3px;
-              }
+            a{
+              font-size: 12px;
+              font-style: italic;
+              margin: 3px 0 0 3px;
             }
           }
         }
       }
     }
   }
+  
 }

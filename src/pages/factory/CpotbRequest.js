@@ -175,7 +175,7 @@ function CpotbRequest() {
     MySwal.fire({
       title: "Sukses Mengajukan CPOTB",
       html: (
-        <div className='form-swal'>
+        <div className='form-swal event'>
           <ul>
             <li className="label">
               <p>Nama Instansi Pabrik</p>
@@ -285,7 +285,8 @@ function CpotbRequest() {
 
         MySwal.update({
           title: "Memproses transaksi...",
-          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳",
+          allowOutsideClick: false
         });
       }
   
@@ -417,10 +418,10 @@ function CpotbRequest() {
       console.log(2);
       
       MySwal.fire({
-        title: `Konfirmasi data pengajuan CPOTB`,
+        title: `Dokumen pengajuan CPOTB`,
         html: `
             <div class="form-swal">
-                <div class="row row--obat">
+                <div class="row row--obat table-like">
                     <div class="col">
                         <ul>
                             <li class="label label-2"><p>Nama Pabrik</p></li>
@@ -440,15 +441,15 @@ function CpotbRequest() {
                               <ul>
                                 <li class="label label-2"><p>${docName}</p></li>
                                 <li class="input input-2">
-                                  <p>
-                                    ${hash !== "Gagal Upload" 
-                                      ? `<a href="http://localhost:8080/ipfs/${hash}" target="_blank">
-                                       Lihat dokumen ↗ (${hash})
-                                      </a>` 
+                                ${hash !== "Gagal Upload" 
+                                  ? 
+                                  `<a href="http://localhost:8080/ipfs/${hash}" target="_blank">
+                                   Lihat dokumen ↗ (${hash})
+                                  </a>` 
 
 
-                                      : `<span style="color: red;">${hash}</span>`}
-                                  </p>
+                                  : `<span style="color: red;">${hash}</span>`}
+                                  
                                 </li>
                               </ul>
                                 `)
@@ -470,6 +471,7 @@ function CpotbRequest() {
               text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳",
               icon: "info",
               showConfirmButton: false,
+              allowOutsideClick: false
             });
             const hashDocs = reconstructedHashes(uploadedHashes);
             console.log(hashDocs);

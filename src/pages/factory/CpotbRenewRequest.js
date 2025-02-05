@@ -84,6 +84,19 @@ function CpotbRenewRequest() {
       }
     }
     connectWallet();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
+  
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -114,7 +127,7 @@ function CpotbRenewRequest() {
     MySwal.fire({
       title: "Sukses mengajukan pengajuan ulang CPOTB",
       html: (
-        <div className='form-swal'>
+        <div className='form-swal event'>
           <ul>
             <li className="label">
               <p>Nama Instansi BPOM</p> 
@@ -249,28 +262,37 @@ function CpotbRenewRequest() {
     }
     
     MySwal.fire({
-      title: 'Data Pengajuan Ulang CPOTB',
+      title: 'Dokumen Pengajuan Ulang CPOTB',
       html: (
         <div className='form-swal'>
-          <div className="row">
-            {Object.entries(uploadedHashes).map(([key, hash]) => (
-              <div key={key} className="file-item">
-                <strong>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</strong>: 
-                <a
-                  href={`http://localhost:8080/ipfs/${hash}`}  
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Lihat dokumen
-                  <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
+          <div className="row row--obat table-like">
+            <div class="col">
+              <div class="doku">
+                {Object.entries(uploadedHashes).map(([key, hash]) => (
+                  <ul key={key}>
+                    <li class="label label-2">
+                      <p>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</p>
+                    </li>
+                    <li class="input input-2">
+                    <a
+                      href={`http://localhost:8080/ipfs/${hash}`}  
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Lihat dokumen ↗ (${hash})
+                    </a>
+                    </li>
+                  </ul>
+                ))}
+
               </div>
-            ))}
+            </div>
           </div>
         </div>
       ),
+      width: '760',
       showCancelButton: true,
-      confirmButtonText: 'Konfirmasi Pengajuan',
+      confirmButtonText: 'Konfirmasi Pengajuan CPOTB',
       cancelButtonText: 'Batal',
       allowOutsideClick: false
     }).then(result => {

@@ -31,7 +31,7 @@ function Navbar() {
                     <li className={currentPath === '/cpotb' || currentPath === '/request-cpotb' || currentPath === '/renew-request-cpotb' ? 'active' : ''}>
                       <Link to="/cpotb">CPOTB</Link>
                     </li>
-                    <li className={currentPath === '/obat-available-factory' || currentPath === '/create-obat' || currentPath === '/obat' || currentPath === '/manage-orders-factory' || currentPath === '/add-quantity-obat' ? 'active' : ''}>
+                    <li className={currentPath === '/obat-available-factory' || currentPath === '/request-nie' || currentPath === '/renew-request-nie'|| currentPath === '/create-obat' || currentPath === '/obat' || currentPath === '/manage-orders-factory' || currentPath === '/add-quantity-obat' ? 'active' : ''}>
                       <Link to="/obat">OBAT TRADISIONAL</Link>
                     </li>
                   </>

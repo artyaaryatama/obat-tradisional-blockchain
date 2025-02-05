@@ -161,7 +161,7 @@ function CpotbApprove() {
       MySwal.fire({
         title: "Pengajuan CPOTB disetujui",
         html: (
-          <div className='form-swal'>
+          <div className='form-swal event'>
             <ul>
               <li className="label">
                 <p>Nomor CPOTB</p> 
@@ -236,7 +236,7 @@ function CpotbApprove() {
       MySwal.fire({
         title: "Pengajuan CPOTB Ditolak",
         html: (
-          <div className='form-swal'>
+          <div className='form-swal event'>
             <ul>
               <li className="label">
                 <p>Nama Instansi BPOM</p> 
@@ -298,6 +298,10 @@ function CpotbApprove() {
         showCancelButton: false,
         confirmButtonText: 'Oke',
         allowOutsideClick: true,
+        didOpen: () => {
+          const actions = Swal.getActions();
+          actions.style.justifyContent = "center";
+      }
       }).then((result) => {
         if (result.isConfirmed) {
           window.location.reload();
@@ -593,7 +597,7 @@ function CpotbApprove() {
           width: '1020',
           showCloseButton: true,
           showCancelButton: false,
-          showConfirmButton: false
+          showConfirmButton: false,
         })
       } else if(detailCpotb.status === 'Tidak Disetujui'){
         MySwal.fire({
@@ -811,12 +815,12 @@ function CpotbApprove() {
           width: '1020',
           showCloseButton: true,
           showCancelButton: false,
-          showConfirmButton: false
+          showConfirmButton: false,
         })
 
       } else{
         MySwal.fire({
-          title: "Setujui Pengajuan CPOTB",
+          title: "Detail Pengajuan CPOTB",
           html: (
             <div className='form-swal order'>
               <div className="row2">
@@ -1063,7 +1067,7 @@ function CpotbApprove() {
           showCancelButton: false,
           confirmButtonText: 'Setujui',
           showDenyButton: true,
-          denyButtonText: 'Tolak'
+          denyButtonText: 'Tolak',
         }).then((result) => {
   
           if(result.isConfirmed){
@@ -1182,10 +1186,12 @@ function CpotbApprove() {
               ),     
               width: '660',       
               icon: 'warning',
-              showCancelButton: true,
+              showCancelButton: false,
               confirmButtonText: 'Setujui',
-              confirmButtonColor: '#4CBE53',
-              cancelButtonText: 'Batal',
+              confirmButtonColor: '#530AF7',
+              showDenyButton: true,
+              denyButtonColor: ' #A6A6A6',
+              denyButtonText: 'Tolak',
               allowOutsideClick: false,
             }).then((result) => {
 
@@ -1329,6 +1335,8 @@ function CpotbApprove() {
               showCancelButton: true,
               showCloseButton: true,
               confirmButtonText: 'Tolak',
+              confirmButtonColor: '#E33333',
+              cancelButtonColor: '#A6A6A6',
               allowOutsideClick: false,
               cancelButtonText: 'Batal',
               preConfirm: () => {

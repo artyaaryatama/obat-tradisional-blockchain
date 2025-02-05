@@ -79,7 +79,7 @@ function RegisterPage() {
     MySwal.fire({
       title: "User Sukses Terdaftar",
       html: (
-        <div className='form-swal regist'>
+        <div className='form-swal regist event'>
           <ul>
             <li className="label">
               <p>Nama Pengguna</p> 
