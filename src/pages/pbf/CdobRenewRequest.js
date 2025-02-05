@@ -102,7 +102,6 @@ function CdobRenewRequest() {
 
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
   
-    // detail can be the cpotb number or rejectMsg
     MySwal.fire({
       title: "Success Renew Request CDOB",
       html: (
@@ -154,7 +153,7 @@ function CdobRenewRequest() {
       allowOutsideClick: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        window.location.reload();
+        navigate('/cdob')
       }
     });
   }
@@ -352,7 +351,7 @@ function CdobRenewRequest() {
                   <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />
                   {dokumen[key] && (
                     <a href={`http://localhost:8080/ipfs/${dokumen[key]}`} target="_blank" rel="noopener noreferrer">
-                      Lihat {key.replace('ipfs', '')}
+                      Lihat {key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}
                       <i className="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
                   )}
@@ -371,7 +370,7 @@ function CdobRenewRequest() {
                   <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />
                   {dokumen[key] && (
                     <a href={`http://localhost:8080/ipfs/${dokumen[key]}`} target="_blank" rel="noopener noreferrer">
-                      Lihat {key.replace('ipfs', '')}
+                      Lihat {key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}
                       <i className="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
                   )}

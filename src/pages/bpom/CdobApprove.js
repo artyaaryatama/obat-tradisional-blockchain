@@ -1463,7 +1463,7 @@ function CdobApprove() {
                             <option value="Surat Permohonan CDOB tidak sesuai">Surat Permohonan CDOB tidak sesuai</option>
                             <option value="Bukti Pembayaran Pajak tidak sesuai">Bukti Pembayaran Pajak tidak sesuai</option>
                             <option value="Surat Izin tidak sesuai">Surat Izin tidak sesuai</option>
-                            <option value="Denah PBF tidak sesuai">Denah PBF tidak sesuai</option>
+                            <option value="Denah Bangunan PBF tidak sesuai">Denah Bangunan PBF tidak sesuai</option>
                             <option value="Surat Izin Apoteker tidak sesuai">Surat Izin Apoteker tidak sesuai</option>
                             <option value="Dokumen Self Assessment tidak sesuai">Dokumen Self Assessment tidak sesuai</option>
                             <option value="Dokumen Teknis tidak lengkap">Dokumen Teknis tidak lengkap</option>

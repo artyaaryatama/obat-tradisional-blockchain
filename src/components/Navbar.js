@@ -28,7 +28,7 @@ function Navbar() {
               <ul>
                 {userRole === '0' && (
                   <>
-                    <li className={currentPath === '/cpotb' || currentPath === '/request-cpotb' ? 'active' : ''}>
+                    <li className={currentPath === '/cpotb' || currentPath === '/request-cpotb' || currentPath === '/renew-request-cpotb' ? 'active' : ''}>
                       <Link to="/cpotb">CPOTB</Link>
                     </li>
                     <li className={currentPath === '/obat-available-factory' || currentPath === '/create-obat' || currentPath === '/obat' || currentPath === '/manage-orders-factory' || currentPath === '/add-quantity-obat' ? 'active' : ''}>

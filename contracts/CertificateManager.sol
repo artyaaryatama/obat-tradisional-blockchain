@@ -39,7 +39,7 @@ contract CertificateManager {
     _;
   }
 
-  struct st_certificateRequest {
+  struct st_certificateRequest { 
     string certId;
     string senderName;
     string senderInstance;
@@ -61,16 +61,18 @@ contract CertificateManager {
 
   function requestCpotb(
     st_certificateRequest memory requestData,
-    uint8 _tipePermohonanCpotb,
-    string memory _factoryType
+    uint8 _jenisSediaan,
+    string memory _factoryType,
+    CpotbCertificate.st_dokumenAdministrasiIpfs memory dokuAdmin,
+    CpotbCertificate.st_dokumenTeknisIpfs memory dokuTeknis
   ) public onlyFactory{
 
-    cpotbCertificate.requestCpotb(requestData.certId, requestData.senderName, requestData.senderInstance, requestData.senderAddr, _tipePermohonanCpotb, _factoryType);
+    cpotbCertificate.requestCpotb(requestData.certId, requestData.senderName, requestData.senderInstance, requestData.senderAddr, _jenisSediaan, _factoryType, dokuAdmin, dokuTeknis);
 
-    emit evt_certRequested(requestData.senderInstance, msg.sender, _tipePermohonanCpotb, block.timestamp); 
+    emit evt_certRequested(requestData.senderInstance, msg.sender, _jenisSediaan, block.timestamp); 
   }
 
-  function approveCpotb(
+  function approveCpotb( 
     st_certificateApproval memory approvalData,
     string memory _ipfsCert,
     uint8 _jenisSediaan 
@@ -95,9 +97,10 @@ contract CertificateManager {
 
   function renewCpotb( 
     st_certificateRequest memory requestData,
-    uint8 _tipePermohonanCpotb
+    CpotbCertificate.st_dokumenAdministrasiIpfs memory newDokuAdmin,
+    CpotbCertificate.st_dokumenTeknisIpfs memory newDokuTeknis
   ) public onlyFactory {  
-    cpotbCertificate.renewRequestCpotb(requestData.certId, _tipePermohonanCpotb);
+    cpotbCertificate.renewRequestCpotb(requestData.certId, newDokuAdmin, newDokuTeknis);  
  
     emit evt_certRenewRequest(requestData.senderInstance, requestData.senderAddr, block.timestamp);
   }
@@ -110,10 +113,19 @@ contract CertificateManager {
     return cpotbCertificate.getAllCpotb();
   }
  
-  function getCpotbDetails(string memory _certId) public view returns (CpotbCertificate.st_certificateDetails memory,
-    CpotbCertificate.st_cpotb memory) {
+  function getCpotbDetails(string memory _certId) public view returns (
+    CpotbCertificate.st_certificateDetails memory,
+    CpotbCertificate.st_cpotb memory,
+    CpotbCertificate.st_dokumenAdministrasiIpfs memory,
+    CpotbCertificate.st_dokumenTeknisIpfs memory
+  ) {
+    (
+      CpotbCertificate.st_cpotb memory cpotb,
+      CpotbCertificate.st_dokumenAdministrasiIpfs memory dokuAdmin,
+      CpotbCertificate.st_dokumenTeknisIpfs memory dokuTeknis
+    ) = cpotbCertificate.getCpotbDetails(_certId);
 
-    return (cpotbCertificate.getCertDetails(_certId), cpotbCertificate.getCpotbDetails(_certId));
+    return (cpotbCertificate.getCertDetails(_certId), cpotb, dokuAdmin, dokuTeknis);
   }
 
   function getRejectMsgCpotb(string memory _certId) public view returns (string memory) {
@@ -123,8 +135,8 @@ contract CertificateManager {
   function requestCdob(
     st_certificateRequest memory requestData,
     uint8 _tipePermohonanCdob,
-    CdobCertificate.st_dokumenAdministrasi memory dokuAdmin,
-    CdobCertificate.st_dokumenTeknis memory dokuTeknis
+    CdobCertificate.st_dokumenAdministrasiIpfs memory dokuAdmin,
+    CdobCertificate.st_dokumenTeknisIpfs memory dokuTeknis
   ) public onlyPBF{
 
     cdobCertificate.requestCdob(requestData.certId, requestData.senderName, requestData.senderInstance, requestData.senderAddr, _tipePermohonanCdob, dokuAdmin, dokuTeknis);
@@ -159,8 +171,8 @@ contract CertificateManager {
 
   function renewCdob( 
     st_certificateRequest memory requestData,
-    CdobCertificate.st_dokumenAdministrasi memory newDokuAdmin,
-    CdobCertificate.st_dokumenTeknis memory newDokuTeknis
+    CdobCertificate.st_dokumenAdministrasiIpfs memory newDokuAdmin,
+    CdobCertificate.st_dokumenTeknisIpfs memory newDokuTeknis
   ) public onlyPBF {  
     cdobCertificate.renewRequestCdob(requestData.certId, newDokuAdmin, newDokuTeknis);
  
@@ -178,13 +190,13 @@ contract CertificateManager {
   function getCdobDetails(string memory _certId) public view returns (
     CdobCertificate.st_certificateDetails memory,
     CdobCertificate.st_cdob memory,
-    CdobCertificate.st_dokumenAdministrasi memory,
-    CdobCertificate.st_dokumenTeknis memory
+    CdobCertificate.st_dokumenAdministrasiIpfs memory,
+    CdobCertificate.st_dokumenTeknisIpfs memory
   ) { 
     (
       CdobCertificate.st_cdob memory cdob,
-      CdobCertificate.st_dokumenAdministrasi memory dokuAdmin,
-      CdobCertificate.st_dokumenTeknis memory dokuTeknis
+      CdobCertificate.st_dokumenAdministrasiIpfs memory dokuAdmin,
+      CdobCertificate.st_dokumenTeknisIpfs memory dokuTeknis
     ) = cdobCertificate.getCdobDetails(_certId);
     return (cdobCertificate.getCertDetails(_certId), cdob, dokuAdmin, dokuTeknis);
   }

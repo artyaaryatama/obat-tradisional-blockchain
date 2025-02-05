@@ -5,6 +5,7 @@ import ProtectedRoute from './routes/ProtectedRoute';
 import ManageCpotb from './pages/factory/ManageCpotb';
 import ManageCdob from './pages/pbf/ManageCdob';
 import CpotbRequest from './pages/factory/CpotbRequest';
+import CpotbRenewRequest from './pages/factory/CpotbRenewRequest';
 import CdobRequest from './pages/pbf/CdobRequest';
 import CdobRenewRequest from './pages/pbf/CdobRenewRequest';
 import CpotbApprove from './pages/bpom/CpotbApprove';
@@ -85,6 +86,17 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <CpotbRequest />
+                <Footer />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/renew-request-cpotb" 
+            element={
+              <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
+                <CpotbRenewRequest />
                 <Footer />
               </ProtectedRoute>
             } 

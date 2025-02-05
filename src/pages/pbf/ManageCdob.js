@@ -121,76 +121,7 @@ function ManageCdob() {
   
     loadData();
   }, [contracts]);
-
-  const handleEventCdobRenewRequested = (bpomInstance, bpomAddr, tipePermohonan, timestamp, txHash) => {
-
-    const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
   
-    // detail can be the cpotb number or rejectMsg
-    MySwal.fire({
-      title: "Success Renew Request CDOB",
-      html: (
-        <div className='form-swal'>
-          <ul>
-            <li className="label">
-              <p>Nama Instansi BPOM</p> 
-            </li>
-            <li className="input">
-              <p>{bpomInstance}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <p>Alamat Akun BPOM (Pengguna)</p> 
-            </li>
-            <li className="input">
-              <p>{bpomAddr}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <p>Tanggal Pengajuan Ulang</p> 
-            </li>
-            <li className="input">
-              <p>{formattedTimestamp}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <p>Tipe Permohonan</p> 
-            </li>
-            <li className="input">
-              <p>{tipePermohonanMap[tipePermohonan]}</p> 
-            </li>
-          </ul>
-          <ul className="txHash">
-            <li className="label">
-              <p>Hash Transaksi</p>
-            </li>
-            <li className="input">
-              <a
-                href={`https://sepolia.etherscan.io/tx/${txHash}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Lihat transaksi di Etherscan
-              </a>
-            </li>
-          </ul>
-        </div>
-      ),
-      icon: 'success',
-      width: '560',
-      showCancelButton: false,
-      confirmButtonText: 'Oke',
-      allowOutsideClick: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.reload();
-      }
-    });
-  }
-
   const getDetailCdob = async (id) => {
     
     console.log(id);

@@ -14,20 +14,20 @@ contract CdobCertificate is BaseCertificate {
     uint8 tipePermohonan;
   }
 
-  struct st_dokumenAdministrasi {
-    bytes32 suratPermohonanIpfs;
-    bytes32 buktiPembayaranPajakIpfs;
+  struct st_dokumenAdministrasiIpfs {
+    string suratPermohonan;
+    string buktiPembayaranPajak;
   }
 
-  struct st_dokumenTeknis {
-    bytes32 suratIzinCdobIpfs; 
-    bytes32 denahIpfs;
-    bytes32 strukturOrganisasi;
-    bytes32 daftarPersonalia;
-    bytes32 daftarPeralatan;
-    bytes32 eksekutifQualityManagement;
-    bytes32 suratIzinApotekerIpfs; 
-    bytes32 dokumenSelfAssesmentIpfs; 
+  struct st_dokumenTeknisIpfs {
+    string suratIzinCdob; 
+    string denahBangunan;
+    string strukturOrganisasi;
+    string daftarPersonalia;
+    string daftarPeralatan;
+    string eksekutifQualityManagement;
+    string suratIzinApoteker; 
+    string dokumenSelfAssesment; 
   }
 
   struct st_certificateList {
@@ -50,8 +50,8 @@ contract CdobCertificate is BaseCertificate {
   st_certificateList[] public allCdobData;
 
   mapping (string => st_cdob) public cdobDataById;
-  mapping (string => st_dokumenAdministrasi) public dokuAdminById;
-  mapping (string => st_dokumenTeknis) public dokuTeknisById;
+  mapping (string => st_dokumenAdministrasiIpfs) public dokuAdminById;
+  mapping (string => st_dokumenTeknisIpfs) public dokuTeknisById;
 
   function requestCdob(
     string memory _certId,
@@ -59,8 +59,8 @@ contract CdobCertificate is BaseCertificate {
     string memory _pbfInstance,
     address _pbfAddr,
     uint8 _tipePermohonanCdob,
-    st_dokumenAdministrasi memory dokuAdmin,
-    st_dokumenTeknis memory dokuTeknis
+    st_dokumenAdministrasiIpfs memory _dokuAdmin,
+    st_dokumenTeknisIpfs memory _dokuTeknis 
   ) public {
 
     st_userCertificate memory userFactory = createUserCertificate(_pbfName, _pbfAddr, _pbfInstance);
@@ -83,8 +83,8 @@ contract CdobCertificate is BaseCertificate {
       certHash: ""
     }));
 
-    dokuAdminById[_certId] = dokuAdmin;
-    dokuTeknisById[_certId] = dokuTeknis; 
+    dokuAdminById[_certId] = _dokuAdmin;
+    dokuTeknisById[_certId] = _dokuTeknis; 
   }
 
   function approveCdob(
@@ -131,9 +131,9 @@ contract CdobCertificate is BaseCertificate {
   }
 
   function renewRequestCdob(
-    string memory _certId, 
-    st_dokumenAdministrasi memory newDokuAdmin,
-    st_dokumenTeknis memory newDokuTeknis
+    string memory _certId,  
+    st_dokumenAdministrasiIpfs memory newDokuAdmin,
+    st_dokumenTeknisIpfs memory newDokuTeknis
   ) public {
 
     updateRenewDetails(_certId);  
@@ -195,8 +195,8 @@ contract CdobCertificate is BaseCertificate {
   function getCdobDetails(string memory _certId) 
     public view returns (
       st_cdob memory, 
-      st_dokumenAdministrasi memory, 
-      st_dokumenTeknis memory
+      st_dokumenAdministrasiIpfs memory, 
+      st_dokumenTeknisIpfs memory
     ) {
     return (cdobDataById[_certId], dokuAdminById[_certId], dokuTeknisById[_certId]);  
   } 

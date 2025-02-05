@@ -130,7 +130,7 @@ function RegisterPage() {
           </ul>
           <ul>
             <li className="label">
-              <p>Lokasi Instanse</p> 
+              <p>Lokasi Instansi</p> 
             </li>
             <li className="input">
               <p>{_locationInstance}</p> 

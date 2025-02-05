@@ -105,6 +105,7 @@
         background-color: $grey-light;
         padding: 10px;
         border-radius: 4px;
+        height: -webkit-fill-available;
         h5{
           font-size: 14px;
           color: $black;
