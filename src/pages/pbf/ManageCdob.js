@@ -465,6 +465,9 @@ function ManageCdob() {
           showCancelButton: false,
           showCloseButton: true,
           confirmButtonText: 'Pengajuan Ulang CDOB',
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
         }).then((result) => {
           if (result.isConfirmed) {
             sessionStorage.setItem("idCdob", JSON.stringify(id))
@@ -776,6 +779,9 @@ function ManageCdob() {
           width: '1020',
           showCancelButton: false,
           confirmButtonText: 'Ok',
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
         })
 
       }

@@ -182,7 +182,7 @@ function CreateObat() {
     MySwal.fire({
       title: "Sukses Membuat data Obat Tradisonal",
       html: (
-        <div className='form-swal'>
+        <div className='form-swal event'>
           <ul>
             <li className="label">
               <p>Nama Produk</p> 

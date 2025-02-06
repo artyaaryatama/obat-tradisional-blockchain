@@ -459,7 +459,7 @@ function CpotbRequest() {
                 </div>
             </div>
         `,
-        width: '760',
+        width: '900',
         showCancelButton: true,
         confirmButtonText: 'Konfirmasi data pengajuan CPOTB',
         cancelButtonText: "Batal",

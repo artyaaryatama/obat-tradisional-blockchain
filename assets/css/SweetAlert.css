@@ -27,6 +27,32 @@ html, body {
 .form-swal.form ul li.input {
   width: 74%;
 }
+.form-swal.form.reject-form ul li.label {
+  width: 22%;
+}
+.form-swal.form.reject-form ul li.input {
+  width: 78%;
+}
+.form-swal.event ul li.label {
+  width: 34%;
+}
+.form-swal.event ul.rejectMsg li.input {
+  width: 64%;
+}
+.form-swal .stok {
+  width: 100%;
+}
+.form-swal .stok ul li.input {
+  background-color: #1d61d6;
+  padding: 8px 8px;
+  width: auto;
+  border-radius: 4px;
+}
+.form-swal .stok ul li.input p {
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+}
 .form-swal .container-stepper {
   padding: 14px;
   width: 16%;
@@ -44,6 +70,40 @@ html, body {
 .form-swal.order .row1 .row--obat ul li.input, .form-swal.order .row1 .row--obat ul li.label-sm {
   width: 100%;
 }
+.form-swal .row2 {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+}
+.form-swal .row2 .col {
+  width: 100%;
+}
+.form-swal .row2 .col.doku {
+  width: 64%;
+  background-color: rgba(242, 243, 245, 0.6196078431);
+  padding: 10px;
+  border-radius: 4px;
+  height: -webkit-fill-available;
+}
+.form-swal .row2 .col.doku h5 {
+  font-size: 18px;
+  color: #1B1C1E;
+  text-align: justify;
+  margin-bottom: 10px;
+}
+.form-swal .row2 .col.doku ul {
+  flex-direction: column;
+}
+.form-swal .row2 .col.doku ul li.label {
+  width: 100%;
+}
+.form-swal .row2 .col ul {
+  align-items: flex-start;
+}
+.form-swal .row2 .col ul li.label {
+  width: 26%;
+}
 .form-swal .row1 {
   display: flex;
   justify-content: space-between;
@@ -54,11 +114,8 @@ html, body {
   flex: 2;
   padding-right: 14px;
 }
-.form-swal .row1 .row {
-  flex: 1;
-}
 .form-swal .row1 .row ul li.label-sm {
-  width: 18%;
+  width: 24%;
   text-align: left;
   font-weight: 600;
 }
@@ -68,6 +125,16 @@ html, body {
 }
 .form-swal .row1 .row .column ul {
   flex-direction: column;
+  align-items: flex-start;
+}
+.form-swal .row1 .row .column ul li.label {
+  width: 35%;
+}
+.form-swal .row1 .row .column-label ul {
+  align-items: flex-start;
+}
+.form-swal .row1 .row .column-label ul li.label {
+  width: 42%;
 }
 .form-swal .col2 {
   display: flex;
@@ -79,6 +146,15 @@ html, body {
   flex-direction: column-reverse;
   justify-content: space-between;
   width: 100%;
+}
+.form-swal .row.table-like .doku:has(> *:nth-of-type(2)) ul {
+  border-bottom: solid 1px #ddd;
+}
+.form-swal .row.table-like ul {
+  border-bottom: solid 1px #ddd;
+}
+.form-swal .row.table-like ul li.label {
+  width: 36%;
 }
 .form-swal .row--obat {
   flex-direction: row-reverse;
@@ -96,13 +172,48 @@ html, body {
 .form-swal .row .col {
   width: 100%;
 }
+.form-swal .row .col.doku {
+  background-color: rgba(242, 243, 245, 0.6196078431);
+  padding: 10px;
+  border-radius: 4px;
+}
+.form-swal .row .col.doku h5 {
+  font-size: 18px;
+  color: #1B1C1E;
+  text-align: justify;
+  margin-bottom: 10px;
+}
+.form-swal .row .col.doku .doku-row {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+.form-swal .row .col.doku .doku-1 {
+  flex: 1;
+}
+.form-swal .row .col.doku .doku-1 ul li.label {
+  width: 48%;
+}
 .form-swal .row .col ul {
-  align-items: flex-start;
   padding-bottom: 4px;
   flex-direction: row;
 }
+.form-swal .row .col ul.status .input p {
+  color: #1B1C1E;
+}
+.form-swal .row .col ul.rejectMsg .input {
+  width: 72%;
+  background-color: rgba(242, 243, 245, 0.6196078431);
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-left: 14px;
+}
+.form-swal .row .col ul.rejectMsg .input p {
+  color: #1B1C1E;
+}
 .form-swal .row .col ul.numbered1 {
   flex-direction: column;
+  align-items: flex-start;
   width: 100%;
   list-style: decimal;
   margin-left: 12px;
@@ -112,8 +223,8 @@ html, body {
   color: #1B1C1E;
 }
 .form-swal .row .col ul.numbered {
-  flex-direction: column;
-  width: 100%;
+  display: inline-table !important;
+  width: auto;
 }
 .form-swal .row .col ul.numbered li.klaim {
   padding: 6px 4px;
@@ -129,28 +240,50 @@ html, body {
   font-size: 13px;
   color: #737373;
 }
+.form-swal .row .col.reject ul li select {
+  margin: 0;
+  background-color: transparent;
+  border: solid 1px #A6A6A6;
+}
+.form-swal .row .col.reject ul li textarea {
+  width: -webkit-fill-available;
+}
+.form-swal .row .col.reject li.select {
+  display: flex;
+  align-items: center;
+}
 .form-swal .row .col.col1 {
   width: 40%;
 }
 .form-swal .row .col.col1 ul {
   display: flex;
-  flex-direction: column;
+}
+.form-swal .row .col.col1 ul.rejectMsg .input {
+  margin-top: 6px;
+  width: 84%;
+  background-color: rgba(242, 243, 245, 0.6196078431);
+  padding: 8px;
+  border-radius: 8px;
+  margin-left: -20px;
 }
 .form-swal .row .col.col1 ul li.label {
-  width: 100%;
+  width: 52%;
 }
 .form-swal .row .col.col1 ul li.input {
   width: 100%;
+  padding-top: 4px;
 }
 .form-swal .row .col.col1 ul li.input span.linked {
   margin-left: 8px;
+}
+.form-swal .row .col.col1 ul.status li.input {
+  padding-top: 2px;
 }
 .form-swal .row .col.col2 {
   width: 60%;
 }
 .form-swal .row .col.col2 ul {
   display: flex;
-  flex-direction: column;
 }
 .form-swal .row .col.col3 {
   width: 44%;
@@ -179,6 +312,20 @@ html, body {
   width: 100%;
   margin-bottom: 12px;
 }
+.form-swal ul.rejectMsg .input {
+  width: 72%;
+  background-color: rgba(182, 25, 25, 0.1411764706);
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-left: 0;
+}
+.form-swal ul.rejectMsg .input p {
+  color: #E33333;
+  font-weight: 600;
+}
+.form-swal ul.rejectMsg.evt input {
+  margin-left: 14px;
+}
 .form-swal ul.txHash a {
   color: #1d61d6;
   text-decoration: underline;
@@ -193,10 +340,14 @@ html, body {
 .form-swal ul li p span.linked {
   margin-left: 8px;
 }
+.form-swal ul li.colJenisSediaan {
+  display: flex;
+  align-items: center;
+}
 .form-swal ul li.label {
   font-weight: 600;
   text-align: left;
-  width: 28%;
+  width: 26%;
 }
 .form-swal ul li.label label {
   font-size: 13px;
@@ -206,11 +357,10 @@ html, body {
   width: 36%;
 }
 .form-swal ul li.label-1 {
-  width: 16%;
+  width: 22%;
 }
 .form-swal ul li.input {
   text-align: left;
-  width: 68%;
   font-size: 12px;
 }
 .form-swal ul li.input a {
@@ -239,6 +389,9 @@ html, body {
   outline: none !important;
   box-shadow: none !important;
 }
+.form-swal ul li.input select#rejectReason {
+  margin: 0;
+}
 .form-swal ul li.input input {
   background-color: #fff;
   border: solid 1px #A6A6A6;
@@ -247,7 +400,6 @@ html, body {
   border-radius: 4px;
   color: #1B1C1E;
   width: -webkit-fill-available;
-  width: 100%;
   padding: 6px 10px;
   font-size: 13px;
 }
@@ -281,6 +433,27 @@ html, body {
 .form-swal ul li.input input:read-only {
   background-color: rgba(242, 243, 245, 0.6196078431);
 }
+.form-swal ul li.input textarea {
+  font-family: "Instrument Sans", sans-serif;
+  background-color: #fff;
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  width: -webkit-fill-available;
+  padding: 6px 10px;
+  font-size: 13px;
+  border: solid 2px #A6A6A6;
+}
+.form-swal ul li.input textarea:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.form-swal ul li.input textarea:-moz-read-only {
+  background-color: rgba(242, 243, 245, 0.6196078431);
+}
+.form-swal ul li.input textarea:read-only {
+  background-color: rgba(242, 243, 245, 0.6196078431);
+}
 .form-swal ul li.input.full-width-table {
   width: 100%;
 }
@@ -294,6 +467,16 @@ html, body {
 }
 .form-swal ul li.select input {
   width: 100%;
+}
+.form-swal.full ul li.input {
+  width: 68%;
+}
+
+div:where(.swal2-container) div:where(.swal2-actions) {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  padding: 0 20px;
 }
 
 div:where(.swal2-container) div:where(.swal2-popup) {
@@ -369,6 +552,14 @@ div:where(.swal2-container) .swal2-html-container {
   color: #A6A6A6;
 }
 
+.scrollable-modal {
+  height: 480px !important;
+}
+
+.scrollable-modal-small {
+  height: 280px !important;
+}
+
 div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm) {
   font-family: "Instrument Sans", sans-serif;
   background-color: #530AF7;
@@ -398,7 +589,7 @@ div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel):hov
 }
 
 div:where(.swal2-container) div:where(.swal2-actions) {
-  margin: 8px 0 0;
+  margin: 10px 0 0;
 }
 
 h5 {

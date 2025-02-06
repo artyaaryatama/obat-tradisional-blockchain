@@ -44,20 +44,36 @@ async function main() {
   await deployedObatTradisional.waitForDeployment();
   console.log("ObatTradisional deployed to:", deployedObatTradisional.target);
 
-  // Deploy OrderObatTradisional
-  const OrderManagement = await hre.ethers.getContractFactory("OrderManagement");
-  const deployedOrderManagement = await OrderManagement.deploy(deployedObatTradisional.target, deployedRoleManager.target, deployedObatShared.target, deployedCdobCertificate.target);
-  await deployedOrderManagement.waitForDeployment();
-  console.log("OrderManagement deployed to:", deployedOrderManagement.target);
+  // Deploy BaseOrderManagement
+  const BaseOrderManagement = await hre.ethers.getContractFactory("BaseOrderManagement");
+  const deployedBaseOrderManagement = await BaseOrderManagement.deploy();
+  await deployedBaseOrderManagement.waitForDeployment();
+  console.log("BaseOrderManagement deployed to:", deployedBaseOrderManagement.target);
+
+  // Deploy OrderManagementPbf
+  const OrderManagementPbf = await hre.ethers.getContractFactory("OrderManagementPbf");
+  const deployedOrderManagementPbf = await OrderManagementPbf.deploy(deployedObatTradisional.target, deployedRoleManager.target, deployedObatShared.target, deployedCdobCertificate.target);
+  await deployedOrderManagementPbf.waitForDeployment();
+  console.log("OrderManagementPbf deployed to:", deployedOrderManagementPbf.target);
+
+  // Deploy OrderManagementRetail
+  const OrderManagementRetail = await hre.ethers.getContractFactory("OrderManagementRetail");
+  const deployedOrderManagementRetail = await OrderManagementRetail.deploy(deployedRoleManager.target, deployedObatShared.target);
+  await deployedOrderManagementRetail.waitForDeployment();
+  console.log("OrderManagementRetail deployed to:", deployedOrderManagementRetail.target);
 
   const deploymentData = {
     ObatTradisional: {
       address: deployedObatTradisional.target,
       abi: (await hre.artifacts.readArtifact("ObatTradisional")).abi
     },
-    OrderManagement: {
-      address: deployedOrderManagement.target,
-      abi: (await hre.artifacts.readArtifact("OrderManagement")).abi
+    OrderManagementPbf: {
+      address: deployedOrderManagementPbf.target,
+      abi: (await hre.artifacts.readArtifact("OrderManagementPbf")).abi
+    },
+    OrderManagementRetail: {
+      address: deployedOrderManagementRetail.target,
+      abi: (await hre.artifacts.readArtifact("OrderManagementRetail")).abi
     },
     RoleManager: {
       address: deployedRoleManager.target,

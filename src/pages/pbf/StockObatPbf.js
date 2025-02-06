@@ -48,9 +48,9 @@ function StockObatPbf() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
 
-          const orderManagementContract = new Contract(
-            contractData.OrderManagement.address,
-            contractData.OrderManagement.abi,
+          const orderManagementPbfContract = new Contract(
+            contractData.OrderManagementPbf.address,
+            contractData.OrderManagementPbf.abi,
             signer
           );
           const obatTradisionalContract = new Contract(
@@ -65,7 +65,7 @@ function StockObatPbf() {
           );
 
           setContracts({
-            orderManagement: orderManagementContract,
+            orderManagementPbf: orderManagementPbfContract,
             obatTradisional: obatTradisionalContract,
             nieManager: NieManager,
           });
@@ -98,7 +98,7 @@ function StockObatPbf() {
       if (contracts) {
         try {
 
-          const allPbfReadyObat = await contracts.orderManagement.getAllObatPbfByInstance(userdata.instanceName);
+          const allPbfReadyObat = await contracts.orderManagementPbf.getAllObatPbfByInstance(userdata.instanceName);
           console.log(allPbfReadyObat);
 
           const reconstructedData = allPbfReadyObat.map((item, index) => ({
@@ -127,13 +127,13 @@ function StockObatPbf() {
 
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
-      const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
-      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
-      const orderObatIpfs = await contracts.orderManagement.obatIpfs(orderId);
+      const detailOrderCt = await contracts.orderManagementPbf.detailOrder(orderId);
+      const orderTimestampCt = await contracts.orderManagementPbf.detailTimestamp(orderId);
+      const orderObatIpfs = await contracts.orderManagementPbf.obatIpfs(orderId);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
 
       const [orderIdd, obatId, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = detailOrderCt
 
@@ -172,7 +172,7 @@ function StockObatPbf() {
               <div className="produce-obat">
                 <div className="detailObat">
                   <div className="row row--obat">
-                    <div className="col">
+                    <div className="col column-label">
 
                       <ul>
                         <li className="label">
@@ -184,7 +184,7 @@ function StockObatPbf() {
                       </ul>
                       <ul>
                         <li className="label">
-                          <p>Nama Instansi Pabriksi Pabrik</p>
+                          <p>Nama Instansi Pabrik</p>
                         </li>
                         <li className="input">
                           <p>{factoryInstance}
@@ -213,7 +213,7 @@ function StockObatPbf() {
                     
                       <ul>
                         <li className="label">
-                          <p>Nama Instansi PBFtansi PBFtansi PBFtansi PBF</p>
+                          <p>Nama Instansi PBF</p>
                         </li>
                         <li className="input">
                           <p>{buyerUser[0]}
@@ -349,7 +349,7 @@ function StockObatPbf() {
             </div>
           </div>
         ),
-        width: '1220',
+        width: '1000',
         showCancelButton: false,
         showCloseButton: true,
         showConfirmButton: false,

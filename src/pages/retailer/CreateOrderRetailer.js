@@ -50,9 +50,14 @@ function CreateOrderRetailer() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
 
-          const orderManagementContract = new Contract(
-            contractData.OrderManagement.address,
-            contractData.OrderManagement.abi,
+          const orderManagementRetailContract = new Contract(
+            contractData.OrderManagementRetail.address,
+            contractData.OrderManagementRetail.abi,
+            signer
+          );
+          const orderManagementPbfContract = new Contract(
+            contractData.OrderManagementPbf.address,
+            contractData.OrderManagementPbf.abi,
             signer
           );
           const obatTradisionalContract = new Contract(
@@ -68,7 +73,8 @@ function CreateOrderRetailer() {
           );
 
           setContracts({
-            orderManagement: orderManagementContract,
+            orderManagementRetail: orderManagementRetailContract,
+            orderManagementPbf: orderManagementPbfContract,
             obatTradisional: obatTradisionalContract,
             nieManager: NieManager,
           });
@@ -101,7 +107,7 @@ function CreateOrderRetailer() {
       if (contracts) {
         try {
 
-          const allPbfReadyObat = await contracts.orderManagement.getAllObatPbfReadyStock();
+          const allPbfReadyObat = await contracts.orderManagementRetail.getAllObatPbfReadyStock();
           console.log(allPbfReadyObat);
 
           const reconstructedData = allPbfReadyObat.map((item, index) => ({
@@ -218,7 +224,7 @@ function CreateOrderRetailer() {
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailBatchCt = await contracts.obatTradisional.detailBatchProduction(id, batchName);
-      const detailPastOrderCt = await contracts.orderManagement.detailOrder(prevOrderId);
+      const detailPastOrderCt = await contracts.orderManagementPbf.detailOrder(prevOrderId);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       
       const [dataObat, obatIpfs] = detailBatchCt
@@ -226,7 +232,7 @@ function CreateOrderRetailer() {
       
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
 
       const [pbfInstance, pbfAddr] = detailPastOrderCt[5]
 
@@ -462,7 +468,7 @@ function CreateOrderRetailer() {
     try {
       console.log(prevOrderIdPbf, orderId, id, batchName, namaProduk, userdata.instanceName, pbfInstance, orderQuantity);
       
-      const createOrderCt = await contracts.orderManagement.createOrder(prevOrderIdPbf, orderId, id, batchName, namaProduk, userdata.instanceName, pbfInstance, orderQuantity, "");
+      const createOrderCt = await contracts.orderManagementRetail.createOrderRetail(prevOrderIdPbf, orderId, id, batchName, namaProduk, userdata.instanceName, pbfInstance, orderQuantity);
       
       if(createOrderCt){
         updateBatchHistoryHash(factoryInstance, namaProduk, batchName, createOrderCt.hash)
@@ -472,7 +478,7 @@ function CreateOrderRetailer() {
         });
       }
 
-      contracts.orderManagement.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.orderManagementRetail.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, createOrderCt.hash);
       });
 

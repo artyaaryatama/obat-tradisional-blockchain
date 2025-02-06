@@ -186,19 +186,24 @@ html, body {
   padding: 8px 12px;
   border-radius: 30px;
 }
-.Layout-Menu .container-data .data-list ul li button.Pending, .Layout-Menu .container-data .data-list ul li button.Requested, .Layout-Menu .container-data .data-list ul li button.Shipped {
-  background-color: #E0E333;
-}
-.Layout-Menu .container-data .data-list ul li button.Approved, .Layout-Menu .container-data .data-list ul li button.Completed {
-  background-color: #4CBE53;
+.Layout-Menu .container-data .data-list ul li button.Dalam, .Layout-Menu .container-data .data-list ul li button.Diajukan, .Layout-Menu .container-data .data-list ul li button.Kosong {
+  background-color: #A6A6A6;
   color: #fff;
 }
-.Layout-Menu .container-data .data-list ul li button.Available {
+.Layout-Menu .container-data .data-list ul li button.Pengajuan.NIE, .Layout-Menu .container-data .data-list ul li button.Pengajuan, .Layout-Menu .container-data .data-list ul li button.Tersedia {
   background-color: #1d61d6;
   color: #fff;
 }
-.Layout-Menu .container-data .data-list ul li button.In, .Layout-Menu .container-data .data-list ul li button.Placed, .Layout-Menu .container-data .data-list ul li button.Empty {
-  background-color: #A6A6A6;
+.Layout-Menu .container-data .data-list ul li button.Dikirim, .Layout-Menu .container-data .data-list ul li button.Dalam.Proses.Pengajuan {
+  background-color: #E0E333;
+  color: #1B1C1E;
+}
+.Layout-Menu .container-data .data-list ul li button.Disetujui, .Layout-Menu .container-data .data-list ul li button.Selesai {
+  background-color: #4CBE53;
+  color: #fff;
+}
+.Layout-Menu .container-data .data-list ul li button.Penolakan, .Layout-Menu .container-data .data-list ul li button.Tidak.Disetujui {
+  background-color: #E33333;
   color: #fff;
 }
 .Layout-Menu .container-data .data-list ul li p {
@@ -218,6 +223,15 @@ html, body {
   flex-direction: column;
   align-content: flex-start;
 }
+.Layout-Menu .container-form form .doku {
+  border-top: solid 2px rgba(242, 243, 245, 0.6196078431);
+  padding-top: 20px;
+}
+.Layout-Menu .container-form form h5 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 900;
+}
 .Layout-Menu .container-form form ul {
   list-style-type: none;
   padding: 0;
@@ -234,6 +248,7 @@ html, body {
 }
 .Layout-Menu .container-form form ul li.label label {
   font-size: 14px;
+  font-weight: 600;
   color: #1B1C1E;
 }
 .Layout-Menu .container-form form ul li.input {
@@ -241,6 +256,10 @@ html, body {
   width: 70%;
   display: flex;
   align-items: flex-start;
+}
+.Layout-Menu .container-form form ul li.input p {
+  font-size: 14px;
+  color: #1B1C1E;
 }
 .Layout-Menu .container-form form ul li.input select {
   font-family: "Instrument Sans", sans-serif;
@@ -259,6 +278,17 @@ html, body {
 .Layout-Menu .container-form form ul li.input select:focus {
   outline: none !important;
   box-shadow: none !important;
+}
+.Layout-Menu .container-form form ul li.input a {
+  color: #1B1C1E;
+  text-decoration: none;
+}
+.Layout-Menu .container-form form ul li.input a:hover {
+  color: #1d61d6;
+  text-decoration: underline;
+}
+.Layout-Menu .container-form form ul li.input a i {
+  margin-left: 6px;
 }
 .Layout-Menu .container-form form ul li.input input {
   background-color: #fff;
@@ -292,6 +322,10 @@ html, body {
   background-color: rgba(242, 243, 245, 0.6196078431);
   color: #737373;
   border: none;
+}
+.Layout-Menu .container-form form ul li.input input:hover {
+  cursor: pointer;
+  background-color: rgba(202, 206, 214, 0.6196078431);
 }
 .Layout-Menu .container-form form ul li.input textarea {
   background-color: #fff;
@@ -332,6 +366,7 @@ html, body {
   width: 100%;
   margin-top: 6px;
   gap: 10px;
+  align-items: center;
   justify-content: space-between;
 }
 .Layout-Menu .container-form form ul li.input .input-group select {
@@ -380,6 +415,13 @@ html, body {
   background-color: rgba(202, 206, 214, 0.6196078431);
   cursor: pointer;
 }
+.Layout-Menu .container-form form ul li.reject p {
+  color: #1B1C1E;
+}
+.Layout-Menu .container-form form ul li.col {
+  display: flex;
+  align-items: center;
+}
 .Layout-Menu .container-form form button {
   background-color: #530AF7;
   color: #fff;
@@ -407,4 +449,12 @@ html, body {
 .Layout-Menu .container-form form button.auto-filled:hover {
   background-color: #828282;
   cursor: pointer;
+}
+.Layout-Menu .pengajuan-ulang form ul li {
+  flex-direction: column;
+}
+.Layout-Menu .pengajuan-ulang form ul li.input a {
+  font-size: 12px;
+  font-style: italic;
+  margin: 3px 0 0 3px;
 }/*# sourceMappingURL=MainLayout.css.map */

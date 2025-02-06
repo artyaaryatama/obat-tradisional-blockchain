@@ -1193,6 +1193,9 @@ function CpotbApprove() {
               denyButtonColor: ' #A6A6A6',
               denyButtonText: 'Tolak',
               allowOutsideClick: false,
+              customClass: {
+                htmlContainer: 'scrollable-modal-small'
+              },
             }).then((result) => {
 
               if(result.isConfirmed){

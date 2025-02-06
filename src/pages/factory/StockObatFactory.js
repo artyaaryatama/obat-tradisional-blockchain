@@ -124,7 +124,7 @@ function StockObatFactory() {
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
 
       const [dataObat, obatIpfs] = detailBatchCt
 
@@ -162,7 +162,7 @@ function StockObatFactory() {
               <div className="produce-obat">
                 <div className="detailObat">
                   <div className="row row--obat">
-                    <div className="col">
+                    <div className="col column-label">
                       <ul>
                         <li className="label-sm">
                           <p>Nama Obat</p>
@@ -309,7 +309,7 @@ function StockObatFactory() {
           
           </div>
         ),
-        width: '1220',
+        width: '1000',
         showCancelButton: false,
         showConfirmButton: false,
         showCloseButton: true,

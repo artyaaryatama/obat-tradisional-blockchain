@@ -10,7 +10,9 @@ import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
-import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+import dummyPdf from '../../assets/dummy.pdf'
+import dummyPdf2 from '../../assets/dummy2.pdf'
+import dummyPdf3 from '../../assets/dummy3.pdf'
 
 const MySwal = withReactContent(Swal);
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
@@ -345,7 +347,7 @@ function NieRequest() {
                 </div>
             </div>
         `,
-        width: '800',
+        width: '900',
         showCancelButton: true,
         confirmButtonText: 'Konfirmasi data pengajuan NIE',
         cancelButtonText: "Batal",
@@ -419,6 +421,45 @@ function NieRequest() {
 
     await Promise.all(uploadPromises);
     return uploadedHashes;
+  };
+
+  const handleAutoUploadClickDummy = (setName) => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'application/pdf';
+    
+    // Trigger the file input to automatically set the file
+    fileInput.files = createFileList([dummyPdf]);
+    
+    handleFileChange({ target: { files: fileInput.files } }, setName);
+  };
+
+  const handleAutoUploadClickDummy2 = (setName) => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'application/pdf';
+    
+    fileInput.files = createFileList([dummyPdf2]);
+    
+    handleFileChange({ target: { files: fileInput.files } }, setName);
+  };
+
+  const handleAutoUploadClickDummy3 = (setName) => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'application/pdf';
+    
+    fileInput.files = createFileList([dummyPdf3]);
+    
+    handleFileChange({ target: { files: fileInput.files } }, setName);
+  };
+
+  const createFileList = (files) => {
+    const dataTransfer = new DataTransfer();
+    files.forEach((file) => {
+      dataTransfer.items.add(file);
+    });
+    return dataTransfer.files;
   };
 
   return (

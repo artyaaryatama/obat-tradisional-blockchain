@@ -662,6 +662,9 @@ function CdobApprove() {
           showCancelButton: false,
           showCloseButton: true,
           showConfirmButton: false,
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
         })
       } else if (detailCdob.status === 'Tidak Disetujui'){
         MySwal.fire({
@@ -947,7 +950,10 @@ function CdobApprove() {
           ),
           width: '1020',
           showCancelButton: false,
-          showCloseButton: true
+          showCloseButton: true,
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
         })
       } else{
         MySwal.fire({
@@ -1237,7 +1243,10 @@ function CdobApprove() {
           showCancelButton: false,
           confirmButtonText: 'Setujui',
           showDenyButton: true,
-          denyButtonText: 'Tolak'
+          denyButtonText: 'Tolak',
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
         }).then((result) => {
   
           if(result.isConfirmed){
@@ -1374,7 +1383,12 @@ function CdobApprove() {
               showCancelButton: true,
               cancelButtonText: 'Batal',
               confirmButtonText: 'Setujui',
+              confirmButtonColor: '#530AF7',
+              cancelButtonColor: '#A6A6A6',
               allowOutsideClick: false,
+              customClass: {
+                htmlContainer: 'scrollable-modal-small'
+              },
             }).then((result) => {
 
               if (result.isConfirmed) {
@@ -1574,8 +1588,8 @@ function CdobApprove() {
     const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
     
     MySwal.update({
-      title: "Menunggu koneksi Metamask...",
-      text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+      title: "Mengunggah semua data CDOB IPFS...",
+      text: "Harap tunggu. Jika proses ini memakan waktu terlalu lama, coba periksa koneksi IPFS. 🚀",
     });
 
     try {

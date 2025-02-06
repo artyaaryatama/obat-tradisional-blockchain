@@ -19,8 +19,8 @@ function StockObatRetailer() {
   const [dataObatReady, setDataObatReady] = useState([]);
 
   const stokStatusMap = {
-    0: "Stock Available",
-    1: "Stock Empty",
+    0: "Stock Tersedia",
+    1: "Stock Kosong",
   };
 
   const tipeObatMap = {
@@ -48,9 +48,9 @@ function StockObatRetailer() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
 
-          const orderManagementContract = new Contract(
-            contractData.OrderManagement.address,
-            contractData.OrderManagement.abi,
+          const orderManagementRetailContract = new Contract(
+            contractData.OrderManagementRetail.address,
+            contractData.OrderManagementRetail.abi,
             signer
           );
           const obatTradisionalContract = new Contract(
@@ -59,9 +59,16 @@ function StockObatRetailer() {
             signer
           );
 
+          const NieManager = new Contract(
+            contractData.NieManager.address, 
+            contractData.NieManager.abi, 
+            signer
+          );
+
           setContracts({
-            orderManagement: orderManagementContract,
-            obatTradisional: obatTradisionalContract
+            orderManagementRetail: orderManagementRetailContract,
+            obatTradisional: obatTradisionalContract,
+            nieManager: NieManager,
           });
         } catch (err) {
           console.error("User access denied!")
@@ -91,7 +98,7 @@ function StockObatRetailer() {
     const loadData = async () => {
       if (contracts) {
         try {
-          const allRetailerReadyObat = await contracts.orderManagement.getAllObatRetailerByInstance(userdata.instanceName);
+          const allRetailerReadyObat = await contracts.orderManagementRetail.getAllObatRetailerByInstance(userdata.instanceName);
           console.log(allRetailerReadyObat);
 
           const reconstructedData = allRetailerReadyObat.map((item, index) => ({
@@ -117,18 +124,17 @@ function StockObatRetailer() {
   }, [contracts, userdata.instanceName]);
   
   const getDetailObat = async (id, orderId) => {
-
+    console.log(id, orderId);
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
-      const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
-      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
-      const orderObatIpfs = await contracts.orderManagement.obatIpfs(orderId);
+      const detailOrderCt = await contracts.orderManagementRetail.detailOrder(orderId);
+      const orderTimestampCt = await contracts.orderManagementRetail.detailTimestamp(orderId);
+      const orderObatIpfs = await contracts.orderManagementRetail.obatIpfs(orderId);
+      const detailNieCt = await contracts.nieManager.getNieDetail(id)
 
-      const [obatDetails, obatNie] = detailObatCt;
+      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = obatDetails;
-
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, bpomInstance, bpomAddr] = obatNie;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
 
       const [orderIdProduk, obatIdProduk, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = detailOrderCt;
 
@@ -170,7 +176,7 @@ function StockObatRetailer() {
               <div className="produce-obat">
                 <div className="detailObat">
                   <div className="row row--obat">
-                    <div className="col">
+                    <div className="col column-label">
 
                       <ul>
                         <li className="label">
@@ -370,7 +376,7 @@ function StockObatRetailer() {
             </div>
           </div>
         ),
-        width: '1220',
+        width: '1000',
         showCancelButton: false,
         showCloseButton: true,
         showConfirmButton: false

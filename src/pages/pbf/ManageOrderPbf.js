@@ -57,9 +57,9 @@ function ManageOrderPbf() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
 
-          const orderManagementContract = new Contract(
-            contractData.OrderManagement.address,
-            contractData.OrderManagement.abi,
+          const orderManagementPbfContract = new Contract(
+            contractData.OrderManagementPbf.address,
+            contractData.OrderManagementPbf.abi,
             signer
           );
           const obatTradisionalContract = new Contract(
@@ -81,7 +81,7 @@ function ManageOrderPbf() {
           );
 
           setContracts({
-            orderManagement: orderManagementContract,
+            orderManagementPbf: orderManagementPbfContract,
             obatTradisional: obatTradisionalContract,
             roleManager: RoleManager,
             nieManager: NieManager,
@@ -113,7 +113,7 @@ function ManageOrderPbf() {
     const loadData = async () => {
       if (contracts) {
         try {
-          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromBuyer(userdata.instanceName);
+          const listOrderedObatCt = await contracts.orderManagementPbf.getAllOrderFromPbftoPabrik(userdata.instanceName);
           console.log(listOrderedObatCt);
 
           const reconstructedDataorder = listOrderedObatCt.map((item, index) => ({
@@ -231,9 +231,9 @@ function ManageOrderPbf() {
 
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
-      const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
-      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
-      const orderObatIpfs = await contracts.orderManagement.obatIpfs(orderId);
+      const detailOrderCt = await contracts.orderManagementPbf.detailOrder(orderId);
+      const orderTimestampCt = await contracts.orderManagementPbf.detailTimestamp(orderId);
+      const orderObatIpfs = await contracts.orderManagementPbf.obatIpfs(orderId);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
@@ -292,7 +292,7 @@ function ManageOrderPbf() {
                 <div className="produce-obat">
                   <div className="detailObat">
                     <div className="row row--obat">
-                      <div className="col">
+                      <div className="col column-label">
   
                         <ul>
                           <li className="label">
@@ -487,7 +487,7 @@ function ManageOrderPbf() {
                 <div className="produce-obat">
                   <div className="detailObat">
                     <div className="row row--obat">
-                      <div className="col">
+                      <div className="col column-label">
                         <ul>
                           <li className="label">
                             <p>Status Order</p>
@@ -676,7 +676,7 @@ function ManageOrderPbf() {
   const completeOrder = async (orderId, ipfsHashes, namaObat, batchName, factoryInstance, pbfInstance) => {
 
     MySwal.fire({
-      title:"Preparing your data",
+      title:"Menunggu koneksi Metamask...",
       text:"Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
       icon: 'info',
       showCancelButton: false,
@@ -685,7 +685,7 @@ function ManageOrderPbf() {
     })
 
     try {
-      const completeOrderCt = await contracts.orderManagement.completeOrderPbf(orderId, ipfsHashes)
+      const completeOrderCt = await contracts.orderManagementPbf.completeOrderPbf(orderId, ipfsHashes)
 
       if(completeOrderCt){
         updateBatchHistoryHash(factoryInstance, namaObat, batchName, completeOrderCt.hash)
@@ -695,7 +695,7 @@ function ManageOrderPbf() {
         });
       }
 
-      contracts.orderManagement.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.orderManagementPbf.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
 
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, completeOrderCt.hash); 
       });
@@ -706,9 +706,9 @@ function ManageOrderPbf() {
   }
   
   const generateIpfs = async(dataObat, dataOrder, timestamps, orderId, batchName, cpotbHash, cdobHash) => {
-    MySwal.fire({
-      title:"Preparing your data",
-      text:"Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+    MySwal.fire({ 
+      title: "Mengunggah data order ke IPFS...",
+      text: "Harap tunggu. Jika proses ini memakan waktu terlalu lama, coba periksa koneksi IPFS. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,

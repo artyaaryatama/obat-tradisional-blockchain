@@ -1888,6 +1888,9 @@ function NieApprove() {
               confirmButtonText: 'Setujui',
               cancelButtonText: 'Batal',
               allowOutsideClick: false,
+              customClass: {
+                htmlContainer: 'scrollable-modal-small'
+              },
             }).then((result) => {
               if(result.isConfirmed){
 

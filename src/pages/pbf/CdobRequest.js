@@ -239,7 +239,7 @@ function CdobRequest() {
                 </div>
             </div>
         `,
-        width: '760',
+        width: '960',
         showCancelButton: true,
         confirmButtonText: 'Konfirmasi pengajuan CDOB',
         cancelButtonText: "Batal",

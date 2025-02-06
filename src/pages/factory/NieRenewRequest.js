@@ -233,9 +233,10 @@ function NieRenewRequest() {
     } catch (error) {
       console.error("Upload failed:", error);
       MySwal.fire({
-        title: 'Gagal mengunggah file ke IPFS',
-        icon: 'error',
-        confirmButtonText: 'Coba Lagi'
+        title: "Gagal mengunggah dokumen pengajuan ulang NIE!",
+        text: "IPFS mungkin tidak aktif atau terjadi error saat mengunggah dokumen.",
+        icon: "error",
+        confirmButtonText: "Coba Lagi"
       });
       return null;
     }
@@ -312,10 +313,10 @@ function NieRenewRequest() {
           
         } catch (error) {
           MySwal.fire({
-            title: 'Gagal mengunggah dokumen ke IPFS.',
-            text: error,
-            icon: 'error',
-            confirmButtonText: 'Coba Lagi',
+            title: "Gagal mengunggah dokumen pengajuan ulang NIE!",
+            text: "IPFS mungkin tidak aktif atau terjadi error saat mengunggah dokumen.",
+            icon: "error",
+            confirmButtonText: "Coba Lagi"
           });
         }
       }
@@ -365,7 +366,7 @@ function NieRenewRequest() {
           </div>
         </div>
       ),
-      width: '760',
+      width: '900',
       showCancelButton: true,
       confirmButtonText: 'Konfirmasi Pengajuan',
       cancelButtonText: 'Batal',

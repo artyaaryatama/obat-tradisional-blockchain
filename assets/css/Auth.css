@@ -46,6 +46,9 @@ html, body {
   width: 360px;
   padding: 14px;
 }
+.App .container .form-container form .empty {
+  display: none;
+}
 .App .container .form-container form > * {
   margin-top: 10px;
 }
@@ -138,6 +141,7 @@ html, body {
   font-size: 14px;
   border-radius: 4px;
   color: #1B1C1E;
+  margin: 10px 0 0 0;
 }
 .App .container .form-container form select:focus {
   outline: none !important;

@@ -17,6 +17,16 @@ html, body {
 #publicObat.txHash .container {
   display: block;
 }
+#publicObat .title-menu {
+  display: flex;
+  align-items: center;
+}
+#publicObat .title-menu .logo-obat {
+  margin-right: 20px;
+}
+#publicObat .title-menu .logo-obat img {
+  width: 64px;
+}
 #publicObat .title-menu h2 {
   font-size: 26px;
   display: flex;
@@ -27,14 +37,15 @@ html, body {
   color: #fff;
   background-color: #530AF7;
   padding: 6px 12px;
-  width: -moz-fit-content;
-  width: fit-content;
   border-radius: 10px;
+  display: flex;
+  align-items: center;
 }
 #publicObat .container {
   flex-direction: row;
   align-items: flex-start;
   gap: 12px;
+  margin: 20px 0 0 0;
 }
 #publicObat .container .data-obat {
   flex: 2;
@@ -82,6 +93,9 @@ html, body {
 }
 #publicObat .container .data-obat .section .content .list-detail ul li {
   margin-bottom: 16px;
+}
+#publicObat .container .data-obat .section .content .list-detail ul li .empty {
+  display: none;
 }
 #publicObat .container .data-obat .section .content .list-detail ul li span.label {
   display: inline-block;
@@ -262,4 +276,70 @@ html, body {
 #publicObat .form-container a {
   text-decoration: none;
   color: #530AF7;
+}
+#publicObat button.view {
+  background-color: #1d61d6;
+  color: #fff;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+}
+#publicObat button.view:hover {
+  background-color: #144497;
+  cursor: pointer;
+}
+#publicObat button.view i {
+  margin-right: 8px;
+}
+#publicObat button.copy {
+  background-color: #530AF7;
+  color: #fff;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+}
+#publicObat button.copy:hover {
+  background-color: #3b06b4;
+  cursor: pointer;
+}
+#publicObat button.copy i {
+  margin-right: 8px;
+}
+#publicObat p b {
+  margin-right: 10px;
+}
+#publicObat select {
+  font-family: "Instrument Sans", sans-serif;
+  background-color: #fff;
+  border: none;
+  margin: 10px 0;
+  padding: 8px 6px;
+  font-size: 14px;
+  border-radius: 4px;
+  color: #1B1C1E;
+  margin: 10px 0 0 0;
+}
+#publicObat select:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+#publicObat table, #publicObat th, #publicObat td {
+  border: solid 1px #A6A6A6;
+}
+#publicObat table {
+  width: 100%; /* Optional: to set the width of the table */
+  border-collapse: collapse; /* Optional: to remove gaps between table borders */
+}
+#publicObat th, #publicObat td {
+  text-align: center; /* Centers the text horizontally */
+  vertical-align: middle; /* Centers the text vertically */
+  padding: 10px; /* Optional: adds padding inside the cells for better spacing */
+}
+#publicObat tr {
+  text-align: center; /* Aligns all rows in the table */
+}
+#publicObat td button {
+  margin: 5px; /* Adds space around each button */
 }/*# sourceMappingURL=CheckObat.css.map */
