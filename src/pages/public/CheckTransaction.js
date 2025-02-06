@@ -15,7 +15,7 @@ function CheckTransaction() {
   const [selectedBatch, setSelectedBatch] = useState(null);
 
   useEffect(() => {
-    document.title = "Check Transaction Data";
+    document.title = "Lacak Obat Tradisonal";
   }, []);
 
   const options = {
@@ -28,7 +28,7 @@ function CheckTransaction() {
   };
 
   const formatTimestamp = (timestamp) => {
-    if (!timestamp) return "Not Available";
+    if (!timestamp) return "Tidak Tersedia";
     return new Date(Number(timestamp)).toLocaleDateString("id-ID", options);
   };
 
@@ -44,7 +44,7 @@ function CheckTransaction() {
   const fetchDocuments = async () => {
     try {
       if (!factoryName.trim()) {
-        showAlert("Error", "Please enter a valid factory name.", "error");
+        showAlert("Error", "Harap masukkan nama pabrik yang sesuai.", "error");
         return;
       }
 
@@ -55,7 +55,7 @@ function CheckTransaction() {
       });
 
       if (fetchedDocuments.length === 0) {
-        showAlert("No Data", `No documents found for "${factoryName}".`, "warning");
+        showAlert("Tidak ada data", `Tidak ada data yang ditemukan untuk "${factoryName}".`, "warning");
       }
 
       setDocuments(fetchedDocuments);
@@ -76,15 +76,15 @@ function CheckTransaction() {
         const output = {
           id: selectedDoc.id,
           historyNie: {
-            'Created Obat': {
+            'Obat Diproduksi': {
               hash: historyNie.createObat,
               timestamp: historyNie.createObatTimestamp,
             },
-            'Request NIE': {
+            'Pengajuan NIE': {
               hash: historyNie.requestNie,
               timestamp: historyNie.requestNieTimestamp,
             },
-            'Approved NIE': {
+            'Penerbitan NIE': {
               hash: historyNie.approvedNie,
               timestamp: historyNie.approvedNieTimestamp,
             },
@@ -96,18 +96,18 @@ function CheckTransaction() {
         };
   
         setDocumentDetails(output);
-        setSelectedBatch(null); // Reset batch when switching documents
+        setSelectedBatch(null); 
         setSelectedDocument(docId);
       }
     } catch (error) {
-      console.error("Error fetching document details:", error);
       showAlert("Error", "Gagal mengakses data transaksi.", "error");
     }
   };
   
-
   const fetchBatchDetails = async (batchName) => {
     try {
+      console.log(batchName);
+      setSelectedBatch(null)
       const selectedBatchData = documentDetails.batchData[batchName];
       const { pbfInstance, historyHash, quantity, retailerInstance } = selectedBatchData;
   
@@ -146,21 +146,21 @@ function CheckTransaction() {
         ...selectedBatchData,
         historyHash,
         cpotbData: {
-          'Request CPOTB' : {
+          'Pengajuan CPOTB' : {
             hash: cpotbData.requestCpotb,
             timestamp: cpotbData.requestTimestamp
           },
-          'Approved CPOTB' : {
+          'Penerbitan CPOTB' : {
             hash: cpotbData.approvedCpotb,
             timestamp:  cpotbData.approvedTimestamp
           }
         },
         cdobData: {
-          'Request CDOB' : {
+          'Pengajuan CDOB' : {
             hash: cdobData.requestCdob,
             timestamp: cdobData.requestTimestamp
           },
-          'Approved CDOB' : {
+          'Penerbitan CDOB' : {
             hash: cdobData.approvedCdob,
             timestamp:  cdobData.approvedTimestamp
           }
@@ -188,10 +188,10 @@ function CheckTransaction() {
         <table>
           <thead>
             <tr>
-              <th>Key</th>
-              <th>Timestamp</th>
+              <th></th>
+              <th>Tanggal</th>
               <th>Hash</th>
-              <th>Actions</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -240,13 +240,13 @@ function CheckTransaction() {
   
   const renderBatchTable = (batchData) => {
     const keyDisplayMap = {
-      orderCreatedRetailer: "Order Created by Retailer",
-      orderShippedRetailer: "Order Shipped to Retailer",
-      orderCreatedPbf: "Order Created by PBF",
-      orderCompletedPbf: "Order Completed by PBF",
-      orderCompletedRetailer: "Order Completed by Retailer",
-      orderShippedPbf: "Order Shipped to PBF",
-      batchCreated: "Batch Created",
+      orderCreatedRetailer: "Pengajuan Order dari Retailer",
+      orderShippedRetailer: "Pengiriman Order dari Retailer",
+      orderCreatedPbf: "Pengajuan Order dari PBF",
+      orderCompletedPbf: "Penyelesaian Order dari PBF",
+      orderCompletedRetailer: "Penyelesaian Order dari Retailer",
+      orderShippedPbf: "Pengiriman Order dari PBF",
+      batchCreated: "Batch Dibuat",
     };
   
     const filteredBatchData = Object.entries(batchData.historyHash || {}).filter(
@@ -261,14 +261,14 @@ function CheckTransaction() {
   
     return (
       <div>
-        <h4>Batch Details</h4>
+        <h4>Detail Batch</h4>
         <table>
           <thead>
             <tr>
-              <th>Key</th>
+              <th></th>
               <th>Timestamp</th>
               <th>Hash</th>
-              <th>Actions</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -367,6 +367,15 @@ function CheckTransaction() {
                 <p><b>Jenis Sediaan:</b> {documentDetails.jenisSediaan || "Not Available"}</p>
                 <p><b>Tipe Obat:</b> {documentDetails.tipeObat || "Not Available"}</p>
 
+                {selectedBatch && (
+                  <div>
+                    {renderTable(
+                      selectedBatch.cpotbData,
+                      "CPOTB Data",
+                      
+                    )}
+                  </div>
+                )}
                 {documentDetails.batchNames.length > 0 && (
                   <>
                     <h3>Batch Selection</h3>
@@ -386,22 +395,17 @@ function CheckTransaction() {
                   </>
                 )}
 
-              {selectedBatch && (
-                <div>
-                  {renderTable(
-                    selectedBatch.cpotbData,
-                    "CPOTB Data",
-                    
-                  )}
-                  {selectedBatch.cdobData &&
-                    renderTable(
-                      selectedBatch.cdobData,
-                      "CDOB Data",
-                    
-                    )}
-                  {renderBatchTable(selectedBatch)}
-                </div>
-              )}
+                {selectedBatch && (
+                  <div>
+                    {selectedBatch.cdobData &&
+                      renderTable(
+                        selectedBatch.cdobData,
+                        "CDOB Data",
+                      
+                      )}
+                    {renderBatchTable(selectedBatch)}
+                  </div>
+                )}
 
               </div>
             )}
