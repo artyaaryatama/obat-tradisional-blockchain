@@ -1502,8 +1502,8 @@ function CpotbApprove() {
 
       if (result.path) {
         MySwal.update({
-          title: "Mempersiapkan transaksi..",
-          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
+          title: "Menunggu koneksi Metamask...",
+          text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
         });
         approveCpotb(cpotbNumber, detailCpotb.cpotbId, detailCpotb.jenisSediaan, result.path, detailCpotb.factoryInstanceName);
       }

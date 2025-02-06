@@ -199,90 +199,7 @@ function ManageNieFactory() {
             <div className='form-swal'>
               <div className="row row--row">
                 
-                <div className="col col2">
-                  <ul>
-                    <li className="label">
-                      <p>Nama Obat</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.namaObat}</p> 
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>Merk Obat</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.merk}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tipe Produk</p>
-                    </li>
-                    <li className="input colJenisSediaan">
-                      <p>{
-                      detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
-                      <JenisSediaanTooltip
-                        jenisSediaan={detailObat.jenisObat}
-                      />
-                    </li>
-                  </ul>
-
-                  <ul>
-                    <li className="label">
-                      <p>Tipe Obat</p>
-                    </li>
-                    <li className="input colJenisSediaan">
-                      <p>{detailObat.tipeObat}</p> 
-                      <JenisSediaanTooltip
-                        jenisSediaan={detailObat.tipeObat}
-                      />
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Kemasan Obat</p>
-                    </li>
-                    <li className="input colJenisSediaan">
-                      <p>{detailObat.kemasan}</p> 
-                      <JenisSediaanTooltip
-                        jenisSediaan={kemasanKeterangan[1]}
-                      />
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Klaim Obat</p>
-                    </li>
-                    <li className="input">
-                      <ul className='numbered'>
-                        {detailObat.klaim.map((item, index) => (
-                          <li key={index}><p>{item}</p></li>
-                        ))}
-                      </ul>
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Komposisi Obat</p>
-                    </li>
-                    <li className="input">
-                      <ul className='numbered'>
-                        {detailObat.komposisi.map((item, index) => (
-                          <li key={index}><p>{item}</p></li>
-                        ))}
-                      </ul>
-                    </li>
-                  </ul>
-  
-                </div>
-
-                <div className="col col1">
+              <div className="col col1">
                   <ul className='status'>
                     <li className="label">
                       <p>Status Izin Edar</p>
@@ -376,6 +293,88 @@ function ManageNieFactory() {
                     </li>
                   </ul>
 
+                </div>
+                <div className="col col2">
+                  <ul>
+                    <li className="label">
+                      <p>Nama Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.namaObat}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Merk Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.merk}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Produk</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{
+                      detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.jenisObat}
+                      />
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Obat</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{detailObat.tipeObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.tipeObat}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Kemasan Obat</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{detailObat.kemasan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={kemasanKeterangan[1]}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Klaim Obat</p>
+                    </li>
+                    <li className="input">
+                      <ul className='numbered'>
+                        {detailObat.klaim.map((item, index) => (
+                          <li key={index}><p>{item}</p></li>
+                        ))}
+                      </ul>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Komposisi Obat</p>
+                    </li>
+                    <li className="input">
+                      <ul className='numbered'>
+                        {detailObat.komposisi.map((item, index) => (
+                          <li key={index}><p>{item}</p></li>
+                        ))}
+                      </ul>
+                    </li>
+                  </ul>
+  
                 </div>
 
                 {/* <div className="container-stepper">
@@ -504,10 +503,10 @@ function ManageNieFactory() {
             
             </div>
           ),
-          width: '1060',
+          width: '1120',
           showCancelButton: false,
           showCloseButton: true,
-          confirmButtonText: 'Pengajuan  NIE',
+          confirmButtonText: 'Pengajuan NIE',
           customClass: {
             htmlContainer: 'scrollable-modal'
           },
@@ -549,6 +548,102 @@ function ManageNieFactory() {
             <div className='form-swal'>
               <div className="row row--row">
                 
+              <div className="col col1">
+    
+                <ul className='status'>
+                  <li className="label">
+                    <p>Status Izin Edar</p>
+                  </li>
+                  <li className="input">
+                    <p className={detailObat.nieStatus}>{detailObat.nieStatus}</p>
+                  </li>
+                </ul>
+
+                <ul className='rejectMsg'>
+                  <li className="label">
+                    <p>Alasan Penolakan</p> 
+                  </li>
+                  <li className="input">
+                    <p>{rejectMsg}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Tanggal Produksi</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.timestampProduction}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Tanggal Pengajuan NIE</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.timestampNieRequest}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Tanggal Penolakan NIE</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.timestampNieReject}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Nama Instansi Pabrik</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.factoryInstanceName}
+                      <span className='linked'>
+                        <a
+                          href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          (CPOTB Details
+                          <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                        </a>
+                      </span>
+                    </p>
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Alamat Akun Pabrik (Pengguna)</p> 
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.factoryAddr}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Nama Instansi BPOM</p> 
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.bpomInstance}
+                    </p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Alamat Akun BPOM (Pengguna)</p> 
+                  </li>
+                  <li className="input">
+                    <p>{bpomAddr}</p> 
+                  </li>
+                </ul>
+
+              </div>
                 <div className="col col2">
                   <ul>
                     <li className="label">
@@ -631,104 +726,6 @@ function ManageNieFactory() {
                   </ul>
   
                 </div>
-  
-                <div className="col col1">
-    
-                  <ul className='status'>
-                    <li className="label">
-                      <p>Status Izin Edar</p>
-                    </li>
-                    <li className="input">
-                      <p className={detailObat.nieStatus}>{detailObat.nieStatus}</p>
-                    </li>
-                  </ul>
-
-                  <ul className='rejectMsg'>
-                    <li className="label">
-                      <p>Alasan Penolakan</p> 
-                    </li>
-                    <li className="input">
-                      <p>{rejectMsg}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Produksi</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.timestampProduction}</p> 
-                    </li>
-                  </ul>
-
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Pengajuan NIE</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.timestampNieRequest}</p> 
-                    </li>
-                  </ul>
-
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Penolakan NIE</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.timestampNieReject}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nama Instansi Pabrik</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryInstanceName}
-                        <span className='linked'>
-                          <a
-                            href={`http://localhost:3000/public/certificate/${cpotbHash}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            (CPOTB Details
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>)
-                          </a>
-                        </span>
-                      </p>
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Alamat Akun Pabrik (Pengguna)</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.factoryAddr}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Nama Instansi BPOM</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.bpomInstance}
-                      </p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Alamat Akun BPOM (Pengguna)</p> 
-                    </li>
-                    <li className="input">
-                      <p>{bpomAddr}</p> 
-                    </li>
-                  </ul>
-  
-                </div>
-  
                 {/* <div className="container-stepper">
                   <div id="stepperOrder"></div>
                 </div> */}
@@ -945,7 +942,7 @@ function ManageNieFactory() {
             
             </div>
           ),
-          width: '1060',
+          width: '1120',
           showCloseButton: true,
           showConfirmButton: true,
           confirmButtonText: "Ajukan Ulang NIE",
@@ -972,97 +969,13 @@ function ManageNieFactory() {
         })
 
       } else{
+        rejectMsg = await contracts.nieManager.getRejectMsgNie(id);
         MySwal.fire({
           title: `Detail Obat ${detailObat.namaObat}`,
           html: (
             <div className='form-swal'>
               <div className="row row--row">
-                
-                <div className="col col2">
-                  <ul>
-                    <li className="label">
-                      <p>Nama Obat</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.namaObat}</p> 
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>Merk Obat</p>
-                    </li>
-                    <li className="input">
-                      <p>{detailObat.merk}</p> 
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Jenis Obat</p>
-                    </li>
-                    <li className="input colJenisSediaan">
-                      <p><p>{
-                      detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> </p> 
-                      <JenisSediaanTooltip
-                        jenisSediaan={detailObat.jenisObat}
-                      />
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Tipe Obat</p>
-                    </li>
-                    <li className="input colJenisSediaan">
-                      <p>{detailObat.tipeObat}</p> 
-                      <JenisSediaanTooltip
-                        jenisSediaan= {detailObat.tipeObat}
-                      />
-                    </li>
-                  </ul>
-
-                  <ul>
-                    <li className="label">
-                      <p>Kemasan Obat</p>
-                    </li>
-                    <li className="input colJenisSediaan">
-                      <p>{detailObat.kemasan}</p> 
-                      <JenisSediaanTooltip
-                        jenisSediaan={kemasanKeterangan[1]}
-                      />
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Klaim Obat</p>
-                    </li>
-                    <li className="input">
-                      <ul className='numbered'>
-                        {detailObat.klaim.map((item, index) => (
-                          <li key={index}><p>{item}</p></li>
-                        ))}
-                      </ul>
-                    </li>
-                  </ul>
-  
-                  <ul>
-                    <li className="label">
-                      <p>Komposisi Obat</p>
-                    </li>
-                    <li className="input">
-                      <ul className='numbered'>
-                        {detailObat.komposisi.map((item, index) => (
-                          <li key={index}><p>{item}</p></li>
-                        ))}
-                      </ul>
-                    </li>
-                  </ul>
-  
-                </div>
-
                 <div className="col col1">
-    
                   <ul className='status'>
                     <li className="label">
                       <p>Status Izin Edar</p>
@@ -1110,7 +1023,7 @@ function ManageNieFactory() {
                     : <div></div>
                   }
                   {rejectMsg?
-                    <ul>
+                    <ul className='rejectMsg'>
                       <li className="label">
                         <p>Alasan Penolakan</p>
                       </li>
@@ -1194,7 +1107,88 @@ function ManageNieFactory() {
                   </ul>
 
                 </div>
+                <div className="col col2">
+                  <ul>
+                    <li className="label">
+                      <p>Nama Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.namaObat}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Merk Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.merk}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Jenis Obat</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p><p>{
+                      detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> </p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.jenisObat}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Obat</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{detailObat.tipeObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan= {detailObat.tipeObat}
+                      />
+                    </li>
+                  </ul>
 
+                  <ul>
+                    <li className="label">
+                      <p>Kemasan Obat</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{detailObat.kemasan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={kemasanKeterangan[1]}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Klaim Obat</p>
+                    </li>
+                    <li className="input">
+                      <ul className='numbered'>
+                        {detailObat.klaim.map((item, index) => (
+                          <li key={index}><p>{item}</p></li>
+                        ))}
+                      </ul>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Komposisi Obat</p>
+                    </li>
+                    <li className="input">
+                      <ul className='numbered'>
+                        {detailObat.komposisi.map((item, index) => (
+                          <li key={index}><p>{item}</p></li>
+                        ))}
+                      </ul>
+                    </li>
+                  </ul>
+  
+                </div>
                 {/* <div className="container-stepper">
                   <div id="stepperOrder"></div>
                 </div> */}
@@ -1408,7 +1402,7 @@ function ManageNieFactory() {
               </div>
             </div>
           ),
-          width: '1060',
+          width: '1120',
           showCloseButton: true,
           showConfirmButton: false,
           showCancelButton: false,

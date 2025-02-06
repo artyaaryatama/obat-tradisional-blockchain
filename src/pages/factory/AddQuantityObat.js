@@ -224,17 +224,77 @@ function AddQuantityObat() {
       });
   }
 
-  const getData = async (e) => {
+  const confirmData = async(e) => {
     e.preventDefault();
 
     MySwal.fire({
-      title: "Mengunggah Data Obat ke IPFS...",
-      text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi IPFS Anda. 🚀",
-      icon: 'info',
-      showCancelButton: false,
-      showConfirmButton: false,
-      allowOutsideClick: false,
-    });
+      title: `Produksi Obat ${namaProduk}`,
+      html: (
+        <div className='form-swal'>
+          <div className="row row--obat">
+            <div className="col">
+
+              <ul>
+                <li className="label label-1">
+                  <p>Nama Produk</p>
+                </li>
+                <li className="input input-1">
+                  <p>{namaProduk}</p> 
+                </li>
+              </ul>
+
+              <ul>
+                <li className="label label-1">
+                  <p>Batch Name</p>
+                </li>
+                <li className="input input-1">
+                  <p>{batchName}</p> 
+                </li>
+              </ul>
+
+              <ul>
+                <li className="label label-1">
+                  <p>Total Stok</p>
+                </li>
+                <li className="input input-1">
+                  <p>{quantityObat} Obat</p> 
+                </li>
+              </ul>
+
+              <ul>
+                <li className="label label-1">
+                  <p>Nama Pabrik</p> 
+                </li>
+                <li className="input input-1">
+                  <p>{userdata.instanceName}</p> 
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      ),
+      width: '620',
+      showCancelButton: true,
+      confirmButtonText: 'Konfirmasi Kuantitas Obat',
+      cancelButtonText: "Batal",
+      allowOutsideClick: false
+    }).then((result) => {
+      if(result.isConfirmed){
+        MySwal.fire({
+          title: "Mengunggah Data Obat ke IPFS...",
+          text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi IPFS Anda. 🚀",
+          icon: 'info',
+          showCancelButton: false,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+        });
+        getData()
+      }
+    })
+
+  }
+
+  const getData = async () => {
 
     const selectedObat = dataObatAvail.filter(item => item.namaProduk === namaProduk)
     const id = selectedObat[0].obatId;
@@ -359,7 +419,7 @@ function AddQuantityObat() {
   
                 <ul>
                   <li className="label label-1">
-                    <p>Nama Factory</p> 
+                    <p>Nama Pabrik</p> 
                   </li>
                   <li className="input input-1">
                     <p>{dataObat.factoryInstanceName}</p> 
@@ -468,7 +528,7 @@ function AddQuantityObat() {
       </div>
       
       <div className='container-form'>
-        <form onSubmit={getData}>
+        <form onSubmit={confirmData}>
 
           <ul>
             <li className="label">

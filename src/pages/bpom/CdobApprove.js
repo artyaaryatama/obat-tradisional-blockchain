@@ -136,7 +136,7 @@ function CdobApprove() {
       MySwal.fire({
         title: "Pengajuan CDOB disetujui",
         html: (
-          <div className='form-swal'>
+          <div className='form-swal event'>
             <ul>
               <li className="label">
                 <p>CDOB Number</p> 
@@ -1025,7 +1025,7 @@ function CdobApprove() {
                     </ul> 
                     : <div></div>
                   }
-                                    <ul>
+                    <ul>
                     <li className="label">
                       <p>Nama Instansi PBF</p>
                     </li>
@@ -1621,6 +1621,11 @@ function CdobApprove() {
 
       if (result.path) {
         console.log("IPFS Hash:", result.path);
+
+        MySwal.update({
+          title: "Menunggu koneksi Metamask...",
+          text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+        });
         
         approveCdob(cdobNumber, detailCdob.cdobId, detailCdob.tipePermohonan, result.path, detailCdob.pbfName);
       }

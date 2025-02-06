@@ -438,13 +438,13 @@ function CreateOrderRetailer() {
         if(result.isConfirmed){
 
           MySwal.fire({
-            title:"Memproses transaksi...",
-            text:"Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+            title: "Menunggu koneksi Metamask...",
+            text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
             icon: 'info',
             showCancelButton: false,
             showConfirmButton: false,
             allowOutsideClick: false,
-          })
+          });
 
           orderObat(detailPastOrderCt[0], id, pbfInstance, namaProduk, obatQuantity, batchName, factoryInstance)
         }

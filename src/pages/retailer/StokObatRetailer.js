@@ -98,7 +98,7 @@ function StockObatRetailer() {
     const loadData = async () => {
       if (contracts) {
         try {
-          const allRetailerReadyObat = await contracts.orderManagementRetail.getAllObatRetailerByInstance(userdata.instanceName);
+          const allRetailerReadyObat = await contracts.orderManagementRetail.getAllOrderRetailByInstance(userdata.instanceName);
           console.log(allRetailerReadyObat);
 
           const reconstructedData = allRetailerReadyObat.map((item, index) => ({

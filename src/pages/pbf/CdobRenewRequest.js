@@ -103,9 +103,9 @@ function CdobRenewRequest() {
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
   
     MySwal.fire({
-      title: "Success Renew Request CDOB",
+      title: "Sukses mengajukan ulang CDOB",
       html: (
-        <div className='form-swal'>
+        <div className='form-swal event'>
           <ul>
             <li className="label">
               <p>Nama Instansi BPOM</p> 
@@ -244,20 +244,28 @@ function CdobRenewRequest() {
       title: 'Dokumen Pengajuan Ulang CDOB',
       html: (
         <div className='form-swal'>
-          <div className="row">
-            {Object.entries(uploadedHashes).map(([key, hash]) => (
-              <div key={key} className="file-item">
-                <strong>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</strong>: 
-                <a
-                  href={`http://localhost:8080/ipfs/${hash}`}  // Using CID to create the link
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Lihat dokumen
-                  <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
+          <div className="row row--obat table-like">
+            <div class="col">
+              <div class="doku">
+                {Object.entries(uploadedHashes).map(([key, hash]) => (
+                  <ul key={key}>
+                    <li class="label label-2">
+                      <p>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</p>
+                    </li>
+                    <li class="input input-2">
+                    <a
+                      href={`http://localhost:8080/ipfs/${hash}`}  
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Lihat dokumen ↗ (${hash})
+                    </a>
+                    </li>
+                  </ul>
+                ))}
+
               </div>
-            ))}
+            </div>
           </div>
         </div>
       ),

@@ -509,7 +509,7 @@ function ManageOrderPbfRetailer() {
                 <div className="produce-obat">
                   <div className="detailObat">
                     <div className="row row--obat">
-                      <div className="col">
+                      <div className="col column-label">
                         <ul>
                           <li className="label">
                             <p>Nama Obat</p>
@@ -549,7 +549,7 @@ function ManageOrderPbfRetailer() {
                         
                         <ul>
                           <li className="label">
-                            <p>Nama Instansi Pabriksi Pabrik</p>
+                            <p>Nama Instansi Pabrik</p>
                           </li>
                           <li className="input">
                             <p>{factoryInstance}

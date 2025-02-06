@@ -72,7 +72,7 @@
           border-radius: 10px;
           background-color: $yellow;
           
-          &.Completed, &.Approved {
+          &.selesai, &.Disetujui {
             background-color: $green;
             color: $white;
           }

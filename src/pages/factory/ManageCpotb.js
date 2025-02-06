@@ -409,7 +409,7 @@ function ManageCpotb() {
                   </li>
                   <li className="input">
                     <a
-                      href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denah_pbf}`}
+                      href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.sistemMutu}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -674,7 +674,7 @@ function ManageCpotb() {
                     </li>
                     <li className="input">
                       <a
-                        href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denah_pbf}`}
+                        href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.sistemMutu}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >

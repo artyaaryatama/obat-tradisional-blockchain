@@ -815,7 +815,7 @@ function ManageOrderRetailer() {
 
     try {
       const prevOrderPbfCt = await contracts.orderManagementRetail.detailOrder(prevOrderId)
-      const orderTimestampCt = await contracts.orderManagementRetail.orderTimestamp(prevOrderId);
+      const orderTimestampCt = await contracts.orderManagementPbf.orderTimestamp(prevOrderId);
 
       const pbfTimestampOrder =  new Date(Number(orderTimestampCt[0]) * 1000).toLocaleDateString('id-ID', options)
       const pbfTimestampShipped = orderTimestampCt[1] !== 0n ? new Date(Number(orderTimestampCt[1]) * 1000).toLocaleDateString('id-ID', options) : "-"
@@ -859,8 +859,8 @@ function ManageOrderRetailer() {
           },
           dataOrderPbf: {
             orderQuantity: parseInt(prevOrderPbfCt[4]),
-            senderInstanceName: prevOrderPbfCt[5][0],
-            senderAddress: prevOrderPbfCt[5][1],
+            senderInstanceName: dataOrder.sellerInstance,
+            senderAddress: dataOrder.sellerAddress,
             statusOrder : "Order Completed",
             pbfInstanceAddress: userPbfCt[4],
             targetInstanceName : prevOrderPbfCt[6][0] ,
