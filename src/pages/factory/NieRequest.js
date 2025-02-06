@@ -375,7 +375,11 @@ function NieRequest() {
         title: "Gagal mengunggah dokumen pengajuan CPOTB!",
         text: "IPFS mungkin tidak aktif atau terjadi error saat mengunggah dokumen.",
         icon: "error",
-        confirmButtonText: "Coba Lagi"
+        confirmButtonText: "Coba Lagi",
+        didOpen: () => {
+          const actions = Swal.getActions();
+         actions.style.justifyContent = "center";
+        }
       });
       
     }
@@ -423,35 +427,31 @@ function NieRequest() {
     return uploadedHashes;
   };
 
-  const handleAutoUploadClickDummy = (setName) => {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'application/pdf';
-    
-    // Trigger the file input to automatically set the file
-    fileInput.files = createFileList([dummyPdf]);
-    
-    handleFileChange({ target: { files: fileInput.files } }, setName);
-  };
-
-  const handleAutoUploadClickDummy2 = (setName) => {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'application/pdf';
-    
-    fileInput.files = createFileList([dummyPdf2]);
-    
-    handleFileChange({ target: { files: fileInput.files } }, setName);
-  };
-
   const handleAutoUploadClickDummy3 = (setName) => {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'application/pdf';
     
+    // Mengatur file input untuk secara otomatis mengisi file
     fileInput.files = createFileList([dummyPdf3]);
     
     handleFileChange({ target: { files: fileInput.files } }, setName);
+  };
+
+  const handleAutoFill = () => {
+    handleAutoUploadClickDummy3(setMasterFormula); // Dokumen Master Formula
+    handleAutoUploadClickDummy3(setSuratKuasa); // Surat Kuasa
+    handleAutoUploadClickDummy3(setSuratPernyataan); // Surat Pernyataan
+    handleAutoUploadClickDummy3(setKomposisiProduk); // Dokumen Komposisi Produk
+    handleAutoUploadClickDummy3(setCaraPembuatanProduk); // Dokumen Cara Pembuatan Produk
+    handleAutoUploadClickDummy3(setSpesifikasiProdukJadi); // Dokumen Spesifikasi Produk Jadi
+    handleAutoUploadClickDummy3(setSistemPenomoranBets); // Dokumen Sistem Penomoran Bets
+    handleAutoUploadClickDummy3(setSertifikatAnalisaBahanBaku); // Sertifikat Analisa Bahan Baku
+    handleAutoUploadClickDummy3(setSertifikatAnalisaProdukJadi); // Sertifikat Analisa Produk Jadi
+    handleAutoUploadClickDummy3(setHasilUjiStabilitas); // Dokumen Hasil Uji Stabilitas
+    handleAutoUploadClickDummy3(setSpesifikasiKemasan); // Spesifikasi Kemasan
+    handleAutoUploadClickDummy3(setDesainKemasan); // Desain Kemasan
+    handleAutoUploadClickDummy3(setDataPendukungKeamanan); // Data Pendukung Keamanan
   };
 
   const createFileList = (files) => {
@@ -623,10 +623,14 @@ function NieRequest() {
             loader? (
               <img src={imgLoader} alt="" />
             ) : (
-              "Kirim Pengajuan CPOTB"
+              "Kirim Pengajuan NIE"
             )
           }
             </button>
+
+            {/* <button type='button' onClick={handleAutoFill}>
+              Isi Semua Field dengan Dummy
+            </button> */}
         </form>
       </div>
     </div>

@@ -777,8 +777,9 @@ function ManageCdob() {
             </div>
           ),
           width: '1020',
+          showCloseButton: true,
           showCancelButton: false,
-          confirmButtonText: 'Ok',
+          showConfirmButton: false,
           customClass: {
             htmlContainer: 'scrollable-modal'
           },

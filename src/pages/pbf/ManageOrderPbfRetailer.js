@@ -230,6 +230,10 @@ function ManageOrderPbfRetailer() {
       showCancelButton: false,
       confirmButtonText: 'Oke',
       allowOutsideClick: true,
+      didOpen: () => {
+        const actions = Swal.getActions();
+        actions.style.justifyContent = "center";
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         window.location.reload()
@@ -765,7 +769,7 @@ function ManageOrderPbfRetailer() {
 
     try {
       const prevOrderPbfCt = await contracts.orderManagementPbf.detailOrder(prevOrderId)
-      const orderTimestampCt = await contracts.orderManagementPbf.orderTimestamp(prevOrderId);
+      const orderTimestampCt = await contracts.orderManagementPbf.detailTimestamp(prevOrderId);
 
       console.log(orderTimestampCt);
 

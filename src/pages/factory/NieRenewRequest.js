@@ -286,8 +286,8 @@ function NieRenewRequest() {
       const factoryDocRef = doc(db, instanceName, documentId); 
 
       await updateDoc(factoryDocRef, {
-        "historyNie.requestNie": obatHash, 
-        "historyNie.requestNieTimestamp": Date.now(), 
+        "historyNie.RenewRequestNie": obatHash, 
+        "historyNie.RenewRequestNieTimestamp": Date.now(), 
       }); 
   
     } catch (err) {
@@ -337,55 +337,71 @@ function NieRenewRequest() {
       });
     }
     
-    MySwal.fire({
-      title: 'Dokumen Pengajuan Ulang NIE',
-      html: (
-        <div className='form-swal'>
-          <div className="row row--obat table-like">
-            <div class="col">
-              <div class="doku">
-                {Object.entries(uploadedHashes).map(([key, hash]) => (
-                  <ul key={key}>
-                    <li class="label label-2">
-                      <p>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</p>
-                    </li>
-                    <li class="input input-2">
-                    <a
-                      href={`http://localhost:8080/ipfs/${hash}`}  
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Lihat dokumen ↗ (${hash})
-                    </a>
-                    </li>
-                  </ul>
-                ))}
-
+    if (uploadedHashes.length !== 0) {
+      MySwal.fire({
+        title: 'Dokumen Pengajuan Ulang NIE',
+        html: (
+          <div className='form-swal'>
+            <div className="row row--obat table-like">
+              <div class="col">
+                <div class="doku">
+                  {Object.entries(uploadedHashes).map(([key, hash]) => (
+                    <ul key={key}>
+                      <li class="label label-2">
+                        <p>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</p>
+                      </li>
+                      <li class="input input-2">
+                      <a
+                        href={`http://localhost:8080/ipfs/${hash}`}  
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Lihat dokumen ↗ (${hash})
+                      </a>
+                      </li>
+                    </ul>
+                  ))}
+  
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ),
-      width: '900',
-      showCancelButton: true,
-      confirmButtonText: 'Konfirmasi Pengajuan',
-      cancelButtonText: 'Batal',
-      allowOutsideClick: false
-    }).then(result => {
-      if (result.isConfirmed) {
-        console.log(updatedDokumen);
-        MySwal.fire({
-          title: "Menunggu koneksi Metamask...",
-          text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
-          icon: 'info',
-          showCancelButton: false,
-          showConfirmButton: false,
-          allowOutsideClick: false,
-        });
-        renewRequestNie(updatedDokumen)
-      }
-    });
-    setLoader(false);
+        ),
+        width: '900',
+        showCancelButton: true,
+        confirmButtonText: 'Konfirmasi Pengajuan',
+        cancelButtonText: 'Batal',
+        allowOutsideClick: false
+      }).then(result => {
+        if (result.isConfirmed) {
+          console.log(updatedDokumen);
+          MySwal.fire({
+            title: "Menunggu koneksi Metamask...",
+            text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+            icon: 'info',
+            showCancelButton: false,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          });
+          renewRequestNie(updatedDokumen)
+        }
+      });
+      setLoader(false);
+      
+    } else{
+      MySwal.fire({
+        title: "Gagal mengunggah dokumen ke IPFS!",
+        text: "Harap masukkan ulang semua dokumen yang ingin diubah.",
+        icon: "error",
+        confirmButtonText: "Coba Lagi",
+        didOpen: () => {
+          const actions = Swal.getActions();
+          actions.style.justifyContent = "center";
+        }
+      });
+      setLoader(false);
+    }
+
   };
 
   return (

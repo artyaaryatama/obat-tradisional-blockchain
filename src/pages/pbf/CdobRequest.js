@@ -11,6 +11,9 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+import dummyPdf from '../../assets/dummy.pdf'
+import dummyPdf2 from '../../assets/dummy2.pdf'
+import dummyPdf3 from '../../assets/dummy3.pdf'
 
 const MySwal = withReactContent(Swal);
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
@@ -263,7 +266,11 @@ function CdobRequest() {
         title: "Gagal mengunggah dokumen pengajuan CDOB!",
         text: "IPFS mungkin tidak aktif atau terjadi error saat mengunggah dokumen.",
         icon: "error",
-        confirmButtonText: "Coba Lagi"
+        confirmButtonText: "Coba Lagi",
+        didOpen: () => {
+          const actions = Swal.getActions();
+         actions.style.justifyContent = "center";
+        }
       });
       
     }
@@ -408,7 +415,38 @@ function CdobRequest() {
   
     setFile(file);
   };
+
+  const createFileList = (files) => {
+    const dataTransfer = new DataTransfer();
+    files.forEach((file) => {
+      dataTransfer.items.add(file);
+    });
+    return dataTransfer.files;
+  };
   
+  const handleAutoFill = () => {
+    handleAutoUploadClickDummy(setSuratPermohonan, dummyPdf); // Surat Permohonan CDOB
+    handleAutoUploadClickDummy(setBuktiPembayaran, dummyPdf2); // Bukti Pembayaran Pajak
+    handleAutoUploadClickDummy(setSuratIzin, dummyPdf); // Surat Izin
+    handleAutoUploadClickDummy(setDenah, dummyPdf2); // Denah Bangunan PBF
+    handleAutoUploadClickDummy(setStrukturOrganisasi, dummyPdf3); // Struktur Organisasi
+    handleAutoUploadClickDummy(setDaftarPersonalia, dummyPdf); // Daftar Personalia
+    handleAutoUploadClickDummy(setDaftarPeraltan, dummyPdf2); // Daftar Peralatan
+    handleAutoUploadClickDummy(setEksekutifQualityManagement, dummyPdf3); // Ringkasan Eksekutif Quality Management System
+    handleAutoUploadClickDummy(setSuratIzinApoteker, dummyPdf); // Surat Izin Apoteker
+    handleAutoUploadClickDummy(setDokSelfAsses, dummyPdf2); // Dokumen Self Assessment
+  };
+
+  const handleAutoUploadClickDummy = (setFile, dummyFile) => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'application/pdf';
+    
+    // Set the file input to automatically fill with the dummy file
+    fileInput.files = createFileList([dummyFile]);
+    
+    handleFileChange({ target: { files: fileInput.files } }, setFile);
+  };
 
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>
@@ -564,6 +602,10 @@ function CdobRequest() {
             )
           }
             </button>
+
+            {/* <button type='button' onClick={handleAutoFill}>
+              Isi Semua Field dengan Dummy
+            </button> */}
         </form>
       </div>
     </div>

@@ -21,23 +21,22 @@ async function main() {
   await deployedObatShared.waitForDeployment();
   console.log("ObatShared deployed to:", deployedObatShared.target);
 
-  // Deploy OrderManagementPbf
+  // Deploy OrderManagement
   const OrderManagementPbf = await hre.ethers.getContractFactory("OrderManagementPbf");
-  const deployedOrderManagementPbf = await OrderManagementPbf.deploy(
+  const deployedOrderManagementPbf = await OrderManagementPbf.deploy(    
     ObatTradisional.address,
     RoleManager.address,
     deployedObatShared.target,
-    deployedCdobCertificate.target
-  );
+    deployedCdobCertificate.target);
   await deployedOrderManagementPbf.waitForDeployment();
   console.log("OrderManagementPbf deployed to:", deployedOrderManagementPbf.target);
+
 
   // Deploy OrderManagementRetail
   const OrderManagementRetail = await hre.ethers.getContractFactory("OrderManagementRetail");
   const deployedOrderManagementRetail = await OrderManagementRetail.deploy(
     RoleManager.address,
-    deployedObatShared.target,
-    deployedOrderManagementPbf.target
+    deployedObatShared.target
   );
   await deployedOrderManagementRetail.waitForDeployment();
   console.log("OrderManagementRetail deployed to:", deployedOrderManagementRetail.target);
@@ -51,6 +50,10 @@ async function main() {
     address: deployedOrderManagementRetail.target,
     abi: (await hre.artifacts.readArtifact("OrderManagementRetail")).abi
   };
+  // deploymentData.OrderManagement = {
+  //   address: deployedOrderManagement.target,
+  //   abi: (await hre.artifacts.readArtifact("OrderManagement")).abi
+  // }
 
   fs.writeFileSync('./src/auto-artifacts/deployments.json', JSON.stringify(deploymentData, null, 2));
 }

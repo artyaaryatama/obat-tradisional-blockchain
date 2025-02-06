@@ -37,6 +37,9 @@
         &:first-child{
           margin-right: 12px;
         }
+        &:last-child{
+          margin-left: 12px;
+        }
 
         button{
           @include btnUniversal($grey, transparent, 30px);

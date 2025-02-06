@@ -294,7 +294,10 @@ contract OrderManagement {
   }
 
   // status: 200ok
-
+  function detailOrder(string memory _orderId)
+    public view returns (st_obatOrder memory){
+      return orderByOrderId[_orderId];
+  }
   
   // status: 200ok
   function orderTimestamp(string memory _orderId)
@@ -303,11 +306,6 @@ contract OrderManagement {
   }
   
   // status: 200ok
-  function detailOrder(string memory _orderId)
-    public view returns (st_obatOrder memory){
-      return orderByOrderId[_orderId];
-  }
-
   function obatIpfs(string memory _orderId)
     public view returns (string[] memory){
       return orderIpfsByOrderId[_orderId];

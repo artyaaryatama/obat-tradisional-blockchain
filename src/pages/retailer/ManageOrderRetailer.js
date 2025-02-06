@@ -815,7 +815,7 @@ function ManageOrderRetailer() {
 
     try {
       const prevOrderPbfCt = await contracts.orderManagementRetail.detailOrder(prevOrderId)
-      const orderTimestampCt = await contracts.orderManagementPbf.orderTimestamp(prevOrderId);
+      const orderTimestampCt = await contracts.orderManagementPbf.detailTimestamp(prevOrderId);
 
       const pbfTimestampOrder =  new Date(Number(orderTimestampCt[0]) * 1000).toLocaleDateString('id-ID', options)
       const pbfTimestampShipped = orderTimestampCt[1] !== 0n ? new Date(Number(orderTimestampCt[1]) * 1000).toLocaleDateString('id-ID', options) : "-"

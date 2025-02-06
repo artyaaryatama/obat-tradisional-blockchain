@@ -18,6 +18,7 @@ function CdobRenewRequest() {
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const idCdob = JSON.parse(sessionStorage.getItem('idCdob'))
+  const [tipePermohonan, setTipePermohonan] = useState('')
   const [dokumen, setDokumen] = useState({
     ipfsSuratPermohonanCdob: null,
     ipfsBuktiPembayaran: null,
@@ -35,8 +36,8 @@ function CdobRenewRequest() {
   const [loader, setLoader] = useState(false);
   const [rejectMsg, setRejectMsg] = useState("");
   const tipePermohonanMap = {
-    0: "Obat Lain",
-    1: "Cold Chain Product (CCP)"
+    0: "ObatLain",
+    1: "CCP"
   };
   
   const today = new Date();
@@ -77,9 +78,13 @@ function CdobRenewRequest() {
 
       const detailCdobCt = await contracts.certificateManager.getCdobDetails(idCdob);
       const rejectMsgCt = await contracts.certificateManager.getRejectMsgCdob(idCdob);
+
+      const [cdobId, cdobNumber, tipePermohonan] = detailCdobCt[1]
       const [suratPermohonan, buktiPembayaran] = detailCdobCt[2];
       const [suratIzinCdob, denah, strukturOrganisasi, daftarPersonalia, daftarPeralatan, eksekutifQualityManagement, suratIzinApoteker, dokumenSelfAsses] = detailCdobCt[3];
 
+
+      setTipePermohonan(tipePermohonan)
       setRejectMsg(rejectMsgCt);
       setDokumen({
         ipfsSuratPermohonanCdob: suratPermohonan,
@@ -151,6 +156,10 @@ function CdobRenewRequest() {
       showCancelButton: false,
       confirmButtonText: 'Oke',
       allowOutsideClick: true,
+      didOpen: () => {
+        const actions = Swal.getActions();
+        actions.style.justifyContent = "center";
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         navigate('/cdob')
@@ -219,7 +228,11 @@ function CdobRenewRequest() {
             title: "Gagal mengunggah dokumen pengajuan ulang CDOB!",
             text: "IPFS mungkin tidak aktif atau terjadi error saat mengunggah dokumen.",
             icon: "error",
-            confirmButtonText: "Coba Lagi"
+            confirmButtonText: "Coba Lagi",
+            didOpen: () => {
+              const actions = Swal.getActions();
+              actions.style.justifyContent = "center";
+            }
           });
         }
       }
@@ -240,55 +253,69 @@ function CdobRenewRequest() {
       });
     }
     
-    MySwal.fire({
-      title: 'Dokumen Pengajuan Ulang CDOB',
-      html: (
-        <div className='form-swal'>
-          <div className="row row--obat table-like">
-            <div class="col">
-              <div class="doku">
-                {Object.entries(uploadedHashes).map(([key, hash]) => (
-                  <ul key={key}>
-                    <li class="label label-2">
-                      <p>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</p>
-                    </li>
-                    <li class="input input-2">
-                    <a
-                      href={`http://localhost:8080/ipfs/${hash}`}  
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Lihat dokumen ↗ (${hash})
-                    </a>
-                    </li>
-                  </ul>
-                ))}
-
+    if (uploadedHashes.length !== 0) {
+      MySwal.fire({
+        title: 'Dokumen Pengajuan Ulang CDOB',
+        html: (
+          <div className='form-swal'>
+            <div className="row row--obat table-like">
+              <div class="col">
+                <div class="doku">
+                  {Object.entries(uploadedHashes).map(([key, hash]) => (
+                    <ul key={key}>
+                      <li class="label label-2">
+                        <p>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</p>
+                      </li>
+                      <li class="input input-2">
+                      <a
+                        href={`http://localhost:8080/ipfs/${hash}`}  
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Lihat dokumen ↗ (${hash})
+                      </a>
+                      </li>
+                    </ul>
+                  ))}
+  
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ),
-      width: '960',
-      showCancelButton: true,
-      confirmButtonText: 'Konfirmasi Pengajuan',
-      cancelButtonText: 'Batal',
-      allowOutsideClick: false
-    }).then(result => {
-      if (result.isConfirmed) {
-        console.log(updatedDokumen);
-        MySwal.fire({
-          title: "Menunggu koneksi Metamask...",
-          text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
-          icon: 'info',
-          showCancelButton: false,
-          showConfirmButton: false,
-          allowOutsideClick: false,
-        });
-        renewRequestCdob(updatedDokumen)
-      }
-    });
-    setLoader(false);
+        ),
+        width: '960',
+        showCancelButton: true,
+        confirmButtonText: 'Konfirmasi Pengajuan',
+        cancelButtonText: 'Batal',
+        allowOutsideClick: false
+      }).then(result => {
+        if (result.isConfirmed) {
+          console.log(updatedDokumen);
+          MySwal.fire({
+            title: "Menunggu koneksi Metamask...",
+            text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+            icon: 'info',
+            showCancelButton: false,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          });
+          renewRequestCdob(updatedDokumen)
+        }
+      });
+      setLoader(false);
+    } else {
+      MySwal.fire({
+        title: "Gagal mengunggah dokumen ke IPFS!",
+        text: "Harap masukkan ulang semua dokumen yang ingin diubah.",
+        icon: "error",
+        confirmButtonText: "Coba Lagi",
+        didOpen: () => {
+          const actions = Swal.getActions();
+          actions.style.justifyContent = "center";
+        }
+      });
+      setLoader(false);
+    }
   };
 
   const renewRequestCdob = async (hashDocs) => {
@@ -302,7 +329,7 @@ function CdobRenewRequest() {
       console.log('Receipt:', renewRequestCdobCt);
   
       if(renewRequestCdobCt){
-        writeCpotbFb( userdata.instanceName, tipePermohonanMap[tipePermohonanMap], renewRequestCdobCt.hash );
+        writeCdobFb( userdata.instanceName, renewRequestCdobCt.hash );
 
         MySwal.update({
           title: "Memproses transaksi...",
@@ -319,14 +346,15 @@ function CdobRenewRequest() {
     }
   }
 
-  const writeCpotbFb = async (instanceName, tipePermohonanMap, cdobHash) => {
+  const writeCdobFb = async (instanceName, cdobHash) => {
     try {
       const documentId = `cdob-lists`; 
       const pbfDocRef = doc(db, instanceName, documentId);
+      const tipePermohon = tipePermohonanMap[tipePermohonan]
 
       await updateDoc(pbfDocRef, {
-        [`${tipePermohonanMap}.RenewRequestCdob`]: cdobHash,
-      [`${tipePermohonanMap}.RenewRequestTimestamp`]: Date.now(),
+        [`${tipePermohon}.RenewRequestCdob`]: cdobHash,
+      [`${tipePermohon}.RenewRequestTimestamp`]: Date.now(),
       });
     } catch (err) {
       errAlert(err);
