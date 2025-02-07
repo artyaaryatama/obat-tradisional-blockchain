@@ -83,12 +83,25 @@ function ManageOrderRetailer() {
             contractData.OrderManagementPbf.abi,
             signer
           );
+
+          const ObatShared = new Contract(
+            contractData.ObatShared.address, 
+            contractData.ObatShared.abi, 
+            signer
+          );
+          const BaseOrderManagement = new Contract(
+            contractData.BaseOrderManagement.address, 
+            contractData.BaseOrderManagement.abi, 
+            signer
+          );
           setContracts({
             orderManagementRetail: orderManagementRetailContract,
             orderManagementPbf: orderManagementPbfContract,
             obatTradisional: obatTradisionalContract,
             roleManager: RoleManager,
             nieManager: NieManager,
+            obatShared: ObatShared,
+            baseOrderManagement: BaseOrderManagement
           });
         } catch (err) {
           console.error("User access denied!")
@@ -781,15 +794,73 @@ function ManageOrderRetailer() {
         });
       }
   
-      contracts.orderManagementRetail.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
-        handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, completeOrderCt.hash);
-      });
-      
+      // contracts.orderManagementRetail.on("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      //   handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, completeOrderCt.hash);
+      // });
     } catch (error) {
       errAlert(error, "Can't Complete Order")
     }
 
   }
+
+  useEffect(() => {
+    if (!contracts || !contracts.orderManagementRetail || !contracts.obatShared || !contracts.baseOrderManagement) return;
+
+    console.log("Setting up event listeners...");
+
+    // Event Listener untuk OrderManagementRetail
+    const handleOrderUpdate = (_batchName, _namaProduk, _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      console.log("ORDER UPDATE EVENT!!");
+      handleEventOrderUpdate(_batchName, _namaProduk, _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, 'asdadas');
+    };
+
+    // Event Listener untuk ObatShared
+    const handleTestBatch = (_batchName, _ipfs) => {
+      console.log('----------------------------------');
+      console.log("INI DATA DI OBAT SHARED!!");
+      console.log(_batchName);
+      console.log(_ipfs);
+    };
+
+    // Event Listener untuk BaseOrderManagement
+    const handleTestBatchPbf = (batchPbf, batchRet) => {
+      console.log('----------------------------------');
+      console.log("INI DATA DI BASE CONTRACT!!");
+      console.log(batchPbf);
+      console.log(batchRet);
+    };
+
+    const handleTestOrderId = (batchPbf, batchRet) => {
+      console.log('----------------------------------');
+      console.log("INI DATA DI BASE CONTRACT!!");
+      console.log(batchPbf);
+      console.log(batchRet);
+    };
+
+    // Menghapus semua listener sebelum menambahkan yang baru
+    contracts.orderManagementRetail.removeAllListeners("evt_orderUpdate");
+    contracts.obatShared.removeAllListeners("testBatch");
+    contracts.baseOrderManagement.removeAllListeners("testBatch_pbf");
+    contracts.baseOrderManagement.removeAllListeners("testOrderId");
+
+    // Pasang event listener
+    contracts.orderManagementRetail.on("evt_orderUpdate", handleOrderUpdate);
+    contracts.obatShared.on("testBatch", handleTestBatch);
+    contracts.baseOrderManagement.on("testBatch_pbf", handleTestBatchPbf);
+    contracts.baseOrderManagement.on("testOrderId", handleTestOrderId);
+
+    console.log("Event listeners attached.");
+
+    // Membersihkan event listener saat komponen unmount
+    return () => {
+      contracts.orderManagementRetail.removeListener("evt_orderUpdate", handleOrderUpdate);
+      contracts.obatShared.removeListener("testBatch", handleTestBatch);
+      contracts.baseOrderManagement.removeListener("testBatch_pbf", handleTestBatchPbf);
+      contracts.baseOrderManagement.removeListener("testOrderId", handleTestOrderId);
+      console.log("Event listeners removed.");
+    };
+  }, [contracts]); // useEffect hanya dijalankan ulang jika `contracts` berubah
+
   
   const generateIpfs = async(prevOrderId, dataObat, dataOrder, timestamps, orderId, batchName, cpotbHash, cdobHash) => {
     MySwal.fire({ 

@@ -690,7 +690,7 @@ function ManageOrderPbf() {
       if(completeOrderCt){
         updateBatchHistoryHash(factoryInstance, namaObat, batchName, completeOrderCt.hash)
         MySwal.update({ 
-          title: "Processing your transaction...",
+          title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }

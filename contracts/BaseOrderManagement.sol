@@ -27,7 +27,16 @@ contract BaseOrderManagement{
     uint256 timestampComplete;  
   }
 
-  string[] internal allOrderId;
+  string[] public allOrderId;
+
+
+  struct st_test{
+    string orderId;
+    string[] ipfs;
+  }  
+  event testBatch_pbf (st_test, st_test);
+  event testOrderId(string _orderId,string  prevId); 
+
 
   mapping (string => st_orderTimestamp) orderTimestampByOrderId;
   mapping (string => string[]) orderIpfsByOrderId;
@@ -97,6 +106,8 @@ contract BaseOrderManagement{
     string[] memory _orderObatIpfs
   ) internal { 
 
+    emit test ('INI KEPANGGIL COMPLETE DRI BASE ORDER');
+
     orderByOrderId[_orderId].sellerUser.instanceAddr = msg.sender;
     orderByOrderId[_orderId].statusOrder = EnumsLibrary.OrderStatus.OrderShipped;
     orderTimestampByOrderId[_orderId].timestampShipped = block.timestamp;
@@ -110,8 +121,10 @@ contract BaseOrderManagement{
 
   function completeOrderPbfFromPabrik(
     string memory _orderId,
-    string[] memory _orderObatIpfs
+    string[] memory _orderObatIpfs 
   ) internal {
+
+    emit test ('INI KEPANGGIL COMPLETE DRI BASE ORDER');
 
     orderByOrderId[_orderId].statusOrder = EnumsLibrary.OrderStatus.OrderCompleted;
     orderTimestampByOrderId[_orderId].timestampComplete = block.timestamp;
@@ -121,30 +134,88 @@ contract BaseOrderManagement{
     for (uint256 i = 0; i < _orderObatIpfs.length; i++) {
       orderIpfsByOrderId[_orderId].push(_orderObatIpfs[i]);
     } 
-  }
+  } 
 
   function acceptOrderRetailerFromPbf(
     string memory _orderId,
-    uint256 _timestampAccept
+    uint256 _timestampAccept,
+    string[] memory _orderObatIpfs
   ) internal {
+    emit test ('INI KEPANGGIL COMPLETE DRI BASE ORDER');
 
     orderByOrderId[_orderId].statusOrder = EnumsLibrary.OrderStatus.OrderShipped;
     orderTimestampByOrderId[_orderId].timestampShipped = _timestampAccept; 
-  }
 
+     st_test memory batchpbf = st_test({
+      orderId: orderByOrderId[_orderId].prevOrderIdPbf,
+      ipfs: _orderObatIpfs
+    });
+
+    st_test memory batchret= st_test({ 
+      orderId: _orderId,
+      ipfs: _orderObatIpfs
+    });
+     
+    delete orderIpfsByOrderId[orderByOrderId[_orderId].prevOrderIdPbf];
+    delete orderIpfsByOrderId[_orderId];
+
+    for (uint256 i = 0; i < _orderObatIpfs.length; i++) {
+      orderIpfsByOrderId[orderByOrderId[_orderId].prevOrderIdPbf].push(_orderObatIpfs[i]);
+      orderIpfsByOrderId[_orderId].push(_orderObatIpfs[i]);
+    }   
+
+    emit testBatch_pbf(batchpbf, batchret);
+    emit testOrderId(_orderId, orderByOrderId[_orderId].prevOrderIdPbf); 
+  } 
+  event test (string msg);
   function completeOrderRetailerFromPbf(
     string memory _orderId,
-    uint256 _timestamp
+    uint256 _timestamp, 
+    string[] memory _orderObatIpfs 
   ) internal{
-
+    emit test ('INI KEPANGGIL COMPLETE DRI BASE ORDER');
     orderByOrderId[_orderId].statusOrder = EnumsLibrary.OrderStatus.OrderCompleted;
-    orderTimestampByOrderId[_orderId].timestampComplete = _timestamp; 
-  }
+    orderTimestampByOrderId[_orderId].timestampComplete = _timestamp;  
 
+     st_test memory batchpbf = st_test({
+      orderId: orderByOrderId[_orderId].prevOrderIdPbf,
+      ipfs: _orderObatIpfs 
+    });
+
+    st_test memory batchret= st_test({ 
+      orderId: _orderId,
+      ipfs: _orderObatIpfs
+    });
+    
+    delete orderIpfsByOrderId[orderByOrderId[_orderId].prevOrderIdPbf];
+    delete orderIpfsByOrderId[_orderId];
+
+    for (uint256 i = 0; i < _orderObatIpfs.length; i++) {
+      orderIpfsByOrderId[orderByOrderId[_orderId].prevOrderIdPbf].push(_orderObatIpfs[i]);
+      orderIpfsByOrderId[_orderId].push(_orderObatIpfs[i]);
+    }   
+
+    emit testBatch_pbf(batchpbf, batchret);
+    emit testOrderId(_orderId, orderByOrderId[_orderId].prevOrderIdPbf);
+  }
+ 
  function updateOrderIpfs(
     string memory _orderId,
     string[] memory _orderObatIpfs
-  ) internal {
+  ) public {
+
+    st_test memory batchpbf = st_test({
+      orderId: orderByOrderId[_orderId].prevOrderIdPbf,
+      ipfs: _orderObatIpfs
+    });
+
+    st_test memory batchret= st_test({ 
+      orderId: _orderId,
+      ipfs: _orderObatIpfs
+    });
+
+    emit testBatch_pbf(batchpbf, batchret);
+    emit testOrderId(_orderId, orderByOrderId[_orderId].prevOrderIdPbf); 
     
     delete orderIpfsByOrderId[orderByOrderId[_orderId].prevOrderIdPbf];
     delete orderIpfsByOrderId[_orderId];

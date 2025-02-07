@@ -73,10 +73,24 @@ function ManageOrderFactoryPbf() {
             contractData.RoleManager.abi,
             signer
           );
+          
+
+          const ObatShared = new Contract(
+            contractData.ObatShared.address, 
+            contractData.ObatShared.abi, 
+            signer
+          );
+          
 
           const NieManager = new Contract(
             contractData.NieManager.address, 
             contractData.NieManager.abi, 
+            signer
+          );
+
+          const BaseOrderManagement = new Contract(
+            contractData.BaseOrderManagement.address, 
+            contractData.BaseOrderManagement.abi, 
             signer
           );
 
@@ -85,6 +99,9 @@ function ManageOrderFactoryPbf() {
             obatTradisional: obatTradisionalContract,
             roleManager: RoleManager,
             nieManager: NieManager,
+            obatShared: ObatShared,
+            baseOrderManagement: BaseOrderManagement
+
           });
         } catch (err) {
           console.error("User access denied!")
@@ -690,7 +707,13 @@ function ManageOrderFactoryPbf() {
         });
       }
 
-      contracts.orderManagementPbf.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.baseOrderManagement.on("test", (msg) => {
+        console.log('----------------------------------');
+        console.log("INI DATA DI BASE CONTRACT!!");
+        console.log(msg);
+      } )
+
+      contracts.orderManagementPbf.on("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, acceptOrderCt.hash); 
       });
       

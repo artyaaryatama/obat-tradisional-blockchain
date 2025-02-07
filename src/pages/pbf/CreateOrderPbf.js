@@ -447,7 +447,7 @@ function CreateOrderPbf() {
           updateBatchHistoryHash(factoryInstance, namaProduk, batchName, createOrderCt.hash, tipeObat)
 
           MySwal.update({
-            title: "Processing your transaction...",
+            title: "Memproses transaksi...",
             text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
           });
         }

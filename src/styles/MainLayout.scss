@@ -182,12 +182,12 @@
               color: $white;
             }
 
-            &.Pengajuan.NIE, &.Pengajuan, &.Tersedia{
+            &.Tersedia{
               background-color: $blue;
               color: $white;
             }
             
-            &.Dikirim, &.Dalam.Proses.Pengajuan{
+            &.Dikirim, &.Dalam.Proses.Pengajuan, &.Pengajuan.NIE, &.Pengajuan{
               background-color: $yellow;
               color: $black;
             }

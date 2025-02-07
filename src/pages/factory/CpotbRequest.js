@@ -625,6 +625,7 @@ function CpotbRequest() {
                 value={jenisSediaan}
                 onChange={handleOptionJenisSediaan}
                 className='jenisSediaan'
+                required
               >
                 <option value="" disabled>Select Jenis Sediaan</option>
                 {/* {filteredJenisSediaan.map(({ key, label }) => (

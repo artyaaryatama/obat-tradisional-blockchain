@@ -71,11 +71,11 @@ contract OrderManagementRetail is BaseOrderManagement{
   function acceptOrderRetailer(
     string memory _orderId,
     string[] memory _orderObatIpfs
-  ) public onlyPBF{
+  ) public onlyPBF{ 
 
-    acceptOrderRetailerFromPbf( _orderId, block.timestamp);  
+    acceptOrderRetailerFromPbf( _orderId, block.timestamp, _orderObatIpfs);  
 
-    updateOrderIpfs(_orderId, _orderObatIpfs);
+    // updateOrderIpfs(_orderId, _orderObatIpfs);
 
     obatShared.updateObatPbf(
       updateInfoByOrderId[_orderId].batchName,
@@ -99,18 +99,13 @@ contract OrderManagementRetail is BaseOrderManagement{
     string memory _orderId,
     string[] memory _orderObatIpfs
   ) public onlyRetail{
-
-    completeOrderRetailerFromPbf(_orderId, block.timestamp);
-    updateOrderIpfs(_orderId, _orderObatIpfs);
+ 
+    completeOrderRetailerFromPbf(_orderId, block.timestamp, _orderObatIpfs);
+    // updateOrderIpfs(_orderId, _orderObatIpfs);
 
     obatShared.updateObatPbf(
       updateInfoByOrderId[_orderId].batchName,
       EnumsLibrary.ObatAvailability.Sold 
-      ); 
-
-    obatShared.updateObatIpfs(
-      updateInfoByOrderId[_orderId].batchName,
-      _orderObatIpfs
       ); 
 
     obatShared.addObatRetailer(

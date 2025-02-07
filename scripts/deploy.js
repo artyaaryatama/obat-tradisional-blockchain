@@ -86,6 +86,14 @@ async function main() {
     NieManager: {
       address: deployedNieManager.target,
       abi: (await hre.artifacts.readArtifact("NieManager")).abi
+    },
+    ObatShared: {
+      address: deployedObatShared.target,
+      abi: (await hre.artifacts.readArtifact("ObatShared")).abi
+    },
+    BaseOrderManagement: {
+      address: deployedBaseOrderManagement.target,
+      abi: (await hre.artifacts.readArtifact("BaseOrderManagement")).abi
     }
   };
 

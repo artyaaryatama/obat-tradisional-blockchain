@@ -68,10 +68,18 @@ function AddQuantityObat() {
             signer
           );
 
+          const ObatShared = new Contract(
+            contractData.ObatShared.address, 
+            contractData.ObatShared.abi, 
+            signer
+          );
+
           setContracts({
             roleManager: RoleManager,
             nieManager: NieManager,
-            obatTradisional: obatTradisionalContract
+            obatTradisional: obatTradisionalContract,
+            obatShared: ObatShared
+
           });
         } catch (err) {
           console.error("User access denied!");
@@ -494,6 +502,13 @@ function AddQuantityObat() {
       contracts.obatTradisional.once('evt_addBatchProduction',  (_batchName, _obatQuantity, _namaProduk, _factoryInstance) => {
         handleEventAddBatchProduction(_batchName, _obatQuantity, _namaProduk, _factoryInstance, addBatchCt.hash)
       });
+
+      contracts.obatShared.once("testBatch", (_batchName, _ipfs) => {
+        console.log('----------------------------------');
+        console.log("INI DATA DI OBAT SHARED!!");
+        console.log(_batchName);
+        console.log(_ipfs);
+      } )
   
     } catch (err) {
       setLoader(false)
