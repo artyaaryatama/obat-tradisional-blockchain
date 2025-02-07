@@ -53,7 +53,7 @@ contract OrderManagementRetail is BaseOrderManagement{
     string memory _sellerInstance,
     uint8 _orderQuantity
   ) public onlyRetail{
-    
+  
     createOrder(_orderId, _obatId, _batchName, _namaProduk, _buyerInstance, _sellerInstance, _orderQuantity, _prevOrderIdPbf);  
 
     updateInfoByOrderId[_orderId] = st_updateInfo({

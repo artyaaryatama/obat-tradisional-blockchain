@@ -45,8 +45,8 @@ function CreateOrderPbf() {
           const signer = await provider.getSigner();
 
           const orderManagementPbfContract = new Contract(
-            contractData.OrderManagementPbf.address,
-            contractData.OrderManagementPbf.abi,
+            contractData.OrderManagement.address,
+            contractData.OrderManagement.abi,
             signer
           );
           const CertificateManager = new Contract(
@@ -441,7 +441,8 @@ function CreateOrderPbf() {
 
       if(pbfCdobHash) {
         
-        const createOrderCt = await contracts.orderManagementPbf.createOrderPbf(orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdobHash[5]);
+        // const createOrderCt = await contracts.orderManagementPbf.createOrderPbf(orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdobHash[5]);
+        const createOrderCt = await contracts.orderManagementPbf.createOrder('', orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdobHash[5]);
         
         if(createOrderCt){
           updateBatchHistoryHash(factoryInstance, namaProduk, batchName, createOrderCt.hash, tipeObat)

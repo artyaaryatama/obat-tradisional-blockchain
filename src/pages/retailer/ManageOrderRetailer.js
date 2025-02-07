@@ -58,8 +58,8 @@ function ManageOrderRetailer() {
           const signer = await provider.getSigner();
 
           const orderManagementRetailContract = new Contract(
-            contractData.OrderManagementRetail.address,
-            contractData.OrderManagementRetail.abi,
+            contractData.OrderManagement.address,
+            contractData.OrderManagement.abi,
             signer
           );
           const obatTradisionalContract = new Contract(
@@ -79,8 +79,8 @@ function ManageOrderRetailer() {
             signer
           );
           const orderManagementPbfContract = new Contract(
-            contractData.OrderManagementPbf.address,
-            contractData.OrderManagementPbf.abi,
+            contractData.OrderManagement.address,
+            contractData.OrderManagement.abi,
             signer
           );
 
@@ -132,7 +132,7 @@ function ManageOrderRetailer() {
       if (contracts) {
         try {
 
-          const listOrderedObatCt = await contracts.orderManagementRetail.getAllOrderRetailByInstance(userdata.instanceName);
+          const listOrderedObatCt = await contracts.orderManagementRetail.getAllOrderFromBuyer(userdata.instanceName);
 
           const tempData = [];
 
@@ -261,7 +261,8 @@ function ManageOrderRetailer() {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailOrderCt = await contracts.orderManagementRetail.detailOrder(orderId);
       const detailOrderPrevCt = await contracts.orderManagementPbf.detailOrder(prevOrderId);
-      const orderTimestampCt = await contracts.orderManagementRetail.detailTimestamp(orderId);
+      // const orderTimestampCt = await contracts.orderManagementRetail.detailTimestamp(orderId);
+      const orderTimestampCt = await contracts.orderManagementPbf.orderTimestamp(orderId);
       const orderObatIpfs = await contracts.orderManagementRetail.obatIpfs(orderId);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
@@ -886,7 +887,9 @@ function ManageOrderRetailer() {
 
     try {
       const prevOrderPbfCt = await contracts.orderManagementRetail.detailOrder(prevOrderId)
-      const orderTimestampCt = await contracts.orderManagementPbf.detailTimestamp(prevOrderId);
+      // const orderTimestampCt = await contracts.orderManagementPbf.detailTimestamp(prevOrderId);
+      const orderTimestampCt = await contracts.orderManagementPbf.orderTimestamp(prevOrderId);
+
 
       const pbfTimestampOrder =  new Date(Number(orderTimestampCt[0]) * 1000).toLocaleDateString('id-ID', options)
       const pbfTimestampShipped = orderTimestampCt[1] !== 0n ? new Date(Number(orderTimestampCt[1]) * 1000).toLocaleDateString('id-ID', options) : "-"

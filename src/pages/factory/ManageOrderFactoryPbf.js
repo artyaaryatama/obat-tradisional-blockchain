@@ -58,8 +58,8 @@ function ManageOrderFactoryPbf() {
           const signer = await provider.getSigner();
 
           const orderManagementPbfContract = new Contract(
-            contractData.OrderManagementPbf.address,
-            contractData.OrderManagementPbf.abi,
+            contractData.OrderManagement.address,
+            contractData.OrderManagement.abi,
             signer
           );
           const obatTradisionalContract = new Contract(
@@ -133,7 +133,7 @@ function ManageOrderFactoryPbf() {
 
         try {
 
-          const listOrderedObatCt = await contracts.orderManagementPbf.getOrdersForFactory(userdata.instanceName);
+          const listOrderedObatCt = await contracts.orderManagementPbf.getAllOrderFromSeller(userdata.instanceName);
           console.log(listOrderedObatCt);
 
           const reconstructedDataorder = listOrderedObatCt.map((item, index) => ({
@@ -252,7 +252,8 @@ function ManageOrderFactoryPbf() {
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailOrderCt = await contracts.orderManagementPbf.detailOrder(orderId);
-      const orderTimestampCt = await contracts.orderManagementPbf.detailTimestamp(orderId);
+      // const orderTimestampCt = await contracts.orderManagementPbf.detailTimestamp(orderId);
+      const orderTimestampCt = await contracts.orderManagementPbf.orderTimestamp(orderId);
       const orderObatIpfs = await contracts.orderManagementPbf.obatIpfs(orderId);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
 

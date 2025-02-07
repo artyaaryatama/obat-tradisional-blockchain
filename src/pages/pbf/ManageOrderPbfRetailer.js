@@ -56,8 +56,8 @@ function ManageOrderPbfRetailer() {
           const signer = await provider.getSigner();
 
           const orderManagementPbfContract = new Contract(
-            contractData.OrderManagementPbf.address,
-            contractData.OrderManagementPbf.abi,
+            contractData.OrderManagement.address,
+            contractData.OrderManagement.abi,
             signer
           );
           const obatTradisionalContract = new Contract(
@@ -79,8 +79,8 @@ function ManageOrderPbfRetailer() {
           );
 
           const orderManagementRetailContract = new Contract(
-            contractData.OrderManagementRetail.address,
-            contractData.OrderManagementRetail.abi,
+            contractData.OrderManagement.address,
+            contractData.OrderManagement.abi,
             signer
           );
 
@@ -132,7 +132,7 @@ function ManageOrderPbfRetailer() {
       if (contracts && userdata.instanceName) {
 
         try {
-          const listOrderedObatCt = await contracts.orderManagementRetail.getOrdersForPbf(userdata.instanceName);
+          const listOrderedObatCt = await contracts.orderManagementRetail.getAllOrderFromSeller(userdata.instanceName);
 
           const tempData = [];
 
@@ -259,7 +259,8 @@ function ManageOrderPbfRetailer() {
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailOrderCt = await contracts.orderManagementRetail.detailOrder(orderId);
-      const orderTimestampCt = await contracts.orderManagementRetail.detailTimestamp(orderId);
+      // const orderTimestampCt = await contracts.orderManagementRetail.detailTimestamp(orderId);
+      const orderTimestampCt = await contracts.orderManagementPbf.orderTimestamp(orderId);
       const orderObatIpfs = await contracts.orderManagementRetail.obatIpfs(orderId);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
@@ -838,7 +839,9 @@ function ManageOrderPbfRetailer() {
 
     try {
       const prevOrderPbfCt = await contracts.orderManagementPbf.detailOrder(prevOrderId)
-      const orderTimestampCt = await contracts.orderManagementPbf.detailTimestamp(prevOrderId);
+      // const orderTimestampCt = await contracts.orderManagementPbf.detailTimestamp(prevOrderId);
+      const orderTimestampCt = await contracts.orderManagementPbf.orderTimestamp(prevOrderId);
+
 
       console.log(orderTimestampCt);
 

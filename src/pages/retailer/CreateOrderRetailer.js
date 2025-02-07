@@ -51,13 +51,13 @@ function CreateOrderRetailer() {
           const signer = await provider.getSigner();
 
           const orderManagementRetailContract = new Contract(
-            contractData.OrderManagementRetail.address,
-            contractData.OrderManagementRetail.abi,
+            contractData.OrderManagement.address,
+            contractData.OrderManagement.abi,
             signer
           );
           const orderManagementPbfContract = new Contract(
-            contractData.OrderManagementPbf.address,
-            contractData.OrderManagementPbf.abi,
+            contractData.OrderManagement.address,
+            contractData.OrderManagement.abi,
             signer
           );
           const obatTradisionalContract = new Contract(
@@ -468,7 +468,7 @@ function CreateOrderRetailer() {
     try {
       console.log(prevOrderIdPbf, orderId, id, batchName, namaProduk, userdata.instanceName, pbfInstance, orderQuantity);
       
-      const createOrderCt = await contracts.orderManagementRetail.createOrderRetail(prevOrderIdPbf, orderId, id, batchName, namaProduk, userdata.instanceName, pbfInstance, orderQuantity);
+      const createOrderCt = await contracts.orderManagementRetail.createOrder(prevOrderIdPbf, orderId, id, batchName, namaProduk, userdata.instanceName, pbfInstance, orderQuantity, '');
       
       if(createOrderCt){
         updateBatchHistoryHash(factoryInstance, namaProduk, batchName, createOrderCt.hash)
