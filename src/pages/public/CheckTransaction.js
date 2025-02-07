@@ -15,7 +15,7 @@ function CheckTransaction() {
   const [selectedBatch, setSelectedBatch] = useState(null);
 
   useEffect(() => {
-    document.title = "Lacak Obat Tradisonal";
+    document.title = "History Transaksi Obat Tradisonal";
   }, []);
 
   const options = {
@@ -198,7 +198,7 @@ function CheckTransaction() {
             {allDataUnavailable ? (
               <tr>
                 <td colSpan="4" style={{ textAlign: "center" }}>
-                  Data not available
+                  Data tidak tersedia
                 </td>
               </tr>
             ) : (
@@ -208,13 +208,13 @@ function CheckTransaction() {
                   <td>
                     {value.timestamp !== undefined
                       ? formatTimestamp(value.timestamp)
-                      : "Data not available"}
+                      : "Data tidak tersedia"}
                   </td>
-                  <td>{value.hash || "Not Available"}</td>
+                  <td>{value.hash || "Data tidak tersedia"}</td>
                   <td>
                     <button className="copy"
                       onClick={() =>
-                        navigator.clipboard.writeText(value.hash || "Not Available")
+                        navigator.clipboard.writeText(value.hash || "Data tidak tersedia")
                       }
                     >
                       Copy Hash
@@ -225,7 +225,7 @@ function CheckTransaction() {
                         window.open(`https://etherscan.io/tx/${value.hash}`, "_blank")
                       }
                     >
-                      View on Etherscan
+                      Lihat di Etherscan
                     </button>
                   </td>
                 </tr>
@@ -279,9 +279,9 @@ function CheckTransaction() {
                 <tr key={key}>
                   <td>{displayKey}</td>
                   <td>{formatTimestamp(batchData.historyHash[timestampKey])}</td>
-                  <td>{value || "Not Available"}</td>
+                  <td>{value || "Data tidak tersedia"}</td>
                   <td>
-                    <button className="copy" onClick={() => navigator.clipboard.writeText(value || "Not Available")}>
+                    <button className="copy" onClick={() => navigator.clipboard.writeText(value || "Data tidak tersedia")}>
                       Copy Hash
                     </button>
                     <button className="view"
@@ -289,7 +289,7 @@ function CheckTransaction() {
                         value && window.open(`https://etherscan.io/tx/${value}`, "_blank")
                       }
                     >
-                      View on Etherscan
+                      Lihat di Etherscan
                     </button>
                   </td>
                 </tr>
@@ -299,14 +299,14 @@ function CheckTransaction() {
         </table>
         <div className="batch-summary">
         <p>
-          <b>Batch Quantity:</b> {batchData.quantity || "Not Available"} Obat
+          <b>Batch Quantity:</b> {batchData.quantity || "Data tidak tersedia"} Obat
         </p>
         <p>
-          <b>Nama Instansi PBF:</b> {batchData.pbfInstance || "Not Available"}
+          <b>Nama Instansi PBF:</b> {batchData.pbfInstance || "Data tidak tersedia"}
         </p>
         <p>
           <b>Nama Instansi Retailer:</b>{" "}
-          {batchData.retailerInstance ? batchData.retailerInstance : "Not Available"}
+          {batchData.retailerInstance ? batchData.retailerInstance : "Data tidak tersedia"}
         </p>
       </div>
       </div>
@@ -322,7 +322,7 @@ function CheckTransaction() {
         <div className="data-obat">
           <div className="section">
             <div className="form-container">
-              <h1>Check Transaction</h1>
+              <h1>History Transaksi</h1>
               <form
                 className="register-form"
                 onSubmit={(e) => {
@@ -337,19 +337,19 @@ function CheckTransaction() {
                   onChange={(e) => setFactoryName(e.target.value)}
                   required
                 />
-                <button type="submit">Fetch Documents</button>
+                <button type="submit">Cari</button>
               </form>
             </div>
 
             {documents.length > 0 && (
               <div className="document-selection">
-                <h3>Available Documents</h3>
+                {/* <h3>Data Transaksi</h3> */}
                 <select
                   value={selectedDocument || ""}
                   onChange={(e) => fetchDocumentDetails(e.target.value)}
                 >
                   <option value="" disabled>
-                    Select a Document
+                    Pilih Nama Obat
                   </option>
                   {documents.map((doc) => (
                     <option key={doc.id} value={doc.id}>
@@ -362,10 +362,10 @@ function CheckTransaction() {
 
             {documentDetails && (
               <div className="document-details">
-                <h3>General Details</h3>
+                <h3>Data Obat</h3>
                 {renderTable(documentDetails.historyNie, "History NIE")}
-                <p><b>Jenis Sediaan:</b> {documentDetails.jenisSediaan || "Not Available"}</p>
-                <p><b>Tipe Obat:</b> {documentDetails.tipeObat || "Not Available"}</p>
+                <p><b>Jenis Sediaan:</b> {documentDetails.jenisSediaan || "Data tidak tersedia"}</p>
+                <p><b>Tipe Obat:</b> {documentDetails.tipeObat || "Data tidak tersedia"}</p>
 
                 {selectedBatch && (
                   <div>
@@ -378,13 +378,13 @@ function CheckTransaction() {
                 )}
                 {documentDetails.batchNames.length > 0 && (
                   <>
-                    <h3>Batch Selection</h3>
+                    <h3>Silahkan pilih Batch</h3>
                     <select
                       onChange={(e) => fetchBatchDetails(e.target.value)}
                       defaultValue=""
                     >
                       <option value="" disabled>
-                        Select a Batch
+                        Pilih Batch
                       </option>
                       {documentDetails.batchNames.map((batchName) => (
                         <option key={batchName} value={batchName}>
