@@ -1,6 +1,6 @@
 name: Slither Analysis
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   slither:
@@ -9,10 +9,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+
       - name: Install Slither
         run: |
-          sudo apt update
-          sudo apt install -y slither
+          pip install slither-analyzer
+          pip install solc-select
+          solc-select install 0.8.19
+          solc-select use 0.8.19
 
       - name: Run Slither Analysis
         run: slither contracts/
