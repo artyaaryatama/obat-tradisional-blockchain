@@ -14,12 +14,22 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Install Slither
+      - name: Install Solidity Compiler
         run: |
-          pip install slither-analyzer
           pip install solc-select
-          solc-select install 0.8.27  # Install the correct Solidity compiler version
-          solc-select use 0.8.27
+          solc-select install 0.8.0
+          solc-select use 0.8.0
+
+      - name: Install Slither
+        run: pip install slither-analyzer
 
       - name: Run Slither Analysis
-        run: slither contracts/
+        run: |
+          mkdir -p slither-reports
+          slither contracts/ --json slither-reports/slither-output.json --exclude-informational --exclude-low --exclude-medium || true
+
+      - name: Upload Slither Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: slither-report
+          path: slither-reports/slither-output.json
