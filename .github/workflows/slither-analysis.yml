@@ -1,0 +1,18 @@
+name: Slither Analysis
+
+on: [push]
+
+jobs:
+  slither:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Slither
+        run: |
+          sudo apt update
+          sudo apt install -y slither
+
+      - name: Run Slither Analysis
+        run: slither contracts/
