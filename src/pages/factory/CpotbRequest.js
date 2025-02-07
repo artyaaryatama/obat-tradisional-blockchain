@@ -425,18 +425,14 @@ function CpotbRequest() {
         html: `
             <div class="form-swal">
                 <div class="row row--obat table-like">
-                    <div class="col">
+                    <div class="col doku">
                         <ul>
                             <li class="label label-2"><p>Nama Pabrik</p></li>
                             <li class="input input-2"><p>${userdata.instanceName}</p></li>
                         </ul>
                         <ul>
-                            <li class="label label-2"><p>NIB</p></li>
-                            <li class="input input-2"><p>${userdata.nib}</p></li>
-                        </ul>
-                        <ul>
-                            <li class="label label-2"><p>NPWP</p></li>
-                            <li class="input input-2"><p>${userdata.npwp}</p></li>
+                            <li class="label label-2"><p>Jenis Sediaan</p></li>
+                            <li class="input input-2"><p>${jenisSediaanMap[jenisSediaan]}</p></li>
                         </ul>
   
                         <div class="doku">

@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
-import ReactDOM from 'react-dom/client';
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig"; 
-import NieStatusStepper from '../../components/StepperNie'
-import "../../styles/MainLayout.scss";
+import "../../styles/MainLayout.scss"; 
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
@@ -296,11 +294,11 @@ function NieApprove() {
       let rejectMsg;
 
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
-      const [nieDetails, doku] = detailNieCt;
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstancee, bpomInstance, bpomAddr] = nieDetails
-      const [masterFormula, suratKuasa, suratPernyataan, komposisiProduk, caraPembuatanProduk, sertifikatAnalisaBahanBaku, sertifikatAnalisaProdukJadi, spesifikasiProdukJadi, spesifikasiKemasan, sistemPenomoranBets, hasilUjiStabilitas, desainKemasan, dataPendukungKeamanan] = doku
-
-      console.log(timestampNieRequest);
+      const [nieDetails, dokumenObat, dokumenSpesifikasi] = detailNieCt;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstancee, bpomInstance, bpomAddr] = nieDetails;
+      const [masterFormula, suratKuasa, suratPernyataan, komposisiProduk, caraPembuatanProduk, spesifikasiKemasan, hasilUjiStabilitas] = dokumenObat;
+      const [sertifikatAnalisaBahanBaku, sertifikatAnalisaProdukJadi, spesifikasiProdukJadi, sistemPenomoranBets, desainKemasan, dataPendukungKeamanan] = dokumenSpesifikasi;
+      
       const detailObat = {
         obatId: id,
         merk: merk,
@@ -445,7 +443,7 @@ function NieApprove() {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            (CPOTB Details
+                            (Detail CPOTB
                             <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                           </a>
                         </span>
@@ -453,7 +451,7 @@ function NieApprove() {
                     </li>
                   </ul>
 
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
@@ -476,7 +474,7 @@ function NieApprove() {
                     </li>
                   </ul>
 
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
@@ -541,7 +539,7 @@ function NieApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Klaim Obat</p>
                     </li>
@@ -554,7 +552,7 @@ function NieApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Komposisi Obat</p>
                     </li>
@@ -884,7 +882,7 @@ function NieApprove() {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            (CPOTB Details
+                            (Detail CPOTB
                             <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                           </a>
                         </span>
@@ -892,7 +890,7 @@ function NieApprove() {
                     </li>
                   </ul>
 
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
@@ -915,7 +913,7 @@ function NieApprove() {
                     </li>
                   </ul>
 
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
@@ -980,7 +978,7 @@ function NieApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Klaim Obat</p>
                     </li>
@@ -993,7 +991,7 @@ function NieApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Komposisi Obat</p>
                     </li>
@@ -1336,7 +1334,7 @@ function NieApprove() {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            (CPOTB Details
+                            (Detail CPOTB
                             <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                           </a>
                         </span>
@@ -1344,7 +1342,7 @@ function NieApprove() {
                     </li>
                   </ul>
 
-                  <ul>
+                  <ul  className='klaim'>
                     <li className="label">
                       <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
@@ -1367,7 +1365,7 @@ function NieApprove() {
                     </li>
                   </ul>
 
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
@@ -1432,7 +1430,7 @@ function NieApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Klaim Obat</p>
                     </li>
@@ -1445,7 +1443,7 @@ function NieApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Komposisi Obat</p>
                     </li>
@@ -1742,14 +1740,14 @@ function NieApprove() {
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              CPOTB Details
+                              Detail CPOTB
                               <i class="fa-solid fa-arrow-up-right-from-square"></i>
                             </a>
                           </span>
                         </li>
                       </ul>
 
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <label htmlFor="factoryAddr">Alamat Akun Pabrik (Pengguna)</label>
                         </li>
@@ -1762,7 +1760,7 @@ function NieApprove() {
                           />
                         </li>
                       </ul>
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <label htmlFor="klaim">Klaim Obat</label>
                         </li>
@@ -1779,7 +1777,7 @@ function NieApprove() {
                         </li>
                       </ul>
 
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <label htmlFor="komposisi">Komposisi Obat</label>
                         </li>

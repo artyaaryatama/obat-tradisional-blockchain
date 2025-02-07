@@ -67,8 +67,8 @@ contract CpotbCertificate is BaseCertificate {
     st_dokumenTeknisIpfs memory dokuTeknis
   ) public {
 
-    st_userCertificate memory userFactory = createUserCertificate(_factoryName, _factoryAddr, _factoryInstance);
-    st_userCertificate memory userBpom = createUserCertificate("", address(0), "");
+    st_userCertificate memory userFactory = createUserCertificate(_factoryName, _factoryInstance, _factoryAddr); 
+    st_userCertificate memory userBpom = createUserCertificate("", "", address(0));
 
     createCertificateDetails(userFactory, userBpom, _certId);  
 
@@ -100,9 +100,9 @@ contract CpotbCertificate is BaseCertificate {
     string memory _ipfsCert
   ) public {
 
-      st_userCertificate memory userBpom = createUserCertificate(_bpomName, _bpomAddr, _bpomInstance);
+      st_userCertificate memory userBpom = createUserCertificate(_bpomName, _bpomInstance, _bpomAddr);
   
-      cpotbDataById[_certId].cpotbNumber = _certNumber;
+      cpotbDataById[_certId].cpotbNumber = _certNumber; 
  
       updateBpomApproveDetails(_certId, _ipfsCert, userBpom);  
 
@@ -123,7 +123,7 @@ contract CpotbCertificate is BaseCertificate {
     address _bpomAddr
   ) public {
     
-      st_userCertificate memory userBpom = createUserCertificate(_bpomName, _bpomAddr, _bpomInstance);
+      st_userCertificate memory userBpom = createUserCertificate(_bpomName, _bpomInstance, _bpomAddr); 
  
       updateBpomRejectDetails(_certId, _rejectMsg, userBpom);  
 

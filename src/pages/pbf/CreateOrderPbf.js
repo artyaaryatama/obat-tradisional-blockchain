@@ -140,7 +140,7 @@ function CreateOrderPbf() {
           </ul>
           <ul>
             <li className="label">
-              <p>Batch Name</p> 
+              <p>Nama Batch</p> 
             </li>
             <li className="input">
               <p>{_batchName}</p> 
@@ -287,7 +287,7 @@ function CreateOrderPbf() {
 
                   <ul>
                     <li className="label">
-                      <p>Batch Name</p>
+                      <p>Nama Batch</p>
                     </li>
                     <li className="input">
                       <p>{batchName}</p> 
@@ -340,7 +340,7 @@ function CreateOrderPbf() {
                     </li>
                   </ul>
 
-                    <ul>
+                    <ul className='klaim'>
                       <li className="label">
                         <p>Klaim Obat</p>
                       </li>
@@ -353,7 +353,7 @@ function CreateOrderPbf() {
                       </li>
                     </ul>
 
-                    <ul>
+                    <ul className='klaim'>
                       <li className="label">
                         <p>Komposisi Obat</p>
                       </li>
@@ -378,7 +378,7 @@ function CreateOrderPbf() {
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              (CPOTB Details
+                              (Detail CPOTB
                               <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                             </a>
                           </span>
@@ -386,7 +386,7 @@ function CreateOrderPbf() {
                       </li>
                     </ul>
 
-                    <ul>
+                    <ul  className='klaim'>
                       <li className="label">
                         <p>Alamat Akun Pabrik (Pengguna)</p>
                       </li>
@@ -535,7 +535,7 @@ function CreateOrderPbf() {
                   <li key={index} className='row'>
                     <div className="detail">
                       <h5>{item.namaProduk}</h5>
-                      <p>Batch Name : {item.batchName}</p>
+                      <p>Nama Batch : {item.batchName}</p>
                       <p>Stok tersedia: {item.obatQuantity} Obat</p>
                       <p>Nama Instansi Pabrik: {item.factoryInstanceName}</p>
 

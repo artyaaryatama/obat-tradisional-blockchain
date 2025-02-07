@@ -334,7 +334,7 @@ function CreateOrderRetailer() {
                     </li>
                   </ul>
 
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Klaim Obat</p>
                     </li>
@@ -347,7 +347,7 @@ function CreateOrderRetailer() {
                     </li>
                   </ul>
 
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Komposisi Obat</p>
                     </li>
@@ -372,7 +372,7 @@ function CreateOrderRetailer() {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            (CPOTB Details
+                            (Detail CPOTB
                             <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                           </a>
                         </span>
@@ -380,7 +380,7 @@ function CreateOrderRetailer() {
                     </li>
                   </ul>
 
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun Pabrik (Pengguna)</p>
                     </li>
@@ -401,7 +401,7 @@ function CreateOrderRetailer() {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            (CDOB Details
+                            (Detail CDOB
                             <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                           </a>
                         </span>
@@ -409,7 +409,7 @@ function CreateOrderRetailer() {
                     </li>
                   </ul>
 
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun PBF (Pengguna)</p>
                     </li>

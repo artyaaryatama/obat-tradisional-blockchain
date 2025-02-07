@@ -103,7 +103,7 @@ function CdobRenewRequest() {
     loadData();
   }, [contracts]);
 
-  const handleEventCdobRenewRequested = (bpomInstance, bpomAddr, timestamp, txHash) => {
+  const handleEventCdobRenewRequested = (pabrikInstance, pabrikAddr, timestamp, txHash) => {
 
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
   
@@ -113,18 +113,18 @@ function CdobRenewRequest() {
         <div className='form-swal event'>
           <ul>
             <li className="label">
-              <p>Nama Instansi BPOM</p> 
+              <p>Nama Instansi PBF</p> 
             </li>
             <li className="input">
-              <p>{bpomInstance}</p> 
+              <p>{pabrikInstance}</p> 
             </li>
           </ul>
           <ul>
             <li className="label">
-              <p>Alamat Akun BPOM (Pengguna)</p> 
+              <p>Alamat Akun PBF (Pengguna)</p> 
             </li>
             <li className="input">
-              <p>{bpomAddr}</p> 
+              <p>{pabrikAddr}</p> 
             </li>
           </ul>
           <ul>

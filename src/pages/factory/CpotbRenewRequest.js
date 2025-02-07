@@ -120,28 +120,28 @@ function CpotbRenewRequest() {
     loadData();
   }, [contracts]);
 
-  const handleEventCpotbRenewRequested = (bpomInstance, bpomAddr, timestamp, txHash) => {
+  const handleEventCpotbRenewRequested = (pabrikInstance, pabrikAddr, timestamp, txHash) => {
 
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
   
     MySwal.fire({
-      title: "Sukses mengajukan pengajuan ulang CPOTB",
+      title: "Sukses mengajukan ulang CPOTB",
       html: (
         <div className='form-swal event'>
           <ul>
             <li className="label">
-              <p>Nama Instansi BPOM</p> 
+              <p>Nama Instansi Pabrik</p> 
             </li>
             <li className="input">
-              <p>{bpomInstance}</p> 
+              <p>{pabrikInstance}</p> 
             </li>
           </ul>
           <ul>
             <li className="label">
-              <p>Alamat Akun BPOM (Pengguna)</p> 
+              <p>Alamat Akun Pabrik (Pengguna)</p> 
             </li>
             <li className="input">
-              <p>{bpomAddr}</p> 
+              <p>{pabrikAddr}</p> 
             </li>
           </ul>
           <ul>
@@ -173,6 +173,10 @@ function CpotbRenewRequest() {
       showCancelButton: false,
       confirmButtonText: 'Oke',
       allowOutsideClick: true,
+      didOpen: () => {
+        const actions = Swal.getActions();
+        actions.style.justifyContent = "center";
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         navigate('/cpotb')

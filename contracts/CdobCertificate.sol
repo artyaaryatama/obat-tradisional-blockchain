@@ -63,8 +63,8 @@ contract CdobCertificate is BaseCertificate {
     st_dokumenTeknisIpfs memory _dokuTeknis 
   ) public {
 
-    st_userCertificate memory userFactory = createUserCertificate(_pbfName, _pbfAddr, _pbfInstance);
-    st_userCertificate memory userBpom = createUserCertificate("", address(0), "");
+    st_userCertificate memory userFactory = createUserCertificate(_pbfName, _pbfInstance, _pbfAddr);
+    st_userCertificate memory userBpom = createUserCertificate("", "", address(0));
 
     createCertificateDetails(userFactory, userBpom, _certId);  
  
@@ -96,7 +96,7 @@ contract CdobCertificate is BaseCertificate {
     string memory _ipfsCert
   ) public {
 
-      st_userCertificate memory userBpom = createUserCertificate(_bpomName, _bpomAddr, _bpomInstance);
+      st_userCertificate memory userBpom = createUserCertificate(_bpomName, _bpomInstance, _bpomAddr);
   
       cdobDataById[_certId].cdobNumber = _certNumber;
  
@@ -119,7 +119,7 @@ contract CdobCertificate is BaseCertificate {
     address _bpomAddr
   ) public {
     
-      st_userCertificate memory userBpom = createUserCertificate(_bpomName, _bpomAddr, _bpomInstance);
+      st_userCertificate memory userBpom = createUserCertificate(_bpomName, _bpomInstance, _bpomAddr);
  
       updateBpomRejectDetails(_certId, _rejectMsg, userBpom);  
 

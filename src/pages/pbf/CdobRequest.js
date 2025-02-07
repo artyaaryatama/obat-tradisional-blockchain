@@ -46,6 +46,11 @@ function CdobRequest() {
   }
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
+  const tp = {
+    0n: "Obat Lain",
+    1n: "Cold Chain Product (CCP)"
+  };
+
   useEffect(() => {
     document.title = "Add New CDOB Request"; 
   }, []);
@@ -91,10 +96,6 @@ function CdobRequest() {
     
     const formattedTimestamp = new Date(Number(_timestampRequest) * 1000).toLocaleDateString('id-ID', options)
   
-    const tp = {
-      0n: "Obat Lain",
-      1n: "Cold Chain Product (CCP)"
-    };
 
     MySwal.fire({
       title: "Pengajuan Sertifikat CDOB Berhasil",
@@ -206,18 +207,14 @@ function CdobRequest() {
         html: `
             <div class="form-swal">
                 <div class="row row--obat table-like">
-                    <div class="col">
+                    <div class="col doku">
                         <ul>
                             <li class="label label-2"><p>Nama PBF</p></li>
                             <li class="input input-2"><p>${userdata.instanceName}</p></li>
                         </ul>
                         <ul>
-                            <li class="label label-2"><p>NIB</p></li>
-                            <li class="input input-2"><p>${userdata.nib}</p></li>
-                        </ul>
-                        <ul>
-                            <li class="label label-2"><p>NPWP</p></li>
-                            <li class="input input-2"><p>${userdata.npwp}</p></li>
+                            <li class="label label-2"><p>Tipe Permohonan</p></li>
+                            <li class="input input-2"><p>${tipePermohonan}</p></li>
                         </ul>
   
                         <div class="doku">

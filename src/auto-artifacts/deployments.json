@@ -1,6 +1,6 @@
 {
   "ObatTradisional": {
-    "address": "0xB82008565FdC7e44609fA118A4a681E92581e680",
+    "address": "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
     "abi": [
       {
         "inputs": [
@@ -575,7 +575,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0x2a810409872AfC346F9B5b26571Fd6eC42EA4849",
+    "address": "0x68B1D87F95878fE05B998F19b66F4baba5De1aed",
     "abi": [
       {
         "inputs": [
@@ -1332,7 +1332,7 @@
     ]
   },
   "RoleManager": {
-    "address": "0xE3011A37A904aB90C8881a99BD1F6E21401f1522",
+    "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
     "abi": [
       {
         "anonymous": false,
@@ -1588,7 +1588,7 @@
     ]
   },
   "CertificateManager": {
-    "address": "0x38a024C0b412B9d1db8BC398140D00F5Af3093D4",
+    "address": "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
     "abi": [
       {
         "inputs": [
@@ -2853,7 +2853,7 @@
     ]
   },
   "NieManager": {
-    "address": "0x5fc748f1FEb28d7b76fa1c6B07D8ba2d5535177c",
+    "address": "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
     "abi": [
       {
         "inputs": [
@@ -3027,7 +3027,7 @@
             "type": "string"
           }
         ],
-        "name": "dokuNieByObatId",
+        "name": "dokuObatByObatId",
         "outputs": [
           {
             "internalType": "string",
@@ -3056,6 +3056,30 @@
           },
           {
             "internalType": "string",
+            "name": "spesifikasiKemasan",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "hasilUjiStabilitas",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "name": "dokuSpesifikasiByObatId",
+        "outputs": [
+          {
+            "internalType": "string",
             "name": "sertifikatAnalisaBahanBaku",
             "type": "string"
           },
@@ -3071,17 +3095,7 @@
           },
           {
             "internalType": "string",
-            "name": "spesifikasiKemasan",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
             "name": "sistemPenomoranBets",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "hasilUjiStabilitas",
             "type": "string"
           },
           {
@@ -3194,6 +3208,23 @@
               },
               {
                 "internalType": "string",
+                "name": "spesifikasiKemasan",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "hasilUjiStabilitas",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct NieManager.st_dokumenObat",
+            "name": "",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
                 "name": "sertifikatAnalisaBahanBaku",
                 "type": "string"
               },
@@ -3209,17 +3240,7 @@
               },
               {
                 "internalType": "string",
-                "name": "spesifikasiKemasan",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
                 "name": "sistemPenomoranBets",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "hasilUjiStabilitas",
                 "type": "string"
               },
               {
@@ -3233,7 +3254,7 @@
                 "type": "string"
               }
             ],
-            "internalType": "struct NieManager.st_dokumenIpfs",
+            "internalType": "struct NieManager.st_dokumenSpesifikasiObat",
             "name": "",
             "type": "tuple"
           }
@@ -3426,6 +3447,23 @@
               },
               {
                 "internalType": "string",
+                "name": "spesifikasiKemasan",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "hasilUjiStabilitas",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct NieManager.st_dokumenObat",
+            "name": "_dokuObat",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
                 "name": "sertifikatAnalisaBahanBaku",
                 "type": "string"
               },
@@ -3441,17 +3479,7 @@
               },
               {
                 "internalType": "string",
-                "name": "spesifikasiKemasan",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
                 "name": "sistemPenomoranBets",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "hasilUjiStabilitas",
                 "type": "string"
               },
               {
@@ -3465,8 +3493,8 @@
                 "type": "string"
               }
             ],
-            "internalType": "struct NieManager.st_dokumenIpfs",
-            "name": "_newDoku",
+            "internalType": "struct NieManager.st_dokumenSpesifikasiObat",
+            "name": "_dokuSpefikasi",
             "type": "tuple"
           }
         ],
@@ -3511,6 +3539,23 @@
               },
               {
                 "internalType": "string",
+                "name": "spesifikasiKemasan",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "hasilUjiStabilitas",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct NieManager.st_dokumenObat",
+            "name": "_dokuObat",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
                 "name": "sertifikatAnalisaBahanBaku",
                 "type": "string"
               },
@@ -3526,17 +3571,7 @@
               },
               {
                 "internalType": "string",
-                "name": "spesifikasiKemasan",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
                 "name": "sistemPenomoranBets",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "hasilUjiStabilitas",
                 "type": "string"
               },
               {
@@ -3550,8 +3585,8 @@
                 "type": "string"
               }
             ],
-            "internalType": "struct NieManager.st_dokumenIpfs",
-            "name": "_doku",
+            "internalType": "struct NieManager.st_dokumenSpesifikasiObat",
+            "name": "_dokuSpefikasi",
             "type": "tuple"
           }
         ],
@@ -3576,7 +3611,7 @@
     ]
   },
   "ObatShared": {
-    "address": "0x1f10F3Ba7ACB61b2F50B9d6DdCf91a6f787C0E82",
+    "address": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
     "abi": [
       {
         "anonymous": false,

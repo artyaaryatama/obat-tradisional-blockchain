@@ -113,7 +113,12 @@ function NieRenewRequest() {
       if (!contracts.nieManager) return;
       const detailNieCt = await contracts.nieManager.getNieDetail(obatData.obatId)
       const rejectMsgCt = await contracts.nieManager.getRejectMsgNie(obatData.obatId);
-      const [masterFormula, suratKuasa, suratPernyataan, komposisiProduk, caraPembuatanProduk, sertifikatAnalisaBahanBaku, sertifikatAnalisaProdukJadi, spesifikasiProdukJadi, spesifikasiKemasan, sistemPenomoranBets, hasilUjiStabilitas, desainKemasan, dataPendukungKeamanan] = detailNieCt[1]
+      const [nieDetails, dokumenObat, dokumenSpesifikasi] = detailNieCt;
+
+      const [masterFormula, suratKuasa, suratPernyataan, komposisiProduk, caraPembuatanProduk, spesifikasiKemasan, hasilUjiStabilitas] = dokumenObat;
+
+      const [sertifikatAnalisaBahanBaku, sertifikatAnalisaProdukJadi, spesifikasiProdukJadi, sistemPenomoranBets, desainKemasan, dataPendukungKeamanan] = dokumenSpesifikasi;
+      
       setDokumenNie({
         MasterFormula: masterFormula,
         SuratKuasa: suratKuasa,
@@ -143,7 +148,7 @@ function NieRenewRequest() {
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
     
     MySwal.fire({
-      title: "Sukses Mengajukan Ulang NIE",
+      title: "Sukses mengajukan ulang NIE",
       html: (
         <div className='form-swal event'>
           <ul>
@@ -248,19 +253,23 @@ function NieRenewRequest() {
       console.log(hashDocs);
       const renewRequestNieCt = await contracts.nieManager.renewRequestNie(
         obatData.obatId,
-        [hashDocs.MasterFormula,
+        [
+          hashDocs.MasterFormula,
           hashDocs.SuratKuasa,
           hashDocs.SuratPernyataan,
           hashDocs.KomposisiProduk,
           hashDocs.CaraPembuatanProduk,
+          hashDocs.SpesifikasiKemasan,
+          hashDocs.HasilUjiStabilitas,
+        ],
+        [
           hashDocs.SertifikatAnalisaBahanBaku,
           hashDocs.SertifikatAnalisaProdukJadi,
           hashDocs.SpesifikasiProdukJadi,
-          hashDocs.SpesifikasiKemasan,
           hashDocs.SistemPenomoranBets,
-          hashDocs.HasilUjiStabilitas,
           hashDocs.DesainKemasan,
-          hashDocs.DataPendukungKeamanan]
+          hashDocs.DataPendukungKeamanan
+        ]
       );
       
       if(renewRequestNieCt){

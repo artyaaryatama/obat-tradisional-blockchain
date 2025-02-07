@@ -36,8 +36,8 @@ contract BaseCertificate {
 
   function createUserCertificate( 
     string memory _userName,
-    address _userAddr,
-    string memory _userInstance
+    string memory _userInstance,
+    address _userAddr
   ) public pure returns (st_userCertificate memory) {
     return st_userCertificate({
       userName: _userName,

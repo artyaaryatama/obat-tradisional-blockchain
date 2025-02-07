@@ -20,8 +20,8 @@ function StockObatFactory() {
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
   const stokStatusMap = {
-    0: "Stock Tersedia",
-    1: "Stock Kosong",
+    0: "Stok Tersedia",
+    1: "Stok Kosong",
   };
 
   const tipeObatMap = {
@@ -193,7 +193,7 @@ function StockObatFactory() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                (CPOTB Details
+                                (Detail CPOTB
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                               </a>
                             </span>
@@ -203,7 +203,7 @@ function StockObatFactory() {
 
                       <ul>
                         <li className="label-sm">
-                          <p>Batch Name</p>
+                          <p>Nama Batch</p>
                         </li>
                         <li className="input">
                           <p>{batchName}</p>
@@ -342,14 +342,14 @@ function StockObatFactory() {
                 Tambah data baru
               </button>
             </div>
-          </div>
+        </div>
           <div className="data-list">
             {dataObat.length > 0 ? (
               <ul>
                 {dataObat.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.obatId, item.batchName)} > [{item.batchName}] {item.namaProduk}</button>
-                    {item.statusStok === "Stock Available" ? 
+                    {item.statusStok === "Stok Tersedia" ? 
                       <p>Stok tersedia: {item.obatQuantity} Obat</p>  :
                       <p>Terjual: {item.obatQuantity} Obat</p>
                     }

@@ -191,7 +191,7 @@ function ManageCpotb() {
         timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
         bpomName : bpom[0] ? bpom[0] : "-",
         bpomInstance: bpom[1] ? bpom[1] : "-",
-        bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[1],
+        bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
         cpotbIpfs: cpotbIpfs ? cpotbIpfs : "-",
         factoryType: typeFactory,
         factoryNIB: detailUserFactoryCt[6],

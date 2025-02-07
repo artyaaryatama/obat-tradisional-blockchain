@@ -19,8 +19,8 @@ function StockObatPbf() {
   const [dataObatReady, setDataObatReady] = useState([]);
   
   const stokStatusMap = {
-    0: "Stock Tersedia",
-    1: "Stock Kosong",
+    0: "Stok Tersedia",
+    1: "Stok Kosong",
   };
 
   const tipeObatMap = {
@@ -123,7 +123,7 @@ function StockObatPbf() {
     loadData();
   }, [contracts, userdata.instanceName]);
 
-  const getDetailObat = async (id, orderId) => {
+  const getDetailObat = async (id, orderId, statusStok) => {
 
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
@@ -194,7 +194,7 @@ function StockObatPbf() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                (CPOTB Details
+                                (Detail CPOTB
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                               </a>
                             </span>
@@ -223,7 +223,7 @@ function StockObatPbf() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                (CDOB Details
+                                (Detail CDOB
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                               </a>
                             </span>
@@ -245,11 +245,7 @@ function StockObatPbf() {
                           <p>Total Stok</p>
                         </li>
                         <li className="input">
-                          {
-                            statusOrder !== 2n ? 
-                            <p> {orderQuantity.toString()} Obat (Stock Available)</p> : 
-                            <p> {orderQuantity.toString()} Obat (Stock  Empty)</p>
-                          }
+                          <p> {orderQuantity.toString()} Obat ({statusStok})</p>
                         </li>
                       </ul>
                       
@@ -264,7 +260,7 @@ function StockObatPbf() {
 
                     <ul>
                       <li className="label-sm">
-                        <p>Batch Name</p>
+                        <p>Nama Batch</p>
                       </li>
                       <li className="input">
                         <p>{batchName}</p> 
@@ -380,7 +376,7 @@ function StockObatPbf() {
               <ul>
                 {dataObatReady.map((item, index) => (
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailObat(item.obatId, item.orderId)} >[{item.batchName}] {item.namaProduk}</button>
+                    <button className='title' onClick={() => getDetailObat(item.obatId, item.orderId, item.statusStok)} >[{item.batchName}] {item.namaProduk}</button>
                     <p>
                       Total Stok: {item.obatQuantity.toString()} Obat
                     </p>

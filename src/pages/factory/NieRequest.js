@@ -22,16 +22,6 @@ function NieRequest() {
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata'))
   const obatData = JSON.parse(sessionStorage.getItem('obatData'))
-  // const [dataObat, setDataObat] = useState({
-  //   merk: null,
-  //   namaObat: null,
-  //   klaim: null,
-  //   kemasan: null,
-  //   cpotbHash: null,
-  //   komposisi: null,
-  //   tipeObat: null,
-  //   jenisObat: null,
-  // });
 
   const [masterFormula, setMasterFormula] = useState(null);
   const [suratKuasa, setSuratKuasa] = useState(null);
@@ -197,12 +187,14 @@ function NieRequest() {
           hashDocs.surat_pernyataan,
           hashDocs.dokumen_komposisi_produk,
           hashDocs.dokumen_cara_pembuatan_produk,
+          hashDocs.spesifikasi_kemasan,
+          hashDocs.dokumen_hasil_uji_stabilitas
+        ],
+        [
           hashDocs.sertifikat_analisa_bahan_baku,
           hashDocs.sertifikat_analisa_produk_jadi,
           hashDocs.dokumen_spesifikasi_produk_jadi,
-          hashDocs.spesifikasi_kemasan,
           hashDocs.dokumen_sistem_penomoran_bets,
-          hashDocs.dokumen_hasil_uji_stabilitas,
           hashDocs.desain_kemasan,
           hashDocs.data_pendukung_keamanan
         ]
@@ -318,14 +310,6 @@ function NieRequest() {
                       <ul>
                           <li class="label label1"><p>Nama Pabrik</p></li>
                           <li class="input input-2"><p>${userdata.instanceName}</p></li>
-                      </ul>
-                      <ul>
-                          <li class="label label1"><p>NIB</p></li>
-                          <li class="input input-2"><p>${userdata.nib}</p></li>
-                      </ul>
-                      <ul>
-                          <li class="label label1"><p>NPWP</p></li>
-                          <li class="input input-2"><p>${userdata.npwp}</p></li>
                       </ul>
                             ${Object.entries(uploadedHashes).map(([docName, hash]) => `
                               <ul>

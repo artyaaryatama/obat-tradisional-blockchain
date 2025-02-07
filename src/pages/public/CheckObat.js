@@ -300,7 +300,7 @@ function CheckObatIpfs() {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          View CPOTB
+                          Detail CPOTB
                           <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </a>
                       </span>
@@ -391,7 +391,7 @@ function CheckObatIpfs() {
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              View CDOB
+                              Detail CDOB
                               <i class="fa-solid fa-arrow-up-right-from-square"></i>
                             </a>
                           </span>

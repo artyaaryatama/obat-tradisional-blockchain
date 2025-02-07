@@ -216,6 +216,9 @@
     width: 100%;
     
     &.table-like{
+      .col.doku {
+        background: none !important;
+      }
       .doku:has(> *:nth-of-type(2)){
         ul{
           border-bottom: solid 1px #ddd;
@@ -290,6 +293,10 @@
         // display: inline-table;
         padding-bottom: 4px;
         flex-direction: row;
+
+        &.klaim{
+          align-items: flex-start;
+        }
 
         // background color status modal
         &.status{
@@ -433,11 +440,15 @@
             .input{
               margin-top: 6px;
               width: 84%;
-              background-color: $grey-light;
+              background-color:rgba(182, 25, 25, 0.1411764706);
               padding: 8px;
               border-radius: 8px;
               // margin-left: 14px;
               margin-left: -20px;
+
+              p{
+                color: #E33333;
+              }
             }
           }
 
@@ -469,6 +480,10 @@
         ul{
           display: flex;
           // flex-direction: column;
+
+          &.klaim{
+            align-items: flex-start;
+          }
         }
       }
 
@@ -502,7 +517,7 @@
     justify-items: center;
     align-items: center;
     width: 100%;
-    margin-bottom: 12px;
+    margin-bottom: 18px;
 
     &.rejectMsg{
       .input{
@@ -554,6 +569,7 @@
         font-weight: 600;
         text-align: left;
         // width: 32%;
+        margin-right: 6px;
         width: 26%;
         
         label{

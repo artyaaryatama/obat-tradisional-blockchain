@@ -147,7 +147,7 @@ function AddQuantityObat() {
           const digits = String(timestamp).slice(-4);
           const letters = Array.from({ length: 4 }, () => String.fromCharCode(65 + Math.floor(Math.random() * 26))).join('');
 
-          const generateBatchName = `BN-${digits}-${letters}`;
+          const generateBatchName= `BN-${digits}-${letters}`;
 
           setBatchName(generateBatchName)
       
@@ -253,7 +253,7 @@ function AddQuantityObat() {
 
               <ul>
                 <li className="label label-1">
-                  <p>Batch Name</p>
+                  <p>Nama Batch</p>
                 </li>
                 <li className="input input-1">
                   <p>{batchName}</p> 
@@ -418,7 +418,7 @@ function AddQuantityObat() {
 
                 <ul>
                   <li className="label label-1">
-                    <p>Batch Name</p>
+                    <p>Nama Batch</p>
                   </li>
                   <li className="input input-1">
                     <p>{batchNameObat}</p> 
@@ -436,7 +436,7 @@ function AddQuantityObat() {
   
                 <ul>
                   <li className="label label-1">
-                    <p>Total Quantity</p> 
+                    <p>Total Stok</p> 
                   </li>
                   <li className="input input-1">
                     <p>{quantityObat} Obat</p>
@@ -556,7 +556,7 @@ function AddQuantityObat() {
 
           <ul>
             <li className="label">
-              <label htmlFor="batchName">Nama Batch Obat</label>
+              <label htmlFor="batchName">Nama Batch</label>
             </li>
             <li className="input">
               <input type="text" name="batchName" value={batchName} readOnly />

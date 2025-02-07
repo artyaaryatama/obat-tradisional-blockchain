@@ -139,7 +139,7 @@ function CdobApprove() {
           <div className='form-swal event'>
             <ul>
               <li className="label">
-                <p>CDOB Number</p> 
+                <p>Nomor CDOB</p> 
               </li>
               <li className="input">
                 <p>{detail}</p> 

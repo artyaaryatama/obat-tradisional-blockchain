@@ -327,7 +327,7 @@ function ManageOrderPbfRetailer() {
 
                         <ul>
                           <li className="label">
-                            <p>Batch Name</p>
+                            <p>Nama Batch</p>
                           </li>
                           <li className="input">
                             <p>{batchName}</p> 
@@ -365,7 +365,7 @@ function ManageOrderPbfRetailer() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                 >
-                                  (CPOTB Details
+                                  (Detail CPOTB
                                   <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                                 </a>
                               </span>
@@ -373,7 +373,7 @@ function ManageOrderPbfRetailer() {
                           </li>
                         </ul>
 
-                        <ul>
+                        <ul className='klaim'>
                           <li className="label">
                             <p>Alamat Akun Pabrik (Pengguna)</p>
                           </li>
@@ -391,7 +391,7 @@ function ManageOrderPbfRetailer() {
                           </li>
                         </ul>
 
-                        <ul>
+                        <ul className='klaim'>
                           <li className="label">
                             <p>Alamat Akun Retail (Pengguna)</p>
                           </li>
@@ -456,7 +456,7 @@ function ManageOrderPbfRetailer() {
                         </li>
                       </ul>
   
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <p>Klaim Obat</p>
                         </li>
@@ -469,7 +469,7 @@ function ManageOrderPbfRetailer() {
                         </li>
                       </ul>
   
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label label1">
                           <p>Komposisi Obat</p>
                         </li>
@@ -532,7 +532,7 @@ function ManageOrderPbfRetailer() {
 
                         <ul>
                           <li className="label">
-                            <p>Batch Name</p>
+                            <p>Nama Batch</p>
                           </li>
                           <li className="input">
                             <p>{batchName}</p> 
@@ -570,7 +570,7 @@ function ManageOrderPbfRetailer() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                 >
-                                  (CPOTB Details
+                                  (Detail CPOTB
                                   <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                                 </a>
                               </span>
@@ -578,7 +578,7 @@ function ManageOrderPbfRetailer() {
                           </li>
                         </ul>
 
-                        <ul>
+                        <ul className='klaim'>
                           <li className="label">
                             <p>Alamat Akun Pabrik (Pengguna)</p>
                           </li>
@@ -596,7 +596,7 @@ function ManageOrderPbfRetailer() {
                           </li>
                         </ul>
 
-                        <ul>
+                        <ul className='klaim'>
                           <li className="label">
                             <p>Alamat Akun Retail (Pengguna)</p>
                           </li>
@@ -659,7 +659,7 @@ function ManageOrderPbfRetailer() {
                         </li>
                       </ul>
   
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <p>Klaim Obat</p>
                         </li>
@@ -672,7 +672,7 @@ function ManageOrderPbfRetailer() {
                         </li>
                       </ul>
   
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label label1">
                           <p>Komposisi Obat</p>
                         </li>
@@ -880,7 +880,7 @@ function ManageOrderPbfRetailer() {
 
                 <ul>
                   <li className="label label-1">
-                    <p>Batch Name</p>
+                    <p>Nama Batch</p>
                   </li>
                   <li className="input input-1">
                     <p>{batchName}</p> 
@@ -987,7 +987,7 @@ function ManageOrderPbfRetailer() {
                 {dataOrder.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.obatId, item.orderId)} >{item.namaProduk}</button>
-                    <p>Batchname : {item.batchName}</p>
+                    <p>Nama Batch: {item.batchName}</p>
                     <p>Order Quantity : {item.orderQuantity.toString()} Obat</p>
                     <button className={`statusOrder ${item.statusOrder}`}>
                       {item.statusOrder}

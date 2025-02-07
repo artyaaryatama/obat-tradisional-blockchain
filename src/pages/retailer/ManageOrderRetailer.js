@@ -346,7 +346,7 @@ function ManageOrderRetailer() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    (CPOTB Details
+                                    (Detail CPOTB
                                     <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                                   </a>
                                 </span>
@@ -354,7 +354,7 @@ function ManageOrderRetailer() {
                             </li>
                           </ul>
                         
-                          <ul>
+                          <ul className='klaim'>
                             <li className="label">
                               <p>Alamat Akun Pabrik (Pengguna)</p>
                             </li>
@@ -377,7 +377,7 @@ function ManageOrderRetailer() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                 >
-                                  (CDOB Details
+                                  (Detail CDOB
                                   <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                                 </a>
                               </span>
@@ -385,7 +385,7 @@ function ManageOrderRetailer() {
                           </li>
                         </ul>
                       
-                        <ul>
+                        <ul className='klaim'>
                           <li className="label">
                             <p>Alamat Akun PBF (Pengguna)</p>
                           </li>
@@ -414,7 +414,7 @@ function ManageOrderRetailer() {
   
                       <ul>
                         <li className="label-sm">
-                          <p>Batch Name</p>
+                          <p>Nama Batch</p>
                         </li>
                         <li className="input">
                           <p>{batchName}</p> 
@@ -476,7 +476,7 @@ function ManageOrderRetailer() {
                         </li>
                       </ul>
   
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <p>Klaim Obat</p>
                         </li>
@@ -489,7 +489,7 @@ function ManageOrderRetailer() {
                         </li>
                       </ul>
   
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label label1">
                           <p>Komposisi Obat</p>
                         </li>
@@ -572,7 +572,7 @@ function ManageOrderRetailer() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                 >
-                                  (CPOTB Details
+                                  (Detail CPOTB
                                   <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                                 </a>
                               </span>
@@ -580,7 +580,7 @@ function ManageOrderRetailer() {
                           </li>
                         </ul>
                       
-                        <ul>
+                        <ul className='klaim'>
                           <li className="label">
                             <p>Alamat Akun Pabrik (Pengguna)</p>
                           </li>
@@ -601,7 +601,7 @@ function ManageOrderRetailer() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                 >
-                                  (CDOB Details
+                                  (Detail CDOB
                                   <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                                 </a>
                               </span>
@@ -609,7 +609,7 @@ function ManageOrderRetailer() {
                           </li>
                         </ul>
                       
-                        <ul>
+                        <ul className='klaim'>
                           <li className="label">
                             <p>Alamat Akun PBF (Pengguna)</p>
                           </li>
@@ -638,7 +638,7 @@ function ManageOrderRetailer() {
   
                       <ul>
                         <li className="label-sm">
-                          <p>Batch Name</p>
+                          <p>Nama Batch</p>
                         </li>
                         <li className="input">
                           <p>{batchName}</p> 
@@ -700,7 +700,7 @@ function ManageOrderRetailer() {
                         </li>
                       </ul>
   
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <p>Klaim Obat</p>
                         </li>
@@ -713,7 +713,7 @@ function ManageOrderRetailer() {
                         </li>
                       </ul>
   
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label label1">
                           <p>Komposisi Obat</p>
                         </li>
@@ -920,7 +920,7 @@ function ManageOrderRetailer() {
                 
                 <ul>
                   <li className="label label-1">
-                    <p>Batch Name</p>
+                    <p>Nama Batch</p>
                   </li>
                   <li className="input input-1">
                     <p>{batchName}</p> 

@@ -198,7 +198,7 @@ function StockObatRetailer() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                (CPOTB Details
+                                (Detail CPOTB
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                               </a>
                             </span>
@@ -227,7 +227,7 @@ function StockObatRetailer() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                (CDOB Details
+                                (Detail CDOB
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                               </a>
                             </span>
@@ -282,7 +282,7 @@ function StockObatRetailer() {
 
                     <ul>
                       <li className="label">
-                        <p>Batch Name</p>
+                        <p>Nama Batch</p>
                       </li>
                       <li className="input">
                         <p>{batchName}</p> 

@@ -327,7 +327,7 @@ function ManageOrderFactoryPbf() {
 
                         <ul>
                           <li className="label">
-                            <p>Batch Name</p>
+                            <p>Nama Batch</p>
                           </li>
                           <li className="input">
                             <p>{batchName}</p> 
@@ -365,7 +365,7 @@ function ManageOrderFactoryPbf() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                 >
-                                  (CDOB Details
+                                  (Detail CDOB
                                   <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                                 </a>
                               </span>
@@ -373,7 +373,7 @@ function ManageOrderFactoryPbf() {
                           </li>
                         </ul>
 
-                        <ul>
+                        <ul className='klaim'>
                           <li className="label">
                             <p>Alamat Akun PBF (Pengguna)</p>
                           </li>
@@ -437,7 +437,7 @@ function ManageOrderFactoryPbf() {
                         </li>
                       </ul>
   
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <p>Klaim Obat</p>
                         </li>
@@ -450,7 +450,7 @@ function ManageOrderFactoryPbf() {
                         </li>
                       </ul>
   
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label label1">
                           <p>Komposisi Obat</p>
                         </li>
@@ -520,7 +520,7 @@ function ManageOrderFactoryPbf() {
 
                         <ul>
                           <li className="label">
-                            <p>Batch Name</p>
+                            <p>Nama Batch</p>
                           </li>
                           <li className="input">
                             <p>{batchName}</p> 
@@ -555,7 +555,7 @@ function ManageOrderFactoryPbf() {
                           </li>
                         </ul>
 
-                        <ul>
+                        <ul className='klaim'>
                           <li className="label">
                             <p>Alamat Akun PBF (Pengguna)</p>
                           </li>
@@ -618,7 +618,7 @@ function ManageOrderFactoryPbf() {
                         </li>
                       </ul>
   
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <p>Klaim Obat</p>
                         </li>
@@ -631,7 +631,7 @@ function ManageOrderFactoryPbf() {
                         </li>
                       </ul>
   
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label label1">
                           <p>Komposisi Obat</p>
                         </li>
@@ -811,7 +811,7 @@ function ManageOrderFactoryPbf() {
                 </ul>
                 <ul>
                   <li className="label label-1">
-                    <p>Batch Name</p>
+                    <p>Nama Batch</p>
                   </li>
                   <li className="input input-1">
                     <p>{batchName}</p> 
@@ -924,7 +924,7 @@ function ManageOrderFactoryPbf() {
                 {dataOrder.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.obatId, item.orderId, item.batchName)} >{item.namaObat}</button>
-                    <p>Batchname : {item.batchName}</p>
+                    <p>Nama Batch: {item.batchName}</p>
                     <p>Order Quantity : {item.orderQuantity.toString()} Obat</p>
                     <button className={`statusOrder ${item.statusOrder}`}>
                       {item.statusOrder}
