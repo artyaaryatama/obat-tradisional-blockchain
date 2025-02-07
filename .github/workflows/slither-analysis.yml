@@ -18,8 +18,8 @@ jobs:
         run: |
           pip install slither-analyzer
           pip install solc-select
-          solc-select install 0.8.19
-          solc-select use 0.8.19
+          solc-select install 0.8.27  # Install the correct Solidity compiler version
+          solc-select use 0.8.27
 
       - name: Run Slither Analysis
         run: slither contracts/
