@@ -56,12 +56,6 @@ function ManageOrderRetailer() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-
-          const orderManagementRetailContract = new Contract(
-            contractData.OrderManagementRetail.address,
-            contractData.OrderManagementRetail.abi,
-            signer
-          );
           const obatTradisionalContract = new Contract(
             contractData.ObatTradisional.address,
             contractData.ObatTradisional.abi,
@@ -78,17 +72,23 @@ function ManageOrderRetailer() {
             contractData.NieManager.abi, 
             signer
           );
-          const orderManagementPbfContract = new Contract(
-            contractData.OrderManagementPbf.address,
-            contractData.OrderManagementPbf.abi,
+          const OrderManagement = new Contract(
+            contractData.OrderManagement.address,
+            contractData.OrderManagement.abi,
+            signer
+          );
+
+          const ObatShared = new Contract(
+            contractData.ObatShared.address, 
+            contractData.ObatShared.abi, 
             signer
           );
           setContracts({
-            orderManagementRetail: orderManagementRetailContract,
-            orderManagementPbf: orderManagementPbfContract,
+            orderManagement: OrderManagement,
             obatTradisional: obatTradisionalContract,
             roleManager: RoleManager,
             nieManager: NieManager,
+            obatShared: ObatShared
           });
         } catch (err) {
           console.error("User access denied!")
@@ -119,7 +119,7 @@ function ManageOrderRetailer() {
       if (contracts) {
         try {
 
-          const listOrderedObatCt = await contracts.orderManagementRetail.getAllOrderRetailByInstance(userdata.instanceName);
+          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromBuyer(userdata.instanceName);
 
           const tempData = [];
 
@@ -246,10 +246,10 @@ function ManageOrderRetailer() {
 
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
-      const detailOrderCt = await contracts.orderManagementRetail.detailOrder(orderId);
-      const detailOrderPrevCt = await contracts.orderManagementPbf.detailOrder(prevOrderId);
-      const orderTimestampCt = await contracts.orderManagementRetail.detailTimestamp(orderId);
-      const orderObatIpfs = await contracts.orderManagementRetail.obatIpfs(orderId);
+      const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
+      const detailOrderPrevCt = await contracts.orderManagement.detailOrder(prevOrderId);
+      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
+      const orderObatIpfs = await contracts.orderManagement.obatIpfs(orderId);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
@@ -769,7 +769,7 @@ function ManageOrderRetailer() {
     });
     
     try {
-      const completeOrderCt = await contracts.orderManagementRetail.completeOrderRetailer(orderId, ipfsHash)
+      const completeOrderCt = await contracts.orderManagement.completeOrderRetailer(orderId, ipfsHash)
       
       console.log(completeOrderCt);
       
@@ -781,10 +781,9 @@ function ManageOrderRetailer() {
         });
       }
   
-      contracts.orderManagementRetail.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.orderManagement.on("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, completeOrderCt.hash);
       });
-      
     } catch (error) {
       errAlert(error, "Can't Complete Order")
     }
@@ -814,8 +813,9 @@ function ManageOrderRetailer() {
     console.log(dataOrder);
 
     try {
-      const prevOrderPbfCt = await contracts.orderManagementRetail.detailOrder(prevOrderId)
-      const orderTimestampCt = await contracts.orderManagementPbf.detailTimestamp(prevOrderId);
+      const prevOrderPbfCt = await contracts.orderManagement.detailOrder(prevOrderId)
+      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(prevOrderId);
+
 
       const pbfTimestampOrder =  new Date(Number(orderTimestampCt[0]) * 1000).toLocaleDateString('id-ID', options)
       const pbfTimestampShipped = orderTimestampCt[1] !== 0n ? new Date(Number(orderTimestampCt[1]) * 1000).toLocaleDateString('id-ID', options) : "-"

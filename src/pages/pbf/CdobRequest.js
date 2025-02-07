@@ -460,7 +460,7 @@ function CdobRequest() {
               <label htmlFor="formatedDate">Tanggal Pengajuan</label>
             </li>
             <li className="input">
-              <input type="text" name="formatedDate" value={formattedDate} disabled />
+              <p>{formattedDate}</p>
             </li>
           </ul>
           <ul>
@@ -468,7 +468,7 @@ function CdobRequest() {
               <label htmlFor="instanceName">Diajukan oleh</label>
             </li>
             <li className="input">
-              <input type="text" name="instanceName" value={userdata.instanceName} disabled />
+              <p>{userdata.instanceName}</p>
             </li>
           </ul>
           <ul>
@@ -476,7 +476,7 @@ function CdobRequest() {
               <label htmlFor="instanceName">NIB PBF</label>
             </li>
             <li className="input">
-              <input type="text" name="instanceName" value={userdata.nib} disabled />
+              <p>{userdata.nib}</p>
             </li>
           </ul>
           <ul>
@@ -484,9 +484,10 @@ function CdobRequest() {
               <label htmlFor="instanceName">NPWP PBF</label>
             </li>
             <li className="input">
-              <input type="text" name="instanceName" value={userdata.npwp} disabled />
+              <p>{userdata.npwp}</p>
             </li>
           </ul>
+
           <ul>
             <li className="label">
               <label htmlFor="tipePermohonan">Tipe Permohonan</label>

@@ -57,9 +57,9 @@ function ManageOrderFactoryPbf() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
 
-          const orderManagementPbfContract = new Contract(
-            contractData.OrderManagementPbf.address,
-            contractData.OrderManagementPbf.abi,
+          const OrderManagement = new Contract(
+            contractData.OrderManagement.address,
+            contractData.OrderManagement.abi,
             signer
           );
           const obatTradisionalContract = new Contract(
@@ -73,18 +73,27 @@ function ManageOrderFactoryPbf() {
             contractData.RoleManager.abi,
             signer
           );
+          
+
+          const ObatShared = new Contract(
+            contractData.ObatShared.address, 
+            contractData.ObatShared.abi, 
+            signer
+          );
+          
 
           const NieManager = new Contract(
             contractData.NieManager.address, 
             contractData.NieManager.abi, 
             signer
           );
-
+          
           setContracts({
-            orderManagementPbf: orderManagementPbfContract,
+            orderManagement: OrderManagement,
             obatTradisional: obatTradisionalContract,
             roleManager: RoleManager,
             nieManager: NieManager,
+            obatShared: ObatShared
           });
         } catch (err) {
           console.error("User access denied!")
@@ -116,7 +125,7 @@ function ManageOrderFactoryPbf() {
 
         try {
 
-          const listOrderedObatCt = await contracts.orderManagementPbf.getOrdersForFactory(userdata.instanceName);
+          const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromSeller(userdata.instanceName);
           console.log(listOrderedObatCt);
 
           const reconstructedDataorder = listOrderedObatCt.map((item, index) => ({
@@ -234,9 +243,9 @@ function ManageOrderFactoryPbf() {
 
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
-      const detailOrderCt = await contracts.orderManagementPbf.detailOrder(orderId);
-      const orderTimestampCt = await contracts.orderManagementPbf.detailTimestamp(orderId);
-      const orderObatIpfs = await contracts.orderManagementPbf.obatIpfs(orderId);
+      const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
+      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
+      const orderObatIpfs = await contracts.orderManagement.obatIpfs(orderId);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
 
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
@@ -679,7 +688,7 @@ function ManageOrderFactoryPbf() {
     });
     
     try {
-      const acceptOrderCt = await contracts.orderManagementPbf.acceptOrderPbf(orderId, ipfsHashes)
+      const acceptOrderCt = await contracts.orderManagement.acceptOrderPbf(orderId, ipfsHashes)
       console.log(acceptOrderCt);
       
       if(acceptOrderCt){
@@ -690,7 +699,7 @@ function ManageOrderFactoryPbf() {
         });
       }
 
-      contracts.orderManagementPbf.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.orderManagement.on("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, acceptOrderCt.hash); 
       });
       

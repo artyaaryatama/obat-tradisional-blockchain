@@ -182,12 +182,12 @@
               color: $white;
             }
 
-            &.Pengajuan.NIE, &.Pengajuan, &.Tersedia{
+            &.Tersedia{
               background-color: $blue;
               color: $white;
             }
             
-            &.Dikirim, &.Dalam.Proses.Pengajuan{
+            &.Dikirim, &.Dalam.Proses.Pengajuan, &.Pengajuan.NIE, &.Pengajuan{
               background-color: $yellow;
               color: $black;
             }
@@ -231,6 +231,13 @@
         border-top: solid 2px $grey-light;
         padding-top: 20px;
     
+        ul li.label{
+          padding-right: 15px;
+
+        }
+        input:read-only{
+          background-color: white !important;
+        }
       }
 
       h5{

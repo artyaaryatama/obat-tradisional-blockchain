@@ -13,6 +13,7 @@
   .title-menu{
     display: flex;
     align-items: center;
+    padding-left: 13px;
 
     .logo-obat{
       margin-right: 20px;
@@ -20,8 +21,9 @@
         width: 64px;
       }
     }
+
     h2{
-      font-size: 26px;
+      font-size: 30px;
       display: flex;
 
     }
@@ -48,7 +50,7 @@
 
       .section{
        background-color: #f2f2f36a; 
-       padding: 10px;
+       padding: 20px 16px;
        margin-bottom: 20px;
        border-radius: 6px;
 
@@ -182,15 +184,15 @@
 
       input{
         @include inputForm($grey, $white);
-        border: none;
         color: $black;
+        padding: 13px 10px;
 
         &:disabled{
           background-color: $grey-secondary;
           font-style: italic;
         }
       }
-      
+
       textarea{
         @include inputForm($grey, $white);
         border: none;
@@ -206,7 +208,7 @@
       }
       
       select{
-        @include selectForm($white)
+        @include selectForm($white);
       }
 
       button{
@@ -259,6 +261,8 @@
   select{
     @include selectForm($white);
     margin: 10px 0 0 0;
+    // border: solid 1px $grey-light !important;
+    padding: 13px 10px;
   }
 
   table, th, td{

@@ -580,7 +580,7 @@ function CpotbRequest() {
               <label htmlFor="formatedDate">Tanggal Pengajuan</label>
             </li>
             <li className="input">
-              <input type="text" name="formatedDate" value={formattedDate} disabled />
+              <p>{formattedDate}</p>
             </li>
           </ul>
           <ul>
@@ -588,33 +588,34 @@ function CpotbRequest() {
               <label htmlFor="instanceName">Diajukan oleh</label>
             </li>
             <li className="input">
-              <input type="text" name="instanceName" value={userdata.instanceName} disabled />
+              <p>{userdata.instanceName}</p>
             </li>
           </ul>
           <ul>
             <li className="label">
-              <label htmlFor="instanceName">Jenis Industri Farmasi</label>
+              <label htmlFor="factoryType">Jenis Industri Farmasi</label>
             </li>
             <li className="input">
-              <input type="text" name="instanceName" value={factoryType} disabled />
+              <p>{factoryType}</p>
             </li>
           </ul>
           <ul>
             <li className="label">
-              <label htmlFor="instanceName">NIB Pabrik</label>
+              <label htmlFor="nib">NIB Pabrik</label>
             </li>
             <li className="input">
-              <input type="text" name="instanceName" value={userdata.nib} disabled />
+              <p>{userdata.nib}</p>
             </li>
           </ul>
           <ul>
             <li className="label">
-              <label htmlFor="instanceName">NPWP Pabrik</label>
+              <label htmlFor="npwp">NPWP Pabrik</label>
             </li>
             <li className="input">
-              <input type="text" name="instanceName" value={userdata.npwp} disabled />
+              <p>{userdata.npwp}</p>
             </li>
           </ul>
+
           <ul>
             <li className="label">
               <label htmlFor="jenisSediaan">Jenis Sediaan</label>
@@ -625,6 +626,7 @@ function CpotbRequest() {
                 value={jenisSediaan}
                 onChange={handleOptionJenisSediaan}
                 className='jenisSediaan'
+                required
               >
                 <option value="" disabled>Select Jenis Sediaan</option>
                 {/* {filteredJenisSediaan.map(({ key, label }) => (

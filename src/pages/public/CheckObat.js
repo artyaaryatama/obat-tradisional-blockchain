@@ -51,7 +51,7 @@ function CheckObatIpfs() {
 
 
   useEffect(() => {
-    document.title = "Check Obat Tradisional"; 
+    document.title = "Cek Obat Tradisional"; 
   }, []);
 
   const getHashFromUrl = () => {
@@ -228,11 +228,11 @@ function CheckObatIpfs() {
                 <div className="list-detail">
                   <ul className="info-list">
                     <li className="info-item">
-                      <span className="label">Batch Name</span>
+                      <span className="label">Nama Batch</span>
                       <span>{batchName}</span>
                     </li>
                     <li className="info-item">
-                      <span className="label">ID Package</span>
+                      <span className="label">ID Kemasan</span>
                       <span>{obatIdPackage}</span>
                     </li>
                     <li className="info-item">
@@ -306,7 +306,7 @@ function CheckObatIpfs() {
                       </span>
                     </li>
 
-                    <li className="info-item">
+                    {/* <li className="info-item">
                       <span className="label">NIB Pabrik</span>
                       <span className='address'>{factoryNib}</span>
                     </li>
@@ -314,7 +314,7 @@ function CheckObatIpfs() {
                     <li className="info-item">
                       <span className="label">NPWP Pabrik</span>
                       <span className='address'>{factoryNPWP}</span>
-                    </li>
+                    </li> */}
 
                     <li className="info-item">
                       <span className="label">Jenis Usaha Farmasi</span>
@@ -338,15 +338,15 @@ function CheckObatIpfs() {
                 <div className="list-detail">
                   <ul className="info-list">
                     <li className="info-item">
-                      <span className="label">NIE Number</span>
+                      <span className="label">Nomor NIE</span>
                       <span>{nieNumber}</span>
                     </li>
                     <li className="info-item">
-                      <span className="label">NIE Request Date</span>
+                      <span className="label">Tanggal Pengajuan NIE</span>
                       <span>{nieRequestDate}</span>
                     </li>
                     <li className="info-item">
-                      <span className="label">NIE Approval Date</span>
+                      <span className="label">Tanggal Penerbitan NIE </span>
                       <span>{nieApprovalDate}</span>
                     </li>
                     <li className="info-item">
@@ -358,14 +358,14 @@ function CheckObatIpfs() {
                       <span className="label">Lokasi BPOM</span>
                       <span>{bpomAddressInstance}</span>
                     </li>
-                    <li className="info-item">
+                    {/* <li className="info-item">
                       <span className="label">NIB BPOM</span>
                       <span>{bpomNib}</span>
                     </li>
                     <li className="info-item">
                       <span className="label">NPWP BPOM</span>
                       <span>{bpomNPWP}</span>
-                    </li>
+                    </li> */}
                   </ul>
                 </div>
               </div>
@@ -400,14 +400,14 @@ function CheckObatIpfs() {
                           <span className="label">Lokasi PBF</span>
                           <span>{pbfInstanceAddress}</span>
                         </li>
-                        <li className="info-item">
+                        {/* <li className="info-item">
                           <span className="label">NIB PBF</span>
                           <span>{pbfNib}</span>
                         </li>
                         <li className="info-item">
                           <span className="label">NPWP PBF</span>
                           <span>{pbfNPWP}</span>
-                        </li>
+                        </li> */}
                         <li className="info-item">
                           <span className="label">Tangal order diajukan</span>
                           <span>{detailOrderPbf.timestampOrder}</span>
@@ -449,14 +449,14 @@ function CheckObatIpfs() {
                           <span className="label">Lokasi Retailer </span>
                           <span>{retailerInstanceAddress}</span>
                         </li>
-                        <li className="info-item">
+                        {/* <li className="info-item">
                           <span className="label">NIB Retailer</span>
                           <span>{retailerNib}</span>
                         </li>
                         <li className="info-item">
                           <span className="label">NPWP Retailer</span>
                           <span>{retailerNPWP}</span>
-                        </li>
+                        </li> */}
                         <li className="info-item">
                           <span className="label">Tangal order diajukan</span>
                           <span>{detailOrderRetailer.timestampOrder}</span>

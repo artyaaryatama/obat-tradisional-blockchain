@@ -22,7 +22,7 @@ function CheckCertificateIpfs() {
   const [factoryType, setFactoryType] = useState("");
 
   useEffect(() => {
-    document.title = "Check Instance Certificate";
+    document.title = "Cek Sertifikat";
   }, []);
 
   const getHashFromUrl = () => {
@@ -69,7 +69,7 @@ function CheckCertificateIpfs() {
         <span>{factoryType}</span>
       </li>
       <li className="info-item">
-        <span className="label">Alamat Akun Pabrik (Pengguna)</span>
+        <span className="label">Lokasi Pabrik</span>
         <span>{senderInstanceAddress}</span>
       </li>
     </>
@@ -77,7 +77,7 @@ function CheckCertificateIpfs() {
 
   const renderCdobDetails = () => (
     <li className="info-item">
-      <span className="label">Alamat Akun PBF (Pengguna)</span>
+      <span className="label">Lokasi PBF</span>
       <span>{senderInstanceAddress}</span>
     </li>
   );
@@ -85,7 +85,7 @@ function CheckCertificateIpfs() {
   const renderDetails = () => (
     <>
       <li className="info-item">
-        <span className="label">Certificate Number</span>
+        <span className="label">Nomor Sertifikat</span>
         <span>{certNumber}</span>
       </li>
       <li className="info-item">
@@ -108,14 +108,14 @@ function CheckCertificateIpfs() {
         <span>{senderInstance}</span>
         <span className='addr'>({senderAddr})</span>
       </li>
-      <li className="info-item">
+      {/* <li className="info-item">
         <span className="label">{certName === "CPOTB" ? "NIB Pabrik" : "NIB PBF"}</span>
         <span>{nib}</span>
       </li>
       <li className="info-item">
         <span className="label">{certName === "CPOTB" ? "NPWP Pabrik" : "NPWP PBF"}</span>
         <span>{npwp}</span>
-      </li>
+      </li> */}
       {certName === "CPOTB" ? renderCpotbDetails() : renderCdobDetails()}
       <li className="info-item">
         <span className="label">Nama Instansi BPOM</span>
@@ -123,7 +123,7 @@ function CheckCertificateIpfs() {
         <span className='addr'>({bpomAddr})</span>
       </li>
       <li className="info-item">
-        <span className="label">Alamat Akun BPOM (Pengguna)</span>
+        <span className="label">Lokasi BPOM</span>
         <span>{bpomInstanceAddress}</span>
       </li>
     </>

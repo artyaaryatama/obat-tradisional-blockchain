@@ -470,7 +470,7 @@ function CreateObat() {
               <label htmlFor="instanceName">Di produksi oleh</label>
             </li>
             <li className="input">
-              <input type="text" name="instanceName" value={userdata.instanceName} readOnly />
+              <p>{userdata.instanceName}</p>
             </li>
           </ul>
 

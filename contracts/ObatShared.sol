@@ -147,6 +147,8 @@ contract ObatShared {
         factoryInstance: _factoryInstance
       });
 
+      emit testBatch (_batchName, _obatIpfs);  
+
       delete obatIpfsbyBatchName[_batchName];
 
       for (uint i = 0; i < _obatIpfs.length; i++) {
@@ -297,10 +299,15 @@ contract ObatShared {
     obatPbfBatchName[_batchName].statusStok = _newStatus;
   }
 
+  event testBatch (string batchName, string[] ipfs);
+
   function updateObatIpfs(
     string memory _batchName,
     string[] memory _obatIpfs
-  ) external {
+  ) public {
+
+    emit testBatch ( _batchName, _obatIpfs); 
+
     delete obatIpfsbyBatchName[_batchName];
 
     for (uint i = 0; i < _obatIpfs.length; i++) {
