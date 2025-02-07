@@ -44,7 +44,7 @@ function CreateOrderPbf() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
 
-          const orderManagementPbfContract = new Contract(
+          const orderManagement = new Contract(
             contractData.OrderManagement.address,
             contractData.OrderManagement.abi,
             signer
@@ -67,7 +67,7 @@ function CreateOrderPbf() {
           );
           
           setContracts({
-            orderManagementPbf: orderManagementPbfContract,
+            orderManagement: orderManagement,
             obatTradisional: obatTradisionalContract,
             nieManager: NieManager,
             certificateManager: CertificateManager
@@ -441,8 +441,7 @@ function CreateOrderPbf() {
 
       if(pbfCdobHash) {
         
-        // const createOrderCt = await contracts.orderManagementPbf.createOrderPbf(orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdobHash[5]);
-        const createOrderCt = await contracts.orderManagementPbf.createOrder('', orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdobHash[5]);
+        const createOrderCt = await contracts.orderManagement.createOrder('', orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdobHash[5]);
         
         if(createOrderCt){
           updateBatchHistoryHash(factoryInstance, namaProduk, batchName, createOrderCt.hash, tipeObat)
@@ -453,7 +452,7 @@ function CreateOrderPbf() {
           });
         }
   
-        contracts.orderManagementPbf.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+        contracts.orderManagement.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
           handleEventCreateOrder(userdata.instanceName, orderId, id, _batchName, _namaProduk, _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, createOrderCt.hash);
         });
 

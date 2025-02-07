@@ -196,6 +196,11 @@ contract OrderManagement {
         orderByOrderId[_orderId].batchName, 
         EnumsLibrary.ObatAvailability.Sold
       );
+
+      obatShared.updateObatPbf(
+        orderByOrderId[_orderId].batchName,
+        EnumsLibrary.ObatAvailability.Sold 
+      ); 
       obatShared.updateObatIpfs(
         orderByOrderId[_orderId].batchName,
         _orderObatIpfs 

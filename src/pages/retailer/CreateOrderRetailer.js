@@ -49,13 +49,7 @@ function CreateOrderRetailer() {
         try {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-
-          const orderManagementRetailContract = new Contract(
-            contractData.OrderManagement.address,
-            contractData.OrderManagement.abi,
-            signer
-          );
-          const orderManagementPbfContract = new Contract(
+          const OrderManagement = new Contract(
             contractData.OrderManagement.address,
             contractData.OrderManagement.abi,
             signer
@@ -73,8 +67,7 @@ function CreateOrderRetailer() {
           );
 
           setContracts({
-            orderManagementRetail: orderManagementRetailContract,
-            orderManagementPbf: orderManagementPbfContract,
+            orderManagement: OrderManagement,
             obatTradisional: obatTradisionalContract,
             nieManager: NieManager,
           });
@@ -107,7 +100,7 @@ function CreateOrderRetailer() {
       if (contracts) {
         try {
 
-          const allPbfReadyObat = await contracts.orderManagementRetail.getAllObatPbfReadyStock();
+          const allPbfReadyObat = await contracts.orderManagement.getAllObatPbfReadyStock();
           console.log(allPbfReadyObat);
 
           const reconstructedData = allPbfReadyObat.map((item, index) => ({
@@ -224,7 +217,7 @@ function CreateOrderRetailer() {
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailBatchCt = await contracts.obatTradisional.detailBatchProduction(id, batchName);
-      const detailPastOrderCt = await contracts.orderManagementPbf.detailOrder(prevOrderId);
+      const detailPastOrderCt = await contracts.orderManagement.detailOrder(prevOrderId);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       
       const [dataObat, obatIpfs] = detailBatchCt
@@ -468,7 +461,7 @@ function CreateOrderRetailer() {
     try {
       console.log(prevOrderIdPbf, orderId, id, batchName, namaProduk, userdata.instanceName, pbfInstance, orderQuantity);
       
-      const createOrderCt = await contracts.orderManagementRetail.createOrder(prevOrderIdPbf, orderId, id, batchName, namaProduk, userdata.instanceName, pbfInstance, orderQuantity, '');
+      const createOrderCt = await contracts.orderManagement.createOrder(prevOrderIdPbf, orderId, id, batchName, namaProduk, userdata.instanceName, pbfInstance, orderQuantity, '');
       
       if(createOrderCt){
         updateBatchHistoryHash(factoryInstance, namaProduk, batchName, createOrderCt.hash)
@@ -478,7 +471,7 @@ function CreateOrderRetailer() {
         });
       }
 
-      contracts.orderManagementRetail.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.orderManagement.once("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, createOrderCt.hash);
       });
 

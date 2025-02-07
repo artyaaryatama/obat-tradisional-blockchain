@@ -48,7 +48,7 @@ function StockObatPbf() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
 
-          const orderManagementPbfContract = new Contract(
+          const OrderManagement = new Contract(
             contractData.OrderManagement.address,
             contractData.OrderManagement.abi,
             signer
@@ -65,7 +65,7 @@ function StockObatPbf() {
           );
 
           setContracts({
-            orderManagementPbf: orderManagementPbfContract,
+            orderManagement: OrderManagement,
             obatTradisional: obatTradisionalContract,
             nieManager: NieManager,
           });
@@ -98,7 +98,7 @@ function StockObatPbf() {
       if (contracts) {
         try {
 
-          const allPbfReadyObat = await contracts.orderManagementPbf.getAllObatPbfByInstance(userdata.instanceName);
+          const allPbfReadyObat = await contracts.orderManagement.getAllObatPbfByInstance(userdata.instanceName);
           console.log(allPbfReadyObat);
 
           const reconstructedData = allPbfReadyObat.map((item, index) => ({
@@ -127,10 +127,9 @@ function StockObatPbf() {
 
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
-      const detailOrderCt = await contracts.orderManagementPbf.detailOrder(orderId);
-      // const orderTimestampCt = await contracts.orderManagementPbf.detailTimestamp(orderId);
-      const orderTimestampCt = await contracts.orderManagementPbf.orderTimestamp(orderId);
-      const orderObatIpfs = await contracts.orderManagementPbf.obatIpfs(orderId);
+      const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
+      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
+      const orderObatIpfs = await contracts.orderManagement.obatIpfs(orderId);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
@@ -248,8 +247,8 @@ function StockObatPbf() {
                         <li className="input">
                           {
                             statusOrder !== 2n ? 
-                            <p> {orderQuantity.toString()} Obat (Stock Empty)</p> : 
-                            <p> {orderQuantity.toString()} Obat (Stock Available)</p>
+                            <p> {orderQuantity.toString()} Obat (Stock Available)</p> : 
+                            <p> {orderQuantity.toString()} Obat (Stock  Empty)</p>
                           }
                         </li>
                       </ul>

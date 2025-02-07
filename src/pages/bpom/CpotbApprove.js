@@ -1487,10 +1487,10 @@ function CpotbApprove() {
         factoryType: detailCpotb.factoryType,
         senderNIB: detailCpotb.factoryNIB,
         senderNPWP: detailCpotb.factoryNPWP,
-        senderInstanceAddress: userFactoryCt[2],
+        senderInstanceAddress: userFactoryCt[4],
         bpomInstance: userdata.instanceName,
         bpomAddress: userdata.address,
-        bpomInstanceAddress: userBpomCt[2]
+        bpomInstanceAddress: userBpomCt[4]
       }
 
       console.log(cpotbData);

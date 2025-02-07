@@ -49,8 +49,8 @@ function StockObatRetailer() {
           const signer = await provider.getSigner();
 
           const orderManagementRetailContract = new Contract(
-            contractData.OrderManagementRetail.address,
-            contractData.OrderManagementRetail.abi,
+            contractData.OrderManagement.address,
+            contractData.OrderManagement.abi,
             signer
           );
           const obatTradisionalContract = new Contract(
@@ -98,8 +98,7 @@ function StockObatRetailer() {
     const loadData = async () => {
       if (contracts) {
         try {
-          const allRetailerReadyObat = await contracts.orderManagementRetail.getAllOrderRetailByInstance(userdata.instanceName);
-          console.log(allRetailerReadyObat);
+          const allRetailerReadyObat = await contracts.orderManagementRetail.getAllOrderFromBuyer(userdata.instanceName);
 
           const reconstructedData = allRetailerReadyObat.map((item, index) => ({
             orderId: item[0],
@@ -128,7 +127,7 @@ function StockObatRetailer() {
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailOrderCt = await contracts.orderManagementRetail.detailOrder(orderId);
-      const orderTimestampCt = await contracts.orderManagementRetail.detailTimestamp(orderId);
+      const orderTimestampCt = await contracts.orderManagementRetail.orderTimestamp(orderId);
       const orderObatIpfs = await contracts.orderManagementRetail.obatIpfs(orderId);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
 
