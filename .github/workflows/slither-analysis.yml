@@ -26,7 +26,7 @@ jobs:
       - name: Run Slither Analysis
         run: |
           mkdir -p slither-reports
-          slither contracts/ --json slither-reports/slither-output.json --exclude-low --exclude-medium || echo "{}" > slither-reports/slither-output.json
+          slither contracts/ --json slither-reports/slither-output.json | tee slither-reports/slither-log.txt
 
       - name: List Contract Files
         run: ls -R contracts/
