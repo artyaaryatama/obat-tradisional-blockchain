@@ -26,10 +26,17 @@ jobs:
       - name: Run Slither Analysis
         run: |
           mkdir -p slither-reports
-          slither contracts/ --json slither-reports/slither-output.json --exclude-informational --exclude-low --exclude-medium || true
+          slither contracts/ --json slither-reports/slither-output.json --exclude-low --exclude-medium || echo "{}" > slither-reports/slither-output.json
+
+      - name: List Contract Files
+        run: ls -R contracts/
 
       - name: Upload Slither Report
         uses: actions/upload-artifact@v4  
         with:
           name: slither-report
           path: slither-reports/slither-output.json
+
+      - name: Check Slither Output
+        run: cat slither-reports/slither-output.json || echo "File is empty"
+
