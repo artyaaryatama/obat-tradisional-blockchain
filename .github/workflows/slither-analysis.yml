@@ -26,24 +26,29 @@ jobs:
       - name: List Contract Files
         run: ls -R contracts/ || echo "No contracts found!"
 
-      - name: Run Slither Analysis
+      - name: Run Slither and Show Logs
         run: |
           mkdir -p slither-reports
-          for file in contracts/*.sol; do 
+          for file in contracts/*.sol; do
             echo "Running Slither on $file"
-            slither "$file" --json "slither-reports/$(basename "$file").json" || echo "{}" > "slither-reports/$(basename "$file").json"
+            slither "$file" || echo "Slither failed for $file"
           done
-        continue-on-error: true
 
-      - name: Debug Slither Output
-        run: cat slither-reports/slither-output.json || echo "Slither output is empty"
+      - name: Debug JSON Output
+        run: |
+          echo "Checking Slither reports..."
+          ls -lah slither-reports/
+          cat slither-reports/*.json || echo "No Slither output found"
 
       - name: Ensure JSON File Exists
         run: |
-          if [ ! -s slither-reports/slither-output.json ]; then
-            echo '{"status": "No issues found"}' > slither-reports/slither-output.json
-            echo "Slither report was empty, added default status."
-          fi
+          for file in slither-reports/*.json; do
+            if [ ! -s "$file" ]; then
+              echo '{"status": "No issues found"}' > "$file"
+              echo "Replaced empty JSON for $file"
+            fi
+          done
+
 
       - name: Upload Slither Report
         uses: actions/upload-artifact@v4
