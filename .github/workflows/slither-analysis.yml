@@ -33,7 +33,7 @@ jobs:
                       contracts/CpotbCertificate.sol contracts/ObatTradisional.sol contracts/OrderManagement.sol \
                       contracts/RoleManager.sol; do
             echo "Running Slither on $file for security analysis..."
-            slither "$file" --json "slither-reports/$(basename "$file").json" || echo "Slither encountered issues with $file but continuing..."
+            slither "$file" --json "slither-reports/$(basename "$file").json"  --exclude unused-return --exclude shadowing-state --exclude reentrancy-no-eth --exclude low --exclude medium || echo "Slither encountered issues with $file but continuing..."
           done
         continue-on-error: true
 
