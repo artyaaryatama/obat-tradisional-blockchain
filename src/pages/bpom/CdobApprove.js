@@ -153,7 +153,7 @@ function CdobApprove() {
                 <p>{bpomInstance}</p> 
               </li>
             </ul>
-            <ul>
+            <ul className='klaim'>
               <li className="label">
                 <p>Alamat Akun BPOM (Pengguna)</p> 
               </li>
@@ -220,7 +220,7 @@ function CdobApprove() {
                 <p>{bpomInstance}</p> 
               </li>
             </ul>
-            <ul>
+            <ul className='klaim'>
               <li className="label">
                 <p>Alamat Akun BPOM (Pengguna)</p> 
               </li>
@@ -439,7 +439,7 @@ function CdobApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun PBF (Pengguna)</p> 
                     </li>
@@ -475,7 +475,7 @@ function CdobApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
@@ -744,7 +744,7 @@ function CdobApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun PBF (Pengguna)</p> 
                     </li>
@@ -780,7 +780,7 @@ function CdobApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
@@ -1034,7 +1034,7 @@ function CdobApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun PBF (Pengguna)</p> 
                     </li>
@@ -1070,7 +1070,7 @@ function CdobApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
@@ -1277,7 +1277,7 @@ function CdobApprove() {
                         </li>
                       </ul>
               
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <label htmlFor="pbfAddr">Alamat Akun PBF (Pengguna)</label>
                         </li>
@@ -1331,7 +1331,7 @@ function CdobApprove() {
                         </li>
                       </ul>
               
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <label htmlFor="bpomAddr">Alamat Akun BPOM (Pengguna)</label>
                         </li>
@@ -1425,7 +1425,7 @@ function CdobApprove() {
                         </li>
                       </ul>
               
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <label htmlFor="pbfAddr">Alamat Akun PBF (Pengguna)</label>
                         </li>
@@ -1453,7 +1453,7 @@ function CdobApprove() {
                         </li>
                       </ul>
               
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <label htmlFor="bpomAddr">Alamat Akun BPOM (Pengguna)</label>
                         </li>
@@ -1656,7 +1656,7 @@ function CdobApprove() {
         });
       }
       
-      contracts.certificateManager.once('evt_certApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
+      contracts.certificateManager.once('CertApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
         handleEventCdob("Disetujui", bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, approveCt.hash);
       });
     } catch (error) {
@@ -1668,7 +1668,7 @@ function CdobApprove() {
     console.log(rejectMsg, tipePermohonan);
 
     try {
-      const rejectCt = await contracts.certificateManager.rejectCdob( cdobId, rejectMsg, userdata.name, userdata.instanceName, userdata.address, tipePermohonan);
+      const rejectCt = await contracts.certificateManager.rejectCdob( cdobId, rejectMsg, userdata.name, userdata.instanceName, tipePermohonan);
 
       if(rejectCt){
         updateCdobFb(pbfName, tipePermohonan, rejectCt.hash, false)
@@ -1679,7 +1679,7 @@ function CdobApprove() {
         });
       }
 
-      contracts.certificateManager.once("evt_certRejected", (_instanceName, _instanceAddr, _tipePermohonan, timestampRejected, _rejectMsg) => {
+      contracts.certificateManager.once("CertRejected", (_instanceName, _instanceAddr, _tipePermohonan, timestampRejected, _rejectMsg) => {
         handleEventCdob( "Tidak Disetujui", _instanceAddr, _instanceName, _tipePermohonan, _rejectMsg, timestampRejected, rejectCt.hash);
       });
     } catch (error) {

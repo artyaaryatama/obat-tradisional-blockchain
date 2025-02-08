@@ -287,7 +287,7 @@ function ManageCpotb() {
                     </li>
                   </ul>
 
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
@@ -330,7 +330,7 @@ function ManageCpotb() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
@@ -557,7 +557,7 @@ function ManageCpotb() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
@@ -575,7 +575,7 @@ function ManageCpotb() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>

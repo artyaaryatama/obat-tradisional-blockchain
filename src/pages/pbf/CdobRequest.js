@@ -109,7 +109,7 @@ function CdobRequest() {
               <p>{_instanceName}</p> 
             </li>
           </ul>
-          <ul>
+          <ul className='klaim'>
             <li className="label">
               <p>Alamat Akun PBF (Pengguna)</p> 
             </li>
@@ -361,7 +361,7 @@ function CdobRequest() {
         });
       }
 
-      contract.once("evt_certRequested", (_instanceName, _userAddr, _tipePermohonan, _timestampRequest) => {
+      contract.once("CertRequested", (_instanceName, _userAddr, _tipePermohonan, _timestampRequest) => {
         handleEventCdobRequested(_instanceName, _userAddr, _tipePermohonan, _timestampRequest, requestCdobCt.hash);
       });
 

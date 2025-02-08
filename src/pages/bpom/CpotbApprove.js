@@ -178,7 +178,7 @@ function CpotbApprove() {
                 <p>{bpomInstance}</p> 
               </li>
             </ul>
-            <ul>
+            <ul className='klaim'>
               <li className="label">
                 <p>Alamat Akun BPOM (Pengguna)</p> 
               </li>
@@ -245,7 +245,7 @@ function CpotbApprove() {
                 <p>{bpomInstance}</p> 
               </li>
             </ul>
-            <ul>
+            <ul className='klaim'>
               <li className="label">
                 <p>Alamat Akun BPOM (Pengguna)</p> 
               </li>
@@ -468,7 +468,7 @@ function CpotbApprove() {
                     </li>
                   </ul>
 
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
@@ -486,7 +486,7 @@ function CpotbApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
@@ -675,7 +675,7 @@ function CpotbApprove() {
                     </li>
                   </ul>
 
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
@@ -718,7 +718,7 @@ function CpotbApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
@@ -926,7 +926,7 @@ function CpotbApprove() {
                     </li>
                   </ul>
 
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun Pabrik (Pengguna)</p> 
                     </li>
@@ -969,7 +969,7 @@ function CpotbApprove() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
@@ -1096,7 +1096,7 @@ function CpotbApprove() {
                         </li>
                       </ul>
               
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <label htmlFor="factoryAddr">Alamat Akun Pabrik (Pengguna)</label>
                         </li>
@@ -1137,7 +1137,7 @@ function CpotbApprove() {
                         </li>
                       </ul>
               
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <label htmlFor="bpomAddr">Alamat Akun BPOM (Pengguna)</label>
                         </li>
@@ -1235,7 +1235,7 @@ function CpotbApprove() {
                         </li>
                       </ul>
               
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <label htmlFor="factoryAddr">Alamat Akun Pabrik (Pengguna)</label>
                         </li>
@@ -1263,7 +1263,7 @@ function CpotbApprove() {
                         </li>
                       </ul>
               
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <label htmlFor="bpomAddr">Alamat Akun BPOM (Pengguna)</label>
                         </li>
@@ -1569,7 +1569,7 @@ function CpotbApprove() {
         });
       }
 
-      contracts.certificateManager.on('evt_certApproved',  (bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove) => {
+      contracts.certificateManager.on('CertApproved',  (bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove) => {
         handleEventCpotb("Disetujui", bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove, approveCt.hash);
       });
     } catch (error) {
@@ -1581,7 +1581,7 @@ function CpotbApprove() {
     console.log(id);
 
     try {
-      const rejectCt = await contracts.certificateManager.rejectCpotb( id, rejectMsg, userdata.name, userdata.instanceName, userdata.address, jenisSediaan);
+      const rejectCt = await contracts.certificateManager.rejectCpotb( id, rejectMsg, userdata.name, userdata.instanceName, jenisSediaan);
 
       if(rejectCt){
         updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, false);
@@ -1591,7 +1591,7 @@ function CpotbApprove() {
         });
       }
 
-      contracts.certificateManager.once("evt_certRejected", (_instanceName, _instanceAddr, _jenisSediaan, timestampRejected, _rejectMsg) => {
+      contracts.certificateManager.once("CertRejected", (_instanceName, _instanceAddr, _jenisSediaan, timestampRejected, _rejectMsg) => {
         handleEventCpotb( "Tidak Disetujui", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, timestampRejected, rejectCt.hash);
       });
     } catch (error) {

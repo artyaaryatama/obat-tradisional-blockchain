@@ -257,7 +257,7 @@ function ManageCdob() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun PBF (Pengguna)</p> 
                     </li>
@@ -293,7 +293,7 @@ function ManageCdob() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
@@ -574,7 +574,7 @@ function ManageCdob() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun PBF (Pengguna)</p> 
                     </li>
@@ -610,7 +610,7 @@ function ManageCdob() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>

@@ -180,7 +180,7 @@ function CreateObat() {
     };
 
     MySwal.fire({
-      title: "Sukses Membuat data Obat Tradisonal",
+      title: "Sukses membuat data obat tradisonal",
       html: (
         <div className='form-swal event'>
           <ul>
@@ -207,7 +207,7 @@ function CreateObat() {
               <p>{_factoryInstanceName}</p> 
             </li>
           </ul>
-          <ul>
+          <ul className='klaim'>
             <li className="label">
               <p>Alamat Akun Pabrik (Pengguna)</p> 
             </li>
@@ -359,7 +359,7 @@ function CreateObat() {
           });
         }
   
-        contracts.obatTradisional.once("evt_obatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
+        contracts.obatTradisional.once("ObatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
           handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);
         });
   

@@ -159,7 +159,7 @@ function NieRenewRequest() {
               <p>{factoryInstance}</p> 
             </li>
           </ul>
-          <ul>
+          <ul className='klaim'>
             <li className="label">
               <p>Alamat Akun Pabrik (Pengguna)</p> 
             </li>
@@ -280,7 +280,7 @@ function NieRenewRequest() {
         });
       }
 
-      contracts.nieManager.once("evt_nieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
+      contracts.nieManager.once("NieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
         handleEventNieRenewRequest( _factoryInstance, _factoryAddr,_timestampRenewRequestNie, renewRequestNieCt.hash)
       });
       

@@ -206,7 +206,7 @@ function StockObatRetailer() {
                         </li>
                       </ul>
                     
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <p>Alamat Akun Pabrik (Pengguna)</p>
                         </li>
@@ -235,7 +235,7 @@ function StockObatRetailer() {
                         </li>
                       </ul>
                     
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <p>Alamat Akun PBF (Pengguna)</p>
                         </li>

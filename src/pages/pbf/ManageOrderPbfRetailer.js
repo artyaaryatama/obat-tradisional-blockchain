@@ -162,7 +162,7 @@ function ManageOrderPbfRetailer() {
 
   const handleEventOrderUpdate = (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, txHash) => {
     const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
-  
+   
     MySwal.fire({
      title: "Sukses Mengirimkan Order!",
       html: (
@@ -253,7 +253,6 @@ function ManageOrderPbfRetailer() {
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailOrderCt = await contracts.orderManagementRetail.detailOrder(orderId);
-      // const orderTimestampCt = await contracts.orderManagementRetail.detailTimestamp(orderId);
       const orderTimestampCt = await contracts.orderManagementPbf.orderTimestamp(orderId);
       const orderObatIpfs = await contracts.orderManagementRetail.obatIpfs(orderId);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
@@ -740,9 +739,9 @@ function ManageOrderPbfRetailer() {
         });
       }
 
-      // contracts.orderManagementRetail.on("evt_orderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
-      //   handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, acceptOrderCt.hash)
-      // });
+      contracts.orderManagementRetail.once("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+        handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, acceptOrderCt.hash)
+      });
 
       
     } catch (error) {

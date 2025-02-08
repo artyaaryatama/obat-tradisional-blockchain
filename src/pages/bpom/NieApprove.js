@@ -159,7 +159,7 @@ function NieApprove() {
                 <p>{bpomInstance}</p> 
               </li>
             </ul>
-            <ul>
+            <ul className='klaim'>
               <li className="label">
                 <p>Alamat Akun BPOM (Pengguna)</p> 
               </li>
@@ -227,7 +227,7 @@ function NieApprove() {
                 <p>{bpomInstance}</p> 
               </li>
             </ul>
-            <ul>
+            <ul className='klaim'>
               <li className="label">
                 <p>Alamat Akun BPOM (Pengguna)</p> 
               </li>
@@ -2048,7 +2048,7 @@ function NieApprove() {
         });
       }
 
-      contracts.nieManager.on('evt_nieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
+      contracts.nieManager.once('NieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
         handleEventNieApproved("Approved", namaObat, _instanceAddr, _instanceName, _nieNumber, _timestampApprove, approveNieCt.hash)
       });
 
@@ -2071,7 +2071,7 @@ function NieApprove() {
         });
       }
 
-      contracts.nieManager.on('evt_nieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
+      contracts.nieManager.once('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
         handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, rejectCt.hash)
       });
 

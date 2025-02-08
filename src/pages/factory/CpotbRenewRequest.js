@@ -136,7 +136,7 @@ function CpotbRenewRequest() {
               <p>{pabrikInstance}</p> 
             </li>
           </ul>
-          <ul>
+          <ul className='klaim'>
             <li className="label">
               <p>Alamat Akun Pabrik (Pengguna)</p> 
             </li>
@@ -356,7 +356,7 @@ function CpotbRenewRequest() {
         });
       }
   
-      contracts.certificateManager.once("evt_certRenewRequest", (_name, _userAddr, _jenisSediaan, _timestampRenew) => {
+      contracts.certificateManager.once("CertRenewRequest", (_name, _userAddr, _jenisSediaan, _timestampRenew) => {
         handleEventCpotbRenewRequested(_name, _userAddr, _jenisSediaan, _timestampRenew, renewRequestCpotbCt.hash);
       });
   
