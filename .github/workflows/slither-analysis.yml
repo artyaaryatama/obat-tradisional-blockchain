@@ -32,7 +32,11 @@ jobs:
       - name: Run Slither Analysis
         run: |
           mkdir -p slither-reports
-          slither contracts/ --json slither-reports/slither-output.json || true
+          slither contracts/BaseCertificate.sol contracts/CdobCertificate.sol \
+                  contracts/CertificateManager.sol contracts/CpotbCertificate.sol \
+                  contracts/ObatTradisional.sol contracts/OrderManagement.sol \
+                  contracts/RoleManager.sol --json slither-reports/slither-output.json || true
+
 
       - name: Debug Slither Output
         run: cat slither-reports/slither-output.json || echo "Slither output is empty"
