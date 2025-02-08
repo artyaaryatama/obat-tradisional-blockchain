@@ -1,0 +1,1271 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "CertificateManager",
+  "sourceName": "contracts/CertificateManager.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_roleManagerAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_cpotbCertificateAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_cdobCertificateAddr",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "bpomInstance",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "bpomAddr",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "tipePermohonan",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "certNumber",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "evt_certApproved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "bpomInstance",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "bpomAddr",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "tipePermohonan",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "rejectMsg",
+          "type": "string"
+        }
+      ],
+      "name": "evt_certRejected",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "senderInstance",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "senderAddr",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "evt_certRenewRequest",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "senderInstance",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "senderAddr",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "tipePermohonan",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "evt_certRequested",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "certNumber",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "certId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "bpomName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "bpomInstance",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "bpomAddr",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct CertificateManager.st_certificateApproval",
+          "name": "approvalData",
+          "type": "tuple"
+        },
+        {
+          "internalType": "string",
+          "name": "_ipfsCert",
+          "type": "string"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_tipePermohonanCdob",
+          "type": "uint8"
+        }
+      ],
+      "name": "approveCdob",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "certNumber",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "certId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "bpomName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "bpomInstance",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "bpomAddr",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct CertificateManager.st_certificateApproval",
+          "name": "approvalData",
+          "type": "tuple"
+        },
+        {
+          "internalType": "string",
+          "name": "_ipfsCert",
+          "type": "string"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_jenisSediaan",
+          "type": "uint8"
+        }
+      ],
+      "name": "approveCpotb",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAllCdob",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "certId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "certNumber",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "instanceName",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "tipePermohonan",
+              "type": "uint8"
+            },
+            {
+              "internalType": "enum EnumsLibrary.StatusCertificate",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "string",
+              "name": "certHash",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CdobCertificate.st_certificateList[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAllCpotb",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "certId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "certNumber",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "instanceName",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "tipePermohonan",
+              "type": "uint8"
+            },
+            {
+              "internalType": "enum EnumsLibrary.StatusCertificate",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "string",
+              "name": "certHash",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CpotbCertificate.st_certificateList[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_instanceName",
+          "type": "string"
+        }
+      ],
+      "name": "getCdobByInstance",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "certId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "certNumber",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "instanceName",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "tipePermohonan",
+              "type": "uint8"
+            },
+            {
+              "internalType": "enum EnumsLibrary.StatusCertificate",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "string",
+              "name": "certHash",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CdobCertificate.st_certificateList[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_certId",
+          "type": "string"
+        }
+      ],
+      "name": "getCdobDetails",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "enum EnumsLibrary.StatusCertificate",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestampRequest",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestampApprove",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestampRejected",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestsmpRenewRequest",
+              "type": "uint256"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "userName",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "userInstance",
+                  "type": "string"
+                },
+                {
+                  "internalType": "address",
+                  "name": "userAddr",
+                  "type": "address"
+                }
+              ],
+              "internalType": "struct BaseCertificate.st_userCertificate",
+              "name": "sender",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "userName",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "userInstance",
+                  "type": "string"
+                },
+                {
+                  "internalType": "address",
+                  "name": "userAddr",
+                  "type": "address"
+                }
+              ],
+              "internalType": "struct BaseCertificate.st_userCertificate",
+              "name": "bpom",
+              "type": "tuple"
+            },
+            {
+              "internalType": "string",
+              "name": "ipfsCert",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct BaseCertificate.st_certificateDetails",
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "cdobId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "cdobNumber",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "tipePermohonan",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct CdobCertificate.st_cdob",
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "suratPermohonan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "buktiPembayaranPajak",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CdobCertificate.st_dokumenAdministrasiIpfs",
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "suratIzinCdob",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "denahBangunan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "strukturOrganisasi",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "daftarPersonalia",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "daftarPeralatan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "eksekutifQualityManagement",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "suratIzinApoteker",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "dokumenSelfAssesment",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CdobCertificate.st_dokumenTeknisIpfs",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_instanceName",
+          "type": "string"
+        }
+      ],
+      "name": "getCpotbByInstance",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "certId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "certNumber",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "instanceName",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "tipePermohonan",
+              "type": "uint8"
+            },
+            {
+              "internalType": "enum EnumsLibrary.StatusCertificate",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "string",
+              "name": "certHash",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CpotbCertificate.st_certificateList[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_certId",
+          "type": "string"
+        }
+      ],
+      "name": "getCpotbDetails",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "enum EnumsLibrary.StatusCertificate",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestampRequest",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestampApprove",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestampRejected",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestsmpRenewRequest",
+              "type": "uint256"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "userName",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "userInstance",
+                  "type": "string"
+                },
+                {
+                  "internalType": "address",
+                  "name": "userAddr",
+                  "type": "address"
+                }
+              ],
+              "internalType": "struct BaseCertificate.st_userCertificate",
+              "name": "sender",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "userName",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "userInstance",
+                  "type": "string"
+                },
+                {
+                  "internalType": "address",
+                  "name": "userAddr",
+                  "type": "address"
+                }
+              ],
+              "internalType": "struct BaseCertificate.st_userCertificate",
+              "name": "bpom",
+              "type": "tuple"
+            },
+            {
+              "internalType": "string",
+              "name": "ipfsCert",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct BaseCertificate.st_certificateDetails",
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "cpotbId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "cpotbNumber",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "tipePermohonan",
+              "type": "uint8"
+            },
+            {
+              "internalType": "string",
+              "name": "factoryType",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CpotbCertificate.st_cpotb",
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "suratPermohonan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "buktiPembayaranNegaraBukanPajak",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "suratKomitmen",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CpotbCertificate.st_dokumenAdministrasiIpfs",
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "denahBangunan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "sistemMutu",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CpotbCertificate.st_dokumenTeknisIpfs",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_certId",
+          "type": "string"
+        }
+      ],
+      "name": "getRejectMsgCdob",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_certId",
+          "type": "string"
+        }
+      ],
+      "name": "getRejectMsgCpotb",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_certId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_rejectMsg",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_bpomName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_bpomInstance",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "_bpomAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_tipePermohonanCdob",
+          "type": "uint8"
+        }
+      ],
+      "name": "rejectCdob",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_certId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_rejectMsg",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_bpomName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_bpomInstance",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "_bpomAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_jenisSediaan",
+          "type": "uint8"
+        }
+      ],
+      "name": "rejectCpotb",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "certId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "senderName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "senderInstance",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "senderAddr",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct CertificateManager.st_certificateRequest",
+          "name": "requestData",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "suratPermohonan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "buktiPembayaranPajak",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CdobCertificate.st_dokumenAdministrasiIpfs",
+          "name": "newDokuAdmin",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "suratIzinCdob",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "denahBangunan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "strukturOrganisasi",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "daftarPersonalia",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "daftarPeralatan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "eksekutifQualityManagement",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "suratIzinApoteker",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "dokumenSelfAssesment",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CdobCertificate.st_dokumenTeknisIpfs",
+          "name": "newDokuTeknis",
+          "type": "tuple"
+        }
+      ],
+      "name": "renewCdob",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "certId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "senderName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "senderInstance",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "senderAddr",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct CertificateManager.st_certificateRequest",
+          "name": "requestData",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "suratPermohonan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "buktiPembayaranNegaraBukanPajak",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "suratKomitmen",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CpotbCertificate.st_dokumenAdministrasiIpfs",
+          "name": "newDokuAdmin",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "denahBangunan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "sistemMutu",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CpotbCertificate.st_dokumenTeknisIpfs",
+          "name": "newDokuTeknis",
+          "type": "tuple"
+        }
+      ],
+      "name": "renewCpotb",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "certId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "senderName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "senderInstance",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "senderAddr",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct CertificateManager.st_certificateRequest",
+          "name": "requestData",
+          "type": "tuple"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_tipePermohonanCdob",
+          "type": "uint8"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "suratPermohonan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "buktiPembayaranPajak",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CdobCertificate.st_dokumenAdministrasiIpfs",
+          "name": "dokuAdmin",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "suratIzinCdob",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "denahBangunan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "strukturOrganisasi",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "daftarPersonalia",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "daftarPeralatan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "eksekutifQualityManagement",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "suratIzinApoteker",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "dokumenSelfAssesment",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CdobCertificate.st_dokumenTeknisIpfs",
+          "name": "dokuTeknis",
+          "type": "tuple"
+        }
+      ],
+      "name": "requestCdob",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "certId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "senderName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "senderInstance",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "senderAddr",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct CertificateManager.st_certificateRequest",
+          "name": "requestData",
+          "type": "tuple"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_jenisSediaan",
+          "type": "uint8"
+        },
+        {
+          "internalType": "string",
+          "name": "_factoryType",
+          "type": "string"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "suratPermohonan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "buktiPembayaranNegaraBukanPajak",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "suratKomitmen",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CpotbCertificate.st_dokumenAdministrasiIpfs",
+          "name": "dokuAdmin",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "denahBangunan",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "sistemMutu",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CpotbCertificate.st_dokumenTeknisIpfs",
+          "name": "dokuTeknis",
+          "type": "tuple"
+        }
+      ],
+      "name": "requestCpotb",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x60803460a257601f6125a638819003918201601f19168301916001600160401b0383118484101760a65780849260609460405283398101031260a25760428160ba565b906057604060516020840160ba565b920160ba565b5f80546001600160a01b039485166001600160a01b0319918216179091556001805493851693821693909317909255600280549190931691161790556040516124d890816100ce8239f35b5f80fd5b634e487b7160e01b5f52604160045260245ffd5b51906001600160a01b038216820360a25756fe60806040526004361015610011575f80fd5b5f5f3560e01c806317d96797146115145780631a898044146114665780631d4303491461125b5780632dbcaf0f146111a257806339a102f21461110f5780634e03317b14610ff357806351c2d32614610f905780635850607c14610f3b57806370c056b014610bf65780637e8f8da714610830578063817aec181461072357806387fecd3e146104ff578063bbd0b8a9146103ba578063cb43b77f146101da578063d0927b19146101545763f14261d2146100ca575f80fd5b346101515780600319360112610151576002546040516378a130e960e11b8152908290829060049082906001600160a01b03165afa908115610146578261011f9392610123575b505060405191829182611b49565b0390f35b61013f92503d8091833e61013781836115f7565b810190612086565b5f80610111565b6040513d84823e3d90fd5b80fd5b503461015157602036600319011261015157600435816001600160401b038211610151576101896101b7923690600401611633565b60018060a01b036002541660405180809581946306f12c2360e41b8352602060048401526024830190611679565b03915afa908115610146578261011f939261012357505060405191829182611b49565b5034610151576060366003190112610151576004356001600160401b0381116103745761020b9036906004016116b1565b816024356001600160401b0381116103745761022b903690600401611d40565b6044356001600160401b0381116103b65761024a903690600401611757565b82546040516395a8c58d60e01b81523360048201526024810185905290602090829060449082906001600160a01b03165afa80156103ab5761029391859161037c575b5061241c565b600154845192906001600160a01b0316803b15610378576102dc856102ee9561030082966040519889978896879563e8002b2760e01b8752606060048801526064870190611679565b85810360031901602487015290611c50565b83810360031901604485015290611c7d565b03925af180156101465761035f575b50604080830151606084015191517f5d1c243c69827850b5c24c0cb8fb4aa56ac0e85d454589afd3035fbcc86c9f4392909182916103599142916001600160a01b03169084612476565b0390a180f35b81610369916115f7565b61037457815f61030f565b5080fd5b8480fd5b61039e915060203d6020116103a4575b61039681836115f7565b810190611e29565b5f61028d565b503d61038c565b6040513d86823e3d90fd5b8280fd5b5034610151576060366003190112610151576004356001600160401b038111610374576103eb9036906004016116b1565b816024356001600160401b0381116103745761040b903690600401611757565b6044356001600160401b0381116103b65761042a9036906004016117b1565b82546040516395a8c58d60e01b81523360048201526001602482015290602090829060449082906001600160a01b03165afa80156103ab576104739185916104e0575b50611e41565b600254845192906001600160a01b0316803b15610378576104bc856104ce9561030082966040519889978896879563a722652760e01b8752606060048801526064870190611679565b85810360031901602487015290611c7d565b83810360031901604485015290611ca7565b6104f9915060203d6020116103a45761039681836115f7565b5f61046d565b50346101515760a0366003190112610151576004356001600160401b038111610374576105309036906004016116b1565b610538611747565b826044356001600160401b03811161037457610558903690600401611633565b926064356001600160401b0381116103b657610578903690600401611d40565b6084356001600160401b03811161071f57610597903690600401611757565b916044602060018060a01b03865416604051928380926395a8c58d60e01b82523360048301528960248301525afa8015610714576105db91869161037c575061241c565b60018060a01b03600154168151966020830151906040840198895194606060018060a01b039101511696843b156107105788968793604051998a98899788966364b409ff60e01b8852600488016101009052610104880161063b91611679565b87810360031901602489015261065091611679565b86810360031901604488015261066591611679565b90606486015260ff8d1660848601526003198582030160a486015261068991611679565b8381036003190160c485015261069e91611c50565b8281036003190160e48401526106b391611c7d565b03925af18015610146576106fb575b50507fc2e9ac3a5604e4974685010330569187c02f4ce9b7b65eccd82376d2737e31799151906103596040519283924291339085611e97565b81610705916115f7565b6103b657825f6106c2565b8880fd5b6040513d87823e3d90fd5b8380fd5b5034610151578061073336611a07565b9395926044602060018060a09996991b03865416604051928380926395a8c58d60e01b8252336004830152600260248301525afa80156107145761077e918691610811575b50611ecc565b6002546001600160a01b0316803b1561037857878588956107b6829660405198899788968795621acf2560e81b875260048701611fd5565b03925af18015610146576107fc575b50506103597f49ccc40643c62b9ba169985fbc04f29649aa4962d40fd63a85a56083c58b1cc6936040519384934291339086612033565b81610806916115f7565b61071f57835f6107c5565b61082a915060203d6020116103a45761039681836115f7565b5f610778565b5034610151576020366003190112610151576004356001600160401b03811161037457610861903690600401611633565b610869612211565b506108726121f1565b5061087b61225b565b50606060e060405161088c816115c0565b82815282602082015282604082015282808201528260808201528260a08201528260c0820152015260018060a01b036002541660405190637e8f8da760e01b8252602060048301528382806108e46024820187611679565b0381845afa9081156103ab57848091819482946109e0575b50946109269495604051808097819463be2e232560e01b8352602060048401526024830190611679565b03915afa928315610714578561095b96946109b2575b50506109a49061011f9394604051968796608088526080880190611bd4565b8681036020880152604060ff8161099061097e8751606087526060870190611679565b60208801518682036020880152611679565b950151169101528582036040870152611c7d565b908382036060850152611ca7565b61011f94506109a492916109d7913d8091833e6109cf81836115f7565b810190612346565b9381925061093c565b9450925050503d8085843e6109f581846115f7565b820191606081840312610378578481516001600160401b038111610374578201946060868603126103745760405195610a2d876115a5565b80516001600160401b03811161071f5786610a49918301611dbe565b875260208101516001600160401b03811161071f5781610a7088604093610a7b9501611dbe565b60208a015201612078565b604087015260208301516001600160401b0381116103b65785610a9f918501612274565b926040810151906001600160401b03821161071f570195610100878703126103b65760405196610ace886115c0565b80516001600160401b0381116103785787610aea918301611dbe565b885260208101516001600160401b0381116103785787610b0b918301611dbe565b602089015260408101516001600160401b0381116103785787610b2f918301611dbe565b604089015260608101516001600160401b0381116103785787610b53918301611dbe565b606089015260808101516001600160401b0381116103785787610b77918301611dbe565b608089015260a08101516001600160401b0381116103785787610b9b918301611dbe565b60a089015260c08101516001600160401b0381116103785787610bbf918301611dbe565b60c089015260e0810151966001600160401b0388116103785761092697610be69201611dbe565b60e08801529295939095946108fc565b5034610151576020366003190112610151576004356001600160401b03811161037457610c27903690600401611633565b610c2f612211565b50606080604051610c3f81611576565b8181528160208201528460408201520152606060408051610c5f816115a5565b8281528260208201520152610c7261225b565b5060015460405163070c056b60e41b81526020600482015291906001600160a01b0316838380610ca56024820186611679565b0381845afa9081156103ab5784809381928294610db4575b610ce6959650604051808097819463be2e232560e01b8352602060048401526024830190611679565b03915afa9283156107145785610d1e9694610d8a575b5050610d7c90610d6e61011f9495604051978897608089526080890190611bd4565b87810360208901526060610d50610d3e8451608085526080850190611679565b60208501518482036020860152611679565b9260ff60408201511660408401520151906060818403910152611679565b908582036040870152611c50565b908382036060850152611c7d565b61011f9450610daa610d7c9392610d6e923d8091833e6109cf81836115f7565b9450819250610cfc565b9350935050503d8085853e610dc981856115f7565b830191606084840312610378578484516001600160401b038111610374578501916080838603126103745760405192610e0184611576565b80516001600160401b03811161071f5786610e1d918301611dbe565b845260208101516001600160401b03811161071f5786610e3e918301611dbe565b6020850152610e4f60408201612078565b60408501526060810151906001600160401b03821161071f57610e7491879101611dbe565b606084015260208601516001600160401b0381116103b6578601956060878703126103b65760405196610ea6886115a5565b80516001600160401b0381116103785787610ec2918301611dbe565b885260208101516001600160401b0381116103785787610ee3918301611dbe565b60208901526040810151906001600160401b03821161037857610f0891889101611dbe565b60408801526040810151956001600160401b03871161071f57610ce696610f2f9201612274565b92959293869550610cbd565b5034610151578060031936011261015157600154604051631614181f60e21b8152908290829060049082906001600160a01b03165afa908115610146578261011f939261012357505060405191829182611b49565b503461015157602036600319011261015157600435816001600160401b03821161015157610fc56101b7923690600401611633565b60018060a01b036001541660405180809581946381fc60a560e01b8352602060048401526024830190611679565b503461015157611002366118e4565b83546040516395a8c58d60e01b81523360048201526002602482015292939290602090829060449082906001600160a01b03165afa80156107145761104d9186916108115750611ecc565b8360018060a01b036001541692805160208201948551906040840151916060850198895195608060018060a01b039101511694833b1561110b576110ac8896928793604051998a9889978896630173c92160e71b885260048801611f23565b03925af18015610146576110f6575b50506103597f5a6de087e789907358535425669e4f40d3b814f0db7eff0cbc6cd0ef46f88f6393519251926040519384934292339086611f8f565b81611100916115f7565b61071f57835f6110bb565b8780fd5b5034610151578061111f36611a07565b9395926044602060018060a09996991b03865416604051928380926395a8c58d60e01b8252336004830152600260248301525afa8015610714576111699186916108115750611ecc565b6001546001600160a01b0316803b1561037857878588956107b682966040519889978896879563e462dde560e01b875260048701611fd5565b5034610151576111b1366118e4565b83546040516395a8c58d60e01b81523360048201526002602482015292939290602090829060449082906001600160a01b03165afa8015610714576111fc9186916108115750611ecc565b8360018060a01b036002541692805160208201948551906040840151916060850198895195608060018060a01b039101511694833b1561110b576110ac8896928793604051998a98899788966315c9fbf960e11b885260048801611f23565b5034611462576080366003190112611462576004356001600160401b0381116114625761128c9036906004016116b1565b90611295611747565b6044356001600160401b038111611462576112b4903690600401611757565b6064356001600160401b038111611462576112d39036906004016117b1565b5f546040516395a8c58d60e01b81523360048201526001602482015290602090829060449082906001600160a01b03165afa80156114575761131b915f916104e05750611e41565b60025485516020870151604088018051606090990151909891936001600160a01b0390811693911690833b15611462576113db5f966113c988946113979a6113a9611385986040519d8e9c8d9b8c9a63682053d960e01b8c5260e060048d015260e48c0190611679565b8a81036003190160248c015290611679565b8881036003190160448a015290611679565b91606487015260ff8d1660848701526003198683030160a4870152611c7d565b8381036003190160c485015290611ca7565b03925af1801561145757611423575b507fc2e9ac3a5604e4974685010330569187c02f4ce9b7b65eccd82376d2737e3179919251906103596040519283924291339085611e97565b7fc2e9ac3a5604e4974685010330569187c02f4ce9b7b65eccd82376d2737e317992505f611450916115f7565b5f916113ea565b6040513d5f823e3d90fd5b5f80fd5b34611462576020366003190112611462576004356001600160401b038111611462575f61149a6114c8923690600401611633565b60018060a01b03600154166040518080958194636d1aa7d560e01b8352602060048401526024830190611679565b03915afa80156114575761011f915f916114f2575b50604051918291602083526020830190611679565b61150e91503d805f833e61150681836115f7565b810190611e04565b826114dd565b34611462576020366003190112611462576004356001600160401b038111611462575f6115486114c8923690600401611633565b60018060a01b03600254166040518080958194636d1aa7d560e01b8352602060048401526024830190611679565b608081019081106001600160401b0382111761159157604052565b634e487b7160e01b5f52604160045260245ffd5b606081019081106001600160401b0382111761159157604052565b61010081019081106001600160401b0382111761159157604052565b604081019081106001600160401b0382111761159157604052565b90601f801991011681019081106001600160401b0382111761159157604052565b6001600160401b03811161159157601f01601f191660200190565b81601f820112156114625780359061164a82611618565b9261165860405194856115f7565b8284526020838301011161146257815f926020809301838601378301015290565b805180835260209291819084018484015e5f828201840152601f01601f1916010190565b35906001600160a01b038216820361146257565b91909160808184031261146257604051906116cb82611576565b819381356001600160401b03811161146257816116e9918401611633565b835260208201356001600160401b038111611462578161170a918401611633565b60208401526040820135906001600160401b03821161146257826117376060949261174294869401611633565b60408601520161169d565b910152565b6024359060ff8216820361146257565b91906040838203126114625760405190611770826115dc565b819380356001600160401b038111611462578261178e918301611633565b83526020810135916001600160401b038311611462576020926117429201611633565b91906101008382031261146257604051906117cb826115c0565b819380356001600160401b03811161146257826117e9918301611633565b835260208101356001600160401b038111611462578261180a918301611633565b602084015260408101356001600160401b038111611462578261182e918301611633565b604084015260608101356001600160401b0381116114625782611852918301611633565b606084015260808101356001600160401b0381116114625782611876918301611633565b608084015260a08101356001600160401b038111611462578261189a918301611633565b60a084015260c08101356001600160401b03811161146257826118be918301611633565b60c084015260e0810135916001600160401b0383116114625760e0926117429201611633565b906060600319830112611462576004356001600160401b0381116114625760a08184036003190112611462576040519060a082018281106001600160401b038211176115915760405280600401356001600160401b0381116114625784600461194f92840101611633565b825260248101356001600160401b0381116114625784600461197392840101611633565b602083015260448101356001600160401b0381116114625784600461199a92840101611633565b604083015260648101356001600160401b03811161146257816119c78660046084946119d2960101611633565b60608501520161169d565b608082015291602435906001600160401b038211611462576119f691600401611633565b9060443560ff811681036114625790565b9060c0600319830112611462576004356001600160401b0381116114625782611a3291600401611633565b916024356001600160401b0381116114625781611a5191600401611633565b916044356001600160401b0381116114625782611a7091600401611633565b91606435906001600160401b03821161146257611a8f91600401611633565b906084356001600160a01b0381168103611462579060a43560ff811681036114625790565b60041115611abe57565b634e487b7160e01b5f52602160045260245ffd5b611b469160a0611b15611b03611af1855160c0865260c0860190611679565b60208601518582036020870152611679565b60408501518482036040860152611679565b9260ff60608201511660608401526080810151611b3181611ab4565b608084015201519060a0818403910152611679565b90565b602081016020825282518091526040820191602060408360051b8301019401925f915b838310611b7b57505050505090565b9091929394602080611b99600193603f198682030187528951611ad2565b97019301930191939290611b6c565b906040611bc1610d3e8451606085526060850190611679565b928101516001600160a01b031691015290565b611b46918151611be381611ab4565b81526020820151602082015260408201516040820152606082015160608201526080820151608082015260e0611c3f611c2d60a085015161010060a0860152610100850190611ba8565b60c085015184820360c0860152611ba8565b9201519060e0818403910152611679565b611b46916040611c6c610d3e8451606085526060850190611679565b920151906040818403910152611679565b611b46916020611c968351604084526040840190611679565b920151906020818403910152611679565b611b469160e0611c3f611d2e611d1c611d0a611cf8611ce6611cd489516101008a526101008a0190611679565b60208a015189820360208b0152611679565b604089015188820360408a0152611679565b60608801518782036060890152611679565b60808701518682036080880152611679565b60a086015185820360a0870152611679565b60c085015184820360c0860152611679565b91906060838203126114625760405190611d59826115a5565b819380356001600160401b0381116114625782611d77918301611633565b835260208101356001600160401b0381116114625782611d98918301611633565b60208401526040810135916001600160401b038311611462576040926117429201611633565b81601f8201121561146257805190611dd582611618565b92611de360405194856115f7565b8284526020838301011161146257815f9260208093018386015e8301015290565b906020828203126114625781516001600160401b03811161146257611b469201611dbe565b90816020910312611462575180151581036114625790565b15611e4857565b60405162461bcd60e51b815260206004820152602160248201527f4f6e6c79205042462063616e20646f2074686973207472616e73616374696f6e6044820152602160f81b6064820152608490fd5b90606092959493611eb260ff92608085526080850190611679565b6001600160a01b0390971660208401521660408201520152565b15611ed357565b60405162461bcd60e51b815260206004820152602260248201527f4f6e6c792042504f4d2063616e20646f2074686973207472616e73616374696f6044820152616e2160f01b6064820152608490fd5b92611f6290611f54611f7094611f46611b469a989560c0895260c0890190611679565b908782036020890152611679565b908582036040870152611679565b908382036060850152611679565b6001600160a01b03909316608082015280830360a09190910152611679565b95949360ff608094611fad611fd0959460a08b5260a08b0190611679565b6001600160a01b0390941660208a01521660408801528682036060880152611679565b930152565b939060809361200761202394611ff9612015949a999a60a08a5260a08a0190611679565b9088820360208a0152611679565b908682036040880152611679565b908482036060860152611679565b6001600160a01b03909416910152565b919390611b46959361204f60ff9260a0865260a0860190611679565b6001600160a01b0390961660208501521660408301526060820152808303608090910152611679565b519060ff8216820361146257565b602081830312611462578051906001600160401b03821161146257019080601f83011215611462576020825192016001600160401b038311611591578260051b60208101936120d860405195866115f7565b845260208401908201918383116114625780915b8383106120fb57505050505090565b82516001600160401b03811161146257820160c081870312611462576040519160c083018381106001600160401b038211176115915760405281516001600160401b0381116114625787612150918401611dbe565b835260208201516001600160401b0381116114625787612171918401611dbe565b602084015260408201516001600160401b0381116114625787612195918401611dbe565b60408401526121a660608301612078565b60608401526080820151600481101561146257608084015260a0820151926001600160401b038411611462576121e188602095869501611dbe565b60a08201528152019201916120ec565b604051906121fe826115a5565b5f60408360608152606060208201520152565b6040519061221e826115c0565b606060e0835f81525f60208201525f60408201525f838201525f60808201526122456121f1565b60a08201526122526121f1565b60c08201520152565b60405190612268826115dc565b60606020838281520152565b9190604083820312611462576040519061228d826115dc565b819380516001600160401b03811161146257826122ab918301611dbe565b83526020810151916001600160401b038311611462576020926117429201611dbe565b919060608382031261146257604051906122e7826115a5565b819380516001600160401b0381116114625782612305918301611dbe565b835260208101516001600160401b03811161146257604092612328918301611dbe565b60208401520151906001600160a01b03821682036114625760400152565b602081830312611462578051906001600160401b038211611462570161010081830312611462576040519161237a836115c0565b815160048110156114625783526020820151602084015260408201516040840152606082015160608401526080820151608084015260a08201516001600160401b03811161146257816123ce9184016122ce565b60a084015260c08201516001600160401b03811161146257816123f29184016122ce565b60c084015260e08201516001600160401b038111611462576124149201611dbe565b60e082015290565b1561242357565b60405162461bcd60e51b815260206004820152602560248201527f4f6e6c7920466163746f72792063616e20646f2074686973207472616e73616360448201526474696f6e2160d81b6064820152608490fd5b61248e60409295949395606083526060830190611679565b6001600160a01b039095166020820152015256fea2646970667358221220c418b1b74c4f68007df1cec6f324e2e48388ea65201e8d786344b5e1f49e1f8164736f6c634300081b0033",
+  "deployedBytecode": "0x60806040526004361015610011575f80fd5b5f5f3560e01c806317d96797146115145780631a898044146114665780631d4303491461125b5780632dbcaf0f146111a257806339a102f21461110f5780634e03317b14610ff357806351c2d32614610f905780635850607c14610f3b57806370c056b014610bf65780637e8f8da714610830578063817aec181461072357806387fecd3e146104ff578063bbd0b8a9146103ba578063cb43b77f146101da578063d0927b19146101545763f14261d2146100ca575f80fd5b346101515780600319360112610151576002546040516378a130e960e11b8152908290829060049082906001600160a01b03165afa908115610146578261011f9392610123575b505060405191829182611b49565b0390f35b61013f92503d8091833e61013781836115f7565b810190612086565b5f80610111565b6040513d84823e3d90fd5b80fd5b503461015157602036600319011261015157600435816001600160401b038211610151576101896101b7923690600401611633565b60018060a01b036002541660405180809581946306f12c2360e41b8352602060048401526024830190611679565b03915afa908115610146578261011f939261012357505060405191829182611b49565b5034610151576060366003190112610151576004356001600160401b0381116103745761020b9036906004016116b1565b816024356001600160401b0381116103745761022b903690600401611d40565b6044356001600160401b0381116103b65761024a903690600401611757565b82546040516395a8c58d60e01b81523360048201526024810185905290602090829060449082906001600160a01b03165afa80156103ab5761029391859161037c575b5061241c565b600154845192906001600160a01b0316803b15610378576102dc856102ee9561030082966040519889978896879563e8002b2760e01b8752606060048801526064870190611679565b85810360031901602487015290611c50565b83810360031901604485015290611c7d565b03925af180156101465761035f575b50604080830151606084015191517f5d1c243c69827850b5c24c0cb8fb4aa56ac0e85d454589afd3035fbcc86c9f4392909182916103599142916001600160a01b03169084612476565b0390a180f35b81610369916115f7565b61037457815f61030f565b5080fd5b8480fd5b61039e915060203d6020116103a4575b61039681836115f7565b810190611e29565b5f61028d565b503d61038c565b6040513d86823e3d90fd5b8280fd5b5034610151576060366003190112610151576004356001600160401b038111610374576103eb9036906004016116b1565b816024356001600160401b0381116103745761040b903690600401611757565b6044356001600160401b0381116103b65761042a9036906004016117b1565b82546040516395a8c58d60e01b81523360048201526001602482015290602090829060449082906001600160a01b03165afa80156103ab576104739185916104e0575b50611e41565b600254845192906001600160a01b0316803b15610378576104bc856104ce9561030082966040519889978896879563a722652760e01b8752606060048801526064870190611679565b85810360031901602487015290611c7d565b83810360031901604485015290611ca7565b6104f9915060203d6020116103a45761039681836115f7565b5f61046d565b50346101515760a0366003190112610151576004356001600160401b038111610374576105309036906004016116b1565b610538611747565b826044356001600160401b03811161037457610558903690600401611633565b926064356001600160401b0381116103b657610578903690600401611d40565b6084356001600160401b03811161071f57610597903690600401611757565b916044602060018060a01b03865416604051928380926395a8c58d60e01b82523360048301528960248301525afa8015610714576105db91869161037c575061241c565b60018060a01b03600154168151966020830151906040840198895194606060018060a01b039101511696843b156107105788968793604051998a98899788966364b409ff60e01b8852600488016101009052610104880161063b91611679565b87810360031901602489015261065091611679565b86810360031901604488015261066591611679565b90606486015260ff8d1660848601526003198582030160a486015261068991611679565b8381036003190160c485015261069e91611c50565b8281036003190160e48401526106b391611c7d565b03925af18015610146576106fb575b50507fc2e9ac3a5604e4974685010330569187c02f4ce9b7b65eccd82376d2737e31799151906103596040519283924291339085611e97565b81610705916115f7565b6103b657825f6106c2565b8880fd5b6040513d87823e3d90fd5b8380fd5b5034610151578061073336611a07565b9395926044602060018060a09996991b03865416604051928380926395a8c58d60e01b8252336004830152600260248301525afa80156107145761077e918691610811575b50611ecc565b6002546001600160a01b0316803b1561037857878588956107b6829660405198899788968795621acf2560e81b875260048701611fd5565b03925af18015610146576107fc575b50506103597f49ccc40643c62b9ba169985fbc04f29649aa4962d40fd63a85a56083c58b1cc6936040519384934291339086612033565b81610806916115f7565b61071f57835f6107c5565b61082a915060203d6020116103a45761039681836115f7565b5f610778565b5034610151576020366003190112610151576004356001600160401b03811161037457610861903690600401611633565b610869612211565b506108726121f1565b5061087b61225b565b50606060e060405161088c816115c0565b82815282602082015282604082015282808201528260808201528260a08201528260c0820152015260018060a01b036002541660405190637e8f8da760e01b8252602060048301528382806108e46024820187611679565b0381845afa9081156103ab57848091819482946109e0575b50946109269495604051808097819463be2e232560e01b8352602060048401526024830190611679565b03915afa928315610714578561095b96946109b2575b50506109a49061011f9394604051968796608088526080880190611bd4565b8681036020880152604060ff8161099061097e8751606087526060870190611679565b60208801518682036020880152611679565b950151169101528582036040870152611c7d565b908382036060850152611ca7565b61011f94506109a492916109d7913d8091833e6109cf81836115f7565b810190612346565b9381925061093c565b9450925050503d8085843e6109f581846115f7565b820191606081840312610378578481516001600160401b038111610374578201946060868603126103745760405195610a2d876115a5565b80516001600160401b03811161071f5786610a49918301611dbe565b875260208101516001600160401b03811161071f5781610a7088604093610a7b9501611dbe565b60208a015201612078565b604087015260208301516001600160401b0381116103b65785610a9f918501612274565b926040810151906001600160401b03821161071f570195610100878703126103b65760405196610ace886115c0565b80516001600160401b0381116103785787610aea918301611dbe565b885260208101516001600160401b0381116103785787610b0b918301611dbe565b602089015260408101516001600160401b0381116103785787610b2f918301611dbe565b604089015260608101516001600160401b0381116103785787610b53918301611dbe565b606089015260808101516001600160401b0381116103785787610b77918301611dbe565b608089015260a08101516001600160401b0381116103785787610b9b918301611dbe565b60a089015260c08101516001600160401b0381116103785787610bbf918301611dbe565b60c089015260e0810151966001600160401b0388116103785761092697610be69201611dbe565b60e08801529295939095946108fc565b5034610151576020366003190112610151576004356001600160401b03811161037457610c27903690600401611633565b610c2f612211565b50606080604051610c3f81611576565b8181528160208201528460408201520152606060408051610c5f816115a5565b8281528260208201520152610c7261225b565b5060015460405163070c056b60e41b81526020600482015291906001600160a01b0316838380610ca56024820186611679565b0381845afa9081156103ab5784809381928294610db4575b610ce6959650604051808097819463be2e232560e01b8352602060048401526024830190611679565b03915afa9283156107145785610d1e9694610d8a575b5050610d7c90610d6e61011f9495604051978897608089526080890190611bd4565b87810360208901526060610d50610d3e8451608085526080850190611679565b60208501518482036020860152611679565b9260ff60408201511660408401520151906060818403910152611679565b908582036040870152611c50565b908382036060850152611c7d565b61011f9450610daa610d7c9392610d6e923d8091833e6109cf81836115f7565b9450819250610cfc565b9350935050503d8085853e610dc981856115f7565b830191606084840312610378578484516001600160401b038111610374578501916080838603126103745760405192610e0184611576565b80516001600160401b03811161071f5786610e1d918301611dbe565b845260208101516001600160401b03811161071f5786610e3e918301611dbe565b6020850152610e4f60408201612078565b60408501526060810151906001600160401b03821161071f57610e7491879101611dbe565b606084015260208601516001600160401b0381116103b6578601956060878703126103b65760405196610ea6886115a5565b80516001600160401b0381116103785787610ec2918301611dbe565b885260208101516001600160401b0381116103785787610ee3918301611dbe565b60208901526040810151906001600160401b03821161037857610f0891889101611dbe565b60408801526040810151956001600160401b03871161071f57610ce696610f2f9201612274565b92959293869550610cbd565b5034610151578060031936011261015157600154604051631614181f60e21b8152908290829060049082906001600160a01b03165afa908115610146578261011f939261012357505060405191829182611b49565b503461015157602036600319011261015157600435816001600160401b03821161015157610fc56101b7923690600401611633565b60018060a01b036001541660405180809581946381fc60a560e01b8352602060048401526024830190611679565b503461015157611002366118e4565b83546040516395a8c58d60e01b81523360048201526002602482015292939290602090829060449082906001600160a01b03165afa80156107145761104d9186916108115750611ecc565b8360018060a01b036001541692805160208201948551906040840151916060850198895195608060018060a01b039101511694833b1561110b576110ac8896928793604051998a9889978896630173c92160e71b885260048801611f23565b03925af18015610146576110f6575b50506103597f5a6de087e789907358535425669e4f40d3b814f0db7eff0cbc6cd0ef46f88f6393519251926040519384934292339086611f8f565b81611100916115f7565b61071f57835f6110bb565b8780fd5b5034610151578061111f36611a07565b9395926044602060018060a09996991b03865416604051928380926395a8c58d60e01b8252336004830152600260248301525afa8015610714576111699186916108115750611ecc565b6001546001600160a01b0316803b1561037857878588956107b682966040519889978896879563e462dde560e01b875260048701611fd5565b5034610151576111b1366118e4565b83546040516395a8c58d60e01b81523360048201526002602482015292939290602090829060449082906001600160a01b03165afa8015610714576111fc9186916108115750611ecc565b8360018060a01b036002541692805160208201948551906040840151916060850198895195608060018060a01b039101511694833b1561110b576110ac8896928793604051998a98899788966315c9fbf960e11b885260048801611f23565b5034611462576080366003190112611462576004356001600160401b0381116114625761128c9036906004016116b1565b90611295611747565b6044356001600160401b038111611462576112b4903690600401611757565b6064356001600160401b038111611462576112d39036906004016117b1565b5f546040516395a8c58d60e01b81523360048201526001602482015290602090829060449082906001600160a01b03165afa80156114575761131b915f916104e05750611e41565b60025485516020870151604088018051606090990151909891936001600160a01b0390811693911690833b15611462576113db5f966113c988946113979a6113a9611385986040519d8e9c8d9b8c9a63682053d960e01b8c5260e060048d015260e48c0190611679565b8a81036003190160248c015290611679565b8881036003190160448a015290611679565b91606487015260ff8d1660848701526003198683030160a4870152611c7d565b8381036003190160c485015290611ca7565b03925af1801561145757611423575b507fc2e9ac3a5604e4974685010330569187c02f4ce9b7b65eccd82376d2737e3179919251906103596040519283924291339085611e97565b7fc2e9ac3a5604e4974685010330569187c02f4ce9b7b65eccd82376d2737e317992505f611450916115f7565b5f916113ea565b6040513d5f823e3d90fd5b5f80fd5b34611462576020366003190112611462576004356001600160401b038111611462575f61149a6114c8923690600401611633565b60018060a01b03600154166040518080958194636d1aa7d560e01b8352602060048401526024830190611679565b03915afa80156114575761011f915f916114f2575b50604051918291602083526020830190611679565b61150e91503d805f833e61150681836115f7565b810190611e04565b826114dd565b34611462576020366003190112611462576004356001600160401b038111611462575f6115486114c8923690600401611633565b60018060a01b03600254166040518080958194636d1aa7d560e01b8352602060048401526024830190611679565b608081019081106001600160401b0382111761159157604052565b634e487b7160e01b5f52604160045260245ffd5b606081019081106001600160401b0382111761159157604052565b61010081019081106001600160401b0382111761159157604052565b604081019081106001600160401b0382111761159157604052565b90601f801991011681019081106001600160401b0382111761159157604052565b6001600160401b03811161159157601f01601f191660200190565b81601f820112156114625780359061164a82611618565b9261165860405194856115f7565b8284526020838301011161146257815f926020809301838601378301015290565b805180835260209291819084018484015e5f828201840152601f01601f1916010190565b35906001600160a01b038216820361146257565b91909160808184031261146257604051906116cb82611576565b819381356001600160401b03811161146257816116e9918401611633565b835260208201356001600160401b038111611462578161170a918401611633565b60208401526040820135906001600160401b03821161146257826117376060949261174294869401611633565b60408601520161169d565b910152565b6024359060ff8216820361146257565b91906040838203126114625760405190611770826115dc565b819380356001600160401b038111611462578261178e918301611633565b83526020810135916001600160401b038311611462576020926117429201611633565b91906101008382031261146257604051906117cb826115c0565b819380356001600160401b03811161146257826117e9918301611633565b835260208101356001600160401b038111611462578261180a918301611633565b602084015260408101356001600160401b038111611462578261182e918301611633565b604084015260608101356001600160401b0381116114625782611852918301611633565b606084015260808101356001600160401b0381116114625782611876918301611633565b608084015260a08101356001600160401b038111611462578261189a918301611633565b60a084015260c08101356001600160401b03811161146257826118be918301611633565b60c084015260e0810135916001600160401b0383116114625760e0926117429201611633565b906060600319830112611462576004356001600160401b0381116114625760a08184036003190112611462576040519060a082018281106001600160401b038211176115915760405280600401356001600160401b0381116114625784600461194f92840101611633565b825260248101356001600160401b0381116114625784600461197392840101611633565b602083015260448101356001600160401b0381116114625784600461199a92840101611633565b604083015260648101356001600160401b03811161146257816119c78660046084946119d2960101611633565b60608501520161169d565b608082015291602435906001600160401b038211611462576119f691600401611633565b9060443560ff811681036114625790565b9060c0600319830112611462576004356001600160401b0381116114625782611a3291600401611633565b916024356001600160401b0381116114625781611a5191600401611633565b916044356001600160401b0381116114625782611a7091600401611633565b91606435906001600160401b03821161146257611a8f91600401611633565b906084356001600160a01b0381168103611462579060a43560ff811681036114625790565b60041115611abe57565b634e487b7160e01b5f52602160045260245ffd5b611b469160a0611b15611b03611af1855160c0865260c0860190611679565b60208601518582036020870152611679565b60408501518482036040860152611679565b9260ff60608201511660608401526080810151611b3181611ab4565b608084015201519060a0818403910152611679565b90565b602081016020825282518091526040820191602060408360051b8301019401925f915b838310611b7b57505050505090565b9091929394602080611b99600193603f198682030187528951611ad2565b97019301930191939290611b6c565b906040611bc1610d3e8451606085526060850190611679565b928101516001600160a01b031691015290565b611b46918151611be381611ab4565b81526020820151602082015260408201516040820152606082015160608201526080820151608082015260e0611c3f611c2d60a085015161010060a0860152610100850190611ba8565b60c085015184820360c0860152611ba8565b9201519060e0818403910152611679565b611b46916040611c6c610d3e8451606085526060850190611679565b920151906040818403910152611679565b611b46916020611c968351604084526040840190611679565b920151906020818403910152611679565b611b469160e0611c3f611d2e611d1c611d0a611cf8611ce6611cd489516101008a526101008a0190611679565b60208a015189820360208b0152611679565b604089015188820360408a0152611679565b60608801518782036060890152611679565b60808701518682036080880152611679565b60a086015185820360a0870152611679565b60c085015184820360c0860152611679565b91906060838203126114625760405190611d59826115a5565b819380356001600160401b0381116114625782611d77918301611633565b835260208101356001600160401b0381116114625782611d98918301611633565b60208401526040810135916001600160401b038311611462576040926117429201611633565b81601f8201121561146257805190611dd582611618565b92611de360405194856115f7565b8284526020838301011161146257815f9260208093018386015e8301015290565b906020828203126114625781516001600160401b03811161146257611b469201611dbe565b90816020910312611462575180151581036114625790565b15611e4857565b60405162461bcd60e51b815260206004820152602160248201527f4f6e6c79205042462063616e20646f2074686973207472616e73616374696f6e6044820152602160f81b6064820152608490fd5b90606092959493611eb260ff92608085526080850190611679565b6001600160a01b0390971660208401521660408201520152565b15611ed357565b60405162461bcd60e51b815260206004820152602260248201527f4f6e6c792042504f4d2063616e20646f2074686973207472616e73616374696f6044820152616e2160f01b6064820152608490fd5b92611f6290611f54611f7094611f46611b469a989560c0895260c0890190611679565b908782036020890152611679565b908582036040870152611679565b908382036060850152611679565b6001600160a01b03909316608082015280830360a09190910152611679565b95949360ff608094611fad611fd0959460a08b5260a08b0190611679565b6001600160a01b0390941660208a01521660408801528682036060880152611679565b930152565b939060809361200761202394611ff9612015949a999a60a08a5260a08a0190611679565b9088820360208a0152611679565b908682036040880152611679565b908482036060860152611679565b6001600160a01b03909416910152565b919390611b46959361204f60ff9260a0865260a0860190611679565b6001600160a01b0390961660208501521660408301526060820152808303608090910152611679565b519060ff8216820361146257565b602081830312611462578051906001600160401b03821161146257019080601f83011215611462576020825192016001600160401b038311611591578260051b60208101936120d860405195866115f7565b845260208401908201918383116114625780915b8383106120fb57505050505090565b82516001600160401b03811161146257820160c081870312611462576040519160c083018381106001600160401b038211176115915760405281516001600160401b0381116114625787612150918401611dbe565b835260208201516001600160401b0381116114625787612171918401611dbe565b602084015260408201516001600160401b0381116114625787612195918401611dbe565b60408401526121a660608301612078565b60608401526080820151600481101561146257608084015260a0820151926001600160401b038411611462576121e188602095869501611dbe565b60a08201528152019201916120ec565b604051906121fe826115a5565b5f60408360608152606060208201520152565b6040519061221e826115c0565b606060e0835f81525f60208201525f60408201525f838201525f60808201526122456121f1565b60a08201526122526121f1565b60c08201520152565b60405190612268826115dc565b60606020838281520152565b9190604083820312611462576040519061228d826115dc565b819380516001600160401b03811161146257826122ab918301611dbe565b83526020810151916001600160401b038311611462576020926117429201611dbe565b919060608382031261146257604051906122e7826115a5565b819380516001600160401b0381116114625782612305918301611dbe565b835260208101516001600160401b03811161146257604092612328918301611dbe565b60208401520151906001600160a01b03821682036114625760400152565b602081830312611462578051906001600160401b038211611462570161010081830312611462576040519161237a836115c0565b815160048110156114625783526020820151602084015260408201516040840152606082015160608401526080820151608084015260a08201516001600160401b03811161146257816123ce9184016122ce565b60a084015260c08201516001600160401b03811161146257816123f29184016122ce565b60c084015260e08201516001600160401b038111611462576124149201611dbe565b60e082015290565b1561242357565b60405162461bcd60e51b815260206004820152602560248201527f4f6e6c7920466163746f72792063616e20646f2074686973207472616e73616360448201526474696f6e2160d81b6064820152608490fd5b61248e60409295949395606083526060830190611679565b6001600160a01b039095166020820152015256fea2646970667358221220c418b1b74c4f68007df1cec6f324e2e48388ea65201e8d786344b5e1f49e1f8164736f6c634300081b0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

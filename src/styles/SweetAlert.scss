@@ -1,0 +1,793 @@
+@import './main.scss';
+@import 'mixin';
+
+.form-swal{
+
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-top: solid 2px $grey-light;
+
+  &.form{
+    padding: 14px 20px;
+    ul{
+      li{
+        &.label{
+          width: 26%;
+        }
+        &.input{
+          width: 74%;
+        }
+      }
+    }
+    
+    &.reject-form{
+      ul{
+        li{
+          &.label{
+            width: 22%;
+          }
+          &.input{
+            width: 78%;
+          }
+        }
+      }
+
+    }
+  }
+
+  &.event{
+    ul{
+      li.label{
+        width: 34%;
+      }
+
+      &.rejectMsg{
+        li.input{
+          width: 64%;
+        }
+      }
+    }
+  }
+
+  .stok{
+    width: 100%;
+
+    ul {
+      // justify-content: flex-end;
+
+      li{
+        // &.label{
+        //   width: auto;
+        // }
+
+        &.input{
+          background-color: $blue;
+          padding: 8px 8px;
+          width: auto;
+          border-radius: 4px;
+    
+          p{
+            font-size: 12px;
+            font-weight: bold;
+            color: $white;
+          }
+        }
+      }
+      
+    }
+    
+  }
+  
+  .container-stepper{
+    padding: 14px;  
+    width: 16%;
+    background-color: $grey-light;
+    border-radius: 14px;
+    height: fit-content;
+    height: 252px;
+  }
+
+  &.order{
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+
+
+    .row1{
+      .row--obat ul li.input, .row--obat ul li.label-sm{
+        width: 100%;
+      }
+      .row--obat ul.status li.input{
+        // width: auto;
+      }
+    }
+  }
+
+  .row2{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+
+    .col{
+      width: 100%;
+
+      &.doku{
+        width: 64%;
+        background-color: $grey-light;
+        padding: 10px;
+        border-radius: 4px;
+        height: -webkit-fill-available;
+        h5{
+          font-size: 18px;
+          color: $black;
+          text-align: justify;
+          margin-bottom: 10px;
+        }
+
+        ul{
+          // border-bottom: solid 1px #ddd;
+          flex-direction: column;
+
+          li.label{
+            width: 100%;
+          }
+        }
+      }
+
+      ul{
+        align-items: flex-start;
+
+        li.label{
+          width: 26%;
+        }
+      }
+    }
+  }
+
+  .row1{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+
+    .produce-obat{
+      // background-color: #a5dc86;
+      flex: 2;
+      padding-right: 14px;
+    }
+
+    .row{
+      // flex: 1;
+
+      ul{
+        // background-color: #a5dc86;
+
+        li.label-sm{
+          // background-color: #86947d;
+          width: 24%;
+          text-align: left;
+          font-weight: 600;
+
+          label{
+            font-size: 13px;
+            color: $black;
+          }
+        }
+
+      }
+
+      .column{
+        ul{
+          flex-direction: column;
+          align-items: flex-start;
+
+          li.label{
+            width: 35%;
+          }
+        }
+      }
+      
+      .column-label{
+        ul {
+          align-items: flex-start;
+
+          li.label{
+            width: 42%;
+          }
+        }
+      }
+    }
+  }
+
+  .col2{
+    display: flex;
+    flex-direction: column;
+    // justify-content: space-between;
+    width: 100%;
+  }
+
+  .row{
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: space-between;
+    width: 100%;
+    
+    &.table-like{
+      .col.doku {
+        background: none !important;
+      }
+      .doku:has(> *:nth-of-type(2)){
+        ul{
+          border-bottom: solid 1px #ddd;
+        }
+      }
+      ul{
+        // border-bottom: solid 1px #ddd;
+        li.label{
+          width: 36%;
+        }
+      }
+    }
+
+    &--obat{
+      flex-direction: row-reverse;
+    }
+
+    &--row {
+      flex-direction: row;
+      gap: 10px;
+
+      .col{
+        flex: 1;
+      }
+
+      .container-stepper{
+        width: 18%;
+      }
+    }
+
+    .col{
+      // commented style for col
+      // width: 49%;
+      width: 100%;
+
+      &.doku{
+        background-color: $grey-light;
+        padding: 10px;
+        border-radius: 4px;
+        h5{
+          font-size: 18px;
+          color: $black;
+          text-align: justify;
+          margin-bottom: 10px;
+        }
+        
+        .doku-row{
+          display: flex;
+          flex-direction: row;
+          gap: 10px;
+          
+          // h5{
+          //   font-size: 16px;
+          //   display: block;
+          // }
+        }
+
+        .doku-1{
+          flex: 1;
+          ul {
+            // border-bottom: solid 1px #ddd;
+      
+            li.label {
+            width: 48%;
+            }
+          }
+        }
+      }
+
+      ul{
+        // align-items: flex-start;
+        // display: inline-table;
+        padding-bottom: 4px;
+        flex-direction: row;
+
+        &.klaim{
+          align-items: flex-start;
+        }
+
+        // background color status modal
+        &.status{
+          .input{
+            p{
+              // background-color: $grey-light;
+              // padding: 4px 8px;
+              color: $black;
+              // font-size: 12px;
+              // font-weight: 600;
+              // padding: 8px 12px;
+              // border-radius: 6px;
+
+              // &.Dalam, &.Diajukan, &.Empty{
+              //   background-color: $grey;
+              //   color: $white;
+              // }
+              
+              // &.Dikirim{
+              //   background-color: $yellow;
+              //   color: $black;
+              // }
+  
+              // &.Disetujui, &.Selesai{
+              //   background-color: $green;
+              //   color: $white;
+              // }
+              
+              // &.Penolakan,  &.Tidak.Disetujui{
+              //   background-color: $red;
+              //   color: $white;
+              // }
+              
+              // &.Available, &.Requested.NIE, &.Pengajuan{
+              //   background-color: $blue;
+              //   color: $white;
+              // }
+            }
+          }
+        }
+        &.rejectMsg{
+
+          .input{
+            width: 72%;
+            background-color: $grey-light;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-left: 14px;
+            p{
+              color: $black;
+            }
+          }
+
+
+        }
+
+        // &.status{
+        //   height: 44px;
+        //   align-items: center;
+
+        //   li.input p{
+        //     padding: 10px 12px;
+        //     border-radius: 6px;
+        //     font-weight: bold;
+            
+        //     &.Pending{
+        //       background-color: $yellow;
+        //       color: $black;
+        //     }
+        //   }
+        // }
+
+        &.numbered1{
+          flex-direction: column;
+          align-items: flex-start;
+          width: 100%;
+          list-style: decimal;
+          margin-left: 12px;
+          margin-bottom: 4px;
+
+          li::marker{
+            color: $black;
+          }
+        }
+
+        &.numbered{
+          // flex-direction: column;
+          display: inline-table!important;
+          width: auto;
+          // padding: 6px 10px;
+          // list-style: none;
+          // padding-left: -12px;
+          
+          li.klaim{
+            padding: 6px 4px;
+            background-color: $grey-light;   
+
+            margin-bottom: 4px;
+            width: 100%;
+            border-radius: 4px;
+
+            &::marker{
+              color: #737373;
+            }
+            p{
+              font-size: 13px;
+              color: #737373;
+            }
+          }
+        }
+      }
+
+      &.reject{
+        ul{
+          li{
+            select{
+              margin: 0;
+              background-color: transparent;
+              border: solid 1px $grey;
+            }
+
+            textarea{
+              width: -webkit-fill-available;
+            }
+          }
+        }
+        li.select{
+          display: flex;
+          align-items: center;
+        }
+      }
+
+      &.col1{
+        width: 40%;
+
+        ul{
+          display: flex;
+          // flex-direction: column;
+
+          &.rejectMsg{
+            .input{
+              margin-top: 6px;
+              width: 84%;
+              background-color:rgba(182, 25, 25, 0.1411764706);
+              padding: 8px;
+              border-radius: 8px;
+              // margin-left: 14px;
+              margin-left: -20px;
+
+              p{
+                color: #E33333;
+              }
+            }
+          }
+
+          li.label{
+            // width: 100%;
+            width: 52%;
+          }
+    
+          li.input{
+            width: 100%;
+            padding-top: 4px;
+
+            span.linked{
+              margin-left: 8px;
+            }
+          }
+
+          &.status{
+            li.input{
+              // width: auto;
+              padding-top: 2px;
+            }
+          }
+        }
+      }
+
+      &.col2{
+        width: 60%;
+        ul{
+          display: flex;
+          // flex-direction: column;
+
+          &.klaim{
+            align-items: flex-start;
+          }
+        }
+      }
+
+      &.col3{
+        width: 44%;
+        ul{
+          display: flex;
+          flex-direction: column;
+
+          li.label{
+            width: 100%;
+            margin-bottom: 6px;
+          }
+    
+          li.input{
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+  
+  &regist{
+    ul{
+      align-items: center
+    }
+  }
+
+  ul{
+    @include list();
+    justify-items: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 18px;
+
+    &.rejectMsg{
+      .input{
+        width: 72%;
+        background-color: #b6191924;
+        padding: 4px 8px;
+        border-radius: 6px;
+        margin-left: 0;
+        p{
+          color: $red;
+          font-weight: 600;
+        }
+      }
+
+      &.evt{
+        input{
+          margin-left: 14px;
+        }
+      }
+    }
+    
+    &.txHash{
+      a{
+        color: $blue;
+        text-decoration: underline;
+      }
+    }
+
+    li{
+      p{
+        color: $black;
+        font-size: 13px;
+
+        span.username{
+          margin-left: 14px;
+        }
+
+        span.linked{
+          margin-left: 8px;
+        }
+      }
+
+      &.colJenisSediaan{
+        display: flex;
+        align-items: center;
+      }
+      
+      &.label{
+        font-weight: 600;
+        text-align: left;
+        // width: 32%;
+        margin-right: 6px;
+        width: 26%;
+        
+        label{
+          font-size: 13px;
+          color: $black;
+        }
+      }
+  
+      &.label1{
+        width: 36%;
+      }
+      
+      &.label-1{
+        width: 22%;
+      }
+
+      &.input{
+        text-align: left;
+        font-size: 12px;
+        // padding-top: 4px;
+
+        a{
+          color: $black;
+          text-decoration: none;
+          
+          &:hover{
+            color: $blue;
+            text-decoration: underline;
+          }
+
+          i{
+            margin-left: 6px;
+          }
+        }
+
+        select{
+          @include selectForm($grey-light);
+          width: 100%;
+
+          &#rejectReason{
+            margin: 0;
+          }
+        }
+
+        input{
+          @include inputForm($black);
+          // width: 100%;
+          padding: 6px 10px;
+          font-size: 13px;   
+          
+          &:read-only{
+            background-color: $grey-light;   
+          }
+        }
+
+        textarea{
+          @include textArea($white);
+          width: -webkit-fill-available;
+          padding: 6px 10px;
+          font-size: 13px;   
+          border: solid 2px $grey;
+          
+          &:read-only{
+            background-color: $grey-light;   
+          }
+        }
+        &.full-width-table{
+          width: 100%;
+        }
+      }
+
+      &.input-1{
+        width: 76%;
+      }
+      
+      &.select{
+
+        select{
+          margin: 0;
+          background-color: transparent;
+          border: solid 1px $grey;
+        }
+
+        input{
+          width: 100%;
+        }
+      }
+      
+
+    }
+    
+    
+  }
+
+  &.full{
+    ul li.input{
+      width: 68%;
+    }
+  }
+}
+
+div:where(.swal2-container) div:where(.swal2-actions){
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+// main modal style
+div:where(.swal2-container) div:where(.swal2-popup) {
+  border-radius: 10px;
+  font-family: "Instrument Sans", sans-serif;
+  padding: 14px 0;
+}
+
+div:where(.swal2-icon){
+  margin: 20px auto;
+}
+div:where(.swal2-container) input:where(.swal2-input), div:where(.swal2-container) input:where(.swal2-file), div:where(.swal2-container) textarea:where(.swal2-textarea), div:where(.swal2-container) select:where(.swal2-select), div:where(.swal2-container) div:where(.swal2-radio), div:where(.swal2-container) label:where(.swal2-checkbox) {
+  margin: 12px 2em;
+}
+
+div:where(.swal2-container) .swal2-input {
+  @include inputForm($grey, $white);
+  border: solid 1px $grey;
+}
+
+div:where(.swal2-icon).swal2-success {
+  border-color: #a5dc86;
+  color: #a5dc86;
+}
+
+div:where(.swal2-icon).swal2-info {
+  border-color: rgb(156.7033492823, 224.2822966507, 246.2966507177);
+  color: #3fc3ee;
+}
+
+div:where(.swal2-container) h2:where(.swal2-title) {
+  padding: 20px 16px 4px;
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 24px;
+  color: $black;
+}
+
+div:where(.swal2-container) .swal2-html-container {
+  font-family: "Instrument Sans", sans-serif;
+  margin: 0;
+  padding: 10px 20px;
+  color: $grey;
+}
+
+.scrollable-modal {
+  height: 480px !important;
+}
+
+.scrollable-modal-small {
+  height: 280px !important;
+}
+
+
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm) {
+  font-family: "Instrument Sans", sans-serif;
+  @include btnAlert($white, $purple, 4px);
+}
+
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel) {
+  font-family: "Instrument Sans", sans-serif;
+  @include btnAlert($white, $red, 4px);
+}
+
+div:where(.swal2-container) div:where(.swal2-actions) {
+  margin: 10px 0 0;
+}
+
+h5{
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 24px;
+  margin: 0;
+}
+
+p{
+  font-family: "Instrument Sans", sans-serif;
+  margin: 0;
+  font-size: 16px;
+  color: $grey;
+}
+
+ul.noList{
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  
+  li{
+    margin-bottom: 4px;
+  }
+}
+
+ul.numbered {
+  list-style-type: decimal; 
+  list-style-position: outside; 
+  padding: 0;
+  margin: 0;
+  padding-left: 12px; 
+  color: $black;
+  text-align: start;
+
+  li {
+    
+    p {
+      display: inline; 
+      margin-left: 0; 
+    }
+  }
+}
+
+button.addQuantity{
+  @include btnIcon($white, $blue);
+
+  i{
+    margin-right: 8px;
+  }
+}

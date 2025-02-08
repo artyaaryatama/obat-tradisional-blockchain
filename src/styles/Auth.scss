@@ -1,0 +1,178 @@
+@import './main.scss';
+@import 'mixin';
+
+#RegisterPage.App{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  height: 100vh;
+
+  form{
+    button{
+      background-color: darken($color: $black, $amount: 14%);
+      img{
+        width: 14px;
+      }
+    }
+  }
+}
+
+.App {
+  .container{
+    background-color: $grey-light;
+    padding: 48px 20px;
+    border-radius: 10px;
+
+    .form-container{
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+
+      h1{
+        font-size: 38px;
+        margin: 0 0 18px 0;
+      }
+
+      form{
+        display: flex;
+        flex-direction: column;
+        width: 360px;
+        padding: 14px;
+
+        .empty{
+          display: none;
+        }
+
+        &>*{
+          margin-top: 10px;
+        }
+
+        input{
+          @include inputForm($grey, $white);
+          border: none;
+          color: $black;
+
+          &:disabled{
+            background-color: $grey-secondary;
+            font-style: italic;
+          }
+        }
+        
+        textarea{
+          @include inputForm($grey, $white);
+          border: none;
+          color: $black;
+          width: auto;
+          font-family: "Instrument Sans", sans-serif;
+  
+          &:disabled{
+            background-color: $grey-secondary;
+            font-style: italic;
+          }
+
+        }
+        
+        select{
+          @include selectForm($white);
+          margin: 10px 0 0 0;
+        }
+
+        button{
+          @include btnUniversal($white, $black, 4px)
+        }
+      }
+
+      p{
+        font-style: italic;
+        font-size: 12px;
+        margin: 4px 0;
+
+        :hover{
+          font-weight: 600;
+          text-decoration: underline;
+        }
+      }
+      
+      a{
+        text-decoration: none;
+        color: $purple;
+        
+      }
+
+    }
+    
+  }
+  
+}
+
+.btn-group{
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+
+  ul{
+    @include list();
+    gap: 16px;
+
+    li{
+      width: 50%;
+
+      button.test{
+        margin-top: 20px;
+        @include btnUniversal($white, $grey, 4px);
+        width: -webkit-fill-available;
+      }
+    }
+    
+  }
+}
+
+#LoginPage.App{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  height: 100vh;
+  
+  .container{
+    display: flex;
+    flex-direction: row;
+    background-color: $white;
+    width: 800px;
+  
+    .img-container{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 20px;
+      width: 56%;
+      
+      img {
+        width: 360px;
+      }
+    }
+  
+    .form-container{
+      background-color: $grey-light;
+      padding: 48px 20px;
+      border-radius: 10px;
+
+      form{
+        button{
+          @include btnUniversal($white, $purple)
+        }
+
+        button{
+          background-color: darken($color: $purple, $amount: 14%);
+          img{
+            width: 14px;
+          }
+        }
+      }
+    }
+  }
+}
+

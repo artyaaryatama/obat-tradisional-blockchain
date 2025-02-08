@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap');
+@import 'mixin.scss';
+
+$white: #fff;
+$grey: #A6A6A6;
+$grey-secondary: #eae7e7;
+$grey-light: #f2f3f59e;
+$purple: #530AF7;
+$green: #4CBE53;
+$yellow: #E0E333;
+$blue: #1d61d6;
+$red: #E33333;
+$black: #1B1C1E;
+
+html, body {
+  font-family: "Instrument Sans", sans-serif;
+  background-color: white;
+  margin: 0;
+  padding: 0;
+  color: $black;
+}
+
+.layout-page{
+  padding: 10px 110px;
+}
