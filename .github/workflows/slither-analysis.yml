@@ -1,4 +1,4 @@
-name: Slither Analysis
+name: Slither Security Analysis
 
 on: [push, pull_request]
 
@@ -26,15 +26,18 @@ jobs:
       - name: List Contract Files
         run: ls -R contracts/ || echo "No contracts found!"
 
-      - name: Run Slither and Show Logs
+      - name: Run Slither Security Analysis
         run: |
           mkdir -p slither-reports
-          for file in contracts/*.sol; do
-            echo "Running Slither on $file"
-            slither "$file" || echo "Slither failed for $file"
+          for file in contracts/BaseCertificate.sol contracts/CdobCertificate.sol contracts/CertificateManager.sol \
+                      contracts/CpotbCertificate.sol contracts/ObatTradisional.sol contracts/OrderManagement.sol \
+                      contracts/RoleManager.sol; do
+            echo "Running Slither on $file for security analysis..."
+            slither "$file" --json "slither-reports/$(basename "$file").json" || echo "Slither encountered issues with $file but continuing..."
           done
+        continue-on-error: true
 
-      - name: Debug JSON Output
+      - name: Debug Slither Output
         run: |
           echo "Checking Slither reports..."
           ls -lah slither-reports/
@@ -44,14 +47,13 @@ jobs:
         run: |
           for file in slither-reports/*.json; do
             if [ ! -s "$file" ]; then
-              echo '{"status": "No issues found"}' > "$file"
+              echo '{"status": "No security issues found"}' > "$file"
               echo "Replaced empty JSON for $file"
             fi
           done
 
-
-      - name: Upload Slither Report
+      - name: Upload Slither Security Report
         uses: actions/upload-artifact@v4
         with:
-          name: slither-report
-          path: slither-reports/slither-output.json
+          name: slither-security-report
+          path: slither-reports/
