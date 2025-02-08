@@ -29,7 +29,7 @@ jobs:
           slither contracts/ --json slither-reports/slither-output.json --exclude-informational --exclude-low --exclude-medium || true
 
       - name: Upload Slither Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  
         with:
           name: slither-report
           path: slither-reports/slither-output.json
