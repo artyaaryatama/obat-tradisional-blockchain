@@ -212,13 +212,13 @@ function CheckTransaction() {
                   </td>
                   <td>{value.hash || "Data tidak tersedia"}</td>
                   <td>
-                    <button className="copy"
+                    {/* <button className="copy"
                       onClick={() =>
                         navigator.clipboard.writeText(value.hash || "Data tidak tersedia")
                       }
                     >
                       Copy Hash
-                    </button>
+                    </button> */}
                     <button className="view"
                       onClick={() =>
                         value.hash &&
@@ -281,9 +281,9 @@ function CheckTransaction() {
                   <td>{formatTimestamp(batchData.historyHash[timestampKey])}</td>
                   <td>{value || "Data tidak tersedia"}</td>
                   <td>
-                    <button className="copy" onClick={() => navigator.clipboard.writeText(value || "Data tidak tersedia")}>
+                    {/* <button className="copy" onClick={() => navigator.clipboard.writeText(value || "Data tidak tersedia")}>
                       Copy Hash
-                    </button>
+                    </button> */}
                     <button className="view"
                       onClick={() =>
                         value && window.open(`https://etherscan.io/tx/${value}`, "_blank")
@@ -343,7 +343,7 @@ function CheckTransaction() {
 
             {documents.length > 0 && (
               <div className="document-selection">
-                {/* <h3>Data Transaksi</h3> */}
+                <h3>Silahkan Pilih Produk Obat Tradisonal</h3>
                 <select
                   value={selectedDocument || ""}
                   onChange={(e) => fetchDocumentDetails(e.target.value)}
@@ -360,12 +360,33 @@ function CheckTransaction() {
               </div>
             )}
 
+            {documentDetails && documentDetails.batchNames && documentDetails.batchNames.length > 0 && (
+
+            <>
+              <h3>Silahkan Pilih Batch</h3>
+              <select
+                onChange={(e) => fetchBatchDetails(e.target.value)}
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  Pilih Batch
+                </option>
+                {documentDetails.batchNames.map((batchName) => (
+                  <option key={batchName} value={batchName}>
+                    {batchName}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
+
             {documentDetails && (
               <div className="document-details">
+                <hr></hr>
                 <h3>Data Obat</h3>
                 {renderTable(documentDetails.historyNie, "History NIE")}
-                <p><b>Jenis Sediaan:</b> {documentDetails.jenisSediaan || "Data tidak tersedia"}</p>
-                <p><b>Tipe Obat:</b> {documentDetails.tipeObat || "Data tidak tersedia"}</p>
+                {/* <p><b>Jenis Sediaan:</b> {documentDetails.jenisSediaan || "Data tidak tersedia"}</p>
+                <p><b>Tipe Obat:</b> {documentDetails.tipeObat || "Data tidak tersedia"}</p> */}
 
                 {selectedBatch && (
                   <div>
@@ -376,24 +397,7 @@ function CheckTransaction() {
                     )}
                   </div>
                 )}
-                {documentDetails.batchNames.length > 0 && (
-                  <>
-                    <h3>Silahkan pilih Batch</h3>
-                    <select
-                      onChange={(e) => fetchBatchDetails(e.target.value)}
-                      defaultValue=""
-                    >
-                      <option value="" disabled>
-                        Pilih Batch
-                      </option>
-                      {documentDetails.batchNames.map((batchName) => (
-                        <option key={batchName} value={batchName}>
-                          {batchName}
-                        </option>
-                      ))}
-                    </select>
-                  </>
-                )}
+          
 
                 {selectedBatch && (
                   <div>

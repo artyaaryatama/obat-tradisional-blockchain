@@ -247,13 +247,19 @@ function CpotbRequest() {
 
   const checkExistingCpotb = (jenisSediaan) => {
     if (dataCpotb.length > 0) {
-      const found = dataCpotb.find((item) => item.jenisSediaan === jenisSediaanMap[jenisSediaan]);
-  
+      const found = dataCpotb.some((item) => item.jenisSediaan === jenisSediaan);
       console.log(jenisSediaan);
       console.log(found);
+
+      if (found){
+        return false
+      } else {
+        return true
+      }
     } else {
       return true
     }
+
   }
 
   const requestCpotb = async (hashDocs) => {
@@ -306,23 +312,10 @@ function CpotbRequest() {
 
   const checkEligiblePabrik = (jenisSediaan) => {
     console.log(jenisSediaan);
-    const isSediaanValid = filteredJenisSediaan.find(item => item.key === jenisSediaan);
+    const isSediaanValid = filteredJenisSediaan.some(item => item.key === jenisSediaan || false);
 
     console.log(isSediaanValid);
-
-    if (!isSediaanValid) {
-      MySwal.fire({
-        title: 'Pengajuan CPOTB gagal',
-        text: `Maaf, ${userdata.instanceName} tidak dapat mengajukan CPOTB untuk bentuk sediaan ${jenisSediaanMap[jenisSediaan]}. Harap memilih bentuk sediaan yang sesuai dengan jenis Industri Obat Tradisional.`,
-        icon: 'error',
-        confirmButtonText: 'Coba Lagi',
-        didOpen: () => {
-          const actions = Swal.getActions();
-          actions.style.justifyContent = "center";
-        }
-      });
-    } 
-
+    return isSediaanValid
   }
 
   const writeCpotbFb = async (instanceName, jenisSediaan, requestCpotbCtHash) => {
@@ -392,15 +385,41 @@ function CpotbRequest() {
       showConfirmButton: false,
       allowOutsideClick: false,
     });
-    
-    const isEligbile = checkEligiblePabrik(jenisSediaan) 
-    console.log(isEligbile);
-    if (!isEligbile) {
-     uploadDocuIpfs()
-      
+
+    const isEligiblePabrik = checkEligiblePabrik(jenisSediaan);
+    const isCpotbNotExist = checkExistingCpotb(jenisSediaan);
+
+    console.log(isEligiblePabrik, isCpotbNotExist);
+
+    if (isEligiblePabrik && isCpotbNotExist) {
+      uploadDocuIpfs();
+      return; 
     }
-    // checkExistingCpotb(jenisSediaan)
+
+    let text = ""; 
+
+    if (!isEligiblePabrik) {
+      text = `Maaf, ${userdata.instanceName} tidak dapat mengajukan CPOTB untuk bentuk sediaan ${jenisSediaanMap[jenisSediaan]}. Harap memilih bentuk sediaan yang sesuai dengan jenis Industri Obat Tradisional.`;
+    } else if (!isCpotbNotExist) {
+      text = `Maaf, ${userdata.instanceName} sudah pernah mengajukan CPOTB untuk bentuk sediaan ${jenisSediaanMap[jenisSediaan]}.`;
+    }
+
+    MySwal.fire({
+      title: 'Pengajuan CPOTB gagal',
+      text: text,
+      icon: 'error',
+      confirmButtonText: 'Coba Lagi',
+      didOpen: () => {
+        const actions = Swal.getActions();
+        actions.style.justifyContent = "center";
+      }
+    });
+
+    setLoader(false);
+
   }
+  
+
 
   const uploadDocuIpfs = async () => {
     console.log(34);

@@ -229,7 +229,7 @@ function CreateOrderRetailer() {
 
       const [pbfInstance, pbfAddr] = detailPastOrderCt[5]
 
-      console.log(detailPastOrderCt);
+      console.log(cdobHash);
 
       const detailObat = {
         obatId: id,

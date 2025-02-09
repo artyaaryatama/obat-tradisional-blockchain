@@ -17,7 +17,7 @@ function Navbar() {
 
   return (
     <>
-      <div className="layout-page">
+      <div className="layout-component">
         <nav className="navbar">
           <div className="navbar-menu">
             <div className="navbar-logo">

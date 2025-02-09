@@ -22,6 +22,7 @@ function CdobRequest() {
   const [contract, setContract] = useState();
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
+  const [cdobData, setCdobData] = useState([]);
   const [suratIzin, setSuratIzin] = useState(null);
   const [denah, setDenah] = useState(null);
   const [strukturOrganisasi, setStrukturOrganisasi] = useState(null);
@@ -50,6 +51,11 @@ function CdobRequest() {
     0n: "Obat Lain",
     1n: "Cold Chain Product (CCP)"
   };
+
+  const tipePermohonanMap = {
+    'ObatLain': 'Obat Lain',
+    'CCP' : "Cold Chain Product (CCP)"
+  }
 
   useEffect(() => {
     document.title = "Add New CDOB Request"; 
@@ -92,6 +98,56 @@ function CdobRequest() {
     };
   }, []);
   
+  useEffect(() => {
+    const fetchDataCpotb = async () => {
+      if(contract) { 
+        try {
+          console.log(userdata.instanceName);
+          const listAllCt = await contract.getCdobByInstance(userdata.instanceName);
+          console.log(listAllCt);
+          
+          const tp2 = {
+            0n: "ObatLain",
+            1n: "CCP"
+          };
+
+          const reconstructedData = listAllCt.map((item) => {
+
+            return { 
+              tipePermohonan: tp2[item[3]],
+            };
+          });
+  
+          setCdobData(reconstructedData);
+  
+        } catch (error) {
+          errAlert(error, "Error loading data.")
+        }
+      }
+
+    }
+
+    fetchDataCpotb()
+  }, [])
+
+  const checkExistingCdob = () => {
+    if (cdobData.length > 0) {
+      const found = cdobData.some((item) => item.tipePermohonan === tipePermohonan);
+      console.log(tipePermohonan);
+      console.log(cdobData);
+      console.log(found);
+
+      if (found){
+        return false
+      } else {
+        return true
+      }
+    } else {
+      return false
+    }
+
+  }
+
   const handleEventCdobRequested =  (_instanceName, _userAddr, _tipePermohonan, _timestampRequest, txHash) => {
     
     const formattedTimestamp = new Date(Number(_timestampRequest) * 1000).toLocaleDateString('id-ID', options)
@@ -180,13 +236,7 @@ function CdobRequest() {
 
   const uploadDocuIpfs = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
-    console.log(34);
-    if (!tipePermohonan) {
-      errAlert(0, "Harap memilih Tipe Permohonan yang sesuai")
-      setLoader(false)
-      return;
-    }
-    let uploadedHashes;
+    let uploadedHashes;    
 
     MySwal.fire({
       title: "Mengunggah semua dokumen ke IPFS...",
@@ -196,81 +246,104 @@ function CdobRequest() {
       showConfirmButton: false,
       allowOutsideClick: true,
     });
-    try {
-      
-      uploadedHashes = await uploadAllDocuments();
-      console.log(uploadedHashes);
-      console.log(2);
-      
-      MySwal.fire({
-        title: `Konfirmasi data pengajuan CDOB`,
-        html: `
-            <div class="form-swal">
-                <div class="row row--obat table-like">
-                    <div class="col doku">
-                        <ul>
-                            <li class="label label-2"><p>Nama PBF</p></li>
-                            <li class="input input-2"><p>${userdata.instanceName}</p></li>
-                        </ul>
-                        <ul>
-                            <li class="label label-2"><p>Tipe Permohonan</p></li>
-                            <li class="input input-2"><p>${tipePermohonan}</p></li>
-                        </ul>
+
+    const isCdobExist = checkExistingCdob();
+    console.log(isCdobExist);
+    console.log(tipePermohonan);
+    console.log(tipePermohonanMap[tipePermohonan]);
+
+    if (isCdobExist) {
+      try {
+        
+        uploadedHashes = await uploadAllDocuments();
+        console.log(uploadedHashes);
+        console.log(2);
+        
+        MySwal.fire({
+          title: `Konfirmasi data pengajuan CDOB`,
+          html: `
+              <div class="form-swal">
+                  <div class="row row--obat table-like">
+                      <div class="col doku">
+                          <ul>
+                              <li class="label label-2"><p>Nama PBF</p></li>
+                              <li class="input input-2"><p>${userdata.instanceName}</p></li>
+                          </ul>
+                          <ul>
+                              <li class="label label-2"><p>Tipe Permohonan</p></li>
+                              <li class="input input-2"><p>${tipePermohonanMap[tipePermohonan]}</p></li>
+                          </ul>
+    
+                          <div class="doku">
+                              ${Object.entries(uploadedHashes).map(([docName, hash]) => `
+                                <ul>
+                                  <li class="label label-2"><p>${docName}</p></li>
+                                  <li class="input input-2">
+                                  ${hash !== "Gagal Upload" 
+                                    ? `<a href="http://localhost:8080/ipfs/${hash}" target="_blank">
+                                     Lihat dokumen ↗ (${hash})
+                                    </a>` 
   
-                        <div class="doku">
-                            ${Object.entries(uploadedHashes).map(([docName, hash]) => `
-                              <ul>
-                                <li class="label label-2"><p>${docName}</p></li>
-                                <li class="input input-2">
-                                ${hash !== "Gagal Upload" 
-                                  ? `<a href="http://localhost:8080/ipfs/${hash}" target="_blank">
-                                   Lihat dokumen ↗ (${hash})
-                                  </a>` 
-
-
-                                  : `<span style="color: red;">${hash}</span>`}
-                                 
-                                </li>
-                              </ul>
-                                `)
-                                .join("")}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `,
-        width: '960',
-        showCancelButton: true,
-        confirmButtonText: 'Konfirmasi pengajuan CDOB',
-        cancelButtonText: "Batal",
-        allowOutsideClick: false
-      }).then((result) => {
-          if (result.isConfirmed) {
-            MySwal.fire({
-              title: "Mempersiapkan transaksi...",
-              text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳",
-              icon: "info",
-              showConfirmButton: false,
-            });
-            const hashDocs = reconstructedHashes(uploadedHashes);
-            console.log(hashDocs);
-            requestCdob(hashDocs);
+  
+                                    : `<span style="color: red;">${hash}</span>`}
+                                   
+                                  </li>
+                                </ul>
+                                  `)
+                                  .join("")}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          `,
+          width: '960',
+          showCancelButton: true,
+          confirmButtonText: 'Konfirmasi pengajuan CDOB',
+          cancelButtonText: "Batal",
+          allowOutsideClick: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+              MySwal.fire({
+                title: "Mempersiapkan transaksi...",
+                text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳",
+                icon: "info",
+                showConfirmButton: false,
+              });
+              const hashDocs = reconstructedHashes(uploadedHashes);
+              console.log(hashDocs);
+              requestCdob(hashDocs);
+            }
+        });
+  
+      } catch (error) {
+        MySwal.fire({
+          title: "Gagal mengunggah dokumen pengajuan CDOB!",
+          text: "IPFS mungkin tidak aktif atau terjadi error saat mengunggah dokumen.",
+          icon: "error",
+          confirmButtonText: "Coba Lagi",
+          didOpen: () => {
+            const actions = Swal.getActions();
+           actions.style.justifyContent = "center";
           }
-      });
-
-    } catch (error) {
+        });
+        
+      }
+    } else {
+      
       MySwal.fire({
-        title: "Gagal mengunggah dokumen pengajuan CDOB!",
-        text: "IPFS mungkin tidak aktif atau terjadi error saat mengunggah dokumen.",
-        icon: "error",
-        confirmButtonText: "Coba Lagi",
+        title: 'Pengajuan CDOB gagal',
+        text: `Maaf, ${userdata.instanceName} sudah pernah mengajukan CDOB untuk tipe permohonan ${tipePermohonanMap[tipePermohonan]}.`,
+        icon: 'error',
+        confirmButtonText: 'Coba Lagi',
         didOpen: () => {
           const actions = Swal.getActions();
-         actions.style.justifyContent = "center";
+          actions.style.justifyContent = "center";
         }
       });
-      
+  
+      setLoader(false);
     }
+
 
 
   };  
@@ -289,7 +362,7 @@ function CdobRequest() {
       "Dokumen Self Assessment": dokSelfAsses, 
     };
 
-    const uploadedHashes = {};
+    let uploadedHashes = {};
 
     const fileEntries = Object.entries(files).filter(([_, file]) => file);
 

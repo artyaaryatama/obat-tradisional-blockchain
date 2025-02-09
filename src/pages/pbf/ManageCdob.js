@@ -137,6 +137,8 @@ function ManageCdob() {
       const [cdobId, cdobNumber, tipePermohonan] = cdobDetails
       const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, pbf, bpom, cdobIpfs] = certDetails
 
+      console.log(cdobIpfs);
+
       if (timestampRejected !== 0n) {
         const rejectMsgCt = await contracts.certificateManager.getRejectMsgCdob(id);
         rejectMsg = rejectMsgCt;  
@@ -618,6 +620,24 @@ function ManageCdob() {
                       <p>{detailCdob.bpomAddr}</p> 
                     </li>
                   </ul>
+                  {cdobIpfs? 
+                    <ul>
+                    <li className="label">
+                      <p>IPFS CDOB</p> 
+                    </li>
+                    <li className="input">
+                      <a
+                        href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Liat data CDOB di IPFS
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
+                    </li>
+                  </ul>  : 
+                  <div></div>
+                    }
                 </div>
                 <div className='col doku'>
                   <h5>Dokumen Administrasi</h5>

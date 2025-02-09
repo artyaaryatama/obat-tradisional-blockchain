@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.24;
 
 import "./EnumsLibrary.sol";
 
@@ -50,7 +50,7 @@ contract RoleManager {
     string memory nibNumber,
     string memory npwpNumber
   ) public {
-    require(!isRegistered[msg.sender], "User already registered");
+    require(!isRegistered[msg.sender], "User sudah terdaftar.");
 
     userDataByAddr[msg.sender] = UserData({
       name: userName,
@@ -77,13 +77,13 @@ contract RoleManager {
   }
 
   function loginUser() public view returns (UserData memory) {
-    require(isRegistered[msg.sender], "User address missmatch");
+    require(isRegistered[msg.sender], "Nama dan alamat User salah");
     
     return userDataByAddr[msg.sender];
   }
 
   function getUserData(address userAddr) public view returns (UserData memory) {
-    require(isRegistered[userAddr], "User is not registered");
+    require(isRegistered[userAddr], "User belum terdaftar");
     return userDataByAddr[userAddr];
   }
 }
