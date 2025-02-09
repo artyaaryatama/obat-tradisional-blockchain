@@ -97,7 +97,6 @@ function StockObatPbf() {
     const loadData = async () => {
       if (contracts) {
         try {
-
           const allPbfReadyObat = await contracts.orderManagement.getAllObatPbfByInstance(userdata.instanceName);
           console.log(allPbfReadyObat);
 
@@ -202,7 +201,7 @@ function StockObatPbf() {
                         </li>
                       </ul>
                     
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <p>Alamat Akun Pabrik (Pengguna)</p>
                         </li>
@@ -231,7 +230,7 @@ function StockObatPbf() {
                         </li>
                       </ul>
                     
-                      <ul>
+                      <ul className='klaim'>
                         <li className="label">
                           <p>Alamat Akun PBF (Pengguna)</p>
                         </li>

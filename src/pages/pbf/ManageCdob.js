@@ -197,7 +197,7 @@ function ManageCdob() {
                     </li>
                   </ul>
 
-                  <ul className='rejectMsg'>
+                  <ul className='rejectMsg klaim'>
                     <li className="label">
                       <p>Alasan Penolakan</p> 
                     </li>
@@ -257,7 +257,7 @@ function ManageCdob() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun PBF (Pengguna)</p> 
                     </li>
@@ -293,7 +293,7 @@ function ManageCdob() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>
@@ -535,7 +535,7 @@ function ManageCdob() {
                       : <div></div>
                     }
                   {rejectMsg? 
-                    <ul className='rejectMsg'>
+                    <ul className='rejectMsg klaim'>
                       <li className="label">
                         <p>Alasan Penolakan</p> 
                       </li>
@@ -574,7 +574,7 @@ function ManageCdob() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun PBF (Pengguna)</p> 
                     </li>
@@ -610,7 +610,7 @@ function ManageCdob() {
                     </li>
                   </ul>
   
-                  <ul>
+                  <ul className='klaim'>
                     <li className="label">
                       <p>Alamat Akun BPOM (Pengguna)</p> 
                     </li>

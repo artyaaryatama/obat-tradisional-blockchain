@@ -52,6 +52,10 @@ function CdobRenewRequest() {
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
   useEffect(() => {
+    document.title = "Pengajuan Ulang CDOB"; 
+  }, []);
+
+  useEffect(() => {
     async function connectWallet() {
       if (window.ethereum) {
         const provider = new BrowserProvider(window.ethereum);
@@ -119,7 +123,7 @@ function CdobRenewRequest() {
               <p>{pabrikInstance}</p> 
             </li>
           </ul>
-          <ul>
+          <ul className='klaim'>
             <li className="label">
               <p>Alamat Akun PBF (Pengguna)</p> 
             </li>
@@ -337,7 +341,7 @@ function CdobRenewRequest() {
         });
       }
   
-      contracts.certificateManager.once("evt_certRenewRequest", (_instance, _userAddr, _timestampRenew) => {
+      contracts.certificateManager.once("CertRenewRequest", (_instance, _userAddr, _timestampRenew) => {
         handleEventCdobRenewRequested(_instance, _userAddr, _timestampRenew, renewRequestCdobCt.hash);
       });
   

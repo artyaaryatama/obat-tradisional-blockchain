@@ -46,7 +46,7 @@ async function main() {
 
   // Deploy OrderManagement
   const OrderManagement = await hre.ethers.getContractFactory("OrderManagement");
-  const deployedOrderManagement = await OrderManagement.deploy(deployedObatTradisional.target, deployedRoleManager.target, deployedObatShared.target, deployedCdobCertificate.target);
+  const deployedOrderManagement = await OrderManagement.deploy(deployedRoleManager.target, deployedObatShared.target, deployedCdobCertificate.target);
   await deployedOrderManagement.waitForDeployment();
   console.log("OrderManagement deployed to:", deployedOrderManagement.target);
 
@@ -74,6 +74,10 @@ async function main() {
     ObatShared: {
       address: deployedObatShared.target,
       abi: (await hre.artifacts.readArtifact("ObatShared")).abi
+    },
+    CdobCertificate: {
+      address: deployedCdobCertificate.target,
+      abi: (await hre.artifacts.readArtifact("CdobCertificate")).abi
     },
   };
 

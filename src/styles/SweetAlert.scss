@@ -39,6 +39,10 @@
 
   &.event{
     ul{
+
+      &.klaim{
+        align-items: flex-start;
+      }
       li.label{
         width: 34%;
       }
@@ -385,7 +389,7 @@
         &.numbered{
           // flex-direction: column;
           display: inline-table!important;
-          width: auto;
+          // width: auto;
           // padding: 6px 10px;
           // list-style: none;
           // padding-left: -12px;
@@ -607,6 +611,8 @@
 
         select{
           @include selectForm($grey-light);
+          background-color: transparent;
+          border: solid 1px $grey;
           width: 100%;
 
           &#rejectReason{

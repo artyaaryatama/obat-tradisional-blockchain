@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
 import "./BaseCertificate.sol";
 import "./EnumsLibrary.sol";
@@ -8,18 +8,18 @@ contract CdobCertificate is BaseCertificate {
   using EnumsLibrary for EnumsLibrary.Roles;
   using EnumsLibrary for EnumsLibrary.StatusCertificate;
   
-  struct st_cdob {
+  struct CdobData {
     string cdobId;
     string cdobNumber;
     uint8 tipePermohonan;
   }
 
-  struct st_dokumenAdministrasiIpfs {
+  struct DokumenAdministrasi {
     string suratPermohonan;
     string buktiPembayaranPajak;
   }
 
-  struct st_dokumenTeknisIpfs {
+  struct DokumenTeknis {
     string suratIzinCdob; 
     string denahBangunan;
     string strukturOrganisasi;
@@ -30,7 +30,7 @@ contract CdobCertificate is BaseCertificate {
     string dokumenSelfAssesment; 
   }
 
-  struct st_certificateList {
+  struct CertificateList {
     string certId;
     string certNumber; 
     string instanceName;
@@ -39,107 +39,142 @@ contract CdobCertificate is BaseCertificate {
     string certHash;
   }
 
-  struct st_updateBpom {
-    string certId;
-    string certNumber;
-    string bpomName;
-    string bpomInstance;
-    uint8 tipePermohonanCpotb;
-  }
+  CertificateList[] public allCdobData;
 
-  st_certificateList[] public allCdobData;
-
-  mapping (string => st_cdob) public cdobDataById;
-  mapping (string => st_dokumenAdministrasiIpfs) public dokuAdminById;
-  mapping (string => st_dokumenTeknisIpfs) public dokuTeknisById;
+  mapping (string => CdobData) public cdobDataById;
+  mapping (string => DokumenAdministrasi) public dokuAdminById;
+  mapping (string => DokumenTeknis) public dokuTeknisById;
 
   function requestCdob(
-    string memory _certId,
-    string memory _pbfName,
-    string memory _pbfInstance,
-    address _pbfAddr,
-    uint8 _tipePermohonanCdob,
-    st_dokumenAdministrasiIpfs memory _dokuAdmin,
-    st_dokumenTeknisIpfs memory _dokuTeknis 
-  ) public {
+    string memory certId,
+    string memory pbfName,
+    string memory pbfInstance,
+    address pbfAddr,
+    uint8 tipePermohonan,
+    DokumenAdministrasi memory dokuAdmin,
+    DokumenTeknis memory dokuTeknis 
+  ) 
+    public 
+  { 
 
-    st_userCertificate memory userFactory = createUserCertificate(_pbfName, _pbfInstance, _pbfAddr);
-    st_userCertificate memory userBpom = createUserCertificate("", "", address(0));
+    UserCert memory userFactory = createUserCertificate(
+      pbfName, 
+      pbfInstance, 
+      pbfAddr
+    );
 
-    createCertificateDetails(userFactory, userBpom, _certId);  
+    UserCert memory userBpom = createUserCertificate(
+      "", 
+      "", 
+      address(0)
+    );
+
+    createCertificateDetails(
+      userFactory, 
+      userBpom, 
+      certId
+    );  
  
-    cdobDataById[_certId] = st_cdob({ 
-      cdobId: _certId,
+    cdobDataById[certId] = CdobData({ 
+      cdobId: certId,
       cdobNumber: "",  
-      tipePermohonan: _tipePermohonanCdob
+      tipePermohonan: tipePermohonan
     });
 
-    allCdobData.push(st_certificateList({
-      certId: _certId,
+    allCdobData.push(CertificateList({
+      certId: certId,
       certNumber: "",
-      instanceName: _pbfInstance,
-      tipePermohonan: _tipePermohonanCdob,
+      instanceName: pbfInstance,
+      tipePermohonan: tipePermohonan,
       status: EnumsLibrary.StatusCertificate.Requested, 
       certHash: ""
     }));
 
-    dokuAdminById[_certId] = _dokuAdmin;
-    dokuTeknisById[_certId] = _dokuTeknis; 
+    dokuAdminById[certId] = dokuAdmin;
+    dokuTeknisById[certId] = dokuTeknis; 
   }
 
   function approveCdob(
-    string memory _certNumber,
-    string memory _certId,
-    string memory _bpomName,
-    string memory _bpomInstance,
-    address _bpomAddr,
-    string memory _ipfsCert
-  ) public {
+    string memory certNumber,
+    string memory certId,
+    string memory bpomName,
+    string memory bpomInstance,
+    address bpomAddr,
+    string memory ipfsCert
+  ) 
+    public  
+  {
 
-      st_userCertificate memory userBpom = createUserCertificate(_bpomName, _bpomInstance, _bpomAddr);
-  
-      cdobDataById[_certId].cdobNumber = _certNumber;
- 
-      updateBpomApproveDetails(_certId, _ipfsCert, userBpom);  
+    UserCert memory userBpom = createUserCertificate(
+      bpomName, 
+      bpomInstance, 
+      bpomAddr
+    );
 
-      for (uint i = 0; i < allCdobData.length; i++) {
-        if (keccak256(abi.encodePacked(allCdobData[i].certId)) == keccak256(abi.encodePacked(_certId))) {
-          allCdobData[i].certNumber = _certNumber;
-          allCdobData[i].status = EnumsLibrary.StatusCertificate.Approved; 
-          allCdobData[i].certHash = _ipfsCert;
-        }  
-      }
+    cdobDataById[certId].cdobNumber = certNumber;
+
+    updateBpomApproveDetails(
+      certId, 
+      ipfsCert, 
+      userBpom
+    );  
+
+    uint length = allCdobData.length;
+
+    for (uint i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCdobData[i].certId)) == keccak256(abi.encodePacked(certId))) {
+        allCdobData[i].certNumber = certNumber;
+        allCdobData[i].status = EnumsLibrary.StatusCertificate.Approved; 
+        allCdobData[i].certHash = ipfsCert;
+      }  
+    }
   } 
 
   function rejectCdob(
-    string memory _certId,
-    string memory _rejectMsg,
-    string memory _bpomName,
-    string memory _bpomInstance,
-    address _bpomAddr
-  ) public {
+    string memory certId,
+    string memory rejectMsg,
+    string memory bpomName,
+    string memory bpomInstance,
+    address bpomAddr
+  ) 
+    public  
+  {
     
-      st_userCertificate memory userBpom = createUserCertificate(_bpomName, _bpomInstance, _bpomAddr);
- 
-      updateBpomRejectDetails(_certId, _rejectMsg, userBpom);  
+    UserCert memory userBpom = createUserCertificate(
+      bpomName,
+      bpomInstance,
+      bpomAddr
+    );
 
-      for (uint i = 0; i < allCdobData.length; i++) {
-        if (keccak256(abi.encodePacked(allCdobData[i].certId)) == keccak256(abi.encodePacked(_certId))) {
-          allCdobData[i].status = EnumsLibrary.StatusCertificate.Rejected; 
-        }   
-      }  
+    updateBpomRejectDetails(
+      certId, 
+      rejectMsg, 
+      userBpom 
+    );  
+
+    uint length = allCdobData.length;
+
+    for (uint i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCdobData[i].certId)) == keccak256(abi.encodePacked(certId))) {
+        allCdobData[i].status = EnumsLibrary.StatusCertificate.Rejected; 
+      }   
+    }  
   }
 
   function renewRequestCdob(
-    string memory _certId,  
-    st_dokumenAdministrasiIpfs memory newDokuAdmin,
-    st_dokumenTeknisIpfs memory newDokuTeknis
-  ) public {
+    string memory certId,  
+    DokumenAdministrasi memory newDokuAdmin,
+    DokumenTeknis memory newDokuTeknis
+  ) 
+    public  
+  {
 
-    updateRenewDetails(_certId);  
+    updateRenewDetails(certId);  
+
+    uint length = allCdobData.length;
      
-    for (uint i = 0; i < allCdobData.length; i++) {
-      if (keccak256(abi.encodePacked(allCdobData[i].certId)) == keccak256(abi.encodePacked(_certId))) {
+    for (uint i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCdobData[i].certId)) == keccak256(abi.encodePacked(certId))) {
         allCdobData[i].status = EnumsLibrary.StatusCertificate.RenewRequest; 
         dokuAdminById[allCdobData[i].certId] = newDokuAdmin;
         dokuTeknisById[allCdobData[i].certId] = newDokuTeknis;
@@ -147,23 +182,23 @@ contract CdobCertificate is BaseCertificate {
     }
   }
 
-  function getAllCdobByInstance(string memory _instanceName) 
-    public view returns (st_certificateList[] memory) {
+  function getAllCdobByInstance(string memory instanceName) public view returns (CertificateList[] memory) {
 
     uint8 count = 0;
+    uint length = allCdobData.length;
 
-    for (uint i = 0; i < allCdobData.length; i++) {
-      if(keccak256(abi.encodePacked(allCdobData[i].instanceName)) == keccak256(abi.encodePacked(_instanceName))){
+    for (uint i = 0; i < length; i++) {
+      if(keccak256(abi.encodePacked(allCdobData[i].instanceName)) == keccak256(abi.encodePacked(instanceName))){
         count++;
       }
     }
 
-    st_certificateList[] memory cdobs = new st_certificateList[](count);
+    CertificateList[] memory cdobs = new CertificateList[](count);
 
     uint8 index = 0;
 
-    for (uint256 i = 0; i < allCdobData.length; i++) {
-      if (keccak256(abi.encodePacked(allCdobData[i].instanceName)) == keccak256(abi.encodePacked(_instanceName))) {
+    for (uint256 i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCdobData[i].instanceName)) == keccak256(abi.encodePacked(instanceName))) {
         cdobs[index] = allCdobData[i];
         index++;
       }
@@ -172,14 +207,15 @@ contract CdobCertificate is BaseCertificate {
     return cdobs;
   } 
 
-  function getAllCdob() 
-    public view returns (st_certificateList[] memory) {
+  function getAllCdob() public view returns (CertificateList[] memory) {
 
-    st_certificateList[] memory cdobs = new st_certificateList[](allCdobData.length);
+    uint length = allCdobData.length;
+
+    CertificateList[] memory cdobs = new CertificateList[](length);
 
     uint8 index = 0;
 
-    for (uint256 i = 0; i < allCdobData.length; i++) {
+    for (uint256 i = 0; i < length; i++) {
       cdobs[index] = allCdobData[i]; 
       index++;
     }
@@ -187,23 +223,24 @@ contract CdobCertificate is BaseCertificate {
     return cdobs;
   }
 
-  function getCertDetails(string memory _certId) 
-    public view returns (st_certificateDetails memory) {
-    return getCertDetail(_certId);  
+  function getCertDetails(string memory certId) public view returns (CertificateDetails memory) { 
+    return getCertDetail(certId);  
   } 
 
-  function getCdobDetails(string memory _certId) 
-    public view returns (
-      st_cdob memory, 
-      st_dokumenAdministrasiIpfs memory, 
-      st_dokumenTeknisIpfs memory
-    ) {
-    return (cdobDataById[_certId], dokuAdminById[_certId], dokuTeknisById[_certId]);  
-  } 
+  function getCdobDetails(string memory certId) public view returns (
+    CdobData memory,  
+    DokumenAdministrasi memory, 
+    DokumenTeknis memory
+  ) {
+    return (
+      cdobDataById[certId],
+      dokuAdminById[certId], 
+      dokuTeknisById[certId]
+    );  
+  }  
 
-  function getRejectsMsg(string memory _certId) 
-    public view returns (string memory) {
-    return getRejectMsg(_certId);  
-  } 
+  function getRejectsMsg(string memory certId) public view returns (string memory) {
+    return getRejectMsg(certId);  
+  }  
 
 }

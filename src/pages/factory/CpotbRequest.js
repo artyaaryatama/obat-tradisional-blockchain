@@ -293,7 +293,7 @@ function CpotbRequest() {
         });
       }
   
-      contract.once("evt_certRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
+      contract.once("CertRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
         handleEventCpotbRequested(_name, _userAddr, _jenisSediaan, _timestampRequest, requestCpotbCt.hash);
       });
   

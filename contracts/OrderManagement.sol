@@ -1,26 +1,71 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./RoleManager.sol";
-import "./ObatTradisional.sol";
+// import "./ObatTradisional.sol";
 import "./CdobCertificate.sol";
 import "./EnumsLibrary.sol";
 import "./ObatShared.sol";
  
-contract OrderManagement {
+contract OrderManagement is ReentrancyGuard {
 
-  ObatTradisional public obatTradisional;
-  RoleManager public roleManager;
-  ObatShared public obatShared;
-  CdobCertificate public cdobCertificate;
+  // ObatTradisional public immutable obatTradisional;
+  RoleManager public immutable roleManager;
+  ObatShared public immutable obatShared;
+  CdobCertificate public immutable cdobCertificate;
  
-  constructor(address _obatTradisionalAddr, address _roleManagerAddr, address _obatSharedAddr, address _cdobCertificateAddr) {
-    roleManager = RoleManager(_roleManagerAddr);
-    obatTradisional = ObatTradisional(_obatTradisionalAddr);
-    obatShared = ObatShared(_obatSharedAddr);
-    cdobCertificate = CdobCertificate(_cdobCertificateAddr);
+  constructor(address roleManagerAddr, address obatSharedAddr, address cdobCertificateAddr) {
+    roleManager = RoleManager(roleManagerAddr);
+    // obatTradisional = ObatTradisional(obatTradisionalAddr); 
+    obatShared = ObatShared(obatSharedAddr);
+    cdobCertificate = CdobCertificate(cdobCertificateAddr);
   }
 
+  using EnumsLibrary for EnumsLibrary.Roles;
+  using EnumsLibrary for EnumsLibrary.OrderStatus;
+  using EnumsLibrary for EnumsLibrary.ObatAvailability;
+
+  struct OrderUser {
+    string instanceName;
+    address instanceAddr;
+  }
+
+  struct OrderDetail {
+    string orderId;
+    string obatId;
+    string namaProduk;
+    string batchName;
+    uint8 orderQuantity;
+    OrderUser buyerUser;
+    OrderUser sellerUser;
+    EnumsLibrary.OrderStatus statusOrder; 
+    string prevOrderIdPbf;
+  }
+
+  struct OrderTimestamp {
+    uint256 timestampOrder;
+    uint256 timestampShipped;
+    uint256 timestampComplete;  
+  }
+  
+  string[] public allOrderIds;
+
+  mapping (string => string[]) obatOrderIpfsById;
+  mapping (string => OrderDetail) orderDetailById;
+  mapping (string => OrderTimestamp) orderTimestampById;
+  mapping (string => string[]) orderInstanceBuyerById;
+  mapping (string => string[]) orderInstanceSellerById;
+
+  event OrderUpdate (
+    string batchName, 
+    string namaProduk, 
+    string buyerInstanceName, 
+    string sellerInstanceName, 
+    uint8 orderQuantity, 
+    uint256 timestamp
+  ); 
+  
   modifier onlyFactory() { 
     require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.Factory), "Pabrik access only");
     _;
@@ -36,138 +81,79 @@ contract OrderManagement {
     _;
   }
 
-  using EnumsLibrary for EnumsLibrary.Roles;
-  using EnumsLibrary for EnumsLibrary.OrderStatus;
-  using EnumsLibrary for EnumsLibrary.ObatAvailability;
+  function createOrder (
+    string memory prevOrderIdPbf,
+    string memory orderId,
+    string memory obatId,
+    string memory batchName,
+    string memory namaProduk,
+    string memory buyerInstance,
+    string memory sellerInstance,
+    uint8 orderQuantity,
+    string memory cdobHash
+  ) public nonReentrant {
 
-  struct st_orderUser {
-    string instanceName;
-    address instanceAddr;
-  }
 
-  struct st_obatOrder {
-    string orderId;
-    string obatId;
-    string namaProduk;
-    string batchName;
-    uint8 orderQuantity;
-    st_orderUser buyerUser;
-    st_orderUser sellerUser;
-    EnumsLibrary.OrderStatus statusOrder; 
-    string prevOrderIdPbf;
-  }
+    allOrderIds.push(orderId); 
+    orderInstanceBuyerById[buyerInstance].push(orderId);
+    orderInstanceSellerById[sellerInstance].push(orderId);
 
-  struct st_orderTimestamp {
-    uint256 timestampOrder;
-    uint256 timestampShipped;
-    uint256 timestampComplete;  
-  }
-  
-  string[] public allOrderId;
+    if ((roleManager.hasRole(
+      msg.sender, 
+      EnumsLibrary.Roles.PBF
+    ))){
+      obatShared.addCdobId(
+        obatId, 
+        cdobHash
+      );
+    }
 
-  mapping (string => string[]) orderIpfsByOrderId;
-  mapping (string => st_obatOrder) orderByOrderId;
-  mapping (string => st_orderTimestamp) orderTimestampByOrderId;
-  mapping (string => string[]) orderIdbyInstanceBuyer;
-  mapping (string => string[]) orderIdbyInstanceSeller;
+    createTimestamp(orderId);
 
-  event evt_orderUpdate (string batchName, string namaProduk, string buyerInstanceName, string sellerInstanceName, uint8 orderQuantity, uint256 timestamp); 
-  
-  function createOrderUser (
-    string memory _instanceName,
-    address _instanceAddr
-  ) internal pure returns (st_orderUser memory){
-      return st_orderUser({  
-        instanceName: _instanceName,
-        instanceAddr: _instanceAddr
-      });
-  }
+    OrderUser memory buyerUser = createOrderUser(
+      buyerInstance, 
+      msg.sender
+    );
 
-  function createTimestamp (
-    string memory _orderId
-  ) internal {
+    OrderUser memory sellerUser = createOrderUser(
+      sellerInstance, 
+      address(0)
+    );
 
-    st_orderTimestamp memory newTimestamp = st_orderTimestamp({
-      timestampOrder: block.timestamp,
-      timestampShipped: 0,
-      timestampComplete: 0
+    orderDetailById[orderId] = OrderDetail({ 
+      orderId: orderId,
+      obatId: obatId,
+      namaProduk: namaProduk,
+      batchName: batchName,
+      orderQuantity: orderQuantity,
+      buyerUser: buyerUser,
+      sellerUser: sellerUser,
+      statusOrder: EnumsLibrary.OrderStatus.OrderPlaced,
+      prevOrderIdPbf: prevOrderIdPbf 
     });
 
-    orderTimestampByOrderId[_orderId] = newTimestamp;
-  }
-
-  function createOrder (
-    string memory _prevOrderIdPbf,
-    string memory _orderId,
-    string memory _obatId,
-    string memory _batchName,
-    string memory _namaProduk,
-    string memory _buyerInstance,
-    string memory _sellerInstance,
-    uint8 _orderQuantity,
-    string memory _cdobHash
-  ) public{
-      st_orderUser memory buyerUser = createOrderUser(_buyerInstance, msg.sender);
-      st_orderUser memory sellerUser = createOrderUser(_sellerInstance, address(0));
-
-      allOrderId.push(_orderId); 
-      orderIdbyInstanceBuyer[_buyerInstance].push(_orderId);
-      orderIdbyInstanceSeller[_sellerInstance].push(_orderId);
-
-      createTimestamp(_orderId);
-
-      if ((roleManager.hasRole(msg.sender, EnumsLibrary.Roles.PBF))) {
-        obatShared.addCdobId(_obatId, _cdobHash);
-      }
-
-      st_obatOrder memory orderData = st_obatOrder({ 
-        orderId: _orderId,
-        obatId: _obatId,
-        namaProduk: _namaProduk,
-        batchName: _batchName,
-        orderQuantity: _orderQuantity,
-        buyerUser: buyerUser,
-        sellerUser: sellerUser,
-        statusOrder: EnumsLibrary.OrderStatus.OrderPlaced,
-        prevOrderIdPbf: _prevOrderIdPbf 
-      });
-
-      orderByOrderId[_orderId] = orderData;
-
-      emitOrderUpdate(_orderId);
-  }
-
-  function emitOrderUpdate(string memory _orderId)
-    internal {
-
-      st_obatOrder memory order;      
-      
-      order = orderByOrderId[_orderId];
-
-      emit evt_orderUpdate(
-        order.batchName,
-        order.namaProduk, 
-        order.buyerUser.instanceName, 
-        order.sellerUser.instanceName,
-        order.orderQuantity,
-        block.timestamp
-      );
+    emitOrderUpdate(orderId);
   }
 
   function acceptOrderPbf(
-    string memory _orderId,
-    string[] memory _orderObatIpfs
-  ) public onlyFactory{ 
-      st_obatOrder storage orderData = orderByOrderId[_orderId];
+    string memory orderId,
+    string[] memory orderObatIpfs
+  ) 
+    public 
+    onlyFactory
+    nonReentrant 
+  { 
+      uint256 length = orderObatIpfs.length;
+      OrderDetail storage orderData = orderDetailById[orderId];
 
       orderData.sellerUser.instanceAddr = msg.sender;
       orderData.statusOrder = EnumsLibrary.OrderStatus.OrderShipped;
-      orderTimestampByOrderId[_orderId].timestampShipped = block.timestamp;
+      orderTimestampById[orderId].timestampShipped = block.timestamp;
 
-      delete orderIpfsByOrderId[_orderId];
+      delete obatOrderIpfsById[orderId];
 
-      for (uint256 i = 0; i < _orderObatIpfs.length; i++) {
-        orderIpfsByOrderId[_orderId].push(_orderObatIpfs[i]);
+      for (uint256 i = 0; i < length; i++) {
+        obatOrderIpfsById[orderId].push(orderObatIpfs[i]);
       }
 
       obatShared.updateBatchProduction(
@@ -175,64 +161,76 @@ contract OrderManagement {
         orderData.batchName, 
         EnumsLibrary.ObatAvailability.Sold
       );
+
       obatShared.updateObatIpfs(
         orderData.batchName,
-        _orderObatIpfs 
+        orderObatIpfs 
       ); 
 
-      emitOrderUpdate(_orderId);
+      emitOrderUpdate(orderId);
   }
   
   function acceptOrderRetailer(
-    string memory _orderId,
-    string[] memory _orderObatIpfs
-  ) public onlyPBF{ 
+    string memory orderId,
+    string[] memory orderObatIpfs
+  ) 
+    public 
+    onlyPBF
+    nonReentrant 
+  { 
  
-      st_obatOrder storage orderData = orderByOrderId[_orderId];
+    uint256 length = orderObatIpfs.length;
+    OrderDetail storage orderData = orderDetailById[orderId];
 
-      orderData.sellerUser.instanceAddr = msg.sender;
-      orderData.statusOrder = EnumsLibrary.OrderStatus.OrderShipped;
-      orderTimestampByOrderId[_orderId].timestampShipped = block.timestamp;
+    orderData.sellerUser.instanceAddr = msg.sender;
+    orderData.statusOrder = EnumsLibrary.OrderStatus.OrderShipped;
+    orderTimestampById[orderId].timestampShipped = block.timestamp;
 
-      delete orderIpfsByOrderId[orderByOrderId[_orderId].prevOrderIdPbf];
-      delete orderIpfsByOrderId[_orderId];
+    delete obatOrderIpfsById[orderDetailById[orderId].prevOrderIdPbf];
+    delete obatOrderIpfsById[orderId];
 
-      for (uint256 i = 0; i < _orderObatIpfs.length; i++) {
-        orderIpfsByOrderId[orderByOrderId[_orderId].prevOrderIdPbf].push(_orderObatIpfs[i]);
-        orderIpfsByOrderId[_orderId].push(_orderObatIpfs[i]);
-      }  
-      obatShared.updateBatchProduction(
-        orderData.obatId,  
-        orderData.batchName, 
-        EnumsLibrary.ObatAvailability.Sold
-      );
+    for (uint256 i = 0; i < length; i++) {
+      obatOrderIpfsById[orderDetailById[orderId].prevOrderIdPbf].push(orderObatIpfs[i]);
+      obatOrderIpfsById[orderId].push(orderObatIpfs[i]);
+    }  
 
-      obatShared.updateObatPbf(
-        orderData.batchName,
-        EnumsLibrary.ObatAvailability.Sold 
-      ); 
-      obatShared.updateObatIpfs(
-        orderData.batchName,
-        _orderObatIpfs 
-      ); 
+    obatShared.updateBatchProduction(
+      orderData.obatId,  
+      orderData.batchName, 
+      EnumsLibrary.ObatAvailability.Sold
+    );
 
-      emitOrderUpdate(_orderId);
+    obatShared.updateObatPbf(
+      orderData.batchName,
+      EnumsLibrary.ObatAvailability.Sold 
+    ); 
+
+    obatShared.updateObatIpfs(
+      orderData.batchName,
+      orderObatIpfs 
+    ); 
+
+    emitOrderUpdate(orderId);
   }
 
   function completeOrderPbf(
-    string memory _orderId,
-    string[] memory _orderObatIpfs
-  ) public onlyPBF{
-
-    st_obatOrder storage orderData = orderByOrderId[_orderId];
+    string memory orderId,
+    string[] memory orderObatIpfs
+  ) 
+    public 
+    onlyPBF
+    nonReentrant 
+  {
+    uint256 length = orderObatIpfs.length;
+    OrderDetail storage orderData = orderDetailById[orderId];
 
     orderData.statusOrder = EnumsLibrary.OrderStatus.OrderCompleted;
-    orderTimestampByOrderId[_orderId].timestampComplete = block.timestamp;
+    orderTimestampById[orderId].timestampComplete = block.timestamp;
 
-    delete orderIpfsByOrderId[_orderId];
+    delete obatOrderIpfsById[orderId];
 
-    for (uint256 i = 0; i < _orderObatIpfs.length; i++) {
-      orderIpfsByOrderId[_orderId].push(_orderObatIpfs[i]);
+    for (uint256 i = 0; i < length; i++) {
+      obatOrderIpfsById[orderId].push(orderObatIpfs[i]);
     }
 
     obatShared.updateBatchProduction( 
@@ -240,119 +238,163 @@ contract OrderManagement {
       orderData.batchName, 
       EnumsLibrary.ObatAvailability.Sold
     );
+
     obatShared.updateObatIpfs(
       orderData.batchName,
-      _orderObatIpfs 
+      orderObatIpfs 
     ); 
 
     obatShared.addObatPbf(
       orderData.obatId, 
-      _orderId,  
+      orderId,  
       orderData.namaProduk, 
       orderData.batchName, 
       orderData.orderQuantity, 
       orderData.buyerUser.instanceName 
     );
 
-    emitOrderUpdate(_orderId);
+    emitOrderUpdate(orderId);
   }
 
   function completeOrderRetailer(
-    string memory _orderId,
-    string[] memory _orderObatIpfs
-  ) public onlyRetailer{
+    string memory orderId,
+    string[] memory orderObatIpfs
+  ) 
+    public 
+    onlyRetailer
+    nonReentrant 
+  {
+    uint256 length = orderObatIpfs.length;
+    OrderDetail storage orderData = orderDetailById[orderId];  
 
-      st_obatOrder storage orderData = orderByOrderId[_orderId];  
+    orderData.statusOrder = EnumsLibrary.OrderStatus.OrderCompleted;
+    orderTimestampById[orderId].timestampComplete = block.timestamp;
 
-      orderData.statusOrder = EnumsLibrary.OrderStatus.OrderCompleted;
-      orderTimestampByOrderId[_orderId].timestampComplete = block.timestamp;
+    delete obatOrderIpfsById[orderData.prevOrderIdPbf];
+    delete obatOrderIpfsById[orderId];
 
-      delete orderIpfsByOrderId[orderData.prevOrderIdPbf];
-      delete orderIpfsByOrderId[_orderId];
+    for (uint256 i = 0; i < length; i++) {
+      obatOrderIpfsById[orderData.prevOrderIdPbf].push(orderObatIpfs[i]); 
+      obatOrderIpfsById[orderId].push(orderObatIpfs[i]);
+    } 
 
-      for (uint256 i = 0; i < _orderObatIpfs.length; i++) {
-        orderIpfsByOrderId[orderData.prevOrderIdPbf].push(_orderObatIpfs[i]); 
-        orderIpfsByOrderId[_orderId].push(_orderObatIpfs[i]);
-      } 
+    obatShared.updateObatPbf(
+      orderData.batchName, 
+      EnumsLibrary.ObatAvailability.Sold
+    );  
 
-      obatShared.updateObatPbf(
-        orderData.batchName, 
-        EnumsLibrary.ObatAvailability.Sold
-      );  
+    obatShared.updateBatchProduction(
+      orderData.obatId, 
+      orderData.batchName, 
+      EnumsLibrary.ObatAvailability.Sold
+    );
+    
+    obatShared.updateObatIpfs(
+      orderData.batchName,
+      orderObatIpfs 
+    ); 
 
-      obatShared.updateBatchProduction(
-        orderData.obatId, 
-        orderData.batchName, 
-        EnumsLibrary.ObatAvailability.Sold
-      );
-      obatShared.updateObatIpfs(
-        orderData.batchName,
-        _orderObatIpfs 
-      ); 
-
-      emitOrderUpdate(_orderId);
+    emitOrderUpdate(orderId);
   }
   
-  function getAllOrderFromBuyer(string memory _buyerInstance)
-    public view returns(st_obatOrder[] memory) {
-      uint256 count = orderIdbyInstanceBuyer[_buyerInstance].length;
+  function getAllOrderFromBuyer(string memory buyerInstance) public view returns(OrderDetail[] memory) {
+    uint256 count = orderInstanceBuyerById[buyerInstance].length;
 
-      st_obatOrder[] memory orders = new st_obatOrder[](count);
+    OrderDetail[] memory orders = new OrderDetail[](count);
 
-      for (uint i = 0; i < count; i++) {
-        string memory orderId = orderIdbyInstanceBuyer[_buyerInstance][i];
+    for (uint i = 0; i < count; i++) {
+      string memory orderId = orderInstanceBuyerById[buyerInstance][i];
 
-        orders[i] = orderByOrderId[orderId];
-      }
+      orders[i] = orderDetailById[orderId];
+    }
 
-      return orders;
+    return orders;
   }
 
-  function getAllOrderFromSeller(string memory _sellerInstance)
-    public view returns(st_obatOrder[] memory) {
-      uint256 count = orderIdbyInstanceSeller[_sellerInstance].length;
+  function getAllOrderFromSeller(string memory sellerInstance) public view returns(OrderDetail[] memory) {
+    uint256 count = orderInstanceSellerById[sellerInstance].length;
 
-      st_obatOrder[] memory orders = new st_obatOrder[](count);
+    OrderDetail[] memory orders = new OrderDetail[](count);
 
-      for (uint i = 0; i < count; i++) {
-        string memory orderId = orderIdbyInstanceSeller[_sellerInstance][i];
+    for (uint i = 0; i < count; i++) {
+      string memory orderId = orderInstanceSellerById[sellerInstance][i];
 
-        orders[i] = orderByOrderId[orderId];
-      }
+      orders[i] = orderDetailById[orderId];
+    }
 
-      return orders;
+    return orders;
   }
 
-  function detailOrder(string memory _orderId)
-    public view returns (st_obatOrder memory){
-      return orderByOrderId[_orderId];
+  function detailOrder(string memory orderId) public view returns (OrderDetail memory){
+    return orderDetailById[orderId];
   }
   
-  function orderTimestamp(string memory _orderId)
-    public view returns (st_orderTimestamp memory){
-      return orderTimestampByOrderId[_orderId];
+  function orderTimestamp(string memory orderId) public view returns (OrderTimestamp memory){
+    
+    return orderTimestampById[orderId];
   }
   
-  function obatIpfs(string memory _orderId)
-    public view returns (string[] memory){
-      return orderIpfsByOrderId[_orderId];
+  function obatIpfs(string memory orderId) public view returns (string[] memory){
+    
+    return obatOrderIpfsById[orderId];
   }
 
-  function getAllObatPbfReadyStock()
-    public view returns (ObatShared.st_obatOutputStock[] memory){
+  function getAllObatPbfReadyStock() public view returns (ObatShared.ObatOutputStok[] memory){ 
 
       return obatShared.getAllObatPbfReadyStock();
   } 
 
-  function getAllObatPbfByInstance(string memory _instanceName)
-    public view returns (ObatShared.st_obatOutputStock[] memory){
+  function getAllObatPbfByInstance(string memory instanceName) public view returns (ObatShared.ObatOutputStok[] memory){
 
-      return obatShared.getAllObatPbfByInstance(_instanceName);
+      return obatShared.getAllObatPbfByInstance(instanceName);
   }
 
-  function getAllObatRetailerByInstance(string memory _instanceName)
-    public view returns (ObatShared.st_obatOutputStock[] memory){
+  function getAllObatRetailerByInstance(string memory instanceName) public view returns (ObatShared.ObatOutputStok[] memory){
 
-      return obatShared.getAllObatRetailerByInstance(_instanceName);
+    return obatShared.getAllObatRetailerByInstance(instanceName);
+  }
+
+  function emitOrderUpdate(string memory orderId) internal {
+
+    OrderDetail memory order;      
+    order = orderDetailById[orderId];
+
+    emit OrderUpdate(
+      order.batchName,
+      order.namaProduk, 
+      order.buyerUser.instanceName, 
+      order.sellerUser.instanceName,
+      order.orderQuantity,
+      block.timestamp
+    );
+  }
+
+  function createOrderUser (
+    string memory instanceName,
+    address instanceAddr
+  ) 
+    internal 
+    pure 
+    returns (
+      OrderUser memory
+  ){
+    
+    return OrderUser({  
+      instanceName: instanceName,
+      instanceAddr: instanceAddr
+    });
+  }
+
+  function createTimestamp (
+    string memory orderId
+  ) internal {
+
+    OrderTimestamp memory newTimestamp = OrderTimestamp({
+      timestampOrder: block.timestamp,
+      timestampShipped: 0,
+      timestampComplete: 0
+    });
+
+    orderTimestampById[orderId] = newTimestamp;
   }
 }

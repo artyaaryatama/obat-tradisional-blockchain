@@ -1,70 +1,89 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
 import "./EnumsLibrary.sol";
 
 contract RoleManager {
   using EnumsLibrary for EnumsLibrary.Roles;
 
-  struct st_user {
+  struct UserData {
     string name;
     string instanceName;
     address userAddr;
     EnumsLibrary.Roles role;
     string locationInstance;
     string factoryType;
-    string NibNumber;
-    string NpwpNumber;
+    string nib;
+    string npwp;
   }
 
-  mapping(address => st_user) private users;
+  mapping(address => UserData) private userDataByAddr;
   mapping(address => bool) private isRegistered;
 
-  event evt_UserRegistered(address userAddr, string name, string instanceName, EnumsLibrary.Roles role, string locationInstance, string nib, string npwp);
+  event UserRegistered(
+    address userAddr, 
+    string name, 
+    string instanceName, 
+    EnumsLibrary.Roles role, 
+    string locationInstance, 
+    string nib, 
+    string npwp
+  );
+
+  function checkRegistration(address userAddr) external view returns (bool) {
+    return isRegistered[userAddr];
+  }
+
+  function hasRole(
+    address userAddr, 
+    EnumsLibrary.Roles role
+  ) external view returns (bool) {
+    return isRegistered[userAddr] && userDataByAddr[userAddr].role == role;
+  }
 
   function registerUser( 
-    string memory _name,
-    string memory _instanceName,
-    uint8 _role,
-    string memory _locationInstance,
-    string memory _factoryType,
-    string memory _nib,
-    string memory _npwp
+    string memory userName,
+    string memory userInstance,
+    uint8 role,
+    string memory locationInstance,
+    string memory factoryType,
+    string memory nibNumber,
+    string memory npwpNumber
   ) public {
     require(!isRegistered[msg.sender], "User already registered");
 
-    users[msg.sender] = st_user({
-      name: _name,
-      instanceName: _instanceName,
+    userDataByAddr[msg.sender] = UserData({
+      name: userName,
+      instanceName: userInstance,
       userAddr: msg.sender,
-      role: EnumsLibrary.Roles(_role),
-      locationInstance: _locationInstance,
-      factoryType: _factoryType,
-      NibNumber: _nib,
-      NpwpNumber: _npwp
+      role: EnumsLibrary.Roles(role),
+      locationInstance: locationInstance,
+      factoryType: factoryType,
+      nib: nibNumber,
+      npwp: npwpNumber
     });
 
     isRegistered[msg.sender] = true;
 
-    emit evt_UserRegistered(msg.sender, _name, _instanceName, EnumsLibrary.Roles(_role), _locationInstance, _nib, _npwp); 
+    emit UserRegistered(
+      msg.sender, 
+      userName, 
+      userInstance, 
+      EnumsLibrary.Roles(role), 
+      locationInstance, 
+      nibNumber, 
+      npwpNumber
+    ); 
   }
 
-  function loginUser() public view returns (st_user memory) {
+  function loginUser() public view returns (UserData memory) {
     require(isRegistered[msg.sender], "User address missmatch");
     
-    return users[msg.sender];
+    return userDataByAddr[msg.sender];
   }
 
-  function getUserData(address _userAddr) public view returns (st_user memory) {
-    require(isRegistered[_userAddr], "User is not registered");
-    return users[_userAddr];
-  }
-
-  function checkRegistration(address _userAddr) external view returns (bool) {
-    return isRegistered[_userAddr];
-  }
-
-  function hasRole(address _userAddr, EnumsLibrary.Roles _role) external view returns (bool) {
-    return isRegistered[_userAddr] && users[_userAddr].role == _role;
+  function getUserData(address userAddr) public view returns (UserData memory) {
+    require(isRegistered[userAddr], "User is not registered");
+    return userDataByAddr[userAddr];
   }
 }

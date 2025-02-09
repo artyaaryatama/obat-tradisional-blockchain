@@ -69,6 +69,10 @@ function CpotbRenewRequest() {
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
   useEffect(() => {
+    document.title = "Pengajuan Ulang CPOTB"; 
+  }, []);
+
+  useEffect(() => {
     async function connectWallet() {
       if (window.ethereum) {
         const provider = new BrowserProvider(window.ethereum);
@@ -136,7 +140,7 @@ function CpotbRenewRequest() {
               <p>{pabrikInstance}</p> 
             </li>
           </ul>
-          <ul>
+          <ul className='klaim'>
             <li className="label">
               <p>Alamat Akun Pabrik (Pengguna)</p> 
             </li>
@@ -356,7 +360,7 @@ function CpotbRenewRequest() {
         });
       }
   
-      contracts.certificateManager.once("evt_certRenewRequest", (_name, _userAddr, _jenisSediaan, _timestampRenew) => {
+      contracts.certificateManager.once("CertRenewRequest", (_name, _userAddr, _jenisSediaan, _timestampRenew) => {
         handleEventCpotbRenewRequested(_name, _userAddr, _jenisSediaan, _timestampRenew, renewRequestCpotbCt.hash);
       });
   
@@ -393,7 +397,7 @@ function CpotbRenewRequest() {
           </ul>
           <ul>
             <li className="label"><label>Alasan Penolakan CPOTB</label></li>
-            <li className="input reject"><p>{rejectMsg}</p></li>
+            <li className="input reject cpotb"><p>{rejectMsg}</p></li>
           </ul> 
           <div className="doku">
             <h5>Dokumen Administrasi</h5>

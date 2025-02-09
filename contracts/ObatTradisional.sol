@@ -1,22 +1,64 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol"; 
 import "./RoleManager.sol";
 import "./EnumsLibrary.sol";
 import "./NieManager.sol";
 import "./ObatShared.sol";
  
-contract ObatTradisional {
+contract ObatTradisional is ReentrancyGuard{
 
-  RoleManager public roleManager;
-  ObatShared public obatShared;
-  NieManager public nieManager;
+  RoleManager public immutable roleManager;
+  ObatShared public immutable obatShared;
+  NieManager public immutable nieManager;
 
-  constructor(address _roleManagerAddr, address _obatSharedAddr, address _nieManagerAddr) {
-    roleManager = RoleManager(_roleManagerAddr);
-    obatShared = ObatShared(_obatSharedAddr);
-    nieManager = NieManager(_nieManagerAddr);
+  constructor(
+    address roleManagerAddr, 
+    address obatSharedAddr, 
+    address nieManagerAddr
+  ) {
+    roleManager = RoleManager(roleManagerAddr);
+    obatShared = ObatShared(obatSharedAddr);
+    nieManager = NieManager(nieManagerAddr);
   }
+
+  using EnumsLibrary for EnumsLibrary.OrderStatus;
+  using EnumsLibrary for EnumsLibrary.ObatAvailability;
+  using EnumsLibrary for EnumsLibrary.Roles;
+
+  struct ObatOutputNie {
+    string obatId;
+    string namaProduk;
+    string nieNumber;
+    uint8 nieStatus;
+    string factoryInstance;
+  }
+
+  struct ObatOutputBatch {
+    string obatId;
+    string namaProduk;
+    string batchName;
+    uint8 obatQuantity;
+    EnumsLibrary.ObatAvailability statusStok;
+    string ownerInstance;
+  }
+
+  string[] public allObatIds;
+  
+  event ObatCreated(
+    string namaProduk, 
+    uint tipeObat, 
+    string factoryInstance, 
+    address factoryAddresses
+  );
+
+  event AddObatBatchProduction(
+    string batchName, 
+    uint8 quantity, 
+    string namaProduk, 
+    string factoryInstance
+  );
 
   modifier onlyFactory() { 
     require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.Factory), "Only Factory");
@@ -28,113 +70,68 @@ contract ObatTradisional {
     _;
   }
 
-  using EnumsLibrary for EnumsLibrary.OrderStatus;
-  using EnumsLibrary for EnumsLibrary.ObatAvailability;
-  using EnumsLibrary for EnumsLibrary.Roles;
-
-  struct st_obatOutputNie {
-    string obatId;
-    string namaProduk;
-    string nieNumber;
-    uint8 nieStatus;
-    string factoryInstance;
-  }
-
-  struct st_obatOutputBatch {
-    string obatId;
-    string namaProduk;
-    string batchName;
-    uint8 obatQuantity;
-    EnumsLibrary.ObatAvailability statusStok;
-    string ownerInstance;
-  }
-
-  string[] public allObatIds;
-  
-  event evt_obatCreated(string namaProduk, uint tipeObat, string factoryInstance, address factoryAddresses);
-  event evt_addBatchProduction(string batchName, uint8 quantity, string namaProduk, string factoryInstance);
-  event evt_renewRejectedNie(string namaProduk, uint256 timestamp);
-
   function createObat(
-    string memory _obatId,
-    string memory _merk,
-    string memory _namaProduk,
-    string[] memory _klaim,
-    string memory _kemasan,
-    string[] memory _komposisi,
-    string memory _factoryInstance,
-    EnumsLibrary.TipePermohonanCdob _tipeObat,
-    string memory _cpotbIpfs,
-    string memory _jenisObat
-  ) public onlyFactory {
+    string memory obatId,
+    string memory merk,
+    string memory namaProduk,
+    string[] memory klaim,
+    string memory kemasan,
+    string[] memory komposisi,
+    string memory factoryInstance,
+    EnumsLibrary.TipePermohonanCdob tipeObat,
+    string memory cpotbIpfs,
+    string memory jenisObat
+  ) 
+    public 
+    onlyFactory 
+    nonReentrant 
+  {
+    allObatIds.push(obatId);
 
     obatShared.setObatDetail(
-      _obatId,
-      _merk, 
-      _namaProduk,
-      _klaim,
-      _komposisi,
-      _kemasan,
-      _factoryInstance,
+      obatId,
+      merk, 
+      namaProduk,
+      klaim,
+      komposisi,
+      kemasan,
+      factoryInstance,
       msg.sender,
-      _tipeObat, 
-      _cpotbIpfs,
-      _jenisObat
+      tipeObat, 
+      cpotbIpfs,
+      jenisObat
     );
 
-    nieManager.createObatNie(_obatId, _factoryInstance);
+    nieManager.createObatNie(
+      obatId, 
+      factoryInstance
+    );
 
-    allObatIds.push(_obatId);
-
-    emit evt_obatCreated(_namaProduk, uint8(_tipeObat),  _factoryInstance, msg.sender);
+    emit ObatCreated(
+      namaProduk, 
+      uint8(tipeObat),  
+      factoryInstance, 
+      msg.sender
+    );
   } 
 
-  // function renewRequestedNie(
-  //   string memory _obatId,
-  //   string memory _merk,
-  //   string memory _namaProduk,
-  //   string[] memory _klaim, 
-  //   string memory _kemasan,
-  //   string[] memory _komposisi,
-  //   EnumsLibrary.TipePermohonanCdob _tipeObat,
-  //   string memory _jenisObat,
-  //   NieManager.st_dokumenIpfs memory _newDoku
-  // ) public onlyFactory {
+  function getAllObat() public view onlyBPOM returns (ObatOutputNie[] memory){
 
-  //   obatShared.updateObatDetail(
-  //     _obatId,
-  //     _merk, 
-  //     _namaProduk,
-  //     _klaim,
-  //     _komposisi,
-  //     _kemasan,
-  //     _tipeObat, 
-  //     _jenisObat
-  //   );
+    uint256 totalId = allObatIds.length;
+    ObatOutputNie[] memory obatList = new ObatOutputNie[](totalId);
+    string[] memory obatIds = allObatIds;
 
-  //   nieManager.renewRequestNie(_obatId, block.timestamp, _newDoku);
+    for (uint256 i = 0; i < totalId; i++) {
+      string memory obatId = obatIds[i];
 
-  //   allObatIds.push(_obatId); 
+      ObatShared.ObatDetail memory details = obatShared.getObatDetail(obatId);
 
-  //   emit evt_renewRejectedNie(_namaProduk, block.timestamp);
-  // } 
-  
-  function getAllObat()
-    public
-    view
-    onlyBPOM
-    returns (st_obatOutputNie[] memory)
-  {
-    uint256 totalObat = allObatIds.length;
-    st_obatOutputNie[] memory obatList = new st_obatOutputNie[](totalObat);
-
-    for (uint256 i = 0; i < totalObat; i++) {
-      string memory obatId = allObatIds[i];
-
-      (string memory nieNumber, uint8 nieStatus) = nieManager.getNieNumberAndStatus(obatId);
-      ObatShared.st_obatDetails memory details = obatShared.getObatDetail(obatId);
-
-      obatList[i] = st_obatOutputNie({
+      ( 
+        string memory nieNumber, 
+        uint8 nieStatus
+      ) = nieManager.getNieNumberAndStatus(obatId);
+      
+      obatList[i] = ObatOutputNie({
         obatId: obatId,
         namaProduk: details.namaProduk,
         nieNumber: nieNumber, 
@@ -146,223 +143,201 @@ contract ObatTradisional {
     return obatList;
   }
 
-  function countAllObatByInstance(string memory _factoryInstance)
-    internal view returns (uint256){
-      uint256 totalObat = allObatIds.length;
-      uint256 count = 0;
+  function getAllObatByInstance(string memory instanceName) public view onlyFactory returns (ObatOutputNie[] memory) {
+    uint256 totalId = allObatIds.length;
+    uint256 ownedObat = countAllObatByInstance(instanceName);
+    ObatOutputNie[] memory obatList = new ObatOutputNie[](ownedObat);
+    uint256 index = 0;
+    
+    bytes32 instanceHash = keccak256(abi.encodePacked(instanceName));
 
-      for (uint i = 0; i < totalObat; i++) {
+    for (uint256 i = 0; i < totalId; i++) {
         string memory obatId = allObatIds[i];
+        ObatShared.ObatDetail memory details = obatShared.getObatDetail(obatId);
 
-        ObatShared.st_obatDetails memory details =  obatShared.getObatDetail(obatId);
-        if (keccak256(abi.encodePacked(details.factoryInstance)) == keccak256(abi.encodePacked(_factoryInstance))) {
-          count++;
-        }
-      }
+        // Filter only matching instances
+        if (keccak256(abi.encodePacked(details.factoryInstance)) == instanceHash) {
+            (string memory nieNumber, uint8 nieStatus) = nieManager.getNieNumberAndStatus(obatId);
 
-      return count;
-
-  }
-
-  function getAllObatByInstance (string memory _instanceName)
-    public view onlyFactory returns (st_obatOutputNie[] memory){
-      
-      uint256 ownedObat = countAllObatByInstance(_instanceName);
-
-      st_obatOutputNie[] memory obatList = new st_obatOutputNie[](ownedObat);
-
-      uint256 index = 0;
-
-      for (uint256 i = 0; i < ownedObat; i++) {
-        string memory obatId = allObatIds[i];
-
-        ObatShared.st_obatDetails memory details =  obatShared.getObatDetail(obatId);
-
-        if (keccak256(abi.encodePacked(details.factoryInstance)) == keccak256(abi.encodePacked(_instanceName))) {
-
-          (string memory nieNumber, uint8 nieStatus) = nieManager.getNieNumberAndStatus(obatId);
-
-            obatList[index] = st_obatOutputNie({
-              obatId: obatId, 
-              namaProduk: details.namaProduk,
-              nieNumber: nieNumber, 
-              nieStatus: nieStatus,
-              factoryInstance: details.factoryInstance
+            obatList[index] = ObatOutputNie({
+                obatId: obatId,
+                namaProduk: details.namaProduk,
+                nieNumber: nieNumber,
+                nieStatus: nieStatus,
+                factoryInstance: details.factoryInstance
             });
 
-          index++;
+            index++;
         }
-      }
+    }
 
     return obatList;
   }
 
-  function detailObat (string memory _obatId) 
-    public view returns ( 
-      ObatShared.st_obatDetails memory
-    ){ 
-      return obatShared.getObatDetail(_obatId);
+  function detailObat (string memory obatId) public view returns (ObatShared.ObatDetail memory){ 
+    return obatShared.getObatDetail(obatId);
   }  
 
   function addBatchProduction(
-    string memory _obatId,
-    string memory _namaProduk,
-    string memory _batchName,
-    uint8 _obatQuantity,
-    string[] memory _obatIpfsHash, 
-    string memory _factoryInstance
-  ) public onlyFactory {
+    string memory obatId,
+    string memory namaProduk,
+    string memory batchName,
+    uint8 obatQuantity,
+    string[] memory obatIpfs, 
+    string memory factoryInstance
+  ) public onlyFactory nonReentrant{
 
     obatShared.addBatchProduction(
-      _obatId,
-      _namaProduk,
-      _batchName,
-      _obatQuantity,
-      _obatIpfsHash,
-      _factoryInstance); 
+      obatId,
+      namaProduk,
+      batchName,
+      obatQuantity,
+      obatIpfs,
+      factoryInstance
+    ); 
 
-    emit evt_addBatchProduction (_batchName, _obatQuantity, _namaProduk, _factoryInstance);
-  } 
- 
-  function countAllBatchReadyStock()
-    internal view returns (uint256){
-      uint256 totalBatchReady = 0;
-      string memory obatId;
-
-      for (uint256 i = 0; i < allObatIds.length; i++) {
-
-        obatId = allObatIds[i];
-
-        ObatShared.st_obatProduction[] memory batchObat = obatShared.getObatProduction(obatId);
-
-        if (batchObat.length == 0) {
-          continue;
-        }
-
-        for (uint256 j = 0; j < batchObat.length; j++) {
-          if (batchObat[j].statusStok == EnumsLibrary.ObatAvailability.Ready) {
-            totalBatchReady++;
-          }
-        }
-      }
-
-    return totalBatchReady;
-  }
-
-  function countAllBatchByInstance(string memory _instanceName)
-    internal view returns (uint256){
-      uint256 totalBatchInstance = 0;
-      string memory obatId;
-      bytes32 instanceHash = keccak256(abi.encodePacked(_instanceName));
-
-      for (uint256 i = 0; i < allObatIds.length; i++) {
-
-        obatId = allObatIds[i];
-
-        ObatShared.st_obatProduction[] memory batchObat = obatShared.getObatProduction(obatId); 
-        
-        if (batchObat.length == 0) {
-            continue;
-        }
-
-        for (uint256 j = 0; j < batchObat.length; j++) {
-          if (keccak256(abi.encodePacked(batchObat[j].factoryInstance)) == instanceHash) {
-            totalBatchInstance++;
-          }
-        }
-      }
-
-    return totalBatchInstance;
-  }
-
-  function createObatOutputBatch(
-    string memory obatId,
-    ObatShared.st_obatProduction memory obatBatch
-  ) internal pure returns (st_obatOutputBatch memory) {
-      return st_obatOutputBatch({
-        obatId: obatId,
-        namaProduk: obatBatch.namaProduk,
-        batchName: obatBatch.batchName,
-        obatQuantity: obatBatch.obatQuantity,
-        statusStok: obatBatch.statusStok,
-        ownerInstance: obatBatch.factoryInstance
-      });
+    emit AddObatBatchProduction(
+      batchName, 
+      obatQuantity, 
+      namaProduk, 
+      factoryInstance
+    );
   } 
 
-  function getAllBatchProductionByInstance(string memory _instanceName)
-    public view onlyFactory returns(st_obatOutputBatch[] memory){
-      uint256 totalReady = countAllBatchByInstance(_instanceName);
+  function getAllBatchProductionByInstance(string memory instanceName) public view onlyFactory returns (ObatOutputBatch[] memory) {
+    uint256 totalId = allObatIds.length;
+    bytes32 instanceHash = keccak256(abi.encodePacked(instanceName));
 
-      st_obatOutputBatch[] memory obatReadyStock = new st_obatOutputBatch[](totalReady);
+    ObatOutputBatch[] memory tempObatReadyStock = new ObatOutputBatch[](totalId * 5);
+    uint256 index = 0;
 
-      bytes32 instanceHash = keccak256(abi.encodePacked(_instanceName));
+    for (uint256 i = 0; i < totalId; i++) {
+      string memory obatId = allObatIds[i];
+      ObatShared.ObatProduction[] memory obatBatches = obatShared.getObatProduction(obatId);
 
-      uint256 index = 0;
-
-      for (uint256 i = 0; i < allObatIds.length; i++) {
-        string memory obatId = allObatIds[i];
-        ObatShared.st_obatProduction[] memory obatBatches = obatShared.getObatProduction(obatId);
-
-        if (obatBatches.length == 0) {
-          continue;
-        }
-
-        for (uint256 j = 0; j < obatBatches.length; j++) {
-          if (keccak256(abi.encodePacked(obatBatches[j].factoryInstance)) == instanceHash) {
-
-            obatReadyStock[index] = createObatOutputBatch(obatId, obatBatches[j]); 
-            index++; 
-          }
+      for (uint256 j = 0; j < obatBatches.length; j++) {
+        if (keccak256(abi.encodePacked(obatBatches[j].factoryInstance)) == instanceHash) {
+          tempObatReadyStock[index] = createObatOutputBatch(obatId, obatBatches[j]);
+          index++;
         }
       }
+    }
 
-    return obatReadyStock;
-  }
-
-
-  function getAllBatchProductionReadyStock()
-    public view returns (
-      st_obatOutputBatch[] memory
-  ){
-      uint256 totalReady = countAllBatchReadyStock();
-
-      if(totalReady == 0 ){
-        return new st_obatOutputBatch[](0);
-      }
-
-      st_obatOutputBatch[] memory obatReadyStock = new st_obatOutputBatch[](totalReady);
-
-      uint256 index = 0;
-
-      for (uint256 i = 0; i < allObatIds.length; i++) {
-        string memory obatId = allObatIds[i];
-        ObatShared.st_obatProduction[] memory obatBatches = obatShared.getObatProduction(obatId);
-
-        for (uint256 j = 0; j < obatBatches.length; j++) {
-          if (obatBatches[j].statusStok == EnumsLibrary.ObatAvailability.Ready) {
-            obatReadyStock[index] = createObatOutputBatch(obatId, obatBatches[j]);
-            index++;
-          }
-        }
+    ObatOutputBatch[] memory obatReadyStock = new ObatOutputBatch[](index);
+    for (uint256 k = 0; k < index; k++) {
+      obatReadyStock[k] = tempObatReadyStock[k];
     }
 
     return obatReadyStock;
   }
 
+
+  // function getAllBatchProductionByInstance(string memory instanceName) public view onlyFactory returns(ObatOutputBatch[] memory){
+  //   uint256 totalId = allObatIds.length;
+  //   uint256 totalReady = countAllBatchByInstance(instanceName);
+  //   bytes32 instanceHash = keccak256(abi.encodePacked(instanceName));
+  //   uint256 index = 0;
+  //   ObatOutputBatch[] memory obatReadyStock = new ObatOutputBatch[](totalReady);
+
+  //   for (uint256 i = 0; i < totalId; i++) {
+  //     string memory obatId = allObatIds[i];
+  //     ObatShared.ObatProduction[] memory obatBatches = obatShared.getObatProduction(obatId);
+
+  //     if (obatBatches.length == 0) {
+  //       continue;
+  //     }
+
+  //     for (uint256 j = 0; j < obatBatches.length; j++) {
+  //       if (keccak256(abi.encodePacked(obatBatches[j].factoryInstance)) == instanceHash) {
+
+  //         obatReadyStock[index] = createObatOutputBatch(obatId, obatBatches[j]); 
+  //         index++; 
+  //       }
+  //     }
+  //   }
+
+  //   return obatReadyStock;
+  // }
+
+  function getAllBatchProductionReadyStock() public view returns (ObatOutputBatch[] memory) {
+    uint256 totalId = allObatIds.length;
+
+    ObatOutputBatch[] memory tempObatReadyStock = new ObatOutputBatch[](totalId * 5);
+    uint256 index = 0;
+
+    for (uint256 i = 0; i < totalId; i++) {
+      string memory obatId = allObatIds[i];
+      ObatShared.ObatProduction[] memory obatBatches = obatShared.getObatProduction(obatId);
+
+      for (uint256 j = 0; j < obatBatches.length; j++) {
+        if (obatBatches[j].statusStok == EnumsLibrary.ObatAvailability.Ready) {
+          tempObatReadyStock[index] = createObatOutputBatch(obatId, obatBatches[j]);
+          index++;
+        }
+      }
+    }
+
+    ObatOutputBatch[] memory obatReadyStock = new ObatOutputBatch[](index);
+
+    for (uint256 k = 0; k < index; k++) {
+      obatReadyStock[k] = tempObatReadyStock[k];
+    }
+
+    return obatReadyStock;
+}
+
+
+  // function getAllBatchProductionReadyStock() public view returns (ObatOutputBatch[] memory){
+  //   uint256 totalReady = countAllBatchReadyStock();
+
+  //   if(totalReady == 0 ){
+  //     return new ObatOutputBatch[](0);
+  //   }
+
+  //   ObatOutputBatch[] memory obatReadyStock = new ObatOutputBatch[](totalReady);
+
+  //   uint256 index = 0;
+  //   uint256 totalId = allObatIds.length;
+
+  //   for (uint256 i = 0; i < totalId; i++) {
+  //     string memory obatId = allObatIds[i];
+  //     ObatShared.ObatProduction[] memory obatBatches = obatShared.getObatProduction(obatId);
+
+  //     for (uint256 j = 0; j < obatBatches.length; j++) {
+  //       if (obatBatches[j].statusStok == EnumsLibrary.ObatAvailability.Ready) {
+  //         obatReadyStock[index] = createObatOutputBatch(obatId, obatBatches[j]);
+  //         index++;
+  //       }
+  //     }
+  //   }
+ 
+  //   return obatReadyStock;
+  // }
+
   function detailBatchProduction(
-    string memory _obatId,
-    string memory _batchName
-  ) public view returns (
-      ObatShared.st_obatProduction memory,
+    string memory obatId,
+    string memory batchName
+  ) 
+    public 
+    view 
+    returns (
+      ObatShared.ObatProduction memory,
       string[] memory
-    ){
+  ){
+ 
+    string[] memory obatIpfs = obatShared.getObatIpfsByBatchName(batchName);
 
-    ObatShared.st_obatProduction[] memory obatBatches = obatShared.getObatProduction(_obatId); 
-
-    ObatShared.st_obatProduction memory obatBatchDetail;
-    string[] memory obatIpfs = obatShared.getObatIpfsByBatchName(_batchName);
-
-    bytes32 batchHash = keccak256(abi.encodePacked(_batchName));
+    bytes32 batchHash = keccak256(abi.encodePacked(batchName));
+    
+    ObatShared.ObatProduction[] memory obatBatches = obatShared.getObatProduction(obatId); 
+    
+    ObatShared.ObatProduction memory obatBatchDetail = ObatShared.ObatProduction({
+      statusStok: EnumsLibrary.ObatAvailability.Ready,
+      namaProduk: "",
+      batchName: "",
+      obatQuantity: 0,
+      factoryInstance: ""
+    });
 
     for (uint256 i = 0; i < obatBatches.length; i++){
       if (keccak256(abi.encodePacked(obatBatches[i].batchName)) == batchHash) {
@@ -375,7 +350,100 @@ contract ObatTradisional {
       obatIpfs = new string[](0);
     }
 
-    return (obatBatchDetail, obatIpfs);
+    return (
+      obatBatchDetail, 
+      obatIpfs
+    );
+  }
+    
+  // function countAllBatchByInstance(string memory instanceName) internal view returns (uint256){
+    
+  //   uint256 totalBatchInstance = 0;
+  //   string memory obatId;
+  //   bytes32 instanceHash = keccak256(abi.encodePacked(instanceName));
+  //   uint256 totalId = allObatIds.length;
+
+  //   for (uint256 i = 0; i < totalId; i++) {
+
+  //     obatId = allObatIds[i];
+
+  //     ObatShared.ObatProduction[] memory batchObat = obatShared.getObatProduction(obatId); 
+      
+  //     if (batchObat.length == 0) {
+  //         continue;
+  //     }
+
+  //     for (uint256 j = 0; j < batchObat.length; j++) {
+  //       if (keccak256(abi.encodePacked(batchObat[j].factoryInstance)) == instanceHash) {
+  //         totalBatchInstance++;
+  //       }
+  //     }
+  //   }
+
+  //   return totalBatchInstance;
+  // }
+
+  // function countAllBatchReadyStock() internal view returns (uint256){
+    
+  //   uint256 totalBatchReady = 0;
+  //   string memory obatId;
+  //   uint256 totalId = allObatIds.length;
+
+  //   for (uint256 i = 0; i < totalId; i++) {
+
+  //     obatId = allObatIds[i];
+
+  //     ObatShared.ObatProduction[] memory batchObat = obatShared.getObatProduction(obatId);
+
+  //     if (batchObat.length == 0) {
+  //       continue;
+  //     }
+
+  //     for (uint256 j = 0; j < batchObat.length; j++) {
+  //       if (batchObat[j].statusStok == EnumsLibrary.ObatAvailability.Ready) {
+  //         totalBatchReady++;
+  //       }
+  //     }
+  //   }
+
+  //   return totalBatchReady;
+  // }
+
+  function countAllObatByInstance(string memory factoryInstance) internal view returns (uint256){
+    
+    uint256 totalId = allObatIds.length;
+    uint256 count = 0;
+
+    for (uint i = 0; i < totalId; i++) {
+      string memory obatId = allObatIds[i];
+      ObatShared.ObatDetail memory details = obatShared.getObatDetail(obatId);
+
+      if (keccak256(abi.encodePacked(details.factoryInstance)) == keccak256(abi.encodePacked(factoryInstance))) {
+        count++;
+      }
+    }
+
+    return count;
+
   }
 
+  function createObatOutputBatch(
+    string memory obatId,
+    ObatShared.ObatProduction memory obatBatch
+  )  
+    internal 
+    pure 
+    returns (
+      ObatOutputBatch memory
+  ){
+
+    return ObatOutputBatch({
+      obatId: obatId,
+      namaProduk: obatBatch.namaProduk,
+      batchName: obatBatch.batchName,
+      obatQuantity: obatBatch.obatQuantity,
+      statusStok: obatBatch.statusStok,
+      ownerInstance: obatBatch.factoryInstance
+    });
+  } 
 }

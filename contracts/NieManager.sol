@@ -1,27 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
 import "./RoleManager.sol";
 import "./EnumsLibrary.sol";
 
 contract NieManager {
-  RoleManager public roleManager;
+  RoleManager public immutable roleManager;
 
-  constructor(address _roleManagerAddr) {
-    roleManager = RoleManager(_roleManagerAddr);
+  constructor(address roleManagerAddr) {
+    roleManager = RoleManager(roleManagerAddr);
   }
 
-  modifier onlyFactory() {
-    require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.Factory), "Only Factory");
-    _;
-  }
-
-  modifier onlyBPOM() {
-    require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.BPOM), "Only BPOM");
-    _;
-  }
-
-  struct st_NieDetails {
+  struct NieDetail {
     string nieNumber; 
     EnumsLibrary.NieStatus nieStatus;   
     uint256 timestampProduction;
@@ -34,7 +24,7 @@ contract NieManager {
     address bpomAddr;
   }
 
-  struct st_dokumenObat {
+  struct DokumenObat {
     string masterFormula;
     string suratKuasa;
     string suratPernyataan;
@@ -44,7 +34,7 @@ contract NieManager {
     string hasilUjiStabilitas;
   }
 
-  struct st_dokumenSpesifikasiObat{
+  struct DokumenPendukung{
     string sertifikatAnalisaBahanBaku;
     string sertifikatAnalisaProdukJadi;
     string spesifikasiProdukJadi;
@@ -53,22 +43,53 @@ contract NieManager {
     string dataPendukungKeamanan;
   } 
 
-  mapping (string => st_NieDetails) public nieDetailsByObatId;
-  mapping (string => string) public rejectMsgbyId; 
-  mapping (string => st_dokumenObat) public dokuObatByObatId;
-  mapping (string => st_dokumenSpesifikasiObat) public dokuSpesifikasiByObatId;
+  mapping (string => NieDetail) public nieDetailById;
+  mapping (string => string) public rejectMsgById; 
+  mapping (string => DokumenObat) public dokuObatById;
+  mapping (string => DokumenPendukung) public dokuPendukungById;
 
-  event evt_nieRequested(string factoryInstance, address factoryAddr,uint timestamp);
-  event evt_nieApproved(string bpomInstance, address bpomAddr, string nieNumber, uint tiemstamp);
-  event evt_nieRejected(string bpomInstance, address bpomAddr, string rejectMsg, uint tiemstamp);
-  event evt_nieRenewRequest(string factoryInstance, address factoryAddr, uint timestamp);
+  event NieRequested(
+    string factoryInstance,
+    address factoryAddr,
+    uint timestamp
+  );
+
+  event NieApproved(
+    string bpomInstance, 
+    address bpomAddr, 
+    string nieNumber, 
+    uint tiemstamp
+  );
+
+  event NieRejected(
+    string bpomInstance, 
+    address bpomAddr, 
+    string rejectMsg, 
+    uint tiemstamp
+  );
+
+  event NieRenewRequest(
+    string factoryInstance, 
+    address factoryAddr, 
+    uint timestamp
+  );
+
+  modifier onlyFactory() {
+    require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.Factory), "Only Factory");
+    _;
+  }
+
+  modifier onlyBPOM() {
+    require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.BPOM), "Only BPOM");
+    _;
+  }
 
   function createObatNie(
-    string memory _obatId,
-    string memory _factoryInstance
-  ) public{
+    string memory obatId,
+    string memory factoryInstance
+  ) public {
 
-    st_NieDetails memory nieDetail = st_NieDetails({
+    NieDetail memory nieDetail = NieDetail({
       nieNumber: "",
       nieStatus: EnumsLibrary.NieStatus.inLocalProduction, 
       timestampProduction: block.timestamp, 
@@ -76,97 +97,136 @@ contract NieManager {
       timestampNieApprove: 0,
       timestampNieRejected: 0,
       timestampNieRenewRequest: 0,
-      factoryInstance: _factoryInstance,
+      factoryInstance: factoryInstance,
       bpomInstance: "",
       bpomAddr: address(0)
     });
 
 
-    nieDetailsByObatId[_obatId] = nieDetail;
+    nieDetailById[obatId] = nieDetail;
   }
 
   function requestNie(
-    string memory _obatId,
-    st_dokumenObat memory _dokuObat,
-    st_dokumenSpesifikasiObat memory _dokuSpefikasi
-  ) public onlyFactory {
+    string memory obatId,
+    DokumenObat memory dokuObat,
+    DokumenPendukung memory dokuPendukung
+  ) 
+    public 
+    onlyFactory 
+  {
 
-    nieDetailsByObatId[_obatId].nieStatus = EnumsLibrary.NieStatus.RequestedNie;
-    nieDetailsByObatId[_obatId].timestampNieRequest = block.timestamp;
-    dokuObatByObatId[_obatId] = _dokuObat; 
-    dokuSpesifikasiByObatId[_obatId] = _dokuSpefikasi;  
+    nieDetailById[obatId].nieStatus = EnumsLibrary.NieStatus.RequestedNie;
+    nieDetailById[obatId].timestampNieRequest = block.timestamp;
+    dokuObatById[obatId] = dokuObat; 
+    dokuPendukungById[obatId] = dokuPendukung;  
     
-    emit evt_nieRequested(nieDetailsByObatId[_obatId].factoryInstance, msg.sender, block.timestamp); 
+    emit NieRequested(
+      nieDetailById[obatId].factoryInstance, 
+      msg.sender, 
+      block.timestamp
+    ); 
   } 
 
   function approveNie(
-    string memory _obatId,
-    string memory _nieNumber,
-    string memory _bpomInstance
-  ) public onlyBPOM{
+    string memory obatId,
+    string memory nieNumber,
+    string memory bpomInstance
+  ) 
+    public 
+    onlyBPOM
+  {
 
-    st_NieDetails storage nieData = nieDetailsByObatId[_obatId];
+    NieDetail storage nieData = nieDetailById[obatId];
 
-    nieData.nieNumber = _nieNumber;
+    nieData.nieNumber = nieNumber;
     nieData.nieStatus = EnumsLibrary.NieStatus.ApprovedNie; 
     nieData.timestampNieApprove = block.timestamp;
-    nieData.bpomInstance = _bpomInstance;
+    nieData.bpomInstance = bpomInstance;
     nieData.bpomAddr = msg.sender;
     
-    emit evt_nieApproved(_bpomInstance, msg.sender, _nieNumber, block.timestamp);  
+    emit NieApproved(
+      bpomInstance,
+      msg.sender, 
+      nieNumber, 
+      block.timestamp
+    );  
   }
  
   function rejectNie(
-    string memory _obatId,
-    string memory _bpomInstance,
-    string memory _rejectMsg
-  ) public onlyBPOM {
+    string memory obatId,
+    string memory bpomInstance,
+    string memory rejectMsg
+  ) 
+    public 
+    onlyBPOM 
+  {
 
-    st_NieDetails storage nieData = nieDetailsByObatId[_obatId];
+    NieDetail storage nieData = nieDetailById[obatId];
 
     nieData.nieStatus = EnumsLibrary.NieStatus.RejectedNie; 
-    nieData.bpomInstance = _bpomInstance;
+    nieData.bpomInstance = bpomInstance;
     nieData.bpomAddr = msg.sender;
     nieData.timestampNieRejected = block.timestamp;
-    rejectMsgbyId[_obatId] = _rejectMsg;
+    rejectMsgById[obatId] = rejectMsg;
      
-    emit evt_nieRejected(_bpomInstance, msg.sender, _rejectMsg, block.timestamp);  
+    emit NieRejected(
+      bpomInstance, 
+      msg.sender, 
+      rejectMsg, 
+      block.timestamp
+    );  
   }
 
   function renewRequestNie(
-    string memory _obatId,
-    st_dokumenObat memory _dokuObat,
-    st_dokumenSpesifikasiObat memory _dokuSpefikasi
-  ) public onlyFactory {
+    string memory obatId,
+    DokumenObat memory dokuObat,
+    DokumenPendukung memory dokuPendukung
+  ) 
+    public 
+    onlyFactory 
+  {
 
-    st_NieDetails storage nieData = nieDetailsByObatId[_obatId];
+    NieDetail storage nieData = nieDetailById[obatId];
 
     nieData.nieStatus = EnumsLibrary.NieStatus.RenewRequestNie; 
     nieData.timestampNieRenewRequest = block.timestamp;
 
-    delete dokuObatByObatId[_obatId];
-    delete dokuSpesifikasiByObatId[_obatId];
+    delete dokuObatById[obatId];
+    delete dokuPendukungById[obatId];
     
-    dokuObatByObatId[_obatId] = _dokuObat; 
-    dokuSpesifikasiByObatId[_obatId] = _dokuSpefikasi;  
+    dokuObatById[obatId] = dokuObat; 
+    dokuPendukungById[obatId] = dokuPendukung;  
 
-    emit evt_nieRenewRequest(nieDetailsByObatId[_obatId].factoryInstance, msg.sender, block.timestamp);
+    emit NieRenewRequest(
+      nieDetailById[obatId].factoryInstance, 
+      msg.sender, 
+      block.timestamp
+    );
   }
 
-  function getNieDetail(string memory _obatId) public view returns (
-    st_NieDetails memory,
-    st_dokumenObat memory,
-    st_dokumenSpesifikasiObat memory
-  ) {
-    return (nieDetailsByObatId[_obatId], dokuObatByObatId[_obatId], dokuSpesifikasiByObatId[_obatId]);
+  function getNieDetail(string memory obatId) public view returns (
+    NieDetail memory,
+    DokumenObat memory,
+    DokumenPendukung memory
+  ){
+    return (
+      nieDetailById[obatId], 
+      dokuObatById[obatId], 
+      dokuPendukungById[obatId]
+    );
   }
 
-  function getNieNumberAndStatus(string memory _obatId) public view returns (string memory, uint8) {
-    return (nieDetailsByObatId[_obatId].nieNumber, uint8(nieDetailsByObatId[_obatId].nieStatus));
+  function getNieNumberAndStatus(string memory obatId) public view returns (
+    string memory, 
+    uint8
+  ){
+    return (
+      nieDetailById[obatId].nieNumber, 
+      uint8(nieDetailById[obatId].nieStatus));
   }
 
-  function getRejectMsgNie(string memory _obatId) public view returns (string memory) {
-    return rejectMsgbyId[_obatId];
+  function getRejectMsgNie(string memory obatId) public view returns (string memory) {
+    return rejectMsgById[obatId];
   }
 
 }

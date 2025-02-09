@@ -175,7 +175,7 @@ function RegisterPage() {
     
     MySwal.fire({
       title: "Harap tunggu",
-      text: "Proses pendaftaran user sedang diproses 🧙‍♂️🧙‍♀️",
+      text: "Proses pendaftaran sedang berlangsung. 🧙‍♂️🧙‍♀️",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
@@ -201,7 +201,7 @@ function RegisterPage() {
         
       }
 
-      contract.once("evt_UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
+      contract.once("UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
         handleEventUserRegister(_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp, registCt.hash);
       });
       

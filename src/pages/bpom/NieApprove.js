@@ -105,14 +105,18 @@ function NieApprove() {
             if(item[3] === 3n){
               nieNumber= null
             }
-            return {
-              obatId: item[0],
-              namaProduk: item[1],
-              nieNumber: nieNumber,
-              nieStatus: obatStatusMap[item[3]],
-              factoryInstance: item[4]
-            };
-          })
+
+            if(item[3] !== 0n){
+              console.log(item[1]);
+              return {
+                obatId: item[0],
+                namaProduk: item[1],
+                nieNumber: nieNumber,
+                nieStatus: obatStatusMap[item[3]],
+                factoryInstance: item[4]
+              };
+            }
+          }).filter(Boolean);
 
           console.log(reconstructedData);
           setDataObat(reconstructedData);
@@ -145,7 +149,7 @@ function NieApprove() {
             </ul>
             <ul>
               <li className="label">
-                <p>NIE Number</p> 
+                <p>Nomor NIE</p> 
               </li>
               <li className="input">
                 <p>{historyNie}</p> 
@@ -159,7 +163,7 @@ function NieApprove() {
                 <p>{bpomInstance}</p> 
               </li>
             </ul>
-            <ul>
+            <ul className='klaim'>
               <li className="label">
                 <p>Alamat Akun BPOM (Pengguna)</p> 
               </li>
@@ -227,7 +231,7 @@ function NieApprove() {
                 <p>{bpomInstance}</p> 
               </li>
             </ul>
-            <ul>
+            <ul className='klaim'>
               <li className="label">
                 <p>Alamat Akun BPOM (Pengguna)</p> 
               </li>
@@ -243,7 +247,7 @@ function NieApprove() {
                 <p>{formattedTimestamp}</p> 
               </li>
             </ul>
-            <ul className='rejectMsg'>
+            <ul className='rejectMsg klaim'>
               <li className="label">
                 <p>Alasan Penolakan</p> 
               </li>
@@ -400,7 +404,7 @@ function NieApprove() {
                     : <div></div>
                   }
                   {rejectMsg?
-                    <ul className='rejectMsg'>
+                    <ul className='rejectMsg klaim'>
                       <li className="label">
                         <p>Alasan Penolakan</p>
                       </li>
@@ -823,7 +827,7 @@ function NieApprove() {
                     </li>
                   </ul>
 
-                  <ul className='rejectMsg'>
+                  <ul className='rejectMsg klaim'>
                       <li className="label">
                         <p>Alasan Penolakan</p>
                       </li>
@@ -1291,7 +1295,7 @@ function NieApprove() {
                     : <div></div>
                   }
                   {rejectMsg?
-                    <ul className='rejectMsg'>
+                    <ul className='rejectMsg klaim'>
                       <li className="label">
                         <p>Alasan Penolakan</p>
                       </li>
@@ -1709,7 +1713,7 @@ function NieApprove() {
             }
 
             MySwal.fire({
-              title: "Approve NIE",
+              title: "Setujui NIE",
               html: (
                 <div className='form-swal form'>
                   <div className="row row--obat">
@@ -1731,7 +1735,7 @@ function NieApprove() {
 
                       <ul>
                         <li className="label">
-                          <label htmlFor="factoryAddr">Factory CPOTB</label>
+                          <label htmlFor="factoryAddr">Pabrik CPOTB</label>
                         </li>
                         <li className="input">
                           <span className='linked-i'>
@@ -1883,10 +1887,11 @@ function NieApprove() {
                   </div>
                 </div>
               ),
-              width: '820',
+              width: '880',
               showCancelButton: true,
               confirmButtonText: 'Setujui',
               cancelButtonText: 'Batal',
+              cancelButtonColor: '#A6A6A6',
               allowOutsideClick: false,
               customClass: {
                 htmlContainer: 'scrollable-modal-small'
@@ -2048,7 +2053,7 @@ function NieApprove() {
         });
       }
 
-      contracts.nieManager.on('evt_nieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
+      contracts.nieManager.once('NieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
         handleEventNieApproved("Approved", namaObat, _instanceAddr, _instanceName, _nieNumber, _timestampApprove, approveNieCt.hash)
       });
 
@@ -2071,7 +2076,7 @@ function NieApprove() {
         });
       }
 
-      contracts.nieManager.on('evt_nieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
+      contracts.nieManager.once('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
         handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, rejectCt.hash)
       });
 

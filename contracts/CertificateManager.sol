@@ -1,28 +1,73 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./RoleManager.sol";
 import "./CpotbCertificate.sol";
 import "./CdobCertificate.sol";
 import "./EnumsLibrary.sol";
 
-contract CertificateManager {
+contract CertificateManager is ReentrancyGuard {
 
-  RoleManager roleManager;
-  CpotbCertificate cpotbCertificate;
-  CdobCertificate cdobCertificate;
+  RoleManager public immutable roleManager;
+  CpotbCertificate public immutable cpotbCertificate;
+  CdobCertificate public immutable cdobCertificate;
 
   constructor(
-    address _roleManagerAddr,
-    address _cpotbCertificateAddr, 
-    address _cdobCertificateAddr
+    address roleManagerAddr,
+    address cpotbCertificateAddr, 
+    address cdobCertificateAddr
   ) {
-    roleManager = RoleManager(_roleManagerAddr);
-    cpotbCertificate = CpotbCertificate(_cpotbCertificateAddr);
-    cdobCertificate = CdobCertificate(_cdobCertificateAddr);
+    roleManager = RoleManager(roleManagerAddr);
+    cpotbCertificate = CpotbCertificate(cpotbCertificateAddr);
+    cdobCertificate = CdobCertificate(cdobCertificateAddr);
   }
 
   using EnumsLibrary for EnumsLibrary.Roles;
+
+  struct CertificateRequest { 
+    string certId;
+    string senderName;
+    string senderInstance;
+    address senderAddr;
+  }
+
+  struct CertificateApproval {
+    string certNumber;
+    string certId;
+    string bpomName;
+    string bpomInstance;
+    address bpomAddr;
+  }
+
+  event CertRequested(
+    string senderInstance, 
+    address senderAddr, 
+    uint8 tipePermohonan, 
+    uint timestamp
+  );
+
+  event CertApproved(
+    string bpomInstance, 
+    address bpomAddr, 
+    uint8 tipePermohonan, 
+    string certNumber, 
+    uint timestamp
+  );
+
+  event CertRejected(
+    string bpomInstance, 
+    address bpomAddr, 
+    uint8 tipePermohonan, 
+    uint timestamp, 
+    string rejectMsg
+  );
+  
+  event CertRenewRequest(
+    string senderInstance, 
+    address senderAddr, 
+    uint timestamp
+  );
 
   modifier onlyFactory() { 
     require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.Factory), "Only Factory can do this transaction!");
@@ -39,170 +84,283 @@ contract CertificateManager {
     _;
   }
 
-  struct st_certificateRequest { 
-    string certId;
-    string senderName;
-    string senderInstance;
-    address senderAddr;
-  }
-
-  struct st_certificateApproval {
-    string certNumber;
-    string certId;
-    string bpomName;
-    string bpomInstance;
-    address bpomAddr;
-  }
-
-  event evt_certRequested(string senderInstance, address senderAddr, uint8 tipePermohonan, uint timestamp);
-  event evt_certApproved(string bpomInstance, address bpomAddr, uint8 tipePermohonan, string certNumber, uint timestamp);
-  event evt_certRejected(string bpomInstance, address bpomAddr, uint8 tipePermohonan, uint timestamp, string rejectMsg);
-  event evt_certRenewRequest(string senderInstance, address senderAddr, uint timestamp);
-
   function requestCpotb(
-    st_certificateRequest memory requestData,
-    uint8 _jenisSediaan,
-    string memory _factoryType,
-    CpotbCertificate.st_dokumenAdministrasiIpfs memory dokuAdmin,
-    CpotbCertificate.st_dokumenTeknisIpfs memory dokuTeknis
-  ) public onlyFactory{
+    CertificateRequest memory reqData,
+    uint8 jenisSediaan,
+    string memory factoryType,
+    CpotbCertificate.DokumenAdministrasi memory dokuAdmin,
+    CpotbCertificate.DokumenTeknis memory dokuTeknis
+  ) public
+    onlyFactory
+    nonReentrant 
+  {
 
-    cpotbCertificate.requestCpotb(requestData.certId, requestData.senderName, requestData.senderInstance, requestData.senderAddr, _jenisSediaan, _factoryType, dokuAdmin, dokuTeknis);
+    cpotbCertificate.requestCpotb(
+      reqData.certId, 
+      reqData.senderName, 
+      reqData.senderInstance, 
+      reqData.senderAddr, 
+      jenisSediaan, 
+      factoryType, 
+      dokuAdmin, 
+      dokuTeknis
+    );
 
-    emit evt_certRequested(requestData.senderInstance, msg.sender, _jenisSediaan, block.timestamp); 
+    emit CertRequested(
+      reqData.senderInstance, 
+      msg.sender, 
+      jenisSediaan, 
+      block.timestamp
+    ); 
   }
 
   function approveCpotb( 
-    st_certificateApproval memory approvalData,
-    string memory _ipfsCert,
-    uint8 _jenisSediaan 
-  ) public onlyBPOM {
-    cpotbCertificate.approveCpotb(approvalData.certNumber, approvalData.certId, approvalData.bpomName, approvalData.bpomInstance, approvalData.bpomAddr, _ipfsCert); 
+    CertificateApproval memory approveData,
+    string memory ipfsCert,
+    uint8 jenisSediaan 
+  ) public 
+    onlyBPOM 
+    nonReentrant 
+  {
+    cpotbCertificate.approveCpotb(
+      approveData.certNumber, 
+      approveData.certId, 
+      approveData.bpomName, 
+      approveData.bpomInstance, 
+      approveData.bpomAddr, 
+      ipfsCert
+    ); 
 
-    emit evt_certApproved(approvalData.bpomInstance, msg.sender, _jenisSediaan, approvalData.certId, block.timestamp);
+    emit CertApproved(
+      approveData.bpomInstance, 
+      msg.sender, 
+      jenisSediaan, 
+      approveData.certNumber, 
+      block.timestamp
+    ); 
   }
  
   function rejectCpotb(
-    string memory _certId,
-    string memory _rejectMsg,
-    string memory _bpomName,
-    string memory _bpomInstance,
-    address _bpomAddr,
-    uint8 _jenisSediaan 
-  ) public onlyBPOM {
-    cpotbCertificate.rejectCpotb(_certId, _rejectMsg, _bpomName, _bpomInstance, _bpomAddr);
+    string memory certId,
+    string memory rejectMsg,
+    string memory bpomName,
+    string memory bpomInstance,
+    uint8 jenisSediaan 
+  ) 
+    public 
+    onlyBPOM 
+    nonReentrant 
+  {
+    cpotbCertificate.rejectCpotb(
+      certId, 
+      rejectMsg, 
+      bpomName, 
+      bpomInstance, 
+      msg.sender
+    );
 
-    emit evt_certRejected(_bpomInstance, msg.sender, _jenisSediaan, block.timestamp, _rejectMsg); 
+    emit CertRejected(
+      bpomInstance, 
+      msg.sender, 
+      jenisSediaan, 
+      block.timestamp, 
+      rejectMsg
+    ); 
   } 
 
   function renewCpotb( 
-    st_certificateRequest memory requestData,
-    CpotbCertificate.st_dokumenAdministrasiIpfs memory newDokuAdmin,
-    CpotbCertificate.st_dokumenTeknisIpfs memory newDokuTeknis
-  ) public onlyFactory {  
-    cpotbCertificate.renewRequestCpotb(requestData.certId, newDokuAdmin, newDokuTeknis);  
+    CertificateRequest memory reqData,
+    CpotbCertificate.DokumenAdministrasi memory newDokuAdmin,
+    CpotbCertificate.DokumenTeknis memory newDokuTeknis
+  ) 
+    public 
+    onlyFactory 
+    nonReentrant 
+  {  
+    cpotbCertificate.renewRequestCpotb(
+      reqData.certId, 
+      newDokuAdmin, 
+      newDokuTeknis
+    );  
  
-    emit evt_certRenewRequest(requestData.senderInstance, requestData.senderAddr, block.timestamp);
+    emit CertRenewRequest(
+      reqData.senderInstance, 
+      reqData.senderAddr, 
+      block.timestamp
+    );
   }
  
-  function getCpotbByInstance(string memory _instanceName) public view returns (CpotbCertificate.st_certificateList[] memory) { 
-    return cpotbCertificate.getAllCpotbByInstance(_instanceName);
+  function getCpotbByInstance(string memory instanceName) public view returns (CpotbCertificate.CertificateList[] memory){ 
+    return cpotbCertificate.getAllCpotbByInstance(instanceName); 
   } 
  
-  function getAllCpotb() public view returns (CpotbCertificate.st_certificateList[] memory) {
+  function getAllCpotb() public view returns (CpotbCertificate.CertificateList[] memory){
     return cpotbCertificate.getAllCpotb();
   }
  
-  function getCpotbDetails(string memory _certId) public view returns (
-    CpotbCertificate.st_certificateDetails memory,
-    CpotbCertificate.st_cpotb memory,
-    CpotbCertificate.st_dokumenAdministrasiIpfs memory,
-    CpotbCertificate.st_dokumenTeknisIpfs memory
+  function getCpotbDetails(string memory certId) public view returns (
+    CpotbCertificate.CertificateDetails memory,
+    CpotbCertificate.CpotbData memory,
+    CpotbCertificate.DokumenAdministrasi memory,
+    CpotbCertificate.DokumenTeknis memory
   ) {
     (
-      CpotbCertificate.st_cpotb memory cpotb,
-      CpotbCertificate.st_dokumenAdministrasiIpfs memory dokuAdmin,
-      CpotbCertificate.st_dokumenTeknisIpfs memory dokuTeknis
-    ) = cpotbCertificate.getCpotbDetails(_certId);
-
-    return (cpotbCertificate.getCertDetails(_certId), cpotb, dokuAdmin, dokuTeknis);
+      CpotbCertificate.CpotbData memory cpotb,
+      CpotbCertificate.DokumenAdministrasi memory dokuAdmin,
+      CpotbCertificate.DokumenTeknis memory dokuTeknis
+    ) = cpotbCertificate.getCpotbDetails(certId);
+ 
+    return (
+      cpotbCertificate.getCertDetails(certId), 
+      cpotb, 
+      dokuAdmin, 
+      dokuTeknis
+    );
   }
 
-  function getRejectMsgCpotb(string memory _certId) public view returns (string memory) {
-    return cpotbCertificate.getRejectMsg(_certId);
+  function getRejectMsgCpotb(string memory certId) public view returns (string memory) {
+    return cpotbCertificate.getRejectMsg(certId);
   }
 
   function requestCdob(
-    st_certificateRequest memory requestData,
-    uint8 _tipePermohonanCdob,
-    CdobCertificate.st_dokumenAdministrasiIpfs memory dokuAdmin,
-    CdobCertificate.st_dokumenTeknisIpfs memory dokuTeknis
-  ) public onlyPBF{
+    CertificateRequest memory reqData,
+    uint8 tipePermohonan,
+    CdobCertificate.DokumenAdministrasi memory dokuAdmin,
+    CdobCertificate.DokumenTeknis memory dokuTeknis
+  )
+    public 
+    onlyPBF
+    nonReentrant 
+  {
 
-    cdobCertificate.requestCdob(requestData.certId, requestData.senderName, requestData.senderInstance, requestData.senderAddr, _tipePermohonanCdob, dokuAdmin, dokuTeknis);
+    cdobCertificate.requestCdob(
+      reqData.certId, 
+      reqData.senderName, 
+      reqData.senderInstance, 
+      reqData.senderAddr, 
+      tipePermohonan, 
+      dokuAdmin, 
+      dokuTeknis
+    );
 
-    emit evt_certRequested(requestData.senderInstance, msg.sender, _tipePermohonanCdob, block.timestamp); 
+    emit CertRequested(
+      reqData.senderInstance, 
+      msg.sender, 
+      tipePermohonan, 
+      block.timestamp
+    ); 
   }
 
   function approveCdob(
-    st_certificateApproval memory approvalData,
-    string memory _ipfsCert,
-    uint8 _tipePermohonanCdob 
-  ) public onlyBPOM {
+    CertificateApproval memory approveData,
+    string memory ipfsCert,
+    uint8 tipePermohonan 
+  )
+    public 
+    onlyBPOM 
+    nonReentrant 
+  {
 
-    cdobCertificate.approveCdob(approvalData.certNumber, approvalData.certId, approvalData.bpomName, approvalData.bpomInstance, approvalData.bpomAddr, _ipfsCert); 
+    cdobCertificate.approveCdob(
+      approveData.certNumber, 
+      approveData.certId, 
+      approveData.bpomName, 
+      approveData.bpomInstance, 
+      approveData.bpomAddr, 
+      ipfsCert
+    ); 
 
-    emit evt_certApproved(approvalData.bpomInstance, msg.sender, _tipePermohonanCdob, approvalData.certId, block.timestamp);
+    emit CertApproved(
+      approveData.bpomInstance, 
+      msg.sender, 
+      tipePermohonan, 
+      approveData.certNumber, 
+      block.timestamp
+    );
   }
  
   function rejectCdob(
-    string memory _certId,
-    string memory _rejectMsg,
-    string memory _bpomName,
-    string memory _bpomInstance,
-    address _bpomAddr,
-    uint8 _tipePermohonanCdob 
-  ) public onlyBPOM {
+    string memory certId,
+    string memory rejectMsg,
+    string memory bpomName,
+    string memory bpomInstance,
+    uint8 tipePermohonan 
+  ) 
+    public 
+    onlyBPOM
+    nonReentrant  
+  {
 
-    cdobCertificate.rejectCdob(_certId, _rejectMsg, _bpomName, _bpomInstance, _bpomAddr);
+    cdobCertificate.rejectCdob(
+      certId, 
+      rejectMsg, 
+      bpomName, 
+      bpomInstance, 
+      msg.sender
+    );
 
-    emit evt_certRejected(_bpomInstance, msg.sender, _tipePermohonanCdob, block.timestamp, _rejectMsg); 
+    emit CertRejected(
+      bpomInstance, 
+      msg.sender, 
+      tipePermohonan, 
+      block.timestamp, 
+      rejectMsg
+    ); 
   } 
 
   function renewCdob( 
-    st_certificateRequest memory requestData,
-    CdobCertificate.st_dokumenAdministrasiIpfs memory newDokuAdmin,
-    CdobCertificate.st_dokumenTeknisIpfs memory newDokuTeknis
-  ) public onlyPBF {  
-    cdobCertificate.renewRequestCdob(requestData.certId, newDokuAdmin, newDokuTeknis);
+    CertificateRequest memory reqData,
+    CdobCertificate.DokumenAdministrasi memory newDokuAdmin,
+    CdobCertificate.DokumenTeknis memory newDokuTeknis
+  ) 
+    public 
+    onlyPBF 
+    nonReentrant 
+  {  
+    cdobCertificate.renewRequestCdob(
+      reqData.certId, 
+      newDokuAdmin, 
+      newDokuTeknis
+    );
  
-    emit evt_certRenewRequest(requestData.senderInstance, requestData.senderAddr, block.timestamp);
+    emit CertRenewRequest(
+      reqData.senderInstance, 
+      reqData.senderAddr, 
+      block.timestamp
+    );
   }
  
-  function getCdobByInstance(string memory _instanceName) public view returns (CdobCertificate.st_certificateList[] memory) { 
-    return cdobCertificate.getAllCdobByInstance(_instanceName);  
+  function getCdobByInstance(string memory instanceName) public view returns (CdobCertificate.CertificateList[] memory){ 
+    return cdobCertificate.getAllCdobByInstance(instanceName);  
   } 
    
-  function getAllCdob() public view returns (CdobCertificate.st_certificateList[] memory) {
+  function getAllCdob() public view returns (CdobCertificate.CertificateList[] memory){
     return cdobCertificate.getAllCdob();
   } 
  
-  function getCdobDetails(string memory _certId) public view returns (
-    CdobCertificate.st_certificateDetails memory,
-    CdobCertificate.st_cdob memory,
-    CdobCertificate.st_dokumenAdministrasiIpfs memory,
-    CdobCertificate.st_dokumenTeknisIpfs memory
+  function getCdobDetails(string memory certId) public view returns (
+    CdobCertificate.CertificateDetails memory,
+    CdobCertificate.CdobData memory,
+    CdobCertificate.DokumenAdministrasi memory,
+    CdobCertificate.DokumenTeknis memory
   ) { 
+
     (
-      CdobCertificate.st_cdob memory cdob,
-      CdobCertificate.st_dokumenAdministrasiIpfs memory dokuAdmin,
-      CdobCertificate.st_dokumenTeknisIpfs memory dokuTeknis
-    ) = cdobCertificate.getCdobDetails(_certId);
-    return (cdobCertificate.getCertDetails(_certId), cdob, dokuAdmin, dokuTeknis);
+      CdobCertificate.CdobData memory cdob,
+      CdobCertificate.DokumenAdministrasi memory dokuAdmin,
+      CdobCertificate.DokumenTeknis memory dokuTeknis
+    ) = cdobCertificate.getCdobDetails(certId);
+
+    return (
+      cdobCertificate.getCertDetails(certId), 
+      cdob, 
+      dokuAdmin, 
+      dokuTeknis
+    );
   }
  
-  function getRejectMsgCdob(string memory _certId) public view returns (string memory) {
-    return cdobCertificate.getRejectMsg(_certId);
+  function getRejectMsgCdob(string memory certId) public view returns (string memory) {
+    return cdobCertificate.getRejectMsg(certId);
   }
  
 }

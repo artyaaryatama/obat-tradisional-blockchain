@@ -109,7 +109,7 @@ function NieRequest() {
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
     
     MySwal.fire({
-      title: "Sukses Mengajukan NIE",
+      title: "Sukses mengajukan NIE",
       html: (
         <div className='form-swal event'>
           <ul>
@@ -128,7 +128,7 @@ function NieRequest() {
               <p>{factoryInstance}</p> 
             </li>
           </ul>
-          <ul>
+          <ul className='klaim'>
             <li className="label">
               <p>Alamat Akun Pabrik (Pengguna)</p> 
             </li>
@@ -177,7 +177,24 @@ function NieRequest() {
   }
 
   const requestNie = async(hashDocs) => {
-    console.log(hashDocs);
+    console.log(obatData.obatId,
+      [
+        hashDocs.dokumen_master_formula,
+        hashDocs.surat_kuasa,
+        hashDocs.surat_pernyataan,
+        hashDocs.dokumen_komposisi_produk,
+        hashDocs.dokumen_cara_pembuatan_produk,
+        hashDocs.dokumen_spesifikasi_kemasan,
+        hashDocs.dokumen_hasil_uji_stabilitas
+      ],
+      [
+        hashDocs.sertifikat_analisa_bahan_baku,
+        hashDocs.sertifikat_analisa_produk_jadi,
+        hashDocs.dokumen_spesifikasi_produk_jadi,
+        hashDocs.dokumen_sistem_penomoran_bets,
+        hashDocs.desain_kemasan,
+        hashDocs.data_pendukung_keamanan
+      ]);
     try {
       const requestNieCt = await contracts.nieManager.requestNie(
         obatData.obatId,
@@ -187,7 +204,7 @@ function NieRequest() {
           hashDocs.surat_pernyataan,
           hashDocs.dokumen_komposisi_produk,
           hashDocs.dokumen_cara_pembuatan_produk,
-          hashDocs.spesifikasi_kemasan,
+          hashDocs.dokumen_spesifikasi_kemasan,
           hashDocs.dokumen_hasil_uji_stabilitas
         ],
         [
@@ -209,7 +226,7 @@ function NieRequest() {
         });
       }
 
-      contracts.nieManager.once("evt_nieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
+      contracts.nieManager.once("NieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
         handleEventNieRequsted(obatData.namaObat, _factoryAddr, _factoryInstance,_timestampRequestNie, requestNieCt.hash)
       });
       
@@ -383,7 +400,7 @@ function NieRequest() {
       "Sertifikat Analisa Bahan Baku": sertifikatAnalisaBahanBaku,
       "Sertifikat Analisa Produk Jadi": sertifikatAnalisaProdukJadi,
       "Dokumen Hasil Uji Stabilitas": hasilUjiStabilitas,
-      "Spesifikasi Kemasan": spesifikasiKemasan,
+      "Dokumen Spesifikasi Kemasan": spesifikasiKemasan,
       "Desain Kemasan": desainKemasan,
       "Data Pendukung Keamanan": dataPendukungKeamanan
     };
@@ -578,7 +595,7 @@ function NieRequest() {
             </ul>
             <ul>
               <li className="label">
-                <label htmlFor="instanceName">Spesifikasi Kemasan</label>
+                <label htmlFor="instanceName">Dokumen Spesifikasi Kemasan</label>
               </li>
               <li className="input">
                 <input type="file" accept="application/pdf" name="instanceName" onChange={(e) => handleFileChange(e, setSpesifikasiKemasan)} required/>

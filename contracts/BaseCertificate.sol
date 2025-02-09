@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
 import "./EnumsLibrary.sol";
 
@@ -7,112 +7,114 @@ contract BaseCertificate {
 
   using EnumsLibrary for EnumsLibrary.StatusCertificate;
 
-  struct st_userCertificate {
+  struct UserCert {
     string userName;
     string userInstance;
     address userAddr;
   }
 
-  struct st_certificateDetails {
+  struct CertificateDetails {
     EnumsLibrary.StatusCertificate status;
     uint timestampRequest;
     uint timestampApprove;
     uint timestampRejected;
-    uint timestsmpRenewRequest; 
-    st_userCertificate sender;  
-    st_userCertificate bpom; 
+    uint timestampRenewRequest; 
+    UserCert sender;  
+    UserCert bpom; 
     string ipfsCert;
   }
 
-  struct st_updateCertificateDetails {
-    EnumsLibrary.StatusCertificate status;
-    uint timestamp;
-    st_userCertificate bpom; 
-    string ipfsCert;
-  }
-
-  mapping (string => st_certificateDetails) public certDetailsById;
-  mapping (string => string) public rejectMsgbyId;
+  mapping (string => CertificateDetails) public certDetailById;
+  mapping (string => string) public rejectMsgById;
 
   function createUserCertificate( 
-    string memory _userName,
-    string memory _userInstance,
-    address _userAddr
-  ) public pure returns (st_userCertificate memory) {
-    return st_userCertificate({
-      userName: _userName,
-      userInstance:  _userInstance,
-      userAddr: _userAddr
+    string memory UserName,
+    string memory userInstance,
+    address userAddr
+  ) 
+    public 
+    pure 
+    returns (UserCert memory) 
+  {
+    return UserCert({
+      userName: UserName,
+      userInstance:  userInstance,
+      userAddr: userAddr
     });
   }
 
   function createCertificateDetails(
-    st_userCertificate memory _sender,
-    st_userCertificate memory _bpom,
-    string memory _certId
-  ) public {
-    certDetailsById[_certId] = st_certificateDetails({
-        status: EnumsLibrary.StatusCertificate.Requested,
-        timestampRequest: block.timestamp,
-        timestampApprove: 0,
-        timestampRejected: 0,
-        timestsmpRenewRequest: 0,
-        sender: _sender,
-        bpom: _bpom,
-        ipfsCert: ""
+    UserCert memory senderData,
+    UserCert memory bpomData,
+    string memory certId
+  ) 
+    public 
+  {
+    certDetailById[certId] = CertificateDetails({
+      status: EnumsLibrary.StatusCertificate.Requested,
+      timestampRequest: block.timestamp,
+      timestampApprove: 0,
+      timestampRejected: 0,
+      timestampRenewRequest: 0,
+      sender: senderData,
+      bpom: bpomData,
+      ipfsCert: ""
     });
   }
 
   function updateBpomApproveDetails(
-    string memory _certId, 
-    string memory _ipfsCert,
-    st_userCertificate memory _bpom
-  ) public { 
-    st_certificateDetails storage certData = certDetailsById[_certId];
+    string memory certId, 
+    string memory ipfsCert,
+    UserCert memory bpomData
+  ) 
+    public 
+  { 
+    CertificateDetails storage certData = certDetailById[certId];
     
-    certData.bpom.userName = _bpom.userName;
-    certData.bpom.userAddr = _bpom.userAddr;
-    certData.bpom.userInstance = _bpom.userInstance;
+    certData.bpom.userName = bpomData.userName;
+    certData.bpom.userAddr = bpomData.userAddr;
+    certData.bpom.userInstance = bpomData.userInstance;
     certData.timestampApprove = block.timestamp;
     certData.status = EnumsLibrary.StatusCertificate.Approved;
-    certData.ipfsCert = _ipfsCert; 
+    certData.ipfsCert = ipfsCert; 
   } 
 
   function updateBpomRejectDetails( 
-    string memory _certId,
-    string memory _rejectMsg,
-    st_userCertificate memory _bpom
-  ) public{
-    st_certificateDetails storage certData = certDetailsById[_certId];
-    rejectMsgbyId[_certId] = _rejectMsg;
+    string memory certId,
+    string memory rejectMsg,
+    UserCert memory bpomData
+  ) 
+    public
+  {
+    CertificateDetails storage certData = certDetailById[certId];
+    rejectMsgById[certId] = rejectMsg;
  
-    certData.bpom.userName = _bpom.userName;
-    certData.bpom.userAddr = _bpom.userAddr;
-    certData.bpom.userInstance = _bpom.userInstance;
+    certData.bpom.userName = bpomData.userName;
+    certData.bpom.userAddr = bpomData.userAddr;
+    certData.bpom.userInstance = bpomData.userInstance;
     certData.timestampRejected = block.timestamp;
     certData.status = EnumsLibrary.StatusCertificate.Rejected;
   }
 
   function updateRenewDetails( 
-    string memory _certId 
-  ) public  { 
-    st_certificateDetails storage certData = certDetailsById[_certId];
+    string memory certId 
+  ) 
+    public  
+  { 
+    CertificateDetails storage certData = certDetailById[certId];
   
-    certData.timestsmpRenewRequest = block.timestamp;
+    certData.timestampRenewRequest = block.timestamp;
     certData.status = EnumsLibrary.StatusCertificate.RenewRequest;
   }
 
-  function getCertDetail(string memory _certId) public view returns 
-  (st_certificateDetails memory) {
-    return certDetailsById[_certId];
+  function getCertDetail(string memory certId) public view returns (CertificateDetails memory) {
+    return certDetailById[certId];
   }
-  function getRejectMsg(string memory _certId) public view returns 
-  (string memory) {
-    return rejectMsgbyId[_certId];
+  function getRejectMsg(string memory certId) public view returns (string memory) {
+    return rejectMsgById[certId];
   }
 
-  function getSenderDetail(string memory _certId) public view returns 
-  (st_userCertificate memory) {
-    return certDetailsById[_certId].sender;
+  function getSenderDetail(string memory certId) public view returns (UserCert memory) {
+    return certDetailById[certId].sender;
   }
 }
