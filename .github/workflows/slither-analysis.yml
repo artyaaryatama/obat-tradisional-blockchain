@@ -34,7 +34,7 @@ jobs:
                       contracts/RoleManager.sol contracts/NieManager.sol contracts/EnumsLibrary.sol \
                       contracts/ObatShared.sol; do
             echo "Running Slither on $file for security analysis..."
-            slither "$file" --json "slither-reports/$(basename "$file").json" --exclude low --exclude medium || echo "Slither encountered issues with $file but continuing..."
+            slither "$file" --json "slither-reports/$(basename "$file").json" || echo "Slither encountered issues with $file but continuing..."
       
             jq '[.results.detectors[] | {description}]' "slither-reports/$(basename "$file").json" > "slither-reports/$(basename "$file")-filtered.json" || echo "[]" > "slither-reports/$(basename "$file")-filtered.json"
           done
