@@ -40,27 +40,27 @@ contract CpotbCertificate is BaseCertificate {
     uint8 tipePermohonan; 
   }
  
-  CertificateList[] public AllCpotbData;
+  CertificateList[] public allCpotbData;
 
-  mapping (string => CpotbData) public CpotbDataById;
-  mapping (string => DokumenAdministrasi) public DokuAdminById;
-  mapping (string => DokumenTeknis) public DokuTeknisById;
+  mapping (string => CpotbData) public cpotbDataById;
+  mapping (string => DokumenAdministrasi) public dokuAdminById;
+  mapping (string => DokumenTeknis) public dokuTeknisById;
 
   function requestCpotb(
-    string memory _certId,
-    string memory _factoryName,
-    string memory _factoryInstance,
-    address _factoryAddr,
-    uint8 _tipePermohonanCpotb,
-    string memory _factoryType,
-    DokumenAdministrasi memory _dokuAdmin,
-    DokumenTeknis memory _dokuTeknis
+    string memory certId,
+    string memory factoryName,
+    string memory factoryInstance,
+    address factoryAddr,
+    uint8 jenisSediaan,
+    string memory factoryType,
+    DokumenAdministrasi memory dokuAdmin,
+    DokumenTeknis memory dokuTeknis
   ) public {
 
     UserCert memory userFactory = createUserCertificate(
-      _factoryName, 
-      _factoryInstance, 
-      _factoryAddr
+      factoryName, 
+      factoryInstance, 
+      factoryAddr
     ); 
 
     UserCert memory userBpom = createUserCertificate(
@@ -72,112 +72,118 @@ contract CpotbCertificate is BaseCertificate {
     createCertificateDetails(
       userFactory, 
       userBpom, 
-      _certId
+      certId
     );  
 
-    CpotbDataById[_certId] = CpotbData({
-      cpotbId: _certId,
+    cpotbDataById[certId] = CpotbData({
+      cpotbId: certId,
       cpotbNumber: "",  
-      tipePermohonan: _tipePermohonanCpotb,
-      factoryType: _factoryType
+      tipePermohonan: jenisSediaan,
+      factoryType: factoryType
     });
 
-    AllCpotbData.push(CertificateList({
-      certId: _certId,
+    allCpotbData.push(CertificateList({
+      certId: certId,
       certNumber: "",
-      instanceName: _factoryInstance,
-      tipePermohonan: _tipePermohonanCpotb,
+      instanceName: factoryInstance,
+      tipePermohonan: jenisSediaan,
       status: EnumsLibrary.StatusCertificate.Requested,
       certHash: ""
     }));
 
-    DokuAdminById[_certId] = _dokuAdmin;
-    DokuTeknisById[_certId] = _dokuTeknis;
+    dokuAdminById[certId] = dokuAdmin;
+    dokuTeknisById[certId] = dokuTeknis;
   }
 
   function approveCpotb(
-    string memory _certNumber,
-    string memory _certId,
-    string memory _bpomName,
-    string memory _bpomInstance,
-    address _bpomAddr,
-    string memory _ipfsCert
+    string memory certNumber,
+    string memory certId,
+    string memory bpomName,
+    string memory bpomInstance,
+    address bpomAddr,
+    string memory ipfsCert
   ) public { 
 
-      UserCert memory userBpom = createUserCertificate(
-        _bpomName, 
-        _bpomInstance, 
-        _bpomAddr
-      );
-  
-      CpotbDataById[_certId].cpotbNumber = _certNumber; 
- 
-      updateBpomApproveDetails(
-        _certId, 
-        _ipfsCert, 
-        userBpom
-      );  
+    UserCert memory userBpom = createUserCertificate(
+      bpomName, 
+      bpomInstance, 
+      bpomAddr
+    );
 
-      for (uint i = 0; i < AllCpotbData.length; i++) {
-        if (keccak256(abi.encodePacked(AllCpotbData[i].certId)) == keccak256(abi.encodePacked(_certId))) {
-          AllCpotbData[i].certNumber = _certNumber;
-          AllCpotbData[i].status = EnumsLibrary.StatusCertificate.Approved; 
-          AllCpotbData[i].certHash = _ipfsCert;
-        }  
-      }
+    cpotbDataById[certId].cpotbNumber = certNumber; 
+
+    updateBpomApproveDetails(
+      certId, 
+      ipfsCert, 
+      userBpom
+    );  
+
+    uint length = allCpotbData.length;
+
+    for (uint i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
+        allCpotbData[i].certNumber = certNumber;
+        allCpotbData[i].status = EnumsLibrary.StatusCertificate.Approved; 
+        allCpotbData[i].certHash = ipfsCert;
+      }  
+    }
   } 
 
   function rejectCpotb(
-    string memory _certId,
-    string memory _rejectMsg,
-    string memory _bpomName,
-    string memory _bpomInstance,
-    address _bpomAddr
+    string memory certId,
+    string memory rejectMsg,
+    string memory bpomName,
+    string memory bpomInstance,
+    address bpomAddr
   ) public {
      
-      UserCert memory userBpom = createUserCertificate(
-        _bpomName, 
-        _bpomInstance, 
-        _bpomAddr
-      ); 
- 
-      updateBpomRejectDetails(
-        _certId, 
-        _rejectMsg, 
-        userBpom
-      );  
+    UserCert memory userBpom = createUserCertificate(
+      bpomName, 
+      bpomInstance, 
+      bpomAddr
+    ); 
 
-      for (uint i = 0; i < AllCpotbData.length; i++) {
-        if (keccak256(abi.encodePacked(AllCpotbData[i].certId)) == keccak256(abi.encodePacked(_certId))) {
-          AllCpotbData[i].status = EnumsLibrary.StatusCertificate.Rejected; 
-        }   
-      }  
+    updateBpomRejectDetails(
+      certId, 
+      rejectMsg, 
+      userBpom
+    );  
+
+    uint length = allCpotbData.length;
+
+    for (uint i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
+        allCpotbData[i].status = EnumsLibrary.StatusCertificate.Rejected; 
+      }   
+    }  
   }
 
   function renewRequestCpotb(
-    string memory _certId, 
+    string memory certId, 
     DokumenAdministrasi memory newDokuAdmin,
     DokumenTeknis memory newDokuTeknis
   ) public {
 
-    updateRenewDetails(_certId);
+    updateRenewDetails(certId);
      
-    for (uint i = 0; i < AllCpotbData.length; i++) {
-      if (keccak256(abi.encodePacked(AllCpotbData[i].certId)) == keccak256(abi.encodePacked(_certId))) {
-        AllCpotbData[i].status = EnumsLibrary.StatusCertificate.RenewRequest; 
-        DokuAdminById[AllCpotbData[i].certId] = newDokuAdmin;
-        DokuTeknisById[AllCpotbData[i].certId] = newDokuTeknis;
+    uint length = allCpotbData.length;
+
+    for (uint i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
+        allCpotbData[i].status = EnumsLibrary.StatusCertificate.RenewRequest; 
+        dokuAdminById[allCpotbData[i].certId] = newDokuAdmin;
+        dokuTeknisById[allCpotbData[i].certId] = newDokuTeknis;
       }  
     } 
   }
 
-  function getAllCpotbByInstance(string memory _instanceName) 
-    public view returns (CertificateList[] memory) {
+  function getAllCpotbByInstance(string memory instanceName) public view returns (CertificateList[] memory) {
 
     uint8 count = 0;
+    uint length = allCpotbData.length;
 
-    for (uint i = 0; i < AllCpotbData.length; i++) {
-      if(keccak256(abi.encodePacked(AllCpotbData[i].instanceName)) == keccak256(abi.encodePacked(_instanceName))){
+    for (uint i = 0; i < length; i++) {
+      if(keccak256(abi.encodePacked(allCpotbData[i].instanceName)) == keccak256(abi.encodePacked(instanceName))){
         count++;
       }
     }
@@ -186,9 +192,9 @@ contract CpotbCertificate is BaseCertificate {
 
     uint8 index = 0;
 
-    for (uint256 i = 0; i < AllCpotbData.length; i++) {
-      if (keccak256(abi.encodePacked(AllCpotbData[i].instanceName)) == keccak256(abi.encodePacked(_instanceName))) {
-        cpotbs[index] = AllCpotbData[i];
+    for (uint256 i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCpotbData[i].instanceName)) == keccak256(abi.encodePacked(instanceName))) {
+        cpotbs[index] = allCpotbData[i];
         index++;
       }
     }
@@ -196,43 +202,40 @@ contract CpotbCertificate is BaseCertificate {
     return cpotbs;
   } 
 
-  function getAllCpotb() 
-    public view returns (CertificateList[] memory) {
+  function getAllCpotb() public view returns (CertificateList[] memory) {
 
-    CertificateList[] memory cpotbs = new CertificateList[](AllCpotbData.length);
+    CertificateList[] memory cpotbs = new CertificateList[](allCpotbData.length);
 
     uint8 index = 0;
+    uint length = allCpotbData.length;
 
-    for (uint256 i = 0; i < AllCpotbData.length; i++) {
-      cpotbs[index] = AllCpotbData[i];
+    for (uint256 i = 0; i < length; i++) {
+      cpotbs[index] = allCpotbData[i];
       index++;
     }
 
     return cpotbs;
   }
 
-  function getCertDetails(string memory _certId) 
-    public view returns (CertificateDetails memory) {
-    return getCertDetail(_certId);  
+  function getCertDetails(string memory certId) public view returns (CertificateDetails memory) {
+    return getCertDetail(certId);  
   } 
 
-  function getCpotbDetails(string memory _certId) 
-    public view returns (
-      CpotbData memory,
-      DokumenAdministrasi memory, 
-      DokumenTeknis memory 
-    ) {
-      
-    return (
-      CpotbDataById[_certId], 
-      DokuAdminById[_certId], 
-      DokuTeknisById[_certId])
-      ;     
+  function getCpotbDetails(string memory certId) public view returns (
+    CpotbData memory,
+    DokumenAdministrasi memory, 
+    DokumenTeknis memory 
+  ) {
+    
+  return (
+    cpotbDataById[certId], 
+    dokuAdminById[certId], 
+    dokuTeknisById[certId])
+    ;     
   } 
 
-  function getRejectsMsg(string memory _certId) 
-    public view returns (string memory) {
-    return getRejectMsg(_certId);  
+  function getRejectsMsg(string memory certId) public view returns (string memory) {
+    return getRejectMsg(certId);  
   } 
 
 }

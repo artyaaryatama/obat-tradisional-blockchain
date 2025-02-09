@@ -5,10 +5,10 @@ import "./RoleManager.sol";
 import "./EnumsLibrary.sol";
 
 contract NieManager {
-  RoleManager public roleManager;
+  RoleManager public immutable roleManager;
 
-  constructor(address _roleManagerAddr) {
-    roleManager = RoleManager(_roleManagerAddr);
+  constructor(address roleManagerAddr) {
+    roleManager = RoleManager(roleManagerAddr);
   }
 
   struct NieDetail {
@@ -43,10 +43,10 @@ contract NieManager {
     string dataPendukungKeamanan;
   } 
 
-  mapping (string => NieDetail) public NieDetailById;
-  mapping (string => string) public RejectMsgById; 
-  mapping (string => DokumenObat) public DokuObatById;
-  mapping (string => DokumenPendukung) public DokuPendukungById;
+  mapping (string => NieDetail) public nieDetailById;
+  mapping (string => string) public rejectMsgById; 
+  mapping (string => DokumenObat) public dokuObatById;
+  mapping (string => DokumenPendukung) public dokuPendukungById;
 
   event NieRequested(
     string factoryInstance,
@@ -85,8 +85,8 @@ contract NieManager {
   }
 
   function createObatNie(
-    string memory _obatId,
-    string memory _factoryInstance
+    string memory obatId,
+    string memory factoryInstance
   ) public {
 
     NieDetail memory nieDetail = NieDetail({
@@ -97,136 +97,136 @@ contract NieManager {
       timestampNieApprove: 0,
       timestampNieRejected: 0,
       timestampNieRenewRequest: 0,
-      factoryInstance: _factoryInstance,
+      factoryInstance: factoryInstance,
       bpomInstance: "",
       bpomAddr: address(0)
     });
 
 
-    NieDetailById[_obatId] = nieDetail;
+    nieDetailById[obatId] = nieDetail;
   }
 
   function requestNie(
-    string memory _obatId,
-    DokumenObat memory _dokuObat,
-    DokumenPendukung memory _dokuPendukung
+    string memory obatId,
+    DokumenObat memory dokuObat,
+    DokumenPendukung memory dokuPendukung
   ) 
     public 
     onlyFactory 
   {
 
-    NieDetailById[_obatId].nieStatus = EnumsLibrary.NieStatus.RequestedNie;
-    NieDetailById[_obatId].timestampNieRequest = block.timestamp;
-    DokuObatById[_obatId] = _dokuObat; 
-    DokuPendukungById[_obatId] = _dokuPendukung;  
+    nieDetailById[obatId].nieStatus = EnumsLibrary.NieStatus.RequestedNie;
+    nieDetailById[obatId].timestampNieRequest = block.timestamp;
+    dokuObatById[obatId] = dokuObat; 
+    dokuPendukungById[obatId] = dokuPendukung;  
     
     emit NieRequested(
-      NieDetailById[_obatId].factoryInstance, 
+      nieDetailById[obatId].factoryInstance, 
       msg.sender, 
       block.timestamp
     ); 
   } 
 
   function approveNie(
-    string memory _obatId,
-    string memory _nieNumber,
-    string memory _bpomInstance
+    string memory obatId,
+    string memory nieNumber,
+    string memory bpomInstance
   ) 
     public 
     onlyBPOM
   {
 
-    NieDetail storage nieData = NieDetailById[_obatId];
+    NieDetail storage nieData = nieDetailById[obatId];
 
-    nieData.nieNumber = _nieNumber;
+    nieData.nieNumber = nieNumber;
     nieData.nieStatus = EnumsLibrary.NieStatus.ApprovedNie; 
     nieData.timestampNieApprove = block.timestamp;
-    nieData.bpomInstance = _bpomInstance;
+    nieData.bpomInstance = bpomInstance;
     nieData.bpomAddr = msg.sender;
     
     emit NieApproved(
-      _bpomInstance,
+      bpomInstance,
       msg.sender, 
-      _nieNumber, 
+      nieNumber, 
       block.timestamp
     );  
   }
  
   function rejectNie(
-    string memory _obatId,
-    string memory _bpomInstance,
-    string memory _rejectMsg
+    string memory obatId,
+    string memory bpomInstance,
+    string memory rejectMsg
   ) 
     public 
     onlyBPOM 
   {
 
-    NieDetail storage nieData = NieDetailById[_obatId];
+    NieDetail storage nieData = nieDetailById[obatId];
 
     nieData.nieStatus = EnumsLibrary.NieStatus.RejectedNie; 
-    nieData.bpomInstance = _bpomInstance;
+    nieData.bpomInstance = bpomInstance;
     nieData.bpomAddr = msg.sender;
     nieData.timestampNieRejected = block.timestamp;
-    RejectMsgById[_obatId] = _rejectMsg;
+    rejectMsgById[obatId] = rejectMsg;
      
     emit NieRejected(
-      _bpomInstance, 
+      bpomInstance, 
       msg.sender, 
-      _rejectMsg, 
+      rejectMsg, 
       block.timestamp
     );  
   }
 
   function renewRequestNie(
-    string memory _obatId,
-    DokumenObat memory _dokuObat,
-    DokumenPendukung memory _dokuPendukung
+    string memory obatId,
+    DokumenObat memory dokuObat,
+    DokumenPendukung memory dokuPendukung
   ) 
     public 
     onlyFactory 
   {
 
-    NieDetail storage nieData = NieDetailById[_obatId];
+    NieDetail storage nieData = nieDetailById[obatId];
 
     nieData.nieStatus = EnumsLibrary.NieStatus.RenewRequestNie; 
     nieData.timestampNieRenewRequest = block.timestamp;
 
-    delete DokuObatById[_obatId];
-    delete DokuPendukungById[_obatId];
+    delete dokuObatById[obatId];
+    delete dokuPendukungById[obatId];
     
-    DokuObatById[_obatId] = _dokuObat; 
-    DokuPendukungById[_obatId] = _dokuPendukung;  
+    dokuObatById[obatId] = dokuObat; 
+    dokuPendukungById[obatId] = dokuPendukung;  
 
     emit NieRenewRequest(
-      NieDetailById[_obatId].factoryInstance, 
+      nieDetailById[obatId].factoryInstance, 
       msg.sender, 
       block.timestamp
     );
   }
 
-  function getNieDetail(string memory _obatId) public view returns (
+  function getNieDetail(string memory obatId) public view returns (
     NieDetail memory,
     DokumenObat memory,
     DokumenPendukung memory
   ){
     return (
-      NieDetailById[_obatId], 
-      DokuObatById[_obatId], 
-      DokuPendukungById[_obatId]
+      nieDetailById[obatId], 
+      dokuObatById[obatId], 
+      dokuPendukungById[obatId]
     );
   }
 
-  function getNieNumberAndStatus(string memory _obatId) public view returns (
+  function getNieNumberAndStatus(string memory obatId) public view returns (
     string memory, 
     uint8
   ){
     return (
-      NieDetailById[_obatId].nieNumber, 
-      uint8(NieDetailById[_obatId].nieStatus));
+      nieDetailById[obatId].nieNumber, 
+      uint8(nieDetailById[obatId].nieStatus));
   }
 
-  function getRejectMsgNie(string memory _obatId) public view returns (string memory) {
-    return RejectMsgById[_obatId];
+  function getRejectMsgNie(string memory obatId) public view returns (string memory) {
+    return rejectMsgById[obatId];
   }
 
 }

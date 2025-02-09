@@ -8,19 +8,15 @@ async function main() {
     RoleManager,
     ObatTradisional,
     ObatShared,
+    CdobCertificate
   } = deploymentData;
-
-  const CdobCertificate = await hre.ethers.getContractFactory("CdobCertificate");
-  const deployedCdobCertificate = await CdobCertificate.deploy();
-  await deployedCdobCertificate.waitForDeployment();
-  console.log("CdobCertificate deployed to:", deployedCdobCertificate.target);
 
   const OrderManagement = await hre.ethers.getContractFactory("OrderManagement");
   const deployedOrderManagement = await OrderManagement.deploy(
     ObatTradisional.address,
     RoleManager.address,
     ObatShared.address,
-    deployedCdobCertificate.target
+    CdobCertificate.address,
   );
   await deployedOrderManagement.waitForDeployment();
   console.log("OrderManagement deployed to:", deployedOrderManagement.target);

@@ -770,7 +770,7 @@ function ManageOrderFactoryPbf() {
           pbfInstanceAddress: userPbfCt[4],
           NpwpPbf:userPbfCt[6],
           NibPbf:userPbfCt[7],
-          statusOrder : "Order Dalam Proses Pengajuan pengiriman",
+          statusOrder : "Order Shipped",
           targetInstanceName : dataOrder.sellerInstance,
           targetAddress: userdata.address,
           timestampOrder: timestamps.timestampOrder,

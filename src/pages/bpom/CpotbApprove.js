@@ -269,7 +269,7 @@ function CpotbApprove() {
                 <p>{jenisSediaanMap[jenisSediaan]}</p> 
               </li>
             </ul>
-            <ul className='rejectMsg'>
+            <ul className='rejectMsg klaim'>
               <li className="label">
                 <p>Alasan Penolakan</p> 
               </li>
@@ -429,7 +429,7 @@ function CpotbApprove() {
                     : <div></div>
                   }
                   {rejectMsg? 
-                    <ul className='rejectMsg'>
+                    <ul className='rejectMsg klaim'>
                       <li className="label">
                         <p>Alasan Penolakan</p> 
                       </li>
@@ -616,7 +616,7 @@ function CpotbApprove() {
                     </li>
                   </ul>
   
-                  <ul className='rejectMsg'>
+                  <ul className='rejectMsg klaim'>
                     <li className="label">
                       <p>Alasan Penolakan</p> 
                     </li>
@@ -878,7 +878,7 @@ function CpotbApprove() {
                     : <div></div>
                   }
                   {rejectMsg? 
-                    <ul className='rejectMsg'>
+                    <ul className='rejectMsg klaim'>
                       <li className="label">
                         <p>Alasan Penolakan</p> 
                       </li>
@@ -1191,7 +1191,7 @@ function CpotbApprove() {
               confirmButtonColor: '#530AF7',
               showDenyButton: true,
               denyButtonColor: ' #A6A6A6',
-              denyButtonText: 'Tolak',
+              denyButtonText: 'Batal',
               allowOutsideClick: false,
               customClass: {
                 htmlContainer: 'scrollable-modal-small'
@@ -1569,7 +1569,7 @@ function CpotbApprove() {
         });
       }
 
-      contracts.certificateManager.on('CertApproved',  (bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove) => {
+      contracts.certificateManager.on('CertApproved',  (bpomInstance, bpomAddr, jenisSediaan, cpotbNumber, timestampApprove) => {
         handleEventCpotb("Disetujui", bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove, approveCt.hash);
       });
     } catch (error) {

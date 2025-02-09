@@ -211,7 +211,7 @@ function CdobApprove() {
       MySwal.fire({
         title: "Pengajuan CDOB Ditolak",
         html: (
-          <div className='form-swal'>
+          <div className='form-swal event'>
             <ul>
               <li className="label">
                 <p>Nama Instansi BPOM</p> 
@@ -400,7 +400,7 @@ function CdobApprove() {
                       : <div></div>
                     }
                   {rejectMsg? 
-                    <ul className='rejectMsg'>
+                    <ul className='rejectMsg klaim'>
                       <li className="label">
                         <p>Alasan Penolakan</p> 
                       </li>
@@ -684,7 +684,7 @@ function CdobApprove() {
                     </li>
                   </ul>
   
-                  <ul className='rejectMsg'>
+                  <ul className='rejectMsg klaim'>
                     <li className="label">
                       <p>Alasan Penolakan</p> 
                     </li>
@@ -950,6 +950,7 @@ function CdobApprove() {
           ),
           width: '1020',
           showCancelButton: false,
+          showConfirmButton: false,
           showCloseButton: true,
           customClass: {
             htmlContainer: 'scrollable-modal'
@@ -1015,7 +1016,7 @@ function CdobApprove() {
                     : <div></div>
                   }
                   {rejectMsg? 
-                    <ul className='rejectMsg'>
+                    <ul className='rejectMsg klaim'>
                       <li className="label">
                         <p>Alasan Penolakan</p> 
                       </li>

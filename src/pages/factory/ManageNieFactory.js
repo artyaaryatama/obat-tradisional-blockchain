@@ -138,6 +138,8 @@ function ManageNieFactory() {
       const [masterFormula, suratKuasa, suratPernyataan, komposisiProduk, caraPembuatanProduk, spesifikasiKemasan, hasilUjiStabilitas] = dokumenObat;
       const [sertifikatAnalisaBahanBaku, sertifikatAnalisaProdukJadi, spesifikasiProdukJadi, sistemPenomoranBets, desainKemasan, dataPendukungKeamanan] = dokumenSpesifikasi;
 
+      console.log(bpomInstance);
+
       const detailObat = {
         obatId: id,
         merk: merk,
@@ -554,7 +556,7 @@ function ManageNieFactory() {
                   </li>
                 </ul>
 
-                <ul className='rejectMsg'>
+                <ul className='rejectMsg klaim'>
                   <li className="label">
                     <p>Alasan Penolakan</p> 
                   </li>
@@ -624,7 +626,7 @@ function ManageNieFactory() {
                     <p>Nama Instansi BPOM</p> 
                   </li>
                   <li className="input">
-                    <p>{detailObat.bpomInstance}
+                    <p>{detailObat.bpomInstanceNames}
                     </p> 
                   </li>
                 </ul>
@@ -1018,7 +1020,7 @@ function ManageNieFactory() {
                     : <div></div>
                   }
                   {rejectMsg?
-                    <ul className='rejectMsg'>
+                    <ul className='rejectMsg klaim'>
                       <li className="label">
                         <p>Alasan Penolakan</p>
                       </li>

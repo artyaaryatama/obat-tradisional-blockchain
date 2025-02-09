@@ -52,6 +52,10 @@ function CdobRenewRequest() {
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
   useEffect(() => {
+    document.title = "Pengajuan Ulang CDOB"; 
+  }, []);
+
+  useEffect(() => {
     async function connectWallet() {
       if (window.ethereum) {
         const provider = new BrowserProvider(window.ethereum);

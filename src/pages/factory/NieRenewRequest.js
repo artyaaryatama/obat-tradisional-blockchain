@@ -169,7 +169,7 @@ function NieRenewRequest() {
           </ul>
           <ul>
             <li className="label">
-              <p>Tanggal Pengajuan</p> 
+              <p>Tanggal Pengajuan Ulang</p> 
             </li>
             <li className="input">
               <p>{formattedTimestamp}</p> 

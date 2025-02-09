@@ -69,6 +69,10 @@ function CpotbRenewRequest() {
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
   useEffect(() => {
+    document.title = "Pengajuan Ulang CPOTB"; 
+  }, []);
+
+  useEffect(() => {
     async function connectWallet() {
       if (window.ethereum) {
         const provider = new BrowserProvider(window.ethereum);
@@ -393,7 +397,7 @@ function CpotbRenewRequest() {
           </ul>
           <ul>
             <li className="label"><label>Alasan Penolakan CPOTB</label></li>
-            <li className="input reject"><p>{rejectMsg}</p></li>
+            <li className="input reject cpotb"><p>{rejectMsg}</p></li>
           </ul> 
           <div className="doku">
             <h5>Dokumen Administrasi</h5>
