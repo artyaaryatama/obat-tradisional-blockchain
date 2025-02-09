@@ -140,7 +140,7 @@ function CheckObatIpfs() {
         setCdobHash(obatData.cdobHash)
         setPbfInstanceAddress(obatData.dataOrderPbf.pbfInstanceAddress)
         if(obatData.dataOrderPbf.statusOrder === 'Order Completed'){
-          detailOrderPbf.statusOrder='Order Disetujui'
+          detailOrderPbf.statusOrder='Order Selesai'
         } else if(obatData.dataOrderPbf.statusOrder === 'Order Shipped'){
           detailOrderPbf.statusOrder='Order Dikirim'
         }
@@ -160,7 +160,7 @@ function CheckObatIpfs() {
           timestampComplete: obatData.dataOrderRetailer.timestampComplete ?  obatData.dataOrderRetailer.timestampComplete : "-",
         }
         if(obatData.dataOrderRetailer.statusOrder === 'Order Completed'){
-          detailOrderRetailer.statusOrder='Order Disetujui'
+          detailOrderRetailer.statusOrder='Order Selesai'
         } else if(obatData.dataOrderRetailer.statusOrder === 'Order Shipped'){
           detailOrderRetailer.statusOrder='Order Dikirim'
         }

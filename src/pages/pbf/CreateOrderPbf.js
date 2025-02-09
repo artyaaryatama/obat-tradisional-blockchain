@@ -172,7 +172,7 @@ function CreateOrderPbf() {
           </ul>
           <ul>
             <li className="label">
-              <p>Timestamp Request Order</p> 
+              <p>Tanggal Pengajuan Order</p> 
             </li>
             <li className="input">
               <p>{timestamp}</p> 
@@ -436,12 +436,12 @@ function CreateOrderPbf() {
     const orderId = `order-pbf-${day}${month}${year}-${randomNumber}` 
   
     const pbfCdobHash = await checkAvailCdob(userdata.instanceName, tipeObat)
-    try {
-      console.log(pbfCdobHash);
+    console.log(pbfCdobHash);
+    console.log('', orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdobHash)
 
-      if(pbfCdobHash) {
-        
-        const createOrderCt = await contracts.orderManagement.createOrder('', orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdobHash[5]);
+    if(pbfCdobHash) {
+      try {
+        const createOrderCt = await contracts.orderManagement.createOrder('', orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdobHash);
         
         if(createOrderCt){
           updateBatchHistoryHash(factoryInstance, namaProduk, batchName, createOrderCt.hash, tipeObat)
@@ -455,27 +455,25 @@ function CreateOrderPbf() {
         contracts.orderManagement.once("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
           handleEventCreateOrder(userdata.instanceName, orderId, id, _batchName, _namaProduk, _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, createOrderCt.hash);
         });
-
-      } else {
-        errAlert({reason: `Unable to order obat`}, `${userdata.instanceName} does not have a CDOB Certification for ${namaProduk}`)
+        
+      } catch (error) {
+        errAlert(error, "Gagal mengajukan order")
       }
-
-
-    } catch (error) {
-      errAlert(error, "Gagal mengajukan order")
+    } else {
+      errAlert({reason: `Gagal mengajukan order obat tradisonal`}, `${userdata.instanceName} Tidak memiliki CDOB untuk ${namaProduk}`)
+      
     }
   }
-
 
   const checkAvailCdob = async(pbfInstance, tipePermohonan) => {
     console.log(pbfInstance, tipePermohonan);
 
     try {
       const listAllCt = await contracts.certificateManager.getCdobByInstance(pbfInstance);
-      const isMatch = listAllCt.find(item => item[3] === tipePermohonan);
+      const isMatch = listAllCt.find(item => item[3] === tipePermohonan || false);
       console.log(isMatch);
-      if(isMatch){
-        return isMatch
+      if(isMatch[5] !== ""){
+        return isMatch[5]
       } else{
         return false
       }

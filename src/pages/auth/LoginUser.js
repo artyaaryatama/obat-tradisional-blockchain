@@ -182,6 +182,12 @@ function LoginPage() {
       <div className="container">
         <div className="img-container">
           <img src={imgLogin} alt="Img Login" />
+
+          <div className="attribute">
+            <span>
+              All Illustration(s) from <a href="https://absurd.design/">absurd.design</a>
+            </span>
+          </div>
         </div>
         <div className="form-container">
           <h1>ot-blockchain.</h1>

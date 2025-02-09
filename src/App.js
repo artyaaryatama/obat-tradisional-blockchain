@@ -29,8 +29,6 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LoginPage from './pages/auth/LoginUser';
 import RegisterPage from './pages/auth/RegisterUser';
-import UnauthorizedPage from './pages/error/Unauthorized';
-import ErrorPage from './pages/error/Error';
 import CheckObatIpfs from './pages/public/CheckObat';
 import ChechCerticateIpfs from './pages/public/CheckCertificate';
 import CheckTransaction from './pages/public/CheckTransaction';
@@ -48,28 +46,6 @@ function App() {
           <Route path="/public/obat/:hash" element={<CheckObatIpfs />} />
           <Route path="/public/certificate/:hash" element={<ChechCerticateIpfs />} />
           <Route path="/lacak" element={<CheckTransaction />} />
-          
-          <Route 
-            path="/error" 
-            element={
-              <>
-              <Navbar />
-                <ErrorPage />
-                <Footer />
-              </>
-            } 
-          />
-
-          <Route 
-            path="/unauthorized" 
-            element={
-              <>
-                <Navbar />
-                <UnauthorizedPage />
-                <Footer />
-              </>
-            } 
-          />
 
           <Route 
             path="/cpotb" 

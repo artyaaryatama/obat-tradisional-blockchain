@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.24;
 
 import "./EnumsLibrary.sol";
 
@@ -106,12 +106,12 @@ contract ObatShared {
 
   function addCdobId(
     string memory obatId,
-    string memory _cdobHash
+    string memory cdobHash
   ) external {
       
     require(bytes(obatId).length > 0, "Invalid ID");
 
-    obatDetailById[obatId].cdobHash= _cdobHash; 
+    obatDetailById[obatId].cdobHash= cdobHash; 
   } 
 
   function addBatchProduction(
@@ -309,8 +309,9 @@ contract ObatShared {
     
     uint256 count = 0; 
     bytes32 ownerInstance = keccak256(abi.encodePacked(retailerInstance));
+    uint length = allObatRetailByBatchName.length; 
 
-    for (uint i = 0; i < allObatRetailByBatchName.length; i++) {  
+    for (uint i = 0; i <length; i++) {  
       bytes32 batchNameHash = keccak256(abi.encodePacked(obatRetailerByBatchName[allObatRetailByBatchName[i]].retailerInstance));
 
       if (batchNameHash == ownerInstance) {
@@ -321,7 +322,7 @@ contract ObatShared {
     ObatOutputStok[] memory obatInstance = new ObatOutputStok[](count);
     uint256 count1 = 0;
 
-    for (uint i = 0; i <  allObatRetailByBatchName.length; i++) {
+    for (uint i = 0; i <length; i++) {
       
       ObatRetail memory currentObatRetailer = obatRetailerByBatchName[allObatRetailByBatchName[i]];
       bytes32 batchNameHash = keccak256(abi.encodePacked(currentObatRetailer.retailerInstance)); 

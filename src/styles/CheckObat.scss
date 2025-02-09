@@ -18,7 +18,8 @@
     .logo-obat{
       margin-right: 20px;
       img{
-        width: 64px;
+        // width: 64px;
+        width: 92px;
       }
     }
 
@@ -74,7 +75,7 @@
           border-radius: 10px;
           background-color: $yellow;
           
-          &.selesai, &.Disetujui {
+          &.Selesai, &.Disetujui {
             background-color: $green;
             color: $white;
           }
@@ -261,7 +262,7 @@
   select{
     @include selectForm($white);
     margin: 10px 0 0 0;
-    // border: solid 1px $grey-light !important;
+    border: solid 1px $grey !important;
     padding: 13px 10px;
   }
 
@@ -288,4 +289,30 @@
   }
   
   
+}
+
+.document-selection{
+  // background-color: beige;
+  // select{
+  //   background-color: aqua;
+  //   margin: 0;
+  // }
+
+  // h3{
+  //   margin: 10px 0;
+  // }
+}
+
+.document-details{
+
+  hr{
+    margin-top: 1em;
+    border: solid 1px $grey;
+  }
+  p{
+    margin: 14px 0;
+    color: $black;
+    font-weight: 600;
+    font-size: 14px;
+  }
 }

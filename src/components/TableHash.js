@@ -130,7 +130,7 @@ export default function TableHash({ ipfsHashes = [] }) {
           {ipfsHashes.length === 0 ? (
             <TableRow>
               <TableCell colSpan={2} align="center" sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontSize: '14px', color: '#777' }}>
-                No entry found
+                Data tidak ditemukan
               </TableCell>
             </TableRow>
           ) : (

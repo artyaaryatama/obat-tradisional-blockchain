@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.24;
 
 import "./EnumsLibrary.sol";
 
@@ -28,7 +28,7 @@ contract BaseCertificate {
   mapping (string => string) public rejectMsgById;
 
   function createUserCertificate( 
-    string memory UserName,
+    string memory userName,
     string memory userInstance,
     address userAddr
   ) 
@@ -37,7 +37,7 @@ contract BaseCertificate {
     returns (UserCert memory) 
   {
     return UserCert({
-      userName: UserName,
+      userName: userName,
       userInstance:  userInstance,
       userAddr: userAddr
     });
