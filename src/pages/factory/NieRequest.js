@@ -317,7 +317,7 @@ function NieRequest() {
       console.log(2);
       
       MySwal.fire({
-        title: `Dokumen pengajuan NIE`,
+        title: `Konfirmasi dokumen pengajuan NIE`,
         html: `
             <div class="form-swal">
                 <div class="row row--obat table-like">
@@ -327,6 +327,10 @@ function NieRequest() {
                       <ul>
                           <li class="label label1"><p>Nama Pabrik</p></li>
                           <li class="input input-2"><p>${userdata.instanceName}</p></li>
+                      </ul>
+                      <ul>
+                          <li class="label label1"><p>Nama Obat</p></li>
+                          <li class="input input-2"><p>${obatData.namaObat}</p></li>
                       </ul>
                             ${Object.entries(uploadedHashes).map(([docName, hash]) => `
                               <ul>
@@ -350,9 +354,12 @@ function NieRequest() {
         `,
         width: '900',
         showCancelButton: true,
-        confirmButtonText: 'Konfirmasi data pengajuan NIE',
+        confirmButtonText: 'Konfirmasi',
         cancelButtonText: "Batal",
-        allowOutsideClick: false
+        allowOutsideClick: false,
+        customClass: {
+          htmlContainer: 'scrollable-modal'
+        },
       }).then((result) => {
           if (result.isConfirmed) {
             MySwal.fire({

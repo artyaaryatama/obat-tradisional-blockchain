@@ -317,7 +317,7 @@ function CheckObatIpfs() {
                     </li> */}
 
                     <li className="info-item">
-                      <span className="label">Jenis Usaha Farmasi</span>
+                      <span className="label">Tipe Industri Farmasi</span>
                       <span className='address'>{factoryType}</span>
                     </li>
                     <li className="info-item">

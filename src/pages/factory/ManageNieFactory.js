@@ -98,7 +98,7 @@ function ManageNieFactory() {
 
           const reconstructedData = listAllObatCt.map((item, index) => {
 
-            let nieNumber = item[2] ? item[2] : 'TBA';
+            let nieNumber = item[2] ? item[2] : 'Belum Tersedia';
             console.log(item);
 
             if(item[3] === 3n){
@@ -1456,8 +1456,8 @@ function ManageNieFactory() {
         <div className="tab-menu">
           <ul>
             <li><button className='active' onClick={() => navigate('/obat')}>Pengajuan NIE</button></li>
-            <li><button onClick={() => navigate('/obat-available-factory')}>Produksi Obat</button></li>
-            <li><button onClick={() => navigate('/manage-orders-factory')}>Order Obat</button></li>
+            <li><button onClick={() => navigate('/obat-available-factory')}>Produksi Batch Obat</button></li>
+            <li><button onClick={() => navigate('/manage-orders-factory')}>Daftar Order Obat </button></li>
           </ul>
         </div>
         <div className="container-data">
@@ -1482,7 +1482,7 @@ function ManageNieFactory() {
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.obatId)} >{item.namaProduk}</button>
                     <p>
-                      { item.nieNumber !== null ? `NIE Number : ${item.nieNumber}` : "NIE Number: Not Available"}
+                      { item.nieNumber !== null ? `NIE : ${item.nieNumber}` : "NIE: Not Available"}
                     </p>
                     <button className={`statusPengajuan ${item.nieStatus}`}>
                       {item.nieStatus}

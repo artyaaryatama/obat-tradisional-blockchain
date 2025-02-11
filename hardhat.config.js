@@ -28,7 +28,7 @@ module.exports = {
       accounts: [
         `0x${process.env.REACT_APP_MY_PRIVATE_KEY}`
       ],
-    },
+    }
   }
 };
 

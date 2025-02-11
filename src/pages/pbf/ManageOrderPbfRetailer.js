@@ -492,7 +492,7 @@ function ManageOrderPbfRetailer() {
           width: '1220',
           showCancelButton: true,
           cancelButtonText: 'Batal',
-          confirmButtonText: 'Terima Order',
+          confirmButtonText: 'Kirim Order',
           customClass: {
             htmlContainer: 'scrollable-modal'
           },
@@ -862,7 +862,7 @@ function ManageOrderPbfRetailer() {
 
     if(newIpfsHashes.length !== 0){
       MySwal.fire({
-        title: `Order Obat ${dataObat.namaProduk}`,
+        title: `Konfirmasi Pengiriman Order ${dataObat.namaProduk}`,
         html: (
           <div className='form-swal'>
             <div className="row row--obat">
@@ -926,8 +926,11 @@ function ManageOrderPbfRetailer() {
         width: '820',
         showCancelButton: true,
         cancelButtonText: 'Batal',
-        confirmButtonText: 'Konfirmasi Order Obat',
+        confirmButtonText: 'Konfirmasi',
         allowOutsideClick: false,
+        customClass: {
+          htmlContainer: 'scrollable-modal'
+        },
   
       }).then((result) => {
         if(result.isConfirmed){

@@ -39,7 +39,7 @@ function StockObatFactory() {
   }
 
   useEffect(() => {
-    document.title = "Produksi Obat Tradisional"; 
+    document.title = "Stok Obat Tradisional Pabrik"; 
   }, []);
 
   useEffect(() => {
@@ -313,6 +313,9 @@ function StockObatFactory() {
         showCancelButton: false,
         showConfirmButton: false,
         showCloseButton: true,
+        customClass: {
+          htmlContainer: 'scrollable-modal'
+        },
       })
       
     } catch (e) {
@@ -330,8 +333,8 @@ function StockObatFactory() {
         <div className="tab-menu">
           <ul>
             <li><button onClick={() => navigate('/obat')}>Pengajuan NIE</button></li>
-            <li><button className='active' onClick={() => navigate('/obat-available-factory')}>Produksi Obat</button></li>
-            <li><button onClick={() => navigate('/manage-orders-factory')}>Order Obat</button></li>
+            <li><button className='active' onClick={() => navigate('/obat-available-factory')}>Produksi Batch Obat</button></li>
+            <li><button onClick={() => navigate('/manage-orders-factory')}>Daftar Order Obat </button></li>
           </ul>
         </div>
         <div className="container-data ">

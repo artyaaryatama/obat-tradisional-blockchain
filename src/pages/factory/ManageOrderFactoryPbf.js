@@ -474,7 +474,7 @@ function ManageOrderFactoryPbf() {
           width: '1220',
           showCancelButton: true,
           cancelButtonText: 'Batal',
-          confirmButtonText: 'Terima Order',
+          confirmButtonText: 'Kirim Order',
           didOpen: async () => {
 
             const stepperOrder = document.getElementById('stepperOrder');
@@ -795,7 +795,7 @@ function ManageOrderFactoryPbf() {
 
     if(newIpfsHashes.length !== 0){
       MySwal.fire({
-        title: `Order Obat ${dataObat.namaObat}`,
+        title: `Konfirmasi Pengiriman Order ${dataObat.namaObat}`,
         html: (
           <div className='form-swal'>
             <div className="row row--obat">
@@ -857,10 +857,12 @@ function ManageOrderFactoryPbf() {
         ),
         width: '820',
         showCancelButton: true,
-        confirmButtonText: 'Konfirmasi Order',
+        confirmButtonText: 'Konfirmasi',
         cancelButtonText: 'Batal',
         allowOutsideClick: false,
-  
+        customClass: {
+          htmlContainer: 'scrollable-modal'
+        },
       }).then((result) => {
         if(result.isConfirmed){
           acceptOrder(orderId, newIpfsHashes, dataObat.namaObat, batchName, dataObat.tipeObat, dataOrder.buyerInstance)
@@ -913,8 +915,8 @@ function ManageOrderFactoryPbf() {
         <div className="tab-menu">
           <ul>
             <li><button onClick={() => navigate('/obat')}>Pengajuan NIE</button></li>
-            <li><button onClick={() => navigate('/obat-available-factory')}>Produksi Obat</button></li>
-            <li><button className='active' onClick={() => navigate('/manage-orders-factory')}>Order Obat</button></li>
+            <li><button onClick={() => navigate('/obat-available-factory')}>Produksi Batch Obat</button></li>
+            <li><button className='active' onClick={() => navigate('/manage-orders-factory')}>Daftar Order Obat </button></li>
           </ul>
         </div>
         <div className="container-data ">

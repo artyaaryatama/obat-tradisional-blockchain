@@ -58,7 +58,7 @@ function CdobRequest() {
   }
 
   useEffect(() => {
-    document.title = "Add New CDOB Request"; 
+    document.title = "Pengajuan CDOB"; 
   }, []);
 
   useEffect(() => {
@@ -133,9 +133,6 @@ function CdobRequest() {
   const checkExistingCdob = () => {
     if (cdobData.length > 0) {
       const found = cdobData.some((item) => item.tipePermohonan === tipePermohonan);
-      console.log(tipePermohonan);
-      console.log(cdobData);
-      console.log(found);
 
       if (found){
         return false
@@ -143,7 +140,7 @@ function CdobRequest() {
         return true
       }
     } else {
-      return false
+      return true
     }
 
   }
@@ -246,7 +243,7 @@ function CdobRequest() {
       showConfirmButton: false,
       allowOutsideClick: true,
     });
-
+    
     const isCdobExist = checkExistingCdob();
     console.log(isCdobExist);
     console.log(tipePermohonan);
@@ -260,7 +257,7 @@ function CdobRequest() {
         console.log(2);
         
         MySwal.fire({
-          title: `Konfirmasi data pengajuan CDOB`,
+          title: `Konfirmasi pengajuan CDOB`,
           html: `
               <div class="form-swal">
                   <div class="row row--obat table-like">
@@ -298,9 +295,12 @@ function CdobRequest() {
           `,
           width: '960',
           showCancelButton: true,
-          confirmButtonText: 'Konfirmasi pengajuan CDOB',
+          confirmButtonText: 'Konfirmasi',
           cancelButtonText: "Batal",
-          allowOutsideClick: false
+          allowOutsideClick: false,
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
         }).then((result) => {
             if (result.isConfirmed) {
               MySwal.fire({

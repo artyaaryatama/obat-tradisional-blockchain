@@ -80,7 +80,7 @@ function CpotbRequest() {
   };
   
   useEffect(() => {
-    document.title = "Add New Obat Request"; 
+    document.title = "Pengajuan CPOTB"; 
   }, []);
 
   useEffect(() => {
@@ -440,7 +440,7 @@ function CpotbRequest() {
       console.log(2);
       
       MySwal.fire({
-        title: `Dokumen pengajuan CPOTB`,
+        title: `Konfirmasi pengajuan CPOTB`,
         html: `
             <div class="form-swal">
                 <div class="row row--obat table-like">
@@ -479,9 +479,9 @@ function CpotbRequest() {
         `,
         width: '900',
         showCancelButton: true,
-        confirmButtonText: 'Konfirmasi data pengajuan CPOTB',
+        confirmButtonText: 'Konfirmasi',
         cancelButtonText: "Batal",
-        allowOutsideClick: false
+        allowOutsideClick: false,
       }).then((result) => {
           if (result.isConfirmed) {
             MySwal.fire({
@@ -608,7 +608,7 @@ function CpotbRequest() {
           </ul>
           <ul>
             <li className="label">
-              <label htmlFor="factoryType">Jenis Industri Farmasi</label>
+              <label htmlFor="factoryType">Tipe Industri Farmasi</label>
             </li>
             <li className="input">
               <p>{factoryType}</p>

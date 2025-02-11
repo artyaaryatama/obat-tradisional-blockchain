@@ -39,7 +39,7 @@ function ManageCdob() {
   }
 
   useEffect(() => {
-    document.title = "CDOB Certification"; 
+    document.title = "CDOB List"; 
   }, []);
 
   useEffect(() => {
@@ -96,7 +96,7 @@ function ManageCdob() {
           console.log(listAllCt);
           const reconstructedData = listAllCt.map((item) => {
             const cdobId = item[0]; 
-            let cdobNumber = item[1] || 'TBA'; 
+            let cdobNumber = item[1] || 'Belum Tersedia'; 
 
             if (item[4] === 2n) {
               cdobNumber = null;
@@ -835,7 +835,7 @@ function ManageCdob() {
                   <li key={index}>
                     <button className='title' onClick={() => getDetailCdob(item.cdobId)}>{item.tipePermohonan}</button>
                     <p>
-                      { item.cdobNumber !== null ? `CDOB Number: ${item.cdobNumber}` : "CDOB Number: Not Available"}
+                      { item.cdobNumber !== null ? `CDOB Number: ${item.cdobNumber}` : "Nomor CDOB: Not Available"}
                     </p>
                     <button className={`statusPengajuan ${item.status}`}>
                       {item.status}

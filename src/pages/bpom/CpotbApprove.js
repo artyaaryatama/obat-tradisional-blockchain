@@ -125,7 +125,7 @@ function CpotbApprove() {
 
           const reconstructedData = listAllCpotb.map((item) => {
             const cpotbId = item[0]; 
-            let cpotbNumber = item[1] || 'TBA'; 
+            let cpotbNumber = item[1] || 'Belum Tersedia'; 
 
             if (item[4] === 2n) {
               cpotbNumber = null;
@@ -686,7 +686,7 @@ function CpotbApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>Jenis Industri Farmasi</p>
+                      <p>Tipe Industri Farmasi</p>
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryType}</p>
@@ -937,7 +937,7 @@ function CpotbApprove() {
 
                   <ul>
                     <li className="label">
-                      <p>Jenis Industri Farmasi</p>
+                      <p>Tipe Industri Farmasi</p>
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryType}</p>
@@ -1065,9 +1065,9 @@ function CpotbApprove() {
           width: '1020',
           showCloseButton: true,
           showCancelButton: false,
-          confirmButtonText: 'Setujui',
           showDenyButton: true,
-          denyButtonText: 'Tolak',
+          confirmButtonText: 'Setujui Pengajuan',
+          denyButtonText: 'Tolak pengajuan',
         }).then((result) => {
   
           if(result.isConfirmed){
@@ -1077,7 +1077,7 @@ function CpotbApprove() {
             const cpotbNumber = `${prefix}.${day}.${randomString}`
             
             MySwal.fire({
-              title: 'Setujui Pengajuan Sertifikat CPOTB',
+              title: 'Konfirmasi Penyetujuan Pengajuan Sertifikat CPOTB',
               html: (
                 <div className="form-swal form">
                   <div className="row">
@@ -1161,8 +1161,8 @@ function CpotbApprove() {
                           <input
                             type="text"
                             id="cpotbNumber"
-                            value={cpotbNumber}
-                            readOnly
+                            defaultValue={cpotbNumber}
+                            
                           />
                         </li>
                       </ul>
@@ -1187,7 +1187,7 @@ function CpotbApprove() {
               width: '660',       
               icon: 'warning',
               showCancelButton: false,
-              confirmButtonText: 'Setujui',
+              confirmButtonText: 'Konfirmasi',
               confirmButtonColor: '#530AF7',
               showDenyButton: true,
               denyButtonColor: ' #A6A6A6',
@@ -1198,6 +1198,7 @@ function CpotbApprove() {
               },
             }).then((result) => {
 
+              let updatedCpotbNumber = document.getElementById('cpotbNumber').value;
               if(result.isConfirmed){
 
                 MySwal.fire({
@@ -1209,14 +1210,14 @@ function CpotbApprove() {
                   allowOutsideClick: false,
                 });
                 
-
-                generateIpfs(cpotbNumber, detailCpotb)
+                console.log(updatedCpotbNumber);
+                generateIpfs(updatedCpotbNumber, detailCpotb)
               }
             })
           } else if (result.isDenied){
 
             MySwal.fire({
-              title: 'Tolak Pengajuan Sertifikat CPOTB',
+              title: 'Konfirmasi Penolakan Pengajuan Sertifikat CPOTB',
               html: (
                 <div className="form-swal form reject-form">
                   <div className="row">
@@ -1337,7 +1338,7 @@ function CpotbApprove() {
               icon: 'warning',
               showCancelButton: true,
               showCloseButton: true,
-              confirmButtonText: 'Tolak',
+              confirmButtonText: 'Konfirmasi',
               confirmButtonColor: '#E33333',
               cancelButtonColor: '#A6A6A6',
               allowOutsideClick: false,
@@ -1443,7 +1444,7 @@ function CpotbApprove() {
       factoryTypesString = `${factoryTypesString.substring(0, lastCommaIndex)} dan ${factoryTypesString.substring(lastCommaIndex + 2)}`;
     }
   
-    return `Jenis sediaan ${jenisSediaanMap[jenisSediaanId]} hanya diperuntukkan untuk jenis industri farmasi ${factoryTypesString}`; 
+    return `Jenis sediaan ${jenisSediaanMap[jenisSediaanId]} hanya diperuntukkan untuk tipr industri farmasi ${factoryTypesString}`; 
   }
   
   function handleRejectReasonChange(e) {

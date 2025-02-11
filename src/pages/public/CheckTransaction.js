@@ -212,13 +212,13 @@ function CheckTransaction() {
                   </td>
                   <td>{value.hash || "Data tidak tersedia"}</td>
                   <td>
-                    {/* <button className="copy"
+                    <button className="copy"
                       onClick={() =>
                         navigator.clipboard.writeText(value.hash || "Data tidak tersedia")
                       }
                     >
                       Copy Hash
-                    </button> */}
+                    </button>
                     <button className="view"
                       onClick={() =>
                         value.hash &&
@@ -281,9 +281,9 @@ function CheckTransaction() {
                   <td>{formatTimestamp(batchData.historyHash[timestampKey])}</td>
                   <td>{value || "Data tidak tersedia"}</td>
                   <td>
-                    {/* <button className="copy" onClick={() => navigator.clipboard.writeText(value || "Data tidak tersedia")}>
+                    <button className="copy" onClick={() => navigator.clipboard.writeText(value || "Data tidak tersedia")}>
                       Copy Hash
-                    </button> */}
+                    </button>
                     <button className="view"
                       onClick={() =>
                         value && window.open(`https://etherscan.io/tx/${value}`, "_blank")

@@ -3,21 +3,18 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./RoleManager.sol";
-// import "./ObatTradisional.sol";
 import "./CdobCertificate.sol";
 import "./EnumsLibrary.sol";
 import "./ObatShared.sol";
  
 contract OrderManagement is ReentrancyGuard {
 
-  // ObatTradisional public immutable obatTradisional;
   RoleManager public immutable roleManager;
   ObatShared public immutable obatShared;
   CdobCertificate public immutable cdobCertificate;
  
   constructor(address roleManagerAddr, address obatSharedAddr, address cdobCertificateAddr) {
     roleManager = RoleManager(roleManagerAddr);
-    // obatTradisional = ObatTradisional(obatTradisionalAddr); 
     obatShared = ObatShared(obatSharedAddr);
     cdobCertificate = CdobCertificate(cdobCertificateAddr);
   }
@@ -186,11 +183,9 @@ contract OrderManagement is ReentrancyGuard {
     orderData.statusOrder = EnumsLibrary.OrderStatus.OrderShipped;
     orderTimestampById[orderId].timestampShipped = block.timestamp;
 
-    delete obatOrderIpfsById[orderDetailById[orderId].prevOrderIdPbf];
     delete obatOrderIpfsById[orderId];
 
     for (uint256 i = 0; i < length; i++) {
-      obatOrderIpfsById[orderDetailById[orderId].prevOrderIdPbf].push(orderObatIpfs[i]);
       obatOrderIpfsById[orderId].push(orderObatIpfs[i]);
     }  
 
@@ -270,11 +265,9 @@ contract OrderManagement is ReentrancyGuard {
     orderData.statusOrder = EnumsLibrary.OrderStatus.OrderCompleted;
     orderTimestampById[orderId].timestampComplete = block.timestamp;
 
-    delete obatOrderIpfsById[orderData.prevOrderIdPbf];
     delete obatOrderIpfsById[orderId];
 
     for (uint256 i = 0; i < length; i++) {
-      obatOrderIpfsById[orderData.prevOrderIdPbf].push(orderObatIpfs[i]); 
       obatOrderIpfsById[orderId].push(orderObatIpfs[i]);
     } 
 

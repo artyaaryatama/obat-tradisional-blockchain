@@ -38,7 +38,7 @@ function StockObatRetailer() {
   }
 
   useEffect(() => {
-    document.title = "Stok Ready Obat Tradisional"; 
+    document.title = "Stok Obat Tradisional Retailer"; 
   }, []);
 
   useEffect(() => {
@@ -378,7 +378,10 @@ function StockObatRetailer() {
         width: '1000',
         showCancelButton: false,
         showCloseButton: true,
-        showConfirmButton: false
+        showConfirmButton: false,
+        customClass: {
+          htmlContainer: 'scrollable-modal'
+        },
       })
       
     } catch (e) {
@@ -397,7 +400,7 @@ function StockObatRetailer() {
           <ul>
           <li><button onClick={() => navigate('/create-retailer-order')}>Pengajuan Order</button></li>
           <li><button onClick={() => navigate('/retailer-orders')}>Order Obat Tradisional</button></li>
-            <li><button className='active' onClick={() => navigate('/obat-available-retailer')}>Obat Ready Stock</button></li>
+            <li><button className='active' onClick={() => navigate('/obat-available-retailer')}>Inventaris Batch Obat</button></li>
           </ul>
         </div>
         <div className="container-data ">
