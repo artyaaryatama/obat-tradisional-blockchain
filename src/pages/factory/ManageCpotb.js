@@ -64,7 +64,7 @@ function ManageCpotb() {
   }
 
   useEffect(() => {
-    document.title = "CPOTB Certification"; 
+    document.title = "CPOTB List"; 
   }, []);
 
   useEffect(() => {
@@ -122,7 +122,7 @@ function ManageCpotb() {
           console.log(listAllCt);
           const reconstructedData = listAllCt.map((item) => {
             const cpotbId = item[0]; 
-            let cpotbNumber = item[1] || 'TBA'; 
+            let cpotbNumber = item[1] || 'Belum Tersedia'; 
 
             if (item[4] === 2n) {
               cpotbNumber = null;
@@ -298,7 +298,7 @@ function ManageCpotb() {
 
                   <ul>
                     <li className="label">
-                      <p>Jenis Industri Farmasi</p>
+                      <p>Tipe Industri Farmasi</p>
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryType}</p>
@@ -534,7 +534,7 @@ function ManageCpotb() {
                   </ul>
                   <ul>
                     <li className="label">
-                      <p>Jenis Industri Farmasi</p>
+                      <p>Tipe Industri Farmasi</p>
                     </li>
                     <li className="input">
                       <p>{detailCpotb.factoryType}</p>

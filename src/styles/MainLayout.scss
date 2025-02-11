@@ -421,3 +421,13 @@
   }
   
 }
+
+.auto-filled-btn{
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  
+  button{
+    width: 100%;
+  }
+}

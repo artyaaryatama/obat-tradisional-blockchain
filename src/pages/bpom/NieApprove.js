@@ -100,7 +100,7 @@ function NieApprove() {
 
           const reconstructedData = listObatCt.map((item, index) => {
 
-            let nieNumber = item[2] ? item[2] : 'TBA';
+            let nieNumber = item[2] ? item[2] : 'Belum Tersedia';
 
             if(item[3] === 3n){
               nieNumber= null
@@ -1680,8 +1680,8 @@ function NieApprove() {
           showCloseButton: true,
           showCancelButton: false,
           showDenyButton: true,
-          confirmButtonText: 'Setujui',
-          denyButtonText: 'Tolak',
+          confirmButtonText: 'Setujui Pengajuan',
+          denyButtonText: 'Tolak pengajuan',
           customClass: {
             htmlContainer: 'scrollable-modal'
           },
@@ -1713,7 +1713,7 @@ function NieApprove() {
             }
 
             MySwal.fire({
-              title: "Setujui NIE",
+              title: "Konfirmasi Penyetujuan Pengajuan NIE",
               html: (
                 <div className='form-swal form'>
                   <div className="row row--obat">
@@ -1801,14 +1801,14 @@ function NieApprove() {
                     <div className="col col3">
                       <ul>
                         <li className="label">
-                          <label htmlFor="factoryInstanceName">NIE Number</label>
+                          <label htmlFor="factoryInstanceName">NIE</label>
                         </li>
                         <li className="input">
                           <input
                             type="text"
-                            id="factoryInstanceName"
-                            value={nieNum}
-                            readOnly
+                            id="nieNumber"
+                            defaultValue={nieNum}
+                            
                           />
                         </li>
                       </ul>
@@ -1889,7 +1889,7 @@ function NieApprove() {
               ),
               width: '880',
               showCancelButton: true,
-              confirmButtonText: 'Setujui',
+              confirmButtonText: 'Konfirmasi',
               cancelButtonText: 'Batal',
               cancelButtonColor: '#A6A6A6',
               allowOutsideClick: false,
@@ -1898,6 +1898,8 @@ function NieApprove() {
               },
             }).then((result) => {
               if(result.isConfirmed){
+
+                let updatedNieNumber = document.getElementById('nieNumber').value;
 
                 MySwal.fire({
                   title: "Menunggu koneksi Metamask...",
@@ -1908,13 +1910,14 @@ function NieApprove() {
                   allowOutsideClick: false,
                 });
 
-                approveNie(id, nieNum, detailObat.namaObat, factoryInstance)
+                console.log(updatedNieNumber);
+                approveNie(id, updatedNieNumber, detailObat.namaObat, factoryInstance)
               }
             })
           
           } else if(result.isDenied){
             MySwal.fire({
-              title: "Tolak Pengajuan NIE",
+              title: "Konfirmasi Penolakan Pengajuan NIE",
               html: (
                 <div className='form-swal form'>
                   <ul>
@@ -1985,7 +1988,7 @@ function NieApprove() {
               width: '638',
               showCancelButton: true,
               showCloseButton: true,
-              confirmButtonText: 'Tolak',
+              confirmButtonText: 'Konfirmasi',
               confirmButtonColor: '#E33333',
               cancelButtonText: 'Batal',
               cancelButtonColor: '#A6A6A6',
@@ -2124,7 +2127,7 @@ function NieApprove() {
                     <button className='title' onClick={() => getDetailObat(item.obatId)}>{item.namaProduk}</button>
                     <p>Nama Instansi Pabrik: {item.factoryInstance}</p>
                     <p>
-                      { item.nieNumber !== null ? `NIE Number : ${item.nieNumber}` : "NIE Number: Not Available"}
+                      { item.nieNumber !== null ? `NIE : ${item.nieNumber}` : "NIE: Not Available"}
                     </p>
                     <button className={`statusPengajuan ${item.nieStatus}`}>
                       {item.nieStatus}

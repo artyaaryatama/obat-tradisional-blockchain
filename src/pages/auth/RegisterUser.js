@@ -174,8 +174,8 @@ function RegisterPage() {
     setLoader(true)
     
     MySwal.fire({
-      title: "Harap tunggu",
-      text: "Proses pendaftaran sedang berlangsung. 🧙‍♂️🧙‍♀️",
+      title:"Menunggu koneksi Metamask...",
+      text:"Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,

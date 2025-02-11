@@ -903,7 +903,7 @@ function ManageOrderRetailer() {
 
     if(newIpfsHashes.length !== 0){
       MySwal.fire({
-        title: `Order Obat ${dataObat.namaProduk}`,
+        title: `Konfirmasi Penyelesaian Order ${dataObat.namaObat}`,
         html: (
           <div className='form-swal'>
             <div className="row row--obat">
@@ -967,7 +967,7 @@ function ManageOrderRetailer() {
         width: '820',
         showCancelButton: true,
         cancelButtonText: 'Batal',
-        confirmButtonText: 'Konfirmasi Order Obat',
+        confirmButtonText: 'Konfirmasi',
         allowOutsideClick: false,
   
       }).then((result) => {
@@ -1019,7 +1019,7 @@ function ManageOrderRetailer() {
           <ul>
             <li><button onClick={() => navigate('/create-retailer-order')}>Pengajuan Order</button></li>
             <li><button className='active' onClick={() => navigate('/retailer-orders')}>Order Obat Tradisional</button></li>
-            <li><button onClick={() => navigate('/obat-available-retailer')}>Obat Ready Stock</button></li>
+            <li><button onClick={() => navigate('/obat-available-retailer')}>Inventaris Batch Obat</button></li>
           </ul>
         </div>
         <div className="container-data ">

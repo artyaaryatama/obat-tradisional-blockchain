@@ -251,7 +251,7 @@ function CreateOrderPbf() {
       const kemasanKeterangan = kemasan.match(/@(.+?)\s*\(/);
 
       MySwal.fire({
-        title: `Form Order Obat`,
+        title: `Detail Obat ${namaProduk}`,
         html: (
           <div className='form-swal'>
               <div className="stok">
@@ -400,9 +400,12 @@ function CreateOrderPbf() {
           </div>
         ),
         width: '620',
-        showCancelButton: true,
-        confirmButtonText: 'Pengajuan Order Obat',
-        cancelButtonText: 'Batal',
+        showCancelButton: false,
+        showCloseButton: true,
+        confirmButtonText: 'Kirim Pengajuan Order Obat',
+        customClass: {
+          htmlContainer: 'scrollable-modal'
+        },
       }).then((result) => {
 
         if(result.isConfirmed){
@@ -522,7 +525,7 @@ function CreateOrderPbf() {
           <ul>
             <li><button className='active' onClick={() => navigate('/create-pbf-order')}>Pengajuan Order</button></li>
             <li><button  onClick={() => navigate('/pbf-orders')}>Order Obat Tradisional</button></li>
-            <li><button onClick={() => navigate('/obat-available-pbf')}>Obat Ready Stok</button></li>
+            <li><button onClick={() => navigate('/obat-available-pbf')}>Inventaris Batch Obat</button></li>
           </ul>
         </div>
         <div className="container-data ">

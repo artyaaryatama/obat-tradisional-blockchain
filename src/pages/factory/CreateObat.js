@@ -180,7 +180,7 @@ function CreateObat() {
     };
 
     MySwal.fire({
-      title: "Sukses membuat data obat tradisonal",
+      title: "Sukses Produksi Obat Tradisonal",
       html: (
         <div className='form-swal event'>
           <ul>
@@ -394,23 +394,84 @@ function CreateObat() {
     setKlaim(lines);
   };
 
-  const handleAutoFill = () => {
+  const handleAutoFill1 = () => {
     const autoFillValues = {
-      namaProduk: "[TEST] UPIK INSTANT RASA COKLAT",
-      merk: " Upik Instan Rasa Coklat",
+      namaProduk: "OBAT HERBAL BATUK PILEK",
+      merk: "Bapil Herbal",
       klaim: [
-        "Memelihara kesehatan",
-        "Membantu memperbaiki nafsu makan",
-        "Secara tradisional digunakan pada penderita kecacingan"
+          "Membantu meredakan batuk kering dan berdahak",
+          "Membantu melegakan tenggorokan",
+          "Membantu mengatasi hidung tersumbat"
       ],
-      // kemasanPrim: "Pil",
       ketKemasanPrim: "5",
-      satuanKemasanPrim: "gram",
-      kemasanSeku: "Dus",
-      ketKemasanSeku: "11",
+      satuanKemasanPrim: "sachet",
+      kemasanSeku: "Box",
+      ketKemasanSeku: "12",
       komposisi: [
-        "Cinnamomum Burmanii Cortex",
-        "Curcuma Aeruginosa Rhizoma",
+          "Zingiber Officinale Rhizoma",
+          "Glycyrrhiza Glabra Radix",
+          "Ocimum Sanctum Folium"
+      ]
+    };
+
+    setNamaProduk(autoFillValues.namaProduk);
+    setMerk(autoFillValues.merk);
+    setKlaim(autoFillValues.klaim);
+    setKetKemasanPrim(autoFillValues.ketKemasanPrim);
+    setSatuanKemasanPrim(autoFillValues.satuanKemasanPrim);
+    setKemasanSeku(autoFillValues.kemasanSeku);
+    setKetKemasanSeku(autoFillValues.ketKemasanSeku);
+    setKomposisi(autoFillValues.komposisi);
+  };
+
+  const handleAutoFill2 = () => {
+    const autoFillValues = {
+      namaProduk: "HERBAL DEMAM REDA",
+      merk: "Demam Reda",
+      klaim: [
+          "Membantu menurunkan panas tubuh",
+          "Meredakan gejala flu dan menggigil",
+          "Membantu meningkatkan daya tahan tubuh"
+      ],
+      ketKemasanPrim: "10",
+      satuanKemasanPrim: "ml",
+      kemasanSeku: "Dus",
+      ketKemasanSeku: "20",
+      komposisi: [
+          "Andrographis Paniculata Herba",
+          "Echinacea Purpurea Herba",
+          "Mentha Arvensis Folium"
+      ]
+    };
+
+    setNamaProduk(autoFillValues.namaProduk);
+    setMerk(autoFillValues.merk);
+    setKlaim(autoFillValues.klaim);
+    // setKemasanPrim(autoFillValues.kemasanPrim);
+    setKetKemasanPrim(autoFillValues.ketKemasanPrim);
+    setSatuanKemasanPrim(autoFillValues.satuanKemasanPrim);
+    setKemasanSeku(autoFillValues.kemasanSeku);
+    setKetKemasanSeku(autoFillValues.ketKemasanSeku);
+    setKomposisi(autoFillValues.komposisi);
+  };
+
+  const handleAutoFill3 = () => {
+    const autoFillValues = {
+      namaProduk: "HERBAL ANTI ALERGI",
+      merk: "Anti Alergi",
+      klaim: [
+          "Membantu meredakan gejala alergi seperti gatal-gatal",
+          "Mengurangi peradangan akibat reaksi alergi",
+          "Membantu memperkuat sistem imun tubuh"
+      ],
+      ketKemasanPrim: "15",
+      satuanKemasanPrim: "mg",
+      kemasanSeku: "Botol",
+      ketKemasanSeku: "30",
+      komposisi: [
+          "Curcuma Longa Rhizoma",
+          "Nigella Sativa Semen",
+          "Perilla Frutescens Folium"
       ]
     };
 
@@ -476,7 +537,7 @@ function CreateObat() {
 
           <ul>
             <li className="label">
-              <label htmlFor="namaProduk">Nama Produk</label>
+              <label htmlFor="namaProduk">Nama Obat</label>
             </li>
             <li className="input">
               <input
@@ -569,7 +630,7 @@ function CreateObat() {
     
           <ul>
             <li className="label">
-              <label htmlFor="kemasanObat">Kemasan Obat Primer</label>
+              <label htmlFor="kemasanObat">Kemasan Primer Obat</label>
             </li>
             <li className="input">
 
@@ -581,7 +642,7 @@ function CreateObat() {
                 onChange={(e) => setKemasanPrim(e.target.value)}
                 required
               >
-                <option value="" disabled>Pilih Kemasan Obat Primer</option>
+                <option value="" disabled>Pilih Kemasan Primer Obat </option>
                 {filteredJenisSediaan.map(({ key, label }) => (
                   <option key={key} value={label}>
                     {label}
@@ -616,7 +677,7 @@ function CreateObat() {
 
           <ul>
             <li className="label">
-              <label htmlFor="kemasanObat">Kemasan Obat Sekunder</label>
+              <label htmlFor="kemasanObat">Kemasan Sekunder Obat</label>
             </li>
             <li className="input">
               <div className="input-group">
@@ -644,7 +705,7 @@ function CreateObat() {
     
           <ul>
             <li className="label">
-            <label htmlFor='komposisi'>Komposisi</label>
+            <label htmlFor='komposisi'>Komposisi Obat</label>
 
             </li>
             <li className="input">
@@ -692,7 +753,12 @@ function CreateObat() {
             )
           }
             </button>
-          <button className='auto-filled' type='button' onClick={handleAutoFill}>Auto Fill Form</button>
+          <div className="auto-filled-btn">
+            <button className='auto-filled' type='button' onClick={handleAutoFill1}>Auto Fill Form 1</button>
+            <button className='auto-filled' type='button' onClick={handleAutoFill2}>Auto Fill Form 2</button>
+            <button className='auto-filled' type='button' onClick={handleAutoFill3}>Auto Fill Form 3</button>
+
+          </div>
         </form>
 
       </div>

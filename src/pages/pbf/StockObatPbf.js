@@ -38,7 +38,7 @@ function StockObatPbf() {
   }
 
   useEffect(() => {
-    document.title = "Stok Ready Obat Tradisional"; 
+    document.title = "Stok Obat Tradisional PBF"; 
   }, []);
 
   useEffect(() => {
@@ -348,6 +348,9 @@ function StockObatPbf() {
         showCancelButton: false,
         showCloseButton: true,
         showConfirmButton: false,
+        customClass: {
+          htmlContainer: 'scrollable-modal'
+        },
       })
       
     } catch (e) {
@@ -366,7 +369,7 @@ function StockObatPbf() {
           <ul>
             <li><button onClick={() => navigate('/create-pbf-order')}>Pengajuan Order</button></li>
             <li><button onClick={() => navigate('/pbf-orders')}>Order Obat Tradisional</button></li>
-            <li><button className='active' onClick={() => navigate('/obat-available-pbf')}>Obat Ready Stok</button></li>
+            <li><button className='active' onClick={() => navigate('/obat-available-pbf')}>Inventaris Batch Obat</button></li>
           </ul>
         </div>
         <div className="container-data ">

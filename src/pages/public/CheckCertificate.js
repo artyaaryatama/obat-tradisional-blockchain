@@ -65,7 +65,7 @@ function CheckCertificateIpfs() {
   const renderCpotbDetails = () => (
     <>
       <li className="info-item">
-        <span className="label">Factory Type</span>
+        <span className="label">Tipe Industri Farmasi</span>
         <span>{factoryType}</span>
       </li>
       <li className="info-item">

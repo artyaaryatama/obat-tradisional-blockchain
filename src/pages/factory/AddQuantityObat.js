@@ -42,7 +42,7 @@ function AddQuantityObat() {
   }
 
   useEffect(() => {
-    document.title = "Create Obat Tradisional"; 
+    document.title = "Tambah stok obat tradisonal"; 
   }, []);
 
   useEffect(() => {
@@ -165,7 +165,7 @@ function AddQuantityObat() {
   const handleEventAddBatchProduction = (_batchName, _obatQuantity, _namaProduk, _factoryInstance, txHash) => {
       
     MySwal.fire({
-        title: `Sukses menambahkan stok obat`,
+        title: `Sukses Produksi Batch Obat`,
         html: (
           <div className='form-swal event'>
             <ul>
@@ -236,7 +236,7 @@ function AddQuantityObat() {
     e.preventDefault();
 
     MySwal.fire({
-      title: `Produksi Obat ${namaProduk}`,
+      title: `Konfirmasi Produksi Obat ${namaProduk}`,
       html: (
         <div className='form-swal'>
           <div className="row row--obat">
@@ -262,6 +262,14 @@ function AddQuantityObat() {
 
               <ul>
                 <li className="label label-1">
+                  <p>Nama Pabrik</p> 
+                </li>
+                <li className="input input-1">
+                  <p>{userdata.instanceName}</p> 
+                </li>
+              </ul>
+              <ul>
+                <li className="label label-1">
                   <p>Total Stok</p>
                 </li>
                 <li className="input input-1">
@@ -269,21 +277,13 @@ function AddQuantityObat() {
                 </li>
               </ul>
 
-              <ul>
-                <li className="label label-1">
-                  <p>Nama Pabrik</p> 
-                </li>
-                <li className="input input-1">
-                  <p>{userdata.instanceName}</p> 
-                </li>
-              </ul>
             </div>
           </div>
         </div>
       ),
       width: '620',
       showCancelButton: true,
-      confirmButtonText: 'Konfirmasi Kuantitas Obat',
+      confirmButtonText: 'Konfirmasi',
       cancelButtonText: "Batal",
       allowOutsideClick: false
     }).then((result) => {
@@ -401,7 +401,7 @@ function AddQuantityObat() {
 
     if(newIpfsHashes.length !== 0){
       MySwal.fire({
-        title: `Data Obat ${dataObat.namaProduk}`,
+        title: `Konfirmasi Produksi Obat ${dataObat.namaProduk}`,
         html: (
           <div className='form-swal'>
             <div className="row row--obat">
@@ -455,9 +455,12 @@ function AddQuantityObat() {
         ),
         width: '820',
         showCancelButton: true,
-        confirmButtonText: 'Konfirmasi Kuantitas Obat',
+        confirmButtonText: 'Konfirmasi',
         cancelButtonText: "Batal",
-        allowOutsideClick: false
+        allowOutsideClick: false,
+        customClass: {
+          htmlContainer: 'scrollable-modal'
+        },
       }).then((result) => {
         if(result.isConfirmed){
           MySwal.update({
@@ -552,7 +555,7 @@ function AddQuantityObat() {
               <label htmlFor="batchName">Nama Batch</label>
             </li>
             <li className="input">
-              <input type="text" name="batchName" value={batchName} readOnly />
+              <input type="text" name="batchName" id='batchName' defaultValue={batchName} onChange={(e) => setBatchName(e.target.value)} />
             </li>
           </ul>
 
@@ -596,6 +599,7 @@ function AddQuantityObat() {
                   <option value="" disabled>Pilih Jumlah Stok Obat</option>
                   <option value="1">1 Obat</option>
                   <option value="5">5 Obat</option>
+                  <option value="10">10 Obat</option>
                   <option value="50">50 Obat</option>
                   <option value="100">100 Obat</option>
                   <option value="200">200 Obat</option>

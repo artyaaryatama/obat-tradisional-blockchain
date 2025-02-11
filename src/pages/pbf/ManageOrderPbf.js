@@ -57,7 +57,7 @@ function ManageOrderPbf() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
 
-          const orderManagementPbfContract = new Contract(
+          const OrderManagementContract = new Contract(
             contractData.OrderManagement.address,
             contractData.OrderManagement.abi,
             signer
@@ -81,7 +81,7 @@ function ManageOrderPbf() {
           );
 
           setContracts({
-            orderManagementPbf: orderManagementPbfContract,
+            OrderManagement: OrderManagementContract,
             obatTradisional: obatTradisionalContract,
             roleManager: RoleManager,
             nieManager: NieManager,
@@ -113,7 +113,7 @@ function ManageOrderPbf() {
     const loadData = async () => {
       if (contracts) {
         try {
-          const listOrderedObatCt = await contracts.orderManagementPbf.getAllOrderFromBuyer(userdata.instanceName);
+          const listOrderedObatCt = await contracts.OrderManagement.getAllOrderFromBuyer(userdata.instanceName);
           console.log(listOrderedObatCt);
 
           const reconstructedDataorder = listOrderedObatCt.map((item, index) => ({
@@ -231,10 +231,9 @@ function ManageOrderPbf() {
 
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
-      const detailOrderCt = await contracts.orderManagementPbf.detailOrder(orderId);
-      // const orderTimestampCt = await contracts.orderManagementPbf.detailTimestamp(orderId);
-      const orderTimestampCt = await contracts.orderManagementPbf.orderTimestamp(orderId);
-      const orderObatIpfs = await contracts.orderManagementPbf.obatIpfs(orderId);
+      const detailOrderCt = await contracts.OrderManagement.detailOrder(orderId);
+      const orderTimestampCt = await contracts.OrderManagement.orderTimestamp(orderId);
+      const orderObatIpfs = await contracts.OrderManagement.obatIpfs(orderId);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
@@ -686,7 +685,7 @@ function ManageOrderPbf() {
     })
 
     try {
-      const completeOrderCt = await contracts.orderManagementPbf.completeOrderPbf(orderId, ipfsHashes)
+      const completeOrderCt = await contracts.OrderManagement.completeOrderPbf(orderId, ipfsHashes)
 
       if(completeOrderCt){
         updateBatchHistoryHash(factoryInstance, namaObat, batchName, completeOrderCt.hash)
@@ -696,13 +695,13 @@ function ManageOrderPbf() {
         });
       }
 
-      contracts.orderManagementPbf.once("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.OrderManagement.once("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
 
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, completeOrderCt.hash); 
       });
 
     } catch (error) {
-      errAlert(error, "Can't Complete Order");
+      errAlert(error, "Tidak bisa menyelesaikan order");
     }
   }
   
@@ -769,7 +768,7 @@ function ManageOrderPbf() {
           pbfInstanceAddress: userPbfCt[4],
           NpwpPbf:userPbfCt[6],
           NibPbf:userPbfCt[7],
-          statusOrder : "Order telah selesai",
+          statusOrder : "Order Completed",
           targetInstanceName : dataOrder.sellerInstance,
           targetAddress: userdata.address,
           timestampOrder: timestamps.timestampOrder,
@@ -795,7 +794,7 @@ function ManageOrderPbf() {
 
     if(newIpfsHashes.length !== 0){
       MySwal.fire({
-        title: `Complete Order Obat ${dataObat.namaObat}`,
+        title: `Konfirmasi Penyelesaian Order ${dataObat.namaObat}`,
         html: (
           <div className='form-swal'>
             <div className="row row--obat">
@@ -859,7 +858,7 @@ function ManageOrderPbf() {
         width: '820',
         showCancelButton: true,
         cancelButtonText: 'Batal',
-        confirmButtonText: 'Konfirmasi Order Obat',
+        confirmButtonText: 'Konfirmasi',
         allowOutsideClick: false,
   
       }).then((result) => {
@@ -908,7 +907,7 @@ function ManageOrderPbf() {
           <ul>
             <li><button onClick={() => navigate('/create-pbf-order')}>Pengajuan Order</button></li>
             <li><button className='active' onClick={() => navigate('/pbf-orders')}>Order Obat Tradisional</button></li>
-            <li><button onClick={() => navigate('/obat-available-pbf')}>Obat Ready Stok</button></li>
+            <li><button onClick={() => navigate('/obat-available-pbf')}>Inventaris Batch Obat</button></li>
           </ul>
         </div>
         <div className="container-data ">

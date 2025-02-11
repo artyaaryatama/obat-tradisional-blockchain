@@ -255,7 +255,7 @@ function CreateOrderRetailer() {
       const kemasanKeterangan = kemasan.match(/@(.+?)\s*\(/);
 
       MySwal.fire({
-        title: `Form Order Obat ${detailObat.namaObat}`,
+        title: `Detail Obat ${namaProduk}`,
         html: (
           <div className='form-swal'>
               <div className="stok">
@@ -423,9 +423,12 @@ function CreateOrderRetailer() {
           </div>
         ),
         width: '620',
-        showCancelButton: true,
-        cancelButtonText: 'Batal',
-        confirmButtonText: 'Order Obat',
+        showCancelButton: false,
+        showCloseButton: true,
+        confirmButtonText: 'Kirim Pengajuan Order Obat',
+        customClass: {
+          htmlContainer: 'scrollable-modal'
+        },
       }).then((result) => {
 
         if(result.isConfirmed){
@@ -518,7 +521,7 @@ function CreateOrderRetailer() {
           <ul>
             <li><button className='active' onClick={() => navigate('/create-retailer-order')}>Pengajuan Order</button></li>
             <li><button  onClick={() => navigate('/retailer-orders')}>Order Obat Tradisional</button></li>
-            <li><button onClick={() => navigate('/obat-available-retailer')}>Obat Ready Stock</button></li>
+            <li><button onClick={() => navigate('/obat-available-retailer')}>Inventaris Batch Obat</button></li>
           </ul>
         </div>
         <div className="container-data ">

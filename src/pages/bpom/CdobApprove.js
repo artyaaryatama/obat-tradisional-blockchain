@@ -43,7 +43,7 @@ function CdobApprove() {
   }
 
   useEffect(() => {
-    document.title = "CDOB List"; 
+  document.title = "CDOB List"; 
   }, []);
 
   useEffect(() => {
@@ -102,7 +102,7 @@ function CdobApprove() {
 
           const reconstructedData = listAllCdob.map((item) => {
             const cdobId = item[0]; 
-            let cdobNumber = item[1] || 'TBA'; 
+            let cdobNumber = item[1] || 'Belum Tersedia'; 
 
             if (item[4] === 2n) {
               cdobNumber = null;
@@ -1242,9 +1242,9 @@ function CdobApprove() {
           width: '1020',
           showCloseButton: true,
           showCancelButton: false,
-          confirmButtonText: 'Setujui',
           showDenyButton: true,
-          denyButtonText: 'Tolak',
+          confirmButtonText: 'Setujui Pengajuan',
+          denyButtonText: 'Tolak pengajuan',
           customClass: {
             htmlContainer: 'scrollable-modal'
           },
@@ -1256,10 +1256,10 @@ function CdobApprove() {
             const today = new Date();
             const month = String(today.getMonth() + 1).padStart(2, '0');  
             const year = today.getFullYear(); 
-            const cdobNumber = `CDOB${randomDigits1}/S1-${randomDigits2}/${month}/${year}`;
+            let cdobNumber = `CDOB${randomDigits1}/S1-${randomDigits2}/${month}/${year}`;
             
             MySwal.fire({
-              title: 'Setujui Pengajuan CDOB',
+              title: 'Konfirmasi Penyetujuan Pengajuan Sertifikat CDOB',
               html: (
                 <div className="form-swal form">
                   <div className="row">
@@ -1350,14 +1350,13 @@ function CdobApprove() {
                     <div className="col">
                       <ul>
                         <li className="label">
-                          <label htmlFor="cdobNumber">CDOB Number</label>
+                          <label htmlFor="cdobNumber">Nomor CDOB</label>
                         </li>
                         <li className="input">
                           <input
                             type="text"
                             id="cdobNumber"
-                            value={cdobNumber}
-                            readOnly
+                            defaultValue={cdobNumber}
                           />
                         </li>
                       </ul>
@@ -1383,7 +1382,7 @@ function CdobApprove() {
               icon: 'warning',
               showCancelButton: true,
               cancelButtonText: 'Batal',
-              confirmButtonText: 'Setujui',
+              confirmButtonText: 'Konfirmasi',
               confirmButtonColor: '#530AF7',
               cancelButtonColor: '#A6A6A6',
               allowOutsideClick: false,
@@ -1391,6 +1390,8 @@ function CdobApprove() {
                 htmlContainer: 'scrollable-modal-small'
               },
             }).then((result) => {
+
+              let updatedCdobNumber = document.getElementById('cdobNumber').value;
 
               if (result.isConfirmed) {
                 MySwal.fire({
@@ -1401,13 +1402,13 @@ function CdobApprove() {
                   showConfirmButton: false,
                   allowOutsideClick: false,
                 });
-
-                generateIpfs(cdobNumber, detailCdob)
+                console.log(updatedCdobNumber);
+                generateIpfs(updatedCdobNumber, detailCdob)
               }
             })
           } else if (result.isDenied){
             MySwal.fire({
-              title: 'Tolak Pengajuan Sertifikat CDOB',
+              title: 'Konfirmasi Penolakan Pengajuan Sertifikat CDOB',
               html: (
                 <div className="form-swal form">
                   <div className="row">
@@ -1526,7 +1527,7 @@ function CdobApprove() {
               icon: 'warning',
               showCancelButton: true,
               showCloseButton: true,
-              confirmButtonText: 'Tolak',
+              confirmButtonText: 'Konfirmasi',
               confirmButtonColor: '#E33333',
               cancelButtonColor: '#A6A6A6',
               allowOutsideClick: false,
@@ -1737,7 +1738,7 @@ function CdobApprove() {
                   <li key={index}>
                     <button className='title' onClick={() => getDetailCdob(item.cdobId)}>{item.pbfName}: {item.tipePermohonan}</button>
                     <p>
-                      { item.cdobNumber !== null ? `CDOB Number : ${item.cdobNumber}` : "Not Available"}
+                      { item.cdobNumber !== null ? `Nomor CDOB : ${item.cdobNumber}` : "Not Available"}
                       
                     </p>
                     <button className={`statusPengajuan ${item.status}`}>
