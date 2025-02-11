@@ -1,0 +1,1395 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "roleManagerAddr",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "cpotbCertificateAddr",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "cdobCertificateAddr",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
+				"name": "ReentrancyGuardReentrantCall",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "bpomInstance",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "bpomAddr",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint8",
+						"name": "tipePermohonan",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "certNumber",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"name": "CertApproved",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "bpomInstance",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "bpomAddr",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint8",
+						"name": "tipePermohonan",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "rejectMsg",
+						"type": "string"
+					}
+				],
+				"name": "CertRejected",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "senderInstance",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "senderAddr",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"name": "CertRenewRequest",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "senderInstance",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "senderAddr",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint8",
+						"name": "tipePermohonan",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"name": "CertRequested",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "certNumber",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "certId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "bpomName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "bpomInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "bpomAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct CertificateManager.CertificateApproval",
+						"name": "approveData",
+						"type": "tuple"
+					},
+					{
+						"internalType": "string",
+						"name": "ipfsCert",
+						"type": "string"
+					},
+					{
+						"internalType": "uint8",
+						"name": "tipePermohonan",
+						"type": "uint8"
+					}
+				],
+				"name": "approveCdob",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "certNumber",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "certId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "bpomName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "bpomInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "bpomAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct CertificateManager.CertificateApproval",
+						"name": "approveData",
+						"type": "tuple"
+					},
+					{
+						"internalType": "string",
+						"name": "ipfsCert",
+						"type": "string"
+					},
+					{
+						"internalType": "uint8",
+						"name": "jenisSediaan",
+						"type": "uint8"
+					}
+				],
+				"name": "approveCpotb",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "cdobCertificate",
+				"outputs": [
+					{
+						"internalType": "contract CdobCertificate",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "cpotbCertificate",
+				"outputs": [
+					{
+						"internalType": "contract CpotbCertificate",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getAllCdob",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "certId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "certNumber",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "instanceName",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "tipePermohonan",
+								"type": "uint8"
+							},
+							{
+								"internalType": "enum EnumsLibrary.StatusCertificate",
+								"name": "status",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "certHash",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CdobCertificate.CertificateList[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getAllCpotb",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "certId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "certNumber",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "instanceName",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "tipePermohonan",
+								"type": "uint8"
+							},
+							{
+								"internalType": "enum EnumsLibrary.StatusCertificate",
+								"name": "status",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "certHash",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CpotbCertificate.CertificateList[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "instanceName",
+						"type": "string"
+					}
+				],
+				"name": "getCdobByInstance",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "certId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "certNumber",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "instanceName",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "tipePermohonan",
+								"type": "uint8"
+							},
+							{
+								"internalType": "enum EnumsLibrary.StatusCertificate",
+								"name": "status",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "certHash",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CdobCertificate.CertificateList[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "certId",
+						"type": "string"
+					}
+				],
+				"name": "getCdobDetails",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "enum EnumsLibrary.StatusCertificate",
+								"name": "status",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestampRequest",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestampApprove",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestampRejected",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestampRenewRequest",
+								"type": "uint256"
+							},
+							{
+								"components": [
+									{
+										"internalType": "string",
+										"name": "userName",
+										"type": "string"
+									},
+									{
+										"internalType": "string",
+										"name": "userInstance",
+										"type": "string"
+									},
+									{
+										"internalType": "address",
+										"name": "userAddr",
+										"type": "address"
+									}
+								],
+								"internalType": "struct BaseCertificate.UserCert",
+								"name": "sender",
+								"type": "tuple"
+							},
+							{
+								"components": [
+									{
+										"internalType": "string",
+										"name": "userName",
+										"type": "string"
+									},
+									{
+										"internalType": "string",
+										"name": "userInstance",
+										"type": "string"
+									},
+									{
+										"internalType": "address",
+										"name": "userAddr",
+										"type": "address"
+									}
+								],
+								"internalType": "struct BaseCertificate.UserCert",
+								"name": "bpom",
+								"type": "tuple"
+							},
+							{
+								"internalType": "string",
+								"name": "ipfsCert",
+								"type": "string"
+							}
+						],
+						"internalType": "struct BaseCertificate.CertificateDetails",
+						"name": "",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "cdobId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "cdobNumber",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "tipePermohonan",
+								"type": "uint8"
+							}
+						],
+						"internalType": "struct CdobCertificate.CdobData",
+						"name": "",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "suratPermohonan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "buktiPembayaranPajak",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CdobCertificate.DokumenAdministrasi",
+						"name": "",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "suratIzinCdob",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "denahBangunan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "strukturOrganisasi",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "daftarPersonalia",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "daftarPeralatan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "eksekutifQualityManagement",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "suratIzinApoteker",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "dokumenSelfAssesment",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CdobCertificate.DokumenTeknis",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "instanceName",
+						"type": "string"
+					}
+				],
+				"name": "getCpotbByInstance",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "certId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "certNumber",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "instanceName",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "tipePermohonan",
+								"type": "uint8"
+							},
+							{
+								"internalType": "enum EnumsLibrary.StatusCertificate",
+								"name": "status",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "certHash",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CpotbCertificate.CertificateList[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "certId",
+						"type": "string"
+					}
+				],
+				"name": "getCpotbDetails",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "enum EnumsLibrary.StatusCertificate",
+								"name": "status",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestampRequest",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestampApprove",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestampRejected",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestampRenewRequest",
+								"type": "uint256"
+							},
+							{
+								"components": [
+									{
+										"internalType": "string",
+										"name": "userName",
+										"type": "string"
+									},
+									{
+										"internalType": "string",
+										"name": "userInstance",
+										"type": "string"
+									},
+									{
+										"internalType": "address",
+										"name": "userAddr",
+										"type": "address"
+									}
+								],
+								"internalType": "struct BaseCertificate.UserCert",
+								"name": "sender",
+								"type": "tuple"
+							},
+							{
+								"components": [
+									{
+										"internalType": "string",
+										"name": "userName",
+										"type": "string"
+									},
+									{
+										"internalType": "string",
+										"name": "userInstance",
+										"type": "string"
+									},
+									{
+										"internalType": "address",
+										"name": "userAddr",
+										"type": "address"
+									}
+								],
+								"internalType": "struct BaseCertificate.UserCert",
+								"name": "bpom",
+								"type": "tuple"
+							},
+							{
+								"internalType": "string",
+								"name": "ipfsCert",
+								"type": "string"
+							}
+						],
+						"internalType": "struct BaseCertificate.CertificateDetails",
+						"name": "",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "cpotbId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "cpotbNumber",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "tipePermohonan",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "factoryType",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CpotbCertificate.CpotbData",
+						"name": "",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "suratPermohonan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "buktiPembayaranNegaraBukanPajak",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "suratKomitmen",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CpotbCertificate.DokumenAdministrasi",
+						"name": "",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "denahBangunan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "sistemMutu",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CpotbCertificate.DokumenTeknis",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "certId",
+						"type": "string"
+					}
+				],
+				"name": "getRejectMsgCdob",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "certId",
+						"type": "string"
+					}
+				],
+				"name": "getRejectMsgCpotb",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "certId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "rejectMsg",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "bpomName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "bpomInstance",
+						"type": "string"
+					},
+					{
+						"internalType": "uint8",
+						"name": "tipePermohonan",
+						"type": "uint8"
+					}
+				],
+				"name": "rejectCdob",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "certId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "rejectMsg",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "bpomName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "bpomInstance",
+						"type": "string"
+					},
+					{
+						"internalType": "uint8",
+						"name": "jenisSediaan",
+						"type": "uint8"
+					}
+				],
+				"name": "rejectCpotb",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "certId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "senderName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "senderInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "senderAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct CertificateManager.CertificateRequest",
+						"name": "reqData",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "suratPermohonan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "buktiPembayaranPajak",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CdobCertificate.DokumenAdministrasi",
+						"name": "newDokuAdmin",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "suratIzinCdob",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "denahBangunan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "strukturOrganisasi",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "daftarPersonalia",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "daftarPeralatan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "eksekutifQualityManagement",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "suratIzinApoteker",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "dokumenSelfAssesment",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CdobCertificate.DokumenTeknis",
+						"name": "newDokuTeknis",
+						"type": "tuple"
+					}
+				],
+				"name": "renewCdob",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "certId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "senderName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "senderInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "senderAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct CertificateManager.CertificateRequest",
+						"name": "reqData",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "suratPermohonan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "buktiPembayaranNegaraBukanPajak",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "suratKomitmen",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CpotbCertificate.DokumenAdministrasi",
+						"name": "newDokuAdmin",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "denahBangunan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "sistemMutu",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CpotbCertificate.DokumenTeknis",
+						"name": "newDokuTeknis",
+						"type": "tuple"
+					}
+				],
+				"name": "renewCpotb",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "certId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "senderName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "senderInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "senderAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct CertificateManager.CertificateRequest",
+						"name": "reqData",
+						"type": "tuple"
+					},
+					{
+						"internalType": "uint8",
+						"name": "tipePermohonan",
+						"type": "uint8"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "suratPermohonan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "buktiPembayaranPajak",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CdobCertificate.DokumenAdministrasi",
+						"name": "dokuAdmin",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "suratIzinCdob",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "denahBangunan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "strukturOrganisasi",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "daftarPersonalia",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "daftarPeralatan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "eksekutifQualityManagement",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "suratIzinApoteker",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "dokumenSelfAssesment",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CdobCertificate.DokumenTeknis",
+						"name": "dokuTeknis",
+						"type": "tuple"
+					}
+				],
+				"name": "requestCdob",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "certId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "senderName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "senderInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "senderAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct CertificateManager.CertificateRequest",
+						"name": "reqData",
+						"type": "tuple"
+					},
+					{
+						"internalType": "uint8",
+						"name": "jenisSediaan",
+						"type": "uint8"
+					},
+					{
+						"internalType": "string",
+						"name": "factoryType",
+						"type": "string"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "suratPermohonan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "buktiPembayaranNegaraBukanPajak",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "suratKomitmen",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CpotbCertificate.DokumenAdministrasi",
+						"name": "dokuAdmin",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "denahBangunan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "sistemMutu",
+								"type": "string"
+							}
+						],
+						"internalType": "struct CpotbCertificate.DokumenTeknis",
+						"name": "dokuTeknis",
+						"type": "tuple"
+					}
+				],
+				"name": "requestCpotb",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "roleManager",
+				"outputs": [
+					{
+						"internalType": "contract RoleManager",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"errors": {
+				"ReentrancyGuardReentrantCall()": [
+					{
+						"details": "Unauthorized reentrant call."
+					}
+				]
+			},
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/CertificateManager.sol": "CertificateManager"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/utils/ReentrancyGuard.sol": {
+			"keccak256": "0x11a5a79827df29e915a12740caf62fe21ebe27c08c9ae3e09abe9ee3ba3866d3",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://3cf0c69ab827e3251db9ee6a50647d62c90ba580a4d7bbff21f2bea39e7b2f4a",
+				"dweb:/ipfs/QmZiKwtKU1SBX4RGfQtY7PZfiapbbu6SZ9vizGQD9UHjRA"
+			]
+		},
+		"contracts/BaseCertificate.sol": {
+			"keccak256": "0x34b33194b2507f147eb27456a426d7cbe29f6dd7da73be35dd9ceb66191f9e65",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d29a6115fb384ad5732ad1c68d6d4e48dde278daae52c8b7ed829616605bcf9e",
+				"dweb:/ipfs/QmVbsuWf15vwP6FaT1xt7W9v3Dp1veVqTTK7wooaEgnWZh"
+			]
+		},
+		"contracts/CdobCertificate.sol": {
+			"keccak256": "0x2e1492543a08001bee435cb77281a4094d0548f9037c6efa3b451a2ac6c54c14",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://b4a96265ed0eea38250316feb7b4573f22f54b9f7be24d9065a688ee5e50b687",
+				"dweb:/ipfs/QmdkvpfT3nAN2xQipXeknoN5wHJYucrQ6cie8W9A7eSMcQ"
+			]
+		},
+		"contracts/CertificateManager.sol": {
+			"keccak256": "0x28b3f95b706daceee47ae9953f9caa2a6825b46bb778b195e06d927ac7e0380f",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://247ba2beb214d9a42e9025794492f8f988959a0116595ac268583f2d7ac5855b",
+				"dweb:/ipfs/QmZsgugiGhrDUSHBV84yJnWY6zS5MGgyJhnjwq3nRwgWGP"
+			]
+		},
+		"contracts/CpotbCertificate.sol": {
+			"keccak256": "0xb5d3045e5df37310435fb79f41165ef0f77f2ef2089395bb0e46a4d5494621a6",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://102636c3c1e98a0847a279376fc5053bbd9580a11c67d3036252cd2dfb055f46",
+				"dweb:/ipfs/QmTGfPGE2yFiuygeTwnpJ7eG3xJAtvA8ULRCJs1RtD1zuu"
+			]
+		},
+		"contracts/EnumsLibrary.sol": {
+			"keccak256": "0x1a740b229e62312d4d231460a51990fe9a31b6682abb5223711f8f8e175662ac",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e157ce208bf0826d43a77eb6a5d72c03f5bd75a2e70b0d9788d155f4e99e99d7",
+				"dweb:/ipfs/QmZGZUPNZJy61YuAaLxRA9zZLPS4XZ9zmfeycwU1gy4UFL"
+			]
+		},
+		"contracts/RoleManager.sol": {
+			"keccak256": "0x9a8eb47465aeffe88b91dc20bd14bc917dc9e88c377e371d5f0f5ce046284f3b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c635b3ff886182ade38749bf724b0cfbf35cebff598fd322e54d38b27306788f",
+				"dweb:/ipfs/QmaHxKwdkcAhFgrTDmqxZusyeTcZwsYpV1TQB59uMwcRDd"
+			]
+		}
+	},
+	"version": 1
+}

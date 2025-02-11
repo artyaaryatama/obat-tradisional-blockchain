@@ -402,7 +402,7 @@ function CdobRenewRequest() {
           </div>
           <div className="doku">
             <h5>Dokumen Teknis</h5>
-            {['ipfsSuratIzinCdob', 'ipfsDenahBangunanPbf', 'ipfsStrukturOrganisasi', 'ipfsDaftarPersonalia', 'ipfsDaftarPeralatan', 'ipfsEksekutifQualityManagement', 'ipfsSuratIzinApoteker', 'ipfsDokumenSelfAssesment'].map((key) => (
+            {['ipfsSuratIzinCdob', 'ipfsDenahBangunanPbf', 'ipfsEksekutifQualityManagement', 'ipfsStrukturOrganisasi', 'ipfsDaftarPersonalia', 'ipfsDaftarPeralatan', 'ipfsSuratIzinApoteker', 'ipfsDokumenSelfAssesment'].map((key) => (
               <ul key={key}>
                 <li className="label">
                   <label>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</label>

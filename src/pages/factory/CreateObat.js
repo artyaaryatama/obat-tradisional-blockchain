@@ -72,6 +72,17 @@ function CreateObat() {
     IOT: [0n, 1n, 2n, 3n, 4n, 5n, 6n, 7n, 8n, 9n, 10n, 11n, 12n, 13n, 14n, 15n, 16n, 17n, 18n, 19n, 20n, 21n, 22n, 23n, 24n] 
   };
 
+  const today = new Date();
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short'
+  };
+  const formattedDate = today.toLocaleDateString('id-ID', options);
+
   useEffect(() => {
     document.title = "Produksi Obat Tradisional"; 
   }, []);
@@ -527,6 +538,10 @@ function CreateObat() {
         <form onSubmit={createObat}>
 
           <ul>
+            <li className="label"><label>Tanggal Produksi</label></li>
+            <li className="input"><p>{formattedDate}</p></li>
+          </ul>
+          <ul>
             <li className="label">
               <label htmlFor="instanceName">Di produksi oleh</label>
             </li>
@@ -724,9 +739,9 @@ function CreateObat() {
                         <button type="button" onClick={() => removeField(index)}><i className="fa-solid fa-trash"></i></button>
                       )}
                       <button type="button" onClick={addField}><i className="fa-solid fa-plus"></i></button>
-                      <button type="button" className="add-prohibited" onClick={handleAddProhibitedIngredient}>
+                      {/* <button type="button" className="add-prohibited" onClick={handleAddProhibitedIngredient}>
                         Add Prohibited Ingredient
-                      </button>
+                      </button> */}
                     </div>
                     
                   </div>

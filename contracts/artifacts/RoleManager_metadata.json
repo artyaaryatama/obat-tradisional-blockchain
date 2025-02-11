@@ -1,0 +1,305 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "userAddr",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "instanceName",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "enum EnumsLibrary.Roles",
+						"name": "role",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "locationInstance",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "nib",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "npwp",
+						"type": "string"
+					}
+				],
+				"name": "UserRegistered",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "userAddr",
+						"type": "address"
+					}
+				],
+				"name": "checkRegistration",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "userAddr",
+						"type": "address"
+					}
+				],
+				"name": "getUserData",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "instanceName",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "userAddr",
+								"type": "address"
+							},
+							{
+								"internalType": "enum EnumsLibrary.Roles",
+								"name": "role",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "locationInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "factoryType",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "nib",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "npwp",
+								"type": "string"
+							}
+						],
+						"internalType": "struct RoleManager.UserData",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "userAddr",
+						"type": "address"
+					},
+					{
+						"internalType": "enum EnumsLibrary.Roles",
+						"name": "role",
+						"type": "uint8"
+					}
+				],
+				"name": "hasRole",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "loginUser",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "instanceName",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "userAddr",
+								"type": "address"
+							},
+							{
+								"internalType": "enum EnumsLibrary.Roles",
+								"name": "role",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "locationInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "factoryType",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "nib",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "npwp",
+								"type": "string"
+							}
+						],
+						"internalType": "struct RoleManager.UserData",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "userName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "userInstance",
+						"type": "string"
+					},
+					{
+						"internalType": "uint8",
+						"name": "role",
+						"type": "uint8"
+					},
+					{
+						"internalType": "string",
+						"name": "locationInstance",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "factoryType",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "nibNumber",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "npwpNumber",
+						"type": "string"
+					}
+				],
+				"name": "registerUser",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/RoleManager.sol": "RoleManager"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/EnumsLibrary.sol": {
+			"keccak256": "0x1a740b229e62312d4d231460a51990fe9a31b6682abb5223711f8f8e175662ac",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e157ce208bf0826d43a77eb6a5d72c03f5bd75a2e70b0d9788d155f4e99e99d7",
+				"dweb:/ipfs/QmZGZUPNZJy61YuAaLxRA9zZLPS4XZ9zmfeycwU1gy4UFL"
+			]
+		},
+		"contracts/RoleManager.sol": {
+			"keccak256": "0x9a8eb47465aeffe88b91dc20bd14bc917dc9e88c377e371d5f0f5ce046284f3b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c635b3ff886182ade38749bf724b0cfbf35cebff598fd322e54d38b27306788f",
+				"dweb:/ipfs/QmaHxKwdkcAhFgrTDmqxZusyeTcZwsYpV1TQB59uMwcRDd"
+			]
+		}
+	},
+	"version": 1
+}

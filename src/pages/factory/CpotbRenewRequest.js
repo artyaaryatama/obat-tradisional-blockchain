@@ -400,25 +400,6 @@ function CpotbRenewRequest() {
             <li className="input reject cpotb"><p>{rejectMsg}</p></li>
           </ul> 
           <div className="doku">
-            <h5>Dokumen Administrasi</h5>
-            {['ipfsSuratPermohonanCpotb', 'ipfsBuktiPembayaranNegaraBukanPajak'].map((key) => (
-              <ul key={key}>
-                <li className="label">
-                  <label>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</label>
-                </li>
-                <li className="input">
-                  <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />
-                  {dokumen[key] && (
-                    <a href={`http://localhost:8080/ipfs/${dokumen[key]}`} target="_blank" rel="noopener noreferrer">
-                      Lihat  {key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}
-                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                    </a>
-                  )}
-                </li>
-              </ul>
-            ))}
-          </div>
-          <div className="doku">
             <h5>Dokumen Teknis</h5>
             {['ipfsDenahBangunan', 'ipfsSistemMutu'].map((key) => (
               <ul key={key}>
@@ -430,6 +411,25 @@ function CpotbRenewRequest() {
                   {dokumen[key] && (
                     <a href={`http://localhost:8080/ipfs/${dokumen[key]}`} target="_blank" rel="noopener noreferrer">
                       Lihat {key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}
+                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                  )}
+                </li>
+              </ul>
+            ))}
+          </div>
+          <div className="doku">
+            <h5>Dokumen Administrasi</h5>
+            {['ipfsSuratPermohonanCpotb', 'ipfsBuktiPembayaranNegaraBukanPajak', 'ipfsSuratKomitmen'].map((key) => (
+              <ul key={key}>
+                <li className="label">
+                  <label>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</label>
+                </li>
+                <li className="input">
+                  <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />
+                  {dokumen[key] && (
+                    <a href={`http://localhost:8080/ipfs/${dokumen[key]}`} target="_blank" rel="noopener noreferrer">
+                      Lihat  {key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}
                       <i className="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
                   )}

@@ -461,12 +461,12 @@ function NieRenewRequest() {
               'SuratPernyataan',
               'KomposisiProduk',
               'CaraPembuatanProduk',
+              'SpesifikasiProdukJadi',
+              'SistemPenomoranBets',
               'SertifikatAnalisaBahanBaku',
               'SertifikatAnalisaProdukJadi',
-              'SpesifikasiProdukJadi',
-              'SpesifikasiKemasan',
-              'SistemPenomoranBets',
               'HasilUjiStabilitas',
+              'SpesifikasiKemasan',
               'DesainKemasan',
               'DataPendukungKeamanan'
             ]

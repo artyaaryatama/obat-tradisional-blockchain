@@ -41,6 +41,9 @@ function AddQuantityObat() {
     timeZoneName: 'short'
   }
 
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString('id-ID', options);
+
   useEffect(() => {
     document.title = "Tambah stok obat tradisonal"; 
   }, []);
@@ -236,7 +239,7 @@ function AddQuantityObat() {
     e.preventDefault();
 
     MySwal.fire({
-      title: `Konfirmasi Produksi Obat ${namaProduk}`,
+      title: `Konfirmasi Produksi Batch Obat ${namaProduk}`,
       html: (
         <div className='form-swal'>
           <div className="row row--obat">
@@ -401,7 +404,7 @@ function AddQuantityObat() {
 
     if(newIpfsHashes.length !== 0){
       MySwal.fire({
-        title: `Konfirmasi Produksi Obat ${dataObat.namaProduk}`,
+        title: `Konfirmasi Produksi Batch Obat ${dataObat.namaProduk}`,
         html: (
           <div className='form-swal'>
             <div className="row row--obat">
@@ -535,12 +538,15 @@ function AddQuantityObat() {
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>
       <div className="title-menu">
-        <h1>Penambahan Stok Obat Tradisional</h1>
+        <h1>Produksi Batch Obat Tradisional</h1>
       </div>
       
       <div className='container-form'>
         <form onSubmit={confirmData}>
-
+        <ul>
+            <li className="label"><label>Tanggal Produksi Batch</label></li>
+            <li className="input"><p>{formattedDate}</p></li>
+          </ul>
           <ul>
             <li className="label">
               <label htmlFor="instanceName">Di produksi oleh</label>
@@ -613,7 +619,7 @@ function AddQuantityObat() {
             loader? (
               <img src={imgLoader} alt="" />
             ) : (
-              "Tambah Stok Obat"
+              "Produksi Batch Obat"
             )
           }
           </button>

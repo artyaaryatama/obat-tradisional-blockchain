@@ -192,6 +192,10 @@
               color: $black;
             }
 
+            &.Pengajuan.Ulang{
+              background-color: #e39c33;
+              color: $black;
+            }
             &.Disetujui, &.Selesai{
               background-color: $green;
               color: $white;
