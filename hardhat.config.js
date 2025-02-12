@@ -1,6 +1,7 @@
 require("dotenv").config();
 require('@nomicfoundation/hardhat-ethers');
 require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-verify");
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -25,10 +26,13 @@ module.exports = {
     },
     sepolia: {
       url: `https://sepolia.infura.io/v3/${process.env.REACT_APP_INFURA_API_KEY}`, 
-      accounts: [
-        `0x${process.env.REACT_APP_MY_PRIVATE_KEY}`
-      ],
+      // accounts: [
+      //   `0x${process.env.REACT_APP_MY_PRIVATE_KEY}`
+      // ],
     }
-  }
+  },
+  etherscan: {
+    apiKey: process.env.REACT_APP_ETHERSCAN_API_KEY,
+  },
 };
 

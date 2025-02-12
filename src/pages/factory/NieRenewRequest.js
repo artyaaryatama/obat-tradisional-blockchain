@@ -55,6 +55,23 @@ function NieRenewRequest() {
     1n: "Cold Chain Product"
   };
 
+  const labelMapping = {
+    MasterFormula: "Dokumen Master Formula",
+    SuratKuasa: "Surat Kuasa",
+    SuratPernyataan: "Surat Pernyataan",
+    KomposisiProduk: "Dokumen Komposisi Produk",
+    CaraPembuatanProduk: "Dokumen Cara Pembuatan Produk",
+    SpesifikasiProdukJadi: "Dokumen Spesifikasi Produk Jadi",
+    SistemPenomoranBets: "Dokumen Sistem Penomoran Bets",
+    SertifikatAnalisaBahanBaku: "Sertifikat Analisa Bahan Baku",
+    SertifikatAnalisaProdukJadi: "Sertifikat Analisa Produk Jadi",
+    HasilUjiStabilitas: "Dokumen Hasil Uji Stabilitas",
+    SpesifikasiKemasan: "Dokumen Spesifikasi Kemasan",
+    DesainKemasan: "Desain Kemasan",
+    DataPendukungKeamanan: "Data Pendukung Keamanan"
+  };
+  
+
   const formattedDate = today.toLocaleDateString('id-ID', options);
   
   useEffect(() => {
@@ -473,7 +490,7 @@ function NieRenewRequest() {
             .map((key) => (
               <ul key={key}>
                 <li className="label">
-                  <label>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</label>
+                  <label>{labelMapping[key]}</label>
                 </li>
                 <li className="input">
                   <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />

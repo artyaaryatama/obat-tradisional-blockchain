@@ -51,6 +51,19 @@ function CdobRenewRequest() {
   };
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
+  const labelMapping = {
+    ipfsSuratPermohonanCdob: "Surat Permohonan CDOB",
+    ipfsBuktiPembayaran: "Bukti Pembayaran Pajak",
+    ipfsSuratIzinCdob: "Surat Izin CDOB",
+    ipfsDenahBangunanPbf: "Denah Bangunan PBF",
+    ipfsStrukturOrganisasi: "Struktur Organisasi",
+    ipfsDaftarPeralatan: "Daftar Peralatan",
+    ipfsDaftarPersonalia: "Daftar Personalia",
+    ipfsEksekutifQualityManagement: "Ringkasan Eksekutif Quality Management System",
+    ipfsSuratIzinApoteker: "Surat Izin Apoteker",
+    ipfsDokumenSelfAssesment: "Dokumen Self Assesment"
+  };
+  
   useEffect(() => {
     document.title = "Pengajuan Ulang CDOB"; 
   }, []);
@@ -386,7 +399,7 @@ function CdobRenewRequest() {
             {['ipfsSuratPermohonanCdob', 'ipfsBuktiPembayaran'].map((key) => (
               <ul key={key}>
                 <li className="label">
-                  <label>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</label>
+                <label>{labelMapping[key]}</label>
                 </li>
                 <li className="input">
                   <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />
@@ -405,7 +418,7 @@ function CdobRenewRequest() {
             {['ipfsSuratIzinCdob', 'ipfsDenahBangunanPbf', 'ipfsEksekutifQualityManagement', 'ipfsStrukturOrganisasi', 'ipfsDaftarPersonalia', 'ipfsDaftarPeralatan', 'ipfsSuratIzinApoteker', 'ipfsDokumenSelfAssesment'].map((key) => (
               <ul key={key}>
                 <li className="label">
-                  <label>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</label>
+                  <label>{labelMapping[key]}</label>
                 </li>
                 <li className="input">
                   <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />

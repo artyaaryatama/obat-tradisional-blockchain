@@ -68,6 +68,14 @@ function CpotbRenewRequest() {
   };
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
+  const labelMapping = {
+    ipfsDenahBangunan: "Denah Bangunan Pabrik",
+    ipfsSistemMutu: "Dokumen Sistem Mutu CPOTB",
+    ipfsSuratPermohonanCpotb: "Surat Permohonan CPOTB",
+    ipfsSuratKomitmen: 'Surat Pernyataan Komitmen',
+    ipfsBuktiPembayaranNegaraBukanPajak: 'Bukti Pembayaran Negara Bukan Pajak'
+  };
+
   useEffect(() => {
     document.title = "Pengajuan Ulang CPOTB"; 
   }, []);
@@ -360,8 +368,8 @@ function CpotbRenewRequest() {
         });
       }
   
-      contracts.certificateManager.once("CertRenewRequest", (_name, _userAddr, _jenisSediaan, _timestampRenew) => {
-        handleEventCpotbRenewRequested(_name, _userAddr, _jenisSediaan, _timestampRenew, renewRequestCpotbCt.hash);
+      contracts.certificateManager.once("CertRenewRequest", (_isntanceName, _instanceAddr, _jenisSediaan, _timestampRenew) => {
+        handleEventCpotbRenewRequested(_isntanceName, _instanceAddr, _timestampRenew, renewRequestCpotbCt.hash);
       });
   
     } catch (err) {
@@ -404,7 +412,7 @@ function CpotbRenewRequest() {
             {['ipfsDenahBangunan', 'ipfsSistemMutu'].map((key) => (
               <ul key={key}>
                 <li className="label">
-                  <label>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</label>
+                  <label>{labelMapping[key]}</label>
                 </li>
                 <li className="input">
                   <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />
@@ -423,7 +431,7 @@ function CpotbRenewRequest() {
             {['ipfsSuratPermohonanCpotb', 'ipfsBuktiPembayaranNegaraBukanPajak', 'ipfsSuratKomitmen'].map((key) => (
               <ul key={key}>
                 <li className="label">
-                  <label>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</label>
+                  <label>{labelMapping[key]}</label>
                 </li>
                 <li className="input">
                   <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />
