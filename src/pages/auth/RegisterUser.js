@@ -217,7 +217,7 @@ function RegisterPage() {
     if(role===0){
       setInstanceName('PT. Budi Pekerti')
       setRole(parseInt(0))
-      setName('Factory ABC')
+      setName('James Doe')
       // setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
       setNib('1111111111')
       setNpwp('11.111.111.1-111.111')
@@ -227,7 +227,7 @@ function RegisterPage() {
     } else if(role===1){
       setInstanceName('PT. Mangga Arum')
       setRole(parseInt(1))
-      setName('PBF DEF') 
+      setName('Charles Doe') 
       setNib('2222222222')
       setNpwp('22.222.222.2-222.222')
       // setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
@@ -237,7 +237,7 @@ function RegisterPage() {
     } else if(role===2){
       setInstanceName('BPOM Makassar')
       setRole(parseInt(2))
-      setName('BPOM GHI') 
+      setName('Sophie Doe') 
       setNib('3333333333')
       setNpwp('33.333.333.3-333.333')
       // setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
@@ -247,7 +247,7 @@ function RegisterPage() {
     }  else if(role===3){
       setInstanceName('Apotek Sejahtera')
       setRole(parseInt(3))
-      setName('Retailer JKL') 
+      setName('Marlene Doe') 
       setNib('4444444444')
       setNpwp('44.444.444.4-444.444')
       // setUserAddr('0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65')

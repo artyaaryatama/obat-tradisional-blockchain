@@ -4,14 +4,14 @@ const hre = require("hardhat");
 async function main() {
 
   const deployedContracts = {
-    RoleManager: "0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690",
-    ObatShared: "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB",
-    CpotbCertificate: "0x9E545E3C0baAB3E08CdfD552C960A1050f373042",
-    CdobCertificate: "0xa82fF9aFd8f496c3d6ac40E2a0F282E47488CFc9",
-    CertificateManager: "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8",
-    NieManager: "0x851356ae760d987E095750cCeb3bC6014560891C",
-    ObatTradisional: "0xf5059a5D33d5853360D16C683c16e67980206f36",
-    OrderManagement: "0x95401dc811bb5740090279Ba06cfA8fcF6113778",
+    RoleManager: "0x9B26B853655e7F26828d25EAACFaFaC0caf8cC56",
+    ObatShared: "0xD88AA28325CcC3156353Eb2CAf9846ae28039964",
+    CpotbCertificate: "0x1543e9EE6e5Bdc64093f1df7480aDE70de0cBd97",
+    CdobCertificate: "0x6C5a3CA75c5Abb25201B42229daBa887e95322bF",
+    CertificateManager: "0xD9C8Aff5cd19e9d883261616f5E48C8CC7a67A2E",
+    NieManager: "0xD8622FF38245018583F75BCbD1aa880f1cae7a9C",
+    ObatTradisional: "0x44AC6209DD242A22Ed40CF4E25c1b455dC39efDf",
+    OrderManagement: "0x19c8510884E7A3A52a2e4ac1CB3ae5F49c16EE59",
   };
 
   console.log("Using hardcoded contract addresses:", deployedContracts);

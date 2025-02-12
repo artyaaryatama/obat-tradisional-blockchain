@@ -68,6 +68,14 @@ function CpotbRenewRequest() {
   };
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
+  const labelMapping = {
+    ipfsDenahBangunan: "Denah Bangunan Pabrik",
+    ipfsSistemMutu: "Dokumen Sistem Mutu CPOTB",
+    ipfsSuratPermohonanCpotb: "Surat Permohonan CPOTB",
+    ipfsSuratKomitmen: 'Surat Pernyataan Komitmen',
+    ipfsBuktiPembayaranNegaraBukanPajak: 'Bukti Pembayaran Negara Bukan Pajak'
+  };
+
   useEffect(() => {
     document.title = "Pengajuan Ulang CPOTB"; 
   }, []);
@@ -360,8 +368,8 @@ function CpotbRenewRequest() {
         });
       }
   
-      contracts.certificateManager.once("CertRenewRequest", (_name, _userAddr, _jenisSediaan, _timestampRenew) => {
-        handleEventCpotbRenewRequested(_name, _userAddr, _jenisSediaan, _timestampRenew, renewRequestCpotbCt.hash);
+      contracts.certificateManager.once("CertRenewRequest", (_isntanceName, _instanceAddr, _jenisSediaan, _timestampRenew) => {
+        handleEventCpotbRenewRequested(_isntanceName, _instanceAddr, _timestampRenew, renewRequestCpotbCt.hash);
       });
   
     } catch (err) {
@@ -400,17 +408,17 @@ function CpotbRenewRequest() {
             <li className="input reject cpotb"><p>{rejectMsg}</p></li>
           </ul> 
           <div className="doku">
-            <h5>Dokumen Administrasi</h5>
-            {['ipfsSuratPermohonanCpotb', 'ipfsBuktiPembayaranNegaraBukanPajak'].map((key) => (
+            <h5>Dokumen Teknis</h5>
+            {['ipfsDenahBangunan', 'ipfsSistemMutu'].map((key) => (
               <ul key={key}>
                 <li className="label">
-                  <label>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</label>
+                  <label>{labelMapping[key]}</label>
                 </li>
                 <li className="input">
                   <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />
                   {dokumen[key] && (
                     <a href={`http://localhost:8080/ipfs/${dokumen[key]}`} target="_blank" rel="noopener noreferrer">
-                      Lihat  {key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}
+                      Lihat {key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}
                       <i className="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
                   )}
@@ -419,17 +427,17 @@ function CpotbRenewRequest() {
             ))}
           </div>
           <div className="doku">
-            <h5>Dokumen Teknis</h5>
-            {['ipfsDenahBangunan', 'ipfsSistemMutu'].map((key) => (
+            <h5>Dokumen Administrasi</h5>
+            {['ipfsSuratPermohonanCpotb', 'ipfsBuktiPembayaranNegaraBukanPajak', 'ipfsSuratKomitmen'].map((key) => (
               <ul key={key}>
                 <li className="label">
-                  <label>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</label>
+                  <label>{labelMapping[key]}</label>
                 </li>
                 <li className="input">
                   <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />
                   {dokumen[key] && (
                     <a href={`http://localhost:8080/ipfs/${dokumen[key]}`} target="_blank" rel="noopener noreferrer">
-                      Lihat {key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}
+                      Lihat  {key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}
                       <i className="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
                   )}

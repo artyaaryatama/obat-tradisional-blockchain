@@ -121,7 +121,7 @@ export default function TableHash({ ipfsHashes = [] }) {
               No.
             </TableCell>
             <TableCell align="left" sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontSize: '14px' }}>
-              IPFS Hash
+              Data obat per-kemasan
             </TableCell>
           </TableRow>
         </TableHead>

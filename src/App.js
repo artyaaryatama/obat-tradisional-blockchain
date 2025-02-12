@@ -32,7 +32,7 @@ import RegisterPage from './pages/auth/RegisterUser';
 import CheckObatIpfs from './pages/public/CheckObat';
 import ChechCerticateIpfs from './pages/public/CheckCertificate';
 import CheckTransaction from './pages/public/CheckTransaction';
-
+import UnauthorizedPage from './pages/Error/Unauthorized';
 
 function App() {
   return (
@@ -46,6 +46,7 @@ function App() {
           <Route path="/public/obat/:hash" element={<CheckObatIpfs />} />
           <Route path="/public/certificate/:hash" element={<ChechCerticateIpfs />} />
           <Route path="/lacak" element={<CheckTransaction />} />
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
           <Route 
             path="/cpotb" 

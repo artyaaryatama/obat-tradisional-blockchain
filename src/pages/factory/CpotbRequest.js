@@ -485,8 +485,8 @@ function CpotbRequest() {
       }).then((result) => {
           if (result.isConfirmed) {
             MySwal.fire({
-              title: "Mempersiapkan transaksi...",
-              text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳",
+              title: "Menunggu koneksi Metamask...",
+              text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
               icon: "info",
               showConfirmButton: false,
               allowOutsideClick: false

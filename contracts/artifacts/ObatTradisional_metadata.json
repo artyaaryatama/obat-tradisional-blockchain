@@ -1,0 +1,649 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "roleManagerAddr",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "obatSharedAddr",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "nieManagerAddr",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
+				"name": "ReentrancyGuardReentrantCall",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "batchName",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint8",
+						"name": "quantity",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "namaProduk",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "factoryInstance",
+						"type": "string"
+					}
+				],
+				"name": "AddObatBatchProduction",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "namaProduk",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "tipeObat",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "factoryInstance",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "factoryAddresses",
+						"type": "address"
+					}
+				],
+				"name": "ObatCreated",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "obatId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "namaProduk",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "batchName",
+						"type": "string"
+					},
+					{
+						"internalType": "uint8",
+						"name": "obatQuantity",
+						"type": "uint8"
+					},
+					{
+						"internalType": "string[]",
+						"name": "obatIpfs",
+						"type": "string[]"
+					},
+					{
+						"internalType": "string",
+						"name": "factoryInstance",
+						"type": "string"
+					}
+				],
+				"name": "addBatchProduction",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "allObatIds",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "obatId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "merk",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "namaProduk",
+						"type": "string"
+					},
+					{
+						"internalType": "string[]",
+						"name": "klaim",
+						"type": "string[]"
+					},
+					{
+						"internalType": "string",
+						"name": "kemasan",
+						"type": "string"
+					},
+					{
+						"internalType": "string[]",
+						"name": "komposisi",
+						"type": "string[]"
+					},
+					{
+						"internalType": "string",
+						"name": "factoryInstance",
+						"type": "string"
+					},
+					{
+						"internalType": "enum EnumsLibrary.TipePermohonanCdob",
+						"name": "tipeObat",
+						"type": "uint8"
+					},
+					{
+						"internalType": "string",
+						"name": "cpotbIpfs",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "jenisObat",
+						"type": "string"
+					}
+				],
+				"name": "createObat",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "obatId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "batchName",
+						"type": "string"
+					}
+				],
+				"name": "detailBatchProduction",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "enum EnumsLibrary.ObatAvailability",
+								"name": "statusStok",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "namaProduk",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "batchName",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "obatQuantity",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "factoryInstance",
+								"type": "string"
+							}
+						],
+						"internalType": "struct ObatShared.ObatProduction",
+						"name": "",
+						"type": "tuple"
+					},
+					{
+						"internalType": "string[]",
+						"name": "",
+						"type": "string[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "obatId",
+						"type": "string"
+					}
+				],
+				"name": "detailObat",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "merk",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "namaProduk",
+								"type": "string"
+							},
+							{
+								"internalType": "string[]",
+								"name": "klaim",
+								"type": "string[]"
+							},
+							{
+								"internalType": "string[]",
+								"name": "komposisi",
+								"type": "string[]"
+							},
+							{
+								"internalType": "string",
+								"name": "kemasan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "factoryInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "factoryAddr",
+								"type": "address"
+							},
+							{
+								"internalType": "enum EnumsLibrary.TipePermohonanCdob",
+								"name": "tipeObat",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "cpotbHash",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "cdobHash",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "jenisObat",
+								"type": "string"
+							}
+						],
+						"internalType": "struct ObatShared.ObatDetail",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "instanceName",
+						"type": "string"
+					}
+				],
+				"name": "getAllBatchProductionByInstance",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "obatId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "namaProduk",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "batchName",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "obatQuantity",
+								"type": "uint8"
+							},
+							{
+								"internalType": "enum EnumsLibrary.ObatAvailability",
+								"name": "statusStok",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "ownerInstance",
+								"type": "string"
+							}
+						],
+						"internalType": "struct ObatTradisional.ObatOutputBatch[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getAllBatchProductionReadyStock",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "obatId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "namaProduk",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "batchName",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "obatQuantity",
+								"type": "uint8"
+							},
+							{
+								"internalType": "enum EnumsLibrary.ObatAvailability",
+								"name": "statusStok",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "ownerInstance",
+								"type": "string"
+							}
+						],
+						"internalType": "struct ObatTradisional.ObatOutputBatch[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getAllObat",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "obatId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "namaProduk",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "nieNumber",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "nieStatus",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "factoryInstance",
+								"type": "string"
+							}
+						],
+						"internalType": "struct ObatTradisional.ObatOutputNie[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "instanceName",
+						"type": "string"
+					}
+				],
+				"name": "getAllObatByInstance",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "obatId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "namaProduk",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "nieNumber",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "nieStatus",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "factoryInstance",
+								"type": "string"
+							}
+						],
+						"internalType": "struct ObatTradisional.ObatOutputNie[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "nieManager",
+				"outputs": [
+					{
+						"internalType": "contract NieManager",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "obatShared",
+				"outputs": [
+					{
+						"internalType": "contract ObatShared",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "roleManager",
+				"outputs": [
+					{
+						"internalType": "contract RoleManager",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"errors": {
+				"ReentrancyGuardReentrantCall()": [
+					{
+						"details": "Unauthorized reentrant call."
+					}
+				]
+			},
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/ObatTradisional.sol": "ObatTradisional"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/utils/ReentrancyGuard.sol": {
+			"keccak256": "0x11a5a79827df29e915a12740caf62fe21ebe27c08c9ae3e09abe9ee3ba3866d3",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://3cf0c69ab827e3251db9ee6a50647d62c90ba580a4d7bbff21f2bea39e7b2f4a",
+				"dweb:/ipfs/QmZiKwtKU1SBX4RGfQtY7PZfiapbbu6SZ9vizGQD9UHjRA"
+			]
+		},
+		"contracts/EnumsLibrary.sol": {
+			"keccak256": "0x1a740b229e62312d4d231460a51990fe9a31b6682abb5223711f8f8e175662ac",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e157ce208bf0826d43a77eb6a5d72c03f5bd75a2e70b0d9788d155f4e99e99d7",
+				"dweb:/ipfs/QmZGZUPNZJy61YuAaLxRA9zZLPS4XZ9zmfeycwU1gy4UFL"
+			]
+		},
+		"contracts/NieManager.sol": {
+			"keccak256": "0xc60bcfb8197666c3457936edf3d106e10552630ca6e2428bed09e9f53aa4c5ec",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e32536d9d69021a637318fe490be64ccc351072c4b262516fe1c7fbdf83fcd6a",
+				"dweb:/ipfs/QmYkRQYPKDa86QTT5gxHYFiHEGX6q9fy6MVwTVMuGGHPMD"
+			]
+		},
+		"contracts/ObatShared.sol": {
+			"keccak256": "0x8bca7b67038c7425ee8b73534edaf3bf8484896eb783613c7b6f5a4fa7c08ebc",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://40176900775d1becbbd8bf2a222d11ce3a62a37af83b04a949f2553c52bae4f8",
+				"dweb:/ipfs/QmetimAHCd6G34E73QMD6naNFY5PfuBgqyUN3bBLBuRSD6"
+			]
+		},
+		"contracts/ObatTradisional.sol": {
+			"keccak256": "0x9433fa3d92c9622bf4e5732ccdf5560aec633873a81ef97dadeba8bfbac393ce",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://3a10cbec6af801279ef7e5ac92e546271ae44899ca493925f378fecc3b348161",
+				"dweb:/ipfs/QmWajs2DNbxez7ptrJTVkkyEoLKRqL4sZRNJr7wRU77rwq"
+			]
+		},
+		"contracts/RoleManager.sol": {
+			"keccak256": "0x9a8eb47465aeffe88b91dc20bd14bc917dc9e88c377e371d5f0f5ce046284f3b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c635b3ff886182ade38749bf724b0cfbf35cebff598fd322e54d38b27306788f",
+				"dweb:/ipfs/QmaHxKwdkcAhFgrTDmqxZusyeTcZwsYpV1TQB59uMwcRDd"
+			]
+		}
+	},
+	"version": 1
+}

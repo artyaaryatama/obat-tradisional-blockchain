@@ -48,7 +48,7 @@ function StockObatRetailer() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
 
-          const orderManagementRetailContract = new Contract(
+          const orderManagementContract = new Contract(
             contractData.OrderManagement.address,
             contractData.OrderManagement.abi,
             signer
@@ -66,7 +66,7 @@ function StockObatRetailer() {
           );
 
           setContracts({
-            orderManagementRetail: orderManagementRetailContract,
+            orderManagement: orderManagementContract,
             obatTradisional: obatTradisionalContract,
             nieManager: NieManager,
           });
@@ -98,18 +98,21 @@ function StockObatRetailer() {
     const loadData = async () => {
       if (contracts) {
         try {
-          const allRetailerReadyObat = await contracts.orderManagementRetail.getAllOrderFromBuyer(userdata.instanceName);
+          const allRetailerReadyObat = await contracts.orderManagement.getAllOrderFromBuyer(userdata.instanceName);
+          console.log(allRetailerReadyObat);
 
-          const reconstructedData = allRetailerReadyObat.map((item, index) => ({
+          const reconstructedData = allRetailerReadyObat
+          .filter(item => item[7] === 2n) 
+          .map(item => ({
             orderId: item[0],
             obatId: item[1],
             namaProduk: item[2],
             batchName: item[3],
             obatQuantity: item[4],
-            statusStok: stokStatusMap[item[5]],
+            statusOrder: item[7],
             pbfInstance: item[6]
           }));
-
+        
           setDataObatReady(reconstructedData)
           console.log(reconstructedData);
 
@@ -126,9 +129,9 @@ function StockObatRetailer() {
     console.log(id, orderId);
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
-      const detailOrderCt = await contracts.orderManagementRetail.detailOrder(orderId);
-      const orderTimestampCt = await contracts.orderManagementRetail.orderTimestamp(orderId);
-      const orderObatIpfs = await contracts.orderManagementRetail.obatIpfs(orderId);
+      const detailOrderCt = await contracts.orderManagement.detailOrder(orderId);
+      const orderTimestampCt = await contracts.orderManagement.orderTimestamp(orderId);
+      const orderObatIpfs = await contracts.orderManagement.obatIpfs(orderId);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
 
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
@@ -407,17 +410,15 @@ function StockObatRetailer() {
           <div className="data-list">
             {dataObatReady.length > 0 ? (
               <ul>
-                {dataObatReady.map((item, index) => (
+                {dataObatReady.map((item, index) => 
                   <li key={index}>
-                    <button className='title' onClick={() => getDetailObat(item.obatId, item.orderId)} >[{item.batchName}] {item.namaProduk}</button>
-                    <p>
-                      Total Stok: {item.obatQuantity.toString()} Obat
-                    </p>
-                    <button className={`statusOrder ${item.statusStok}`}>
-                      {item.statusStok}
+                    <button className='title' onClick={() => getDetailObat(item.obatId, item.orderId)}> 
+                      [{item.batchName}] {item.namaProduk}
                     </button>
+                    <p>Total Stok: {item.obatQuantity.toString()} Obat</p>
+                    <button className={`statusOrder ${item.statusStok}`}>{item.statusStok}</button>
                   </li>
-                ))}
+                )}
               </ul>
             ) : (
               <h2 className='small'>No Records Found</h2>
