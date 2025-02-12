@@ -1,8 +1,6 @@
 # Obat-tradisonal-blockchain
 
-```markdown
-![OT-Blockchain](./src/assets/images/OT-Blockchain.png)
-```
+![OT-Blockchain](https://github.com/artyaaryatama/obat-tradisional-blockchain/blob/master/src/assets/images/OT-Blockchain.png?raw=true)
 
 This project is part of my Undergraduate Thesis and focuses on using blockchain technology to improve the supply chains of traditional medicine. The aim is to make the process more secure and transparent, helping to prevent counterfeit medicines by utilizing Proof of Stake (PoS) as a consensus mechanism.
 
