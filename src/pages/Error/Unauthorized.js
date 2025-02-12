@@ -15,7 +15,7 @@ function UnauthorizedPage() {
     <>
       <div className="layout-page">
         <div className="container">
-          <h1>Tunggu, !</h1>          
+          <h1>Maaf, Kamu Tidak Memiliki Akses!</h1>          
           <img src={imgUnauthor} alt="" />
           <p>Sepertinya kamu mencoba mengakses area yang terbatas. Silahkan kembali ke halaman sebelumnya. &#128373;</p>
         </div>
