@@ -1,70 +1,36 @@
-# Getting Started with Create React App
+# Obat-tradisonal-blockchain
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+```markdown
+![OT-Blockchain](./src/assets/images/OT-Blockchain.png)
+```
 
-## Available Scripts
+This project is part of my Undergraduate Thesis and focuses on using blockchain technology to improve the supply chains of traditional medicine. The aim is to make the process more secure and transparent, helping to prevent counterfeit medicines by utilizing Proof of Stake (PoS) as a consensus mechanism.
 
-In the project directory, you can run:
+## Technologies used in this project:
+- **Hardhat** for local blockchain development and testing.
+- **Sepolia** test network for Ethereum deployment and transactions.
+- **MetaMask** for browser extension wallet management.
+- **Ether.js** for interacting with the Ethereum blockchain.
+- **React.js** for the frontend interface.
+- **Firebase** for off-chain backend services.
+- **IPFS** for off-chain decentralized file storage.
+- **Slither** for static analysis of smart contracts.
 
-### `npm start`
+## Installation
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/your-username/Obat-tradisonal-blockchain.git
+    ```
+2. Install dependencies for the frontend and smart contracts:
+   ```bash
+   npm install
+    ```
+3. Set up and deploy the smart contract on the Sepolia test network using Hardhat:
+   ```bash
+   npx hardhat run scripts/deploy.js --network sepolia
+    ```
+4. Run the frontend application:
+   ```bash
+   npm start
+    ```
