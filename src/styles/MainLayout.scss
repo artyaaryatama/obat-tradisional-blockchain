@@ -1,0 +1,437 @@
+@import './main.scss';
+@import 'mixin';
+
+.Layout-Menu{
+  // background-color: aqua;
+
+  .title-menu{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 48px 0;
+
+    h1{
+      margin: 0;
+      font-size: 24px;
+    }
+
+    p{
+      margin: 6px 0;
+      font-size: 18px;
+      color: $grey;
+    }
+  }
+
+  .tab-menu{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ul{
+      @include list();
+      background-color: $grey-light;
+      padding: 10px 20px;
+      border-radius: 30px;
+
+      li{
+        &:first-child{
+          margin-right: 12px;
+        }
+        &:last-child{
+          margin-left: 12px;
+        }
+
+        button{
+          @include btnUniversal($grey, transparent, 30px);
+          padding: 10px 20px;
+          font-style: italic;
+          font-weight: 600;
+          
+          &.active{
+            background-color: $purple;
+            color: $white;
+          }
+          
+          &:hover{
+            background-color: $grey;
+            color: $white;
+
+          }
+        }
+      }
+    }
+  }
+
+  .container-data{
+    background-color: $grey-light;
+    border-radius: 8px;
+    margin: 40px 0;
+    padding: 20px 14px;
+
+    .menu-data{
+      display: flex;
+      justify-content: end;
+
+      .btn{
+        button {
+          &.btn-menu{
+            @include btnUniversal($white, $purple, 6px);
+  
+            i {
+              margin-right: 8px;
+            }
+          }
+
+          &.btn-auto-filled{
+            margin-left: 20px;
+            @include btnUniversal($white, $grey, 6px);
+          }
+
+
+        }
+        
+        
+      }
+    }
+
+    .data-accordion{
+      padding: 20px 0 0;
+
+    }
+
+    .data-list{
+      padding: 20px 0 0;
+
+      img{
+        // background-color: aquamarine;
+        filter: grayscale(100%);
+      }
+
+      h2{
+        text-align: center;
+
+        &.small{
+          font-size: 16px;
+          font-weight: 600;
+          color: $grey;
+          font-style: italic;
+        }
+      }
+
+      ul{
+        @include list();
+        margin: 0 auto;
+        flex-wrap: wrap;
+
+        li{
+          background-color: $white;
+          padding: 20px;
+          border-radius: 6px;
+          width: calc(50% - 16px);
+          box-sizing: border-box;
+          margin: 8px;
+       
+          &.row{
+            display: flex;
+            justify-content: space-between;
+          }
+
+          h5{
+            margin: 0;
+            font-size: 15px;
+          }
+
+          button{ 
+            background-color: transparent;
+            color: $black;
+            font-size: 14px;
+            padding: 8px 0;
+            border: none;
+            margin: 0;
+            
+            &.title{
+              text-align: left;
+              font-weight: 600;
+              text-decoration: underline;
+              font-style: italic;
+
+              &:hover{
+                cursor: pointer;
+                color: $purple;
+              }
+            }
+
+            &.order{
+              @include btnUniversal($white, $blue);
+
+              i{
+                margin-right: 8px;
+              }
+            }
+            
+            &.statusPengajuan, &.statusOrder{
+              margin-top: 14px;
+              font-size: 12px;
+              font-weight: 600;
+              padding: 8px 12px;
+              border-radius: 30px;
+            }
+
+            &.Dalam, &.Diajukan, &.Kosong{
+              background-color: $grey;
+              color: $white;
+            }
+
+            &.Tersedia{
+              background-color: $blue;
+              color: $white;
+            }
+            
+            &.Dikirim, &.Dalam.Proses.Pengajuan, &.Pengajuan.NIE, &.Pengajuan{
+              background-color: $yellow;
+              color: $black;
+            }
+
+            &.Pengajuan.Ulang{
+              background-color: #e39c33;
+              color: $black;
+            }
+            &.Disetujui, &.Selesai{
+              background-color: $green;
+              color: $white;
+            }
+            
+            &.Penolakan,  &.Tidak.Disetujui{
+              background-color: $red;
+              color: $white;
+            }
+            
+          }
+
+          p{
+            color: $black;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+
+  .container-form{
+    border-radius: 8px;
+    margin: 40px 0;
+    // padding: 0 218px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    form{
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-content: flex-start;
+
+      ul li.label{
+        padding-right: 15px;
+      }
+
+      .doku{
+        border-top: solid 2px $grey-light;
+        padding-top: 20px;
+    
+        input:read-only{
+          background-color: white !important;
+        }
+      }
+
+      h5{
+        margin-bottom: 10px;
+        font-size: 18px;
+        font-weight: 900;
+      }
+
+      ul{
+        @include list();
+        justify-items: center;
+        align-items: center;
+        margin-bottom: 20px;
+        
+        li.label{
+          // padding-top: 6px;
+          width: 30%;
+          text-align: left;
+          font-weight: 600;
+
+          label{
+            font-size: 14px;
+            font-weight: 600;
+            color: $black;
+          }
+        }
+        
+        li{
+
+          &.input{
+            text-align: left;
+            width: 70%;
+            display: flex;
+            align-items: flex-start;
+            
+            p{
+              font-size: 14px;
+              color: $black;
+            }
+
+            select{
+              @include selectForm($white);
+              border: solid 1px $grey;
+              width: 100%;
+              margin: 0;
+              color: $black;
+            }
+
+            a{
+              color: $black;
+              text-decoration: none;
+              &:hover{
+                color: $blue;
+                text-decoration: underline;
+              }
+              i{
+                margin-left: 6px;
+              }
+            }
+            
+        
+            input{
+              @include inputForm($black);
+              &:hover{
+                cursor: pointer;
+                background-color: darken(#f2f3f59e, 14%);
+              }
+            }
+            
+            textarea{
+              @include inputForm($black);
+              resize: none;
+            }
+  
+            .input-group{
+              display: flex;
+              width: 100%;
+              margin-top: 6px;
+              gap: 10px;
+              align-items: center;
+              justify-content: space-between;
+              
+              select{
+                flex: 4;
+                width: calc(100% - 100px - 120px);
+              }
+              
+              input{
+                width: 100px;
+                flex: 1;
+              }
+              
+              select[name="kemasan"]{
+                flex: 1;
+                width: 120px;
+              }
+            }
+  
+            // background-color: rgb(108, 214, 214);
+            .input-multiple{
+              width: 100%;
+  
+              .input-child{
+                display: flex;
+                align-items: center;
+                width: 100%;
+                justify-content: space-between;
+                gap: 10px;
+                margin-top: 10px;
+  
+                input{
+                  flex: 1;
+                }
+  
+                .btn{
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+  
+                  button{
+                    @include btnUniversal($grey, $grey-light);
+                    border: solid 1px $grey;
+                    font-size: 12px;
+                    margin-top: 0;
+                  }
+                }
+              }
+            }
+  
+          }
+
+          &.reject{
+            p{
+              color: $black;
+            }
+          }
+
+          &.col{
+            display: flex;
+            align-items: center
+          }
+
+        }
+        
+      }
+
+      button{
+        @include btnUniversal($white, $purple);
+        margin-top: 20px;
+
+        img{
+          width: 14px;
+        }
+      }
+
+      button.auto-filled{
+        @include btnUniversal($white, $grey, 4px);
+      }
+    }
+  }
+
+  .pengajuan-ulang{
+    form{
+      ul{
+        li{
+          flex-direction: column;
+          &.input{
+            // background-color: wheat;
+            // display: flex;
+            // width: 100%;
+
+            a{
+              font-size: 12px;
+              font-style: italic;
+              margin: 3px 0 0 3px;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+}
+
+.auto-filled-btn{
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  
+  button{
+    width: 100%;
+  }
+}

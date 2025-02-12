@@ -1,0 +1,100 @@
+@import './main.scss';
+
+nav{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: solid 2px $grey-light;
+  padding: 10px 0 16px;
+  
+  .navbar-menu{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+
+    .navbar-logo{
+      h2{
+        font-size: 20px;
+      }
+    }
+    
+    .navbar-links{
+      margin-left: 30px;
+  
+      ul{
+        @include list();
+        justify-content: flex-start;
+        
+        li{
+          color: $grey;
+          margin: 0 2px;
+          padding: 8px 14px;
+          border-radius: 30px;
+          font-size: 14px;
+          
+          &:hover{
+            background-color: $purple;
+            a{
+              color: $white;
+            }
+          }
+
+          a{
+            text-decoration: none;
+            margin: 0;
+            color: $grey;
+          }
+        }
+  
+        li.active{
+          border: solid 1px $purple;
+          
+          a{
+            color: $black;
+            font-weight: 700;
+          }
+
+          &:hover{
+            a{
+              color: $white;
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+  .navbar-actions{
+    display: flex;
+    align-items: center;
+    &>span {
+      margin-right: 10px;
+    }
+
+    span.instanceName{
+      background-color: $grey-light;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 30px;
+    }
+
+    span.name{
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    button{
+      @include btnIcon($white, $red);
+
+      padding: 6px 8px;
+      border-radius: 4px;
+      
+      i{
+        font-size: 10px;
+      }
+    }
+  }
+}

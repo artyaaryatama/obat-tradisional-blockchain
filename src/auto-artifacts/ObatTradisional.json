@@ -1,0 +1,662 @@
+{
+  "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "nieNumber",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "namaProduk",
+          "type": "string"
+        }
+      ],
+      "name": "evt_nieApproved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "obatId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestampRequested",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "namaProduk",
+          "type": "string"
+        }
+      ],
+      "name": "evt_nieRequested",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "namaProduk",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "factoryInstanceNames",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "factoryUserNames",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "factoryAddresses",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "kemasan",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum ObatTradisional.en_tipeProduk",
+          "name": "en_tipeProduk",
+          "type": "uint8"
+        }
+      ],
+      "name": "evt_obatCreated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "allObatData",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "obatId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "merk",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "namaProduk",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "kemasan",
+          "type": "string"
+        },
+        {
+          "internalType": "enum ObatTradisional.en_tipeProduk",
+          "name": "tipeProduk",
+          "type": "uint8"
+        },
+        {
+          "internalType": "enum ObatTradisional.en_obatStatus",
+          "name": "obatStatus",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "nieRequestDate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "nieApprovalDate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "nieNumber",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_obatId",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "_bpomAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "_bpomInstanceName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_bpomUserName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_nieNumber",
+          "type": "string"
+        }
+      ],
+      "name": "approveNie",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "bpomAddresses",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "bpomInstanceNames",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "bpomUserNames",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_obatId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_merk",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_namaProduk",
+          "type": "string"
+        },
+        {
+          "internalType": "string[]",
+          "name": "_klaim",
+          "type": "string[]"
+        },
+        {
+          "internalType": "string",
+          "name": "_kemasan",
+          "type": "string"
+        },
+        {
+          "internalType": "string[]",
+          "name": "_komposisi",
+          "type": "string[]"
+        },
+        {
+          "internalType": "address",
+          "name": "_factoryAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "_factoryInstanceName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_factoryUserName",
+          "type": "string"
+        },
+        {
+          "internalType": "enum ObatTradisional.en_tipeProduk",
+          "name": "_tipeProduk",
+          "type": "uint8"
+        }
+      ],
+      "name": "createObat",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "factoryAddresses",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "factoryInstanceNames",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "factoryUserNames",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getListAllObatNie",
+      "outputs": [
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint8[]",
+          "name": "",
+          "type": "uint8[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_factoryInstanceName",
+          "type": "string"
+        }
+      ],
+      "name": "getListObatByFactory",
+      "outputs": [
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        },
+        {
+          "internalType": "uint8[]",
+          "name": "",
+          "type": "uint8[]"
+        },
+        {
+          "internalType": "uint8[]",
+          "name": "",
+          "type": "uint8[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_obatId",
+          "type": "string"
+        }
+      ],
+      "name": "getListObatById",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "obatId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "merk",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "namaProduk",
+              "type": "string"
+            },
+            {
+              "internalType": "string[]",
+              "name": "klaim",
+              "type": "string[]"
+            },
+            {
+              "internalType": "string",
+              "name": "kemasan",
+              "type": "string"
+            },
+            {
+              "internalType": "string[]",
+              "name": "komposisi",
+              "type": "string[]"
+            },
+            {
+              "internalType": "enum ObatTradisional.en_tipeProduk",
+              "name": "tipeProduk",
+              "type": "uint8"
+            },
+            {
+              "internalType": "enum ObatTradisional.en_obatStatus",
+              "name": "obatStatus",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "nieRequestDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "nieApprovalDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "nieNumber",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct ObatTradisional.st_obatDetails",
+          "name": "obatDetails",
+          "type": "tuple"
+        },
+        {
+          "internalType": "address",
+          "name": "factoryAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "factoryInstanceName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "factoryUserName",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "bpomAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "bpomInstanceName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "bpomUserName",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "getRole",
+      "outputs": [
+        {
+          "internalType": "enum ObatTradisional.en_roles",
+          "name": "",
+          "type": "uint8"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "obatDetailsById",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "obatId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "merk",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "namaProduk",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "kemasan",
+          "type": "string"
+        },
+        {
+          "internalType": "enum ObatTradisional.en_tipeProduk",
+          "name": "tipeProduk",
+          "type": "uint8"
+        },
+        {
+          "internalType": "enum ObatTradisional.en_obatStatus",
+          "name": "obatStatus",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "nieRequestDate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "nieApprovalDate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "nieNumber",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_obatId",
+          "type": "string"
+        }
+      ],
+      "name": "requestNie",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "userRoles",
+      "outputs": [
+        {
+          "internalType": "enum ObatTradisional.en_roles",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}

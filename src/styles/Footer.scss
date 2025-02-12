@@ -1,0 +1,108 @@
+@import './main.scss';
+@import 'mixin';
+
+footer{
+  // background-color: aquamarine;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40px 0 10px;
+  border-top: solid 2px $grey-light;
+  gap: 10px;
+
+  hr{
+    height: 4px;
+    background-color: $grey-light;
+    border: none;
+  }
+
+  .project-user{
+    h1{
+      font-size: 24px;
+      margin: 0;
+
+      span{
+        // display: block;
+        background-color: $grey-light;
+        padding: 0 6px;
+      }
+    }
+
+    img{
+      margin-top: 16px;
+      width: 150px;
+      border: solid 10px $grey-light;
+      border-radius: 4px;
+      background-color: $white;
+    }
+    
+  }
+  
+  .group{
+    // background-color: bisque;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    
+    .fun-img{
+      margin-bottom: 20px;
+      ul{
+        @include list();
+        gap: 6px;
+  
+        li{
+          border: 4px solid $grey-light;
+          background-color: $white;
+
+          img{
+            width: 92px;
+            height: 92px;
+          }
+        }
+
+      }
+    }
+
+
+    .project-intro{
+      width: 552px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      // margin: 20px 0;
+      
+      p{
+        background-color: $grey-light;
+        color: $black;
+        font-size: 14px;
+      }
+  
+      span{
+        margin-top: 4px;
+        text-align: left;
+        font-style: italic;
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .attribute{
+    span {
+      margin-bottom: 10px;
+      a{
+        text-decoration: none;
+        color: $purple;
+      }
+    }
+
+  }
+
+  p.motto{
+    background-color: $grey-light;
+    color: $grey;
+    padding: 2px 6px;
+  }
+
+}

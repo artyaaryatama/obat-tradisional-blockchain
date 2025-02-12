@@ -1,0 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap");
+html, body {
+  font-family: "Instrument Sans", sans-serif;
+  background-color: white;
+  margin: 0;
+  padding: 0;
+  color: #1B1C1E;
+}
+
+.layout-page {
+  padding: 10px 110px;
+}/*# sourceMappingURL=DataTable.css.map */

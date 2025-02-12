@@ -1,0 +1,102 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap");
+html, body {
+  font-family: "Instrument Sans", sans-serif;
+  background-color: white;
+  margin: 0;
+  padding: 0;
+  color: #1B1C1E;
+}
+
+.layout-page {
+  padding: 10px 110px;
+}
+
+nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: solid 2px rgba(242, 243, 245, 0.6196078431);
+  padding: 10px 0 16px;
+}
+nav .navbar-menu {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+nav .navbar-menu .navbar-logo h2 {
+  font-size: 20px;
+}
+nav .navbar-menu .navbar-links {
+  margin-left: 30px;
+}
+nav .navbar-menu .navbar-links ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: flex-start;
+}
+nav .navbar-menu .navbar-links ul li {
+  color: #A6A6A6;
+  margin: 0 2px;
+  padding: 8px 14px;
+  border-radius: 30px;
+  font-size: 14px;
+}
+nav .navbar-menu .navbar-links ul li:hover {
+  background-color: #530AF7;
+}
+nav .navbar-menu .navbar-links ul li:hover a {
+  color: #fff;
+}
+nav .navbar-menu .navbar-links ul li a {
+  text-decoration: none;
+  margin: 0;
+  color: #A6A6A6;
+}
+nav .navbar-menu .navbar-links ul li.active {
+  border: solid 1px #530AF7;
+}
+nav .navbar-menu .navbar-links ul li.active a {
+  color: #1B1C1E;
+  font-weight: 700;
+}
+nav .navbar-menu .navbar-links ul li.active:hover a {
+  color: #fff;
+}
+nav .navbar-actions {
+  display: flex;
+  align-items: center;
+}
+nav .navbar-actions > span {
+  margin-right: 10px;
+}
+nav .navbar-actions span.instanceName {
+  background-color: rgba(242, 243, 245, 0.6196078431);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 30px;
+}
+nav .navbar-actions span.name {
+  font-size: 20px;
+  font-weight: 600;
+}
+nav .navbar-actions button {
+  background-color: #E33333;
+  color: #fff;
+  font-size: 12px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 7px;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+nav .navbar-actions button:hover {
+  background-color: #b61919;
+  cursor: pointer;
+}
+nav .navbar-actions button i {
+  font-size: 10px;
+}/*# sourceMappingURL=Navbar.css.map */

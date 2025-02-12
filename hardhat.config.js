@@ -1,14 +1,38 @@
+require("dotenv").config();
+require('@nomicfoundation/hardhat-ethers');
 require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-verify");
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.27",
+  solidity: {
+    version: "0.8.27",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200
+      },
+      viaIR: true,
+      evmVersion: "cancun"
+    }
+  },
   paths: {
-    artifacts: './frontend/src/artifacts',
+    artifacts: './src/artifacts',
   },
   networks: {
-    hardhat: {
-      chainId : 1337,
+    localhost: {
+      url: "http://127.0.0.1:8545", 
+      chainId: 31337, 
+    },
+    sepolia: {
+      url: `https://sepolia.infura.io/v3/${process.env.REACT_APP_INFURA_API_KEY}`, 
+      // accounts: [
+      //   `0x${process.env.REACT_APP_MY_PRIVATE_KEY}`
+      // ],
     }
-  }
+  },
+  etherscan: {
+    apiKey: process.env.REACT_APP_ETHERSCAN_API_KEY,
+  },
 };
+
