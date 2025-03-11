@@ -10,14 +10,14 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v3
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
       with:
-          python-version: '3.8'
-          
-    - name: Install sol2uml
+        node-version: '16'  
+
+    - name: Install dependencies (npm)
       run: |
-        pip install sol2uml
+        npm install -g sol2uml
 
     - name: Run sol2uml for all Solidity files in contracts folder
       run: |
