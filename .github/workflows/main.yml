@@ -25,7 +25,7 @@ jobs:
         # Ini akan menjalankan sol2uml untuk setiap file .sol di folder contracts dan menyimpan UML diagram di output-folder
 
     - name: Upload UML Diagrams
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: uml-diagrams
         path: output-folder/*.png
