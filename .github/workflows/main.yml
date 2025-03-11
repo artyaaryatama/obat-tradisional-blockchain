@@ -21,12 +21,14 @@ jobs:
 
     - name: Run sol2uml for all Solidity files in contracts folder
       run: |
-        mkdir -p output-folder
-        for file in contracts/*.sol; do
-          sol2uml $file -o output-folder/$(basename $file .sol).png
-        done
-        # Ini akan menjalankan sol2uml untuk setiap file .sol di folder contracts dan menyimpan UML diagram di output-folder
-
+         mkdir -p output-sol2uml
+          for file in contracts/BaseCertificate.sol contracts/CdobCertificate.sol contracts/CertificateManager.sol \
+                      contracts/CpotbCertificate.sol contracts/ObatTradisional.sol contracts/OrderManagement.sol \
+                      contracts/RoleManager.sol contracts/NieManager.sol contracts/EnumsLibrary.sol \
+                      contracts/ObatShared.sol; do
+            sol2uml $file -o output-folder/$(basename $file .sol).png
+          done
+          
     - name: Upload UML Diagrams
       uses: actions/upload-artifact@v4
       with:
