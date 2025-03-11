@@ -1,0 +1,32 @@
+name: Generate UML from Solidity Contracts
+
+on: [push, pull_request]
+
+jobs:
+  generate-uml:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y python3-pip
+        pip3 install sol2uml
+
+    - name: Run sol2uml for all Solidity files in contracts folder
+      run: |
+        mkdir -p output-folder
+        for file in contracts/*.sol; do
+          sol2uml $file -o output-folder/$(basename $file .sol).png
+        done
+        # Ini akan menjalankan sol2uml untuk setiap file .sol di folder contracts dan menyimpan UML diagram di output-folder
+
+    - name: Upload UML Diagrams
+      uses: actions/upload-artifact@v2
+      with:
+        name: uml-diagrams
+        path: output-folder/*.png
+        # Menyimpan setiap file UML sebagai artifact yang bisa diunduh
