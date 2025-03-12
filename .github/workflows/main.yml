@@ -10,12 +10,24 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Run sol2uml in Docker
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Install sol2uml via npm
       run: |
-        docker run --rm -v $(pwd)/contracts:/contracts sol2uml/sol2uml /contracts/BaseCertificate.sol /contracts/CdobCertificate.sol /contracts/CertificateManager.sol \
-        /contracts/CpotbCertificate.sol /contracts/ObatTradisional.sol /contracts/OrderManagement.sol \
-        /contracts/RoleManager.sol /contracts/NieManager.sol /contracts/EnumsLibrary.sol /contracts/ObatShared.sol \
-        -o /contracts/output-folder/
+        npm install -g sol2uml
+
+    - name: Run sol2uml for all Solidity files in contracts folder
+      run: |
+        mkdir -p output-folder
+        for file in contracts/BaseCertificate.sol contracts/CdobCertificate.sol contracts/CertificateManager.sol \
+                    contracts/CpotbCertificate.sol contracts/ObatTradisional.sol contracts/OrderManagement.sol \
+                    contracts/RoleManager.sol contracts/NieManager.sol contracts/EnumsLibrary.sol \
+                    contracts/ObatShared.sol; do
+          sol2uml $file -o output-folder/$(basename $file .sol).png
+        done
           
     - name: Upload UML Diagrams
       uses: actions/upload-artifact@v4
