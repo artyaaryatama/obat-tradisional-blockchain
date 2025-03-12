@@ -10,11 +10,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Docker
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y docker.io
-
     - name: Run sol2uml in Docker
       run: |
         docker run --rm -v $(pwd)/contracts:/contracts sol2uml/sol2uml /contracts/BaseCertificate.sol /contracts/CdobCertificate.sol /contracts/CertificateManager.sol \
