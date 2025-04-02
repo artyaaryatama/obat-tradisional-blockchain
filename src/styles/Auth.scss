@@ -45,8 +45,16 @@
           display: none;
         }
 
-        &>*{
-          margin-top: 10px;
+        &>input, &>select, &>textarea{
+          margin-bottom: 10px;
+        }
+        
+        div.nibNpwp{
+          margin: 10px 0;
+
+          input.nib{
+            margin-bottom: 10px;
+          }
         }
 
         input{
@@ -76,11 +84,12 @@
         
         select{
           @include selectForm($white);
-          margin: 10px 0 0 0;
+          margin: 0;
         }
 
         button{
-          @include btnUniversal($white, $black, 4px)
+          @include btnUniversal($white, $black, 4px);
+          margin-top: 10px;
         }
       }
 
@@ -152,7 +161,7 @@
       width: 56%;
       
       img {
-        width: 360px;
+        width: 310px;
       }
 
       .attribute{
@@ -166,6 +175,41 @@
           }
         }
     
+      }
+
+      .nav-group{
+        margin-top: 12px;
+        padding: 6px;
+        background-color: $grey-light;
+        border-radius: 10px;
+      
+        ul{
+          @include list();
+      
+          li{
+      
+            button{
+              padding: 10px 24px;
+              color: $purple;
+              font-size: 12px;
+              width: max-content;
+              border: none;
+              border-radius: 8px;
+              background-color: transparent;
+      
+              &:hover{
+                cursor: pointer;
+                background-color: $purple;
+                color: white;
+                transition: ease 300ms;
+              }
+      
+              i{
+                margin-right: 10px;
+              }
+            }
+          }
+        }
       }
     }
   

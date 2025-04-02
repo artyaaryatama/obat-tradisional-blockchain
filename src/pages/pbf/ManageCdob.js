@@ -7,15 +7,19 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+import Loader from '../../components/Loader';
+import imgSad from '../../assets/images/3.png'
 
 const MySwal = withReactContent(Swal);
 
 function ManageCdob() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
-
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataCdob, setDataCdob] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fadeClass, setFadeClass] = useState('fade-in');
+  const [fadeOutLoader, setFadeOutLoader] = useState(false);
 
   const tipePermohonanMap = {
     0: "Obat Lain",
@@ -115,12 +119,25 @@ function ManageCdob() {
   
         } catch (error) {
           console.error("Error loading data: ", error);
+        } finally {
+          setLoading(false);
         }
       }
     };
   
     loadData();
   }, [contracts]);
+
+  useEffect(() => {
+    if (!loading) {
+      setFadeOutLoader(true);
+  
+      setTimeout(() => {
+        setFadeClass('fade-in');
+      }, 400);
+    }
+  }, [loading]);
+  
   
   const getDetailCdob = async (id) => {
     
@@ -829,8 +846,15 @@ function ManageCdob() {
             </div>
           </div>
           <div className="data-list">
-            {dataCdob.length > 0 ? (
-              <ul>
+
+          <div className="fade-container">
+            <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
+              <Loader />
+            </div>
+
+            <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>
+              {dataCdob.length > 0 ? (
+                <ul>
                 {dataCdob.map((item, index) => ( 
                   <li key={index}>
                     <button className='title' onClick={() => getDetailCdob(item.cdobId)}>{item.tipePermohonan}</button>
@@ -843,9 +867,15 @@ function ManageCdob() {
                   </li>
                 ))}
               </ul>
-            ) : (
-              <h2 className='small'>No Records Found</h2>
-            )}
+              ) : (
+                <div className="image">
+                  <img src={imgSad}/>
+                  <p className='small'>Maaf, belum ada data sertifikat yang tersedia.</p>
+                </div>
+              )}
+            </div>
+          </div>
+
         </div>
         </div>
       </div>

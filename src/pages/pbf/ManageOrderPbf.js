@@ -8,12 +8,13 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import DataIpfsHash from '../../components/TableHash';
 import OrderStatusStepper from '../../components/StepperOrder';
-
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+import Loader from '../../components/Loader';
+import imgSad from '../../assets/images/3.png'
 
 const MySwal = withReactContent(Swal);
 
@@ -22,9 +23,11 @@ const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 function ManageOrderPbf() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
-
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataOrder, setDataOrder] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fadeClass, setFadeClass] = useState('fade-in');
+  const [fadeOutLoader, setFadeOutLoader] = useState(false);
 
   const orderStatusMap = {
     0n: "Order Diajukan",
@@ -132,6 +135,8 @@ function ManageOrderPbf() {
 
         } catch (error) {
           errAlert(error, "Can't access order data.");
+        } finally{
+          setLoading(false);
         }
       }
     };
@@ -139,6 +144,16 @@ function ManageOrderPbf() {
     loadData();
   }, [contracts]);
   
+  useEffect(() => {
+    if (!loading) {
+      setFadeOutLoader(true);
+  
+      setTimeout(() => {
+        setFadeClass('fade-in');
+      }, 400);
+    }
+  }, [loading]);
+
   const handleEventOrderUpdate = (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, txHash) => {
     
     const timestamp = new Date(Number(_timestampOrder) * 1000).toLocaleDateString('id-ID', options)
@@ -474,7 +489,72 @@ function ManageOrderPbf() {
           }
         }).then((result) => {
           if (result.isConfirmed) {
-            generateIpfs(detailObat, detailOrder, timestamps, orderId, batchName, cpotbHash, cdobHash)
+
+            MySwal.fire({
+              title: `Konfirmasi Penyelesaian Order Batch Obat ${namaProduk}`,
+              html: (
+                <div className='form-swal'>
+                  <div className="row row--obat">
+                    <div className="col">
+        
+                      <ul>
+                        <li className="label label-1">
+                          <p>Nama Produk</p>
+                        </li>
+                        <li className="input input-1">
+                          <p>{namaProduk}</p> 
+                        </li>
+                      </ul>
+        
+                      <ul>
+                        <li className="label label-1">
+                          <p>Nama Batch</p>
+                        </li>
+                        <li className="input input-1">
+                          <p>{batchName}</p> 
+                        </li>
+                      </ul>
+        
+                      <ul>
+                        <li className="label label-1">
+                          <p>Nama PBF</p> 
+                        </li>
+                        <li className="input input-1">
+                          <p>{userdata.instanceName}</p> 
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label label-1">
+                          <p>Nama Pabrik</p> 
+                        </li>
+                        <li className="input input-1">
+                          <p>{factoryInstance}</p> 
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label label-1">
+                          <p>Total Stok</p>
+                        </li>
+                        <li className="input input-1">
+                          <p>{orderQuantity} Obat</p> 
+                        </li>
+                      </ul>
+        
+                    </div>
+                  </div>
+                </div>
+              ),
+              width: '620',
+              showCancelButton: true,
+              confirmButtonText: 'Konfirmasi',
+              cancelButtonText: "Batal",
+              allowOutsideClick: false
+            }).then((result) => {
+              if(result.isConfirmed){
+                generateIpfs(detailObat, detailOrder, timestamps, orderId, batchName, cpotbHash, cdobHash)
+              }
+            })
+            
           }
         })
 
@@ -912,23 +992,33 @@ function ManageOrderPbf() {
         </div>
         <div className="container-data ">
           <div className="data-list">
-            {dataOrder.length > 0 ? (
+            <div className="fade-container">
+              <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
+                <Loader />
+              </div>
+
+              <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>
+              {dataOrder.length > 0 ? (
               <ul>
                 {dataOrder.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailObat(item.obatId, item.orderId)} >{item.namaObat}</button>
                     <p>Nama Batch: {item.batchName}</p>
-                    <p> Total Order: {item.orderQuantity.toString()} Obat
-                    </p>
+                    <p>Nama Instansi Pabrik: {item.sellerUser[0]}</p>
+                    <p> Total Order: {item.orderQuantity.toString()} Obat</p>
                     <button className={`statusOrder ${item.statusOrder}`}>
                       {item.statusOrder}
                     </button>
                   </li>
                 ))}
-              </ul>
-            ) : (
-              <h2 className='small'>No Records Found</h2>
-            )}
+              </ul>) : (
+                  <div className="image">
+                    <img src={imgSad}/>
+                    <p className='small'>Maaf, belum ada data order yang tersedia.</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -60,7 +60,7 @@ batch BN-6090-ZLOH
 - send order retail
 - complete order retail
 
-batch BN-1516-MEXF
+batch BN-1516-MEXF [HERBAL ANTI ALERGI]
 - produksi https://sepolia.etherscan.io/tx/0x1a1bf8bc0529dda9475bba47c66880a7b018e4ce15d6c2062b09a0f9c3447ee0
 - order pbf https://sepolia.etherscan.io/tx/0x470e22d1191c90f3f00da4767818c3343162165c3d5ea188307854f11398ed65
 - send order pbf https://sepolia.etherscan.io/tx/0x959ec4af06ea107a901dd03039de612cb9d964557297b59a7c26d028a375968e
@@ -85,4 +85,4 @@ batch BN-0564-JWNR
 - complete order pbf https://sepolia.etherscan.io/tx/0x700291644aa0e851a0eb250a90c2a364a2d281266b7178a31a51530ee8aca3d2
 - order retail https://sepolia.etherscan.io/tx/0xb980197b4db7b9ff2200b4d4e1d674c1e711ca4f543b54145a18ed5ea365b343
 - send order retail https://sepolia.etherscan.io/tx/0x61a2017da73a8f387c2cc0483bcf7f082e49599ced5028cb562448590930398a
-- complete order retail
+- complete order retail https://sepolia.etherscan.io/tx/0xf85032a0aa6fcfa3cb0173769b388d1ac8056bfef64895a153361016fbd79066

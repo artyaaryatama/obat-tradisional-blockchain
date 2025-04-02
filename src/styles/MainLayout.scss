@@ -102,8 +102,58 @@
     .data-list{
       padding: 20px 0 0;
 
+      .fade-container{
+        position: relative;
+
+        .fade-layer{
+          transition: opacity 0.4s ease;
+          opacity: 1;
+          pointer-events: auto;
+
+          &.fade-in {
+            opacity: 1;
+            pointer-events: auto;
+          }
+          
+          &.fade-out {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+          }
+        }
+        
+        
+      }
+
+      .image{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        img{
+          width: 120px;
+          filter: none;
+        }
+
+        p{
+          margin-top: 16px;
+          font-size: 16px;
+        }
+      }
+
+      .sc-VHjGu.bMauMy{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        p{
+          margin-top: 16px;
+          font-size: 16px;
+        }
+      }
+
       img{
-        // background-color: aquamarine;
         filter: grayscale(100%);
       }
 

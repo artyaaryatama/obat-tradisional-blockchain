@@ -13,18 +13,20 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+import Loader from '../../components/Loader';
+import imgSad from '../../assets/images/3.png'
 
 const MySwal = withReactContent(Swal);
-
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
-
 
 function ManageOrderFactoryPbf() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
-
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataOrder, setDataOrder] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fadeClass, setFadeClass] = useState('fade-in');
+  const [fadeOutLoader, setFadeOutLoader] = useState(false);
 
   const orderStatusMap = {
     0n: "Order Diajukan",
@@ -120,11 +122,20 @@ function ManageOrderFactoryPbf() {
   }, []);
 
   useEffect(() => {
+    if (!loading) {
+      setFadeOutLoader(true);
+  
+      setTimeout(() => {
+        setFadeClass('fade-in');
+      }, 400);
+    }
+  }, [loading]);
+
+  useEffect(() => {
     const loadData = async () => {
       if (contracts && userdata.instanceName) {
 
         try {
-
           const listOrderedObatCt = await contracts.orderManagement.getAllOrderFromSeller(userdata.instanceName);
           console.log(listOrderedObatCt);
 
@@ -144,7 +155,10 @@ function ManageOrderFactoryPbf() {
 
         } catch (error) {
           console.error("Error loading data: ", error);
+        } finally{
+          setLoading(false);
         }
+        
       }
     };
   
@@ -486,7 +500,72 @@ function ManageOrderFactoryPbf() {
           }
         }).then((result) => {
           if (result.isConfirmed) {
-            generateIpfs(detailObat, detailOrder, timestamps, orderId, selectedBatchName, cpotbHash, cdobHash)
+
+            MySwal.fire({
+              title: `Konfirmasi Terima Order Batch Obat ${namaProduk}`,
+              html: (
+                <div className='form-swal'>
+                  <div className="row row--obat">
+                    <div className="col">
+        
+                      <ul>
+                        <li className="label label-1">
+                          <p>Nama Produk</p>
+                        </li>
+                        <li className="input input-1">
+                          <p>{namaProduk}</p> 
+                        </li>
+                      </ul>
+        
+                      <ul>
+                        <li className="label label-1">
+                          <p>Nama Batch</p>
+                        </li>
+                        <li className="input input-1">
+                          <p>{batchName}</p> 
+                        </li>
+                      </ul>
+        
+                      <ul>
+                        <li className="label label-1">
+                          <p>Nama PBF</p> 
+                        </li>
+                        <li className="input input-1">
+                          <p>{detailOrder.buyerInstance}</p> 
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label label-1">
+                          <p>Nama Pabrik</p> 
+                        </li>
+                        <li className="input input-1">
+                          <p>{userdata.instanceName}</p> 
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label label-1">
+                          <p>Total Stok</p>
+                        </li>
+                        <li className="input input-1">
+                          <p>{orderQuantity} Obat</p> 
+                        </li>
+                      </ul>
+        
+                    </div>
+                  </div>
+                </div>
+              ),
+              width: '620',
+              showCancelButton: true,
+              confirmButtonText: 'Konfirmasi',
+              cancelButtonText: "Batal",
+              allowOutsideClick: false
+            }).then((result) => {
+              if(result.isConfirmed){
+                generateIpfs(detailObat, detailOrder, timestamps, orderId, selectedBatchName, cpotbHash, cdobHash)
+              }
+            })
+
           }
         })
       } else {
@@ -921,7 +1000,13 @@ function ManageOrderFactoryPbf() {
         </div>
         <div className="container-data ">
           <div className="data-list">
-            {dataOrder.length !== 0 ? (
+            <div className="fade-container">
+              <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
+                <Loader />
+              </div>
+
+              <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>
+              {dataOrder.length !== 0 ? (
               <ul>
                 {dataOrder.map((item, index) => (
                   <li key={index}>
@@ -935,8 +1020,13 @@ function ManageOrderFactoryPbf() {
                 ))}
               </ul>
             ) : (
-              <h2 className='small'>No Records Found</h2>
-            )}
+                  <div className="image">
+                    <img src={imgSad}/>
+                    <p className='small'>Maaf, belum ada data order yang tersedia.</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

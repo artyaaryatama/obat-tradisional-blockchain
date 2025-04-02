@@ -171,6 +171,16 @@ function LoginPage() {
     
   }
   
+  function goToPage(page){
+    if(page === 'obat'){
+      navigate('/cek-obat');
+    } else if (page === 'sertifikat'){
+      navigate('/cek-sertifikat')
+    } else {
+      navigate('/riwayat-transaksi')
+    }
+  }
+
   const formattedAddress = (addr) => {
     if (!addr) return "";
     return `${addr.slice(0, 16)}...${addr.slice(-14)}`;
@@ -179,6 +189,7 @@ function LoginPage() {
   return (
     <>
     <div id="LoginPage" className="App">
+
       <div className="container">
         <div className="img-container">
           <img src={imgLogin} alt="Img Login" />
@@ -188,6 +199,41 @@ function LoginPage() {
               All Illustration(s) from <a href="https://absurd.design/">absurd.design</a>
             </span>
           </div>
+
+          <div className="nav-group">
+          <ul>
+            <li>
+              <button 
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  goToPage('obat')}}
+              >
+              <i class="fa-solid fa-magnifying-glass"></i>
+                Cek Obat
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  goToPage('sertifikat')}}
+              >
+              <i class="fa-solid fa-magnifying-glass"></i>
+                Cek Sertifikasi
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  goToPage('transaksi')}}
+              >
+              <i class="fa-solid fa-magnifying-glass"></i>
+                Riwayat Transaksi
+              </button>
+            </li>
+          </ul>
+        </div>
         </div>
         <div className="form-container">
           <h1>ot-blockchain.</h1>
@@ -246,6 +292,7 @@ function LoginPage() {
           </div>
         </div>
       </div>
+
     </div>
   </>
   );

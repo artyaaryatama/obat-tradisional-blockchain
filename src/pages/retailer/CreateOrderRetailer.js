@@ -9,15 +9,19 @@ import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
+import Loader from '../../components/Loader';
+import imgSad from '../../assets/images/3.png'
 
 const MySwal = withReactContent(Swal);
 
 function CreateOrderRetailer() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
-
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fadeClass, setFadeClass] = useState('fade-in');
+  const [fadeOutLoader, setFadeOutLoader] = useState(false);
   
   const obatStatusMap = {
     0: "Order Placed",
@@ -112,17 +116,29 @@ function CreateOrderRetailer() {
             pbfInstance: item[5],
           }));
 
-          setDataObat(reconstructedData)
+          // setDataObat(reconstructedData)
           console.log(reconstructedData);
 
         } catch (error) {
           errAlert(error, "Can't retrieve obat produced data.")
+        } finally{
+          setLoading(false);
         }
     }
     };
   
     loadData();
   }, [contracts]);
+
+  useEffect(() => {
+    if (!loading) {
+      setFadeOutLoader(true);
+  
+      setTimeout(() => {
+        setFadeClass('fade-in');
+      }, 400);
+    }
+  }, [loading]);
 
   const handleEventOrderUpdate = (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, txHash) => {
 
@@ -434,15 +450,80 @@ function CreateOrderRetailer() {
         if(result.isConfirmed){
 
           MySwal.fire({
-            title: "Menunggu koneksi Metamask...",
-            text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
-            icon: 'info',
-            showCancelButton: false,
-            showConfirmButton: false,
-            allowOutsideClick: false,
-          });
+            title: `Konfirmasi Order Obat ${namaProduk}`,
+            html: (
+              <div className='form-swal'>
+                <div className="row row--obat">
+                  <div className="col">
+      
+                    <ul>
+                      <li className="label label-1">
+                        <p>Nama Produk</p>
+                      </li>
+                      <li className="input input-1">
+                        <p>{namaProduk}</p> 
+                      </li>
+                    </ul>
+      
+                    <ul>
+                      <li className="label label-1">
+                        <p>Jenis Obat</p>
+                      </li>
+                      <li className="input input-1">
+                        <p>{detailObat.jenisObat}</p> 
+                      </li>
+                    </ul>
+      
+                    <ul>
+                      <li className="label label-1">
+                        <p>Nama Batch</p>
+                      </li>
+                      <li className="input input-1">
+                        <p>{batchName}</p> 
+                      </li>
+                    </ul>
+      
+                    <ul>
+                      <li className="label label-1">
+                        <p>Nama Pabrik</p> 
+                      </li>
+                      <li className="input input-1">
+                        <p>{factoryInstance}</p> 
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label label-1">
+                        <p>Total Stok</p>
+                      </li>
+                      <li className="input input-1">
+                        <p>{obatQuantity.toString()} Obat</p> 
+                      </li>
+                    </ul>
+      
+                  </div>
+                </div>
+              </div>
+            ),
+            width: '620',
+            showCancelButton: true,
+            confirmButtonText: 'Konfirmasi',
+            cancelButtonText: "Batal",
+            allowOutsideClick: false
+          }).then((result) => {
+            if(result.isConfirmed){
 
-          orderObat(detailPastOrderCt[0], id, pbfInstance, namaProduk, obatQuantity, batchName, factoryInstance)
+              MySwal.fire({
+                title: "Menunggu koneksi Metamask...",
+                text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+                icon: 'info',
+                showCancelButton: false,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+              });
+    
+              orderObat(detailPastOrderCt[0], id, pbfInstance, namaProduk, obatQuantity, batchName, factoryInstance)
+            }
+          })
         }
       })
       
@@ -526,13 +607,20 @@ function CreateOrderRetailer() {
         </div>
         <div className="container-data ">
           <div className="data-list">
-            {dataObat.length > 0 ? (
+            <div className="fade-container">
+              <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
+                <Loader />
+              </div>
+
+              <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>
+              {dataObat.length > 0 ? (
               <ul>
                 {dataObat.map((item, index) => (
                   <li key={index} className='row'>
                     <div className="detail">
                       <h5>{item.namaProduk}</h5>
                       <p>Batchname: {item.batchName}</p>
+                      <p>Nama Instansi PBF: {item.pbfInstance}</p>
                       <p>Stok tersedia: {item.obatQuantity.toString()} Obat</p>
                     </div>
                     <div className="order">
@@ -546,8 +634,13 @@ function CreateOrderRetailer() {
                 ))}
               </ul>
             ) : (
-              <h2 className='small'>No Records Found</h2>
-            )}
+                  <div className="image">
+                    <img src={imgSad}/>
+                    <p className='small'>Maaf, belum ada data order yang tersedia.</p>
+                  </div>
+                )}
+              </div>
+            </div>
         </div>
         </div>
       </div>

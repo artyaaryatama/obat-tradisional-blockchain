@@ -15,7 +15,7 @@ function CheckTransaction() {
   const [selectedBatch, setSelectedBatch] = useState(null);
 
   useEffect(() => {
-    document.title = "History Transaksi Obat Tradisonal";
+    document.title = "Riwayat Hash Transaksi";
   }, []);
 
   const options = {
@@ -315,21 +315,19 @@ function CheckTransaction() {
 
   return (
     <div id="publicObat" className="txHash">
-      <div className="title-menu">
-        <h2>ot-blockchain.</h2>
-      </div>
       <div className="container">
         <div className="data-obat">
           <div className="section">
             <div className="form-container">
-              <h1>History Transaksi</h1>
               <form
                 className="register-form"
                 onSubmit={(e) => {
                   e.preventDefault();
                   fetchDocuments();
                 }}
-              >
+                >
+                <h3>Riwayat Hash Transaksi</h3>
+                <div className="group">
                 <input
                   type="text"
                   placeholder="Input Factory Name"
@@ -338,6 +336,8 @@ function CheckTransaction() {
                   required
                 />
                 <button type="submit">Cari</button>
+
+                </div>
               </form>
             </div>
 

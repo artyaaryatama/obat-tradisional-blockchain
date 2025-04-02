@@ -9,15 +9,20 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+import Loader from '../../components/Loader';
+import imgSad from '../../assets/images/3.png'
 
 const MySwal = withReactContent(Swal);
 
 function ManageCpotb() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
-
   const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
   const [dataCpotb, setDataCpotb] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fadeClass, setFadeClass] = useState('fade-in');
+  const [fadeOutLoader, setFadeOutLoader] = useState(false);
+
 
   const jenisSediaanMap = {
     0n: "Cairan Obat Dalam",
@@ -137,18 +142,28 @@ function ManageCpotb() {
             };
           });
           
-          // Update state with reconstructed data
           setDataCpotb(reconstructedData);
-          
   
         } catch (error) {
           console.error("Error loading data: ", error);
+        } finally{
+          setLoading(false);
         }
       }
     };
   
     loadData();
   }, [contracts]);
+
+  useEffect(() => {
+    if (!loading) {
+      setFadeOutLoader(true);
+  
+      setTimeout(() => {
+        setFadeClass('fade-in');
+      }, 400);
+    }
+  }, [loading]);
 
   const getDetailCpotb = async (id) => {
     
@@ -717,9 +732,15 @@ function ManageCpotb() {
             </div>
           </div>
           <div className="data-list">
-            {dataCpotb.length > 0 ? (
-              <ul>
-                {dataCpotb.map((item, index) => (
+            <div className="fade-container">
+              <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
+                <Loader />
+              </div>
+
+              <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>
+              {dataCpotb.length > 0 ? (
+                <ul>
+                  {dataCpotb.map((item, index) => (
                   <li key={index}>
                     <button className='title' onClick={() => getDetailCpotb(item.cpotbId)}>{item.jenisSediaan}</button>
                     <p>
@@ -732,8 +753,13 @@ function ManageCpotb() {
                 ))}
               </ul>
             ) : (
-              <h2 className='small'>No Records Found</h2>
-            )}
+                  <div className="image">
+                    <img src={imgSad}/>
+                    <p className='small'>Maaf, belum ada data sertifikat yang tersedia.</p>
+                  </div>
+                )}
+              </div>
+            </div>
         </div>
         </div>
       </div>

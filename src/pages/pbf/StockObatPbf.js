@@ -8,15 +8,19 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+import Loader from '../../components/Loader';
+import imgSad from '../../assets/images/3.png'
 
 const MySwal = withReactContent(Swal);
 
 function StockObatPbf() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
-
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObatReady, setDataObatReady] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fadeClass, setFadeClass] = useState('fade-in');
+  const [fadeOutLoader, setFadeOutLoader] = useState(false);
   
   const stokStatusMap = {
     0: "Stok Tersedia",
@@ -115,12 +119,24 @@ function StockObatPbf() {
 
         } catch (error) {
           errAlert(error, "Can't access order data.");
+        } finally{
+          setLoading(false);
         }
       }
     };
   
     loadData();
   }, [contracts, userdata.instanceName]);
+
+  useEffect(() => {
+    if (!loading) {
+      setFadeOutLoader(true);
+  
+      setTimeout(() => {
+        setFadeClass('fade-in');
+      }, 400);
+    }
+  }, [loading]);
 
   const getDetailObat = async (id, orderId, statusStok) => {
 
@@ -374,6 +390,13 @@ function StockObatPbf() {
         </div>
         <div className="container-data ">
           <div className="data-list">
+
+          <div className="fade-container">
+            <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
+              <Loader />
+            </div>
+
+            <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>
             {dataObatReady.length > 0 ? (
               <ul>
                 {dataObatReady.map((item, index) => (
@@ -389,8 +412,13 @@ function StockObatPbf() {
                 ))}
               </ul>
             ) : (
-              <h2 className='small'>No Records Found</h2>
-            )}
+                <div className="image">
+                  <img src={imgSad}/>
+                  <p className='small'>Maaf, belum ada data obat yang tersedia.</p>
+                </div>
+              )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -10,6 +10,8 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+import Loader from '../../components/Loader';
+import imgSad from '../../assets/images/3.png'
 
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 const MySwal = withReactContent(Swal);
@@ -20,6 +22,10 @@ function CdobApprove() {
   const [contracts, setContracts] = useState(null);
   const [dataCdob, setDataCdob] = useState([]);
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
+  const [loading, setLoading] = useState(true);
+  const [fadeClass, setFadeClass] = useState('fade-in');
+  const [fadeOutLoader, setFadeOutLoader] = useState(false);
+
 
   const tipePermohonanMap = {
     0: "Obat Lain",
@@ -120,12 +126,25 @@ function CdobApprove() {
           setDataCdob(reconstructedData);
         } catch (e) {
           errAlert(e, "Can't Get The Data")
+        } finally{
+          setLoading(false);
         }
+        
       }
     }
 
     getAllCdob()
   }, [contracts])
+
+  useEffect(() => {
+    if (!loading) {
+      setFadeOutLoader(true);
+  
+      setTimeout(() => {
+        setFadeClass('fade-in');
+      }, 400);
+    }
+  }, [loading]);
 
   const handleEventCdob = (status, bpomAddr, bpomInstance, tipePermohonan, detail, timestamp, txHash) => {
 
@@ -1732,25 +1751,37 @@ function CdobApprove() {
         </div>
         <div className="container-data">
           <div className="data-list">
-            {dataCdob.length > 0 ? (
-              <ul>
-                {dataCdob.map((item, index) => (
-                  <li key={index}>
-                    <button className='title' onClick={() => getDetailCdob(item.cdobId)}>{item.pbfName}: {item.tipePermohonan}</button>
-                    <p>
-                      { item.cdobNumber !== null ? `Nomor CDOB : ${item.cdobNumber}` : "Not Available"}
-                      
-                    </p>
-                    <button className={`statusPengajuan ${item.status}`}>
-                      {item.status}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <h2 className='small'>No Records Found</h2>
-            )}
-        </div>
+            <div className="fade-container">
+              <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
+                <Loader />
+              </div>
+
+              <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>
+              {dataCdob.length > 0 ? (
+                <ul>
+                  {dataCdob.map((item, index) => (
+                    <li key={index}>
+                      <button className='title' onClick={() => getDetailCdob(item.cdobId)}>{item.pbfName}: {item.tipePermohonan}</button>
+                      <p>
+                        { item.cdobNumber !== null ? `Nomor CDOB : ${item.cdobNumber}` : "Not Available"}
+                        
+                      </p>
+                      <button className={`statusPengajuan ${item.status}`}>
+                        {item.status}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                  <div className="image">
+                    <img src={imgSad}/>
+                    <p className='small'>Maaf, belum ada data sertifikat yang tersedia.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
     </>

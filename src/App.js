@@ -26,13 +26,15 @@ import CreateOrderRetailer from './pages/retailer/CreateOrderRetailer';
 import ManageOrderRetailer from './pages/retailer/ManageOrderRetailer';
 import StockObatRetailer from './pages/retailer/StokObatRetailer';
 import Navbar from './components/Navbar';
-import Footer from './components/Footer';
 import LoginPage from './pages/auth/LoginUser';
 import RegisterPage from './pages/auth/RegisterUser';
 import CheckObatIpfs from './pages/public/CheckObat';
 import ChechCerticateIpfs from './pages/public/CheckCertificate';
 import CheckTransaction from './pages/public/CheckTransaction';
-import UnauthorizedPage from './pages/Error/Unauthorized';
+import UnauthorizedPage from './pages/Error/Unauthorized'; 
+import FetchBlockchainData from './pages/public/FetchBlockchainData';
+import CheckObatPieces from './pages/public/CheckObatPieces';
+import CheckCertificatePieces from './pages/public/CheckCertificatePieces';
 
 function App() {
   return (
@@ -45,8 +47,11 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/public/obat/:hash" element={<CheckObatIpfs />} />
           <Route path="/public/certificate/:hash" element={<ChechCerticateIpfs />} />
-          <Route path="/lacak" element={<CheckTransaction />} />
+          <Route path="/riwayat-Transaksi" element={<CheckTransaction />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          <Route path="/fetchBlockchain" element={<FetchBlockchainData />} />
+          <Route path="/cek-obat" element={<CheckObatPieces />} />
+          <Route path="/cek-sertifikat" element={<CheckCertificatePieces />} />
 
           <Route 
             path="/cpotb" 
@@ -54,7 +59,6 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <ManageCpotb />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -65,7 +69,6 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <CpotbRequest />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -76,7 +79,6 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <CpotbRenewRequest />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -87,7 +89,6 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <ManageNieFactory />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -98,7 +99,6 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <NieRequest />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -109,7 +109,6 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <NieRenewRequest />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -120,7 +119,6 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <CreateObat />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -131,7 +129,6 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <AddQuantityObat />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -142,7 +139,6 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <StockObatFactory />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -153,7 +149,6 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <ManageOrderFactoryPbf />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -164,7 +159,6 @@ function App() {
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
                 <ManageCdob />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -175,7 +169,6 @@ function App() {
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
                 <CdobRequest />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -186,7 +179,6 @@ function App() {
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
                 <CdobRenewRequest />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -197,7 +189,6 @@ function App() {
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
                 <ManageOrderPbf />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -208,7 +199,6 @@ function App() {
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
                 <CreateOrderPbf />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -219,7 +209,6 @@ function App() {
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
                 <StockObatPbf />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -230,7 +219,6 @@ function App() {
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
                 <ManageOrderPbfRetailer />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -241,7 +229,6 @@ function App() {
               <ProtectedRoute allowedRoles={['2']}>
                 <Navbar />
                 <CpotbApprove />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -252,7 +239,6 @@ function App() {
               <ProtectedRoute allowedRoles={['2']}>
                 <Navbar />
                 <CdobApprove />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -263,7 +249,6 @@ function App() {
               <ProtectedRoute allowedRoles={['2']}>
                 <Navbar />
                 <NieApprove />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -274,7 +259,6 @@ function App() {
               <ProtectedRoute allowedRoles={['3']}>
                 <Navbar />
                 <CreateOrderRetailer />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -285,7 +269,6 @@ function App() {
               <ProtectedRoute allowedRoles={['3']}>
                 <Navbar />
                 <ManageOrderRetailer />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -297,7 +280,6 @@ function App() {
               <ProtectedRoute allowedRoles={['3']}>
                 <Navbar />
                 <StockObatRetailer />
-                <Footer />
               </ProtectedRoute>
             } 
           />
@@ -309,7 +291,6 @@ function App() {
               <ProtectedRoute allowedRoles={['2']}>
                 <Navbar />
                 <CpotbApprove />
-                <Footer />
               </ProtectedRoute>
             } 
           /> */}

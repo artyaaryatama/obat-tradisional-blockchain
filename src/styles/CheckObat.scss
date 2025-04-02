@@ -4,6 +4,31 @@
 #publicObat{
   padding: 20px;
 
+  form{
+    background-color: #f2f2f36a;
+    border-radius: 6px;
+    padding: 20px 16px;
+
+    h3{
+      font-size: 26px;
+      margin: 0 0 12px 0;
+    }
+
+    .group{
+      display: flex;
+      gap: 10px;
+
+      input{
+        @include inputForm();
+        width: 500px;
+      }
+
+      button{
+        @include btnUniversal($white, $purple, 4px);
+      }
+    }
+  }
+
   &.txHash{
     .container{
       display: block;
@@ -170,51 +195,14 @@
     align-items: flex-start;
     flex-direction: column;
 
+    form{
+      padding: 0;
+      background-color: transparent;
+    }
+
     h1{
       font-size: 26px;
       margin: 0 0 18px 0;
-    }
-
-    form{
-      display: flex;
-      width: -webkit-fill-available;
-
-      &>*{
-        margin-right: 10px;
-      }
-
-      input{
-        @include inputForm($grey, $white);
-        color: $black;
-        padding: 13px 10px;
-
-        &:disabled{
-          background-color: $grey-secondary;
-          font-style: italic;
-        }
-      }
-
-      textarea{
-        @include inputForm($grey, $white);
-        border: none;
-        color: $black;
-        width: auto;
-        font-family: "Instrument Sans", sans-serif;
-
-        &:disabled{
-          background-color: $grey-secondary;
-          font-style: italic;
-        }
-
-      }
-      
-      select{
-        @include selectForm($white);
-      }
-
-      button{
-        @include btnUniversal($white, $black, 4px)
-      }
     }
 
     p{
@@ -264,6 +252,7 @@
     margin: 10px 0 0 0;
     border: solid 1px $grey !important;
     padding: 13px 10px;
+    width: 500px;
   }
 
   table, th, td{

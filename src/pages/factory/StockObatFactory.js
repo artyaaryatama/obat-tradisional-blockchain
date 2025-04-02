@@ -2,23 +2,26 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-
 import DataIpfsHash from '../../components/TableHash';
-
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+import Loader from '../../components/Loader';
+import imgSad from '../../assets/images/3.png'
 
 const MySwal = withReactContent(Swal);
 
 function StockObatFactory() {
   const [contracts, setContracts] = useState([]);
   const navigate = useNavigate();
-
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fadeClass, setFadeClass] = useState('fade-in');
+  const [fadeOutLoader, setFadeOutLoader] = useState(false);
+
   const stokStatusMap = {
     0: "Stok Tersedia",
     1: "Stok Kosong",
@@ -109,12 +112,24 @@ function StockObatFactory() {
 
         } catch (error) {
           console.error("Error loading data: ", error);
-        }
+        } finally{
+          setLoading(false);
+        }        
       }
     };
   
     loadData();
   }, [contracts, userdata.instanceName]);
+
+  useEffect(() => {
+    if (!loading) {
+      setFadeOutLoader(true);
+  
+      setTimeout(() => {
+        setFadeClass('fade-in');
+      }, 400);
+    }
+  }, [loading]);
 
   const getDetailObat = async (id, batchName) => {
 
@@ -347,25 +362,36 @@ function StockObatFactory() {
             </div>
         </div>
           <div className="data-list">
-            {dataObat.length > 0 ? (
-              <ul>
-                {dataObat.map((item, index) => (
-                  <li key={index}>
-                    <button className='title' onClick={() => getDetailObat(item.obatId, item.batchName)} > [{item.batchName}] {item.namaProduk}</button>
-                    {item.statusStok === "Stok Tersedia" ? 
-                      <p>Stok tersedia: {item.obatQuantity} Obat</p>  :
-                      <p>Terjual: {item.obatQuantity} Obat</p>
-                    }
-                    <button className={`statusOrder ${item.statusStok}`}>
-                      {item.statusStok}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <h2 className='small'>No Records Found</h2>
-            )}
-        </div>
+            <div className="fade-container">
+              <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
+                <Loader />
+              </div>
+
+              <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>
+              { dataObat.length > 0 ? (
+                <ul>
+                  {dataObat.map((item, index) => (
+                    <li key={index}>
+                      <button className='title' onClick={() => getDetailObat(item.obatId, item.batchName)} > [{item.batchName}] {item.namaProduk}</button>
+                      {item.statusStok === "Stok Tersedia" ? 
+                        <p>Stok tersedia: {item.obatQuantity} Obat</p>  :
+                        <p>Terjual: {item.obatQuantity} Obat</p>
+                      }
+                      <button className={`statusOrder ${item.statusStok}`}>
+                        {item.statusStok}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                  <div className="image">
+                    <img src={imgSad}/>
+                    <p className='small'>Maaf, belum ada data obat yang tersedia.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>

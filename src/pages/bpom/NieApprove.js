@@ -8,15 +8,18 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
-
+import Loader from '../../components/Loader';
+import imgSad from '../../assets/images/3.png'
 
 const MySwal = withReactContent(Swal);
 
 function NieApprove() {
   const [contracts, setContracts] = useState(null);
   const [dataObat, setDataObat] = useState([])
-  
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
+  const [loading, setLoading] = useState(true);
+  const [fadeClass, setFadeClass] = useState('fade-in');
+  const [fadeOutLoader, setFadeOutLoader] = useState(false);
 
   const obatStatusMap = {
     0n: "Dalam Produksi",
@@ -123,12 +126,25 @@ function NieApprove() {
   
         } catch (error) {
           console.error("Error loading data: ", error);
+        } finally{
+          setLoading(false);
         }
+        
       }
     };
   
     loadData();
   }, [contracts])
+
+  useEffect(() => {
+    if (!loading) {
+      setFadeOutLoader(true);
+  
+      setTimeout(() => {
+        setFadeClass('fade-in');
+      }, 400);
+    }
+  }, [loading]);
 
   const handleEventNieApproved = (status, namaProduk, bpomAddr, bpomInstance, historyNie, timestamp, txHash) => {
 
@@ -2120,7 +2136,13 @@ function NieApprove() {
         </div>
         <div className="container-data">
           <div className="data-list">
-            {dataObat.length !== 0 ? (
+            <div className="fade-container">
+              <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
+                <Loader />
+              </div>
+
+              <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>
+              {dataObat.length !== 0 ? (
               <ul>
                 {dataObat.map((item, index) => (
                   <li key={index}>
@@ -2136,8 +2158,13 @@ function NieApprove() {
                 ))}
               </ul>
             ) : (
-              <h2 className='small'>No Records Found</h2>
-            )}
+                  <div className="image">
+                    <img src={imgSad}/>
+                    <p className='small'>Maaf, belum ada data obat yang tersedia.</p>
+                  </div>
+                )}
+              </div>
+            </div>
         </div>
         </div>
       </div>

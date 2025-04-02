@@ -15,6 +15,7 @@ function RegisterPage() {
   const navigate = useNavigate(); 
   const [contract, setContract] = useState("");
   const [loader, setLoader] = useState(false)
+  const [isBpom, setIsBpom] = useState(true)
 
   const [name, setName] = useState("");
   const [instanceName, setInstanceName] = useState("");
@@ -167,6 +168,135 @@ function RegisterPage() {
       }
     });
   };
+
+  const confirmData = async(e) => {
+    e.preventDefault();
+    let r, typeFactory;
+    if(role===2){
+      setNib('0')
+      setNpwp('0')
+      r = 'Pabrik'
+    } else if(role ===0){
+      r= "Pabrik"
+    } else if (role===1){
+      r= "PBF"
+    } else if (role===3){
+      r= "Pengecer"
+    }
+
+    if (factoryType === "UMOT") {
+      typeFactory = "Usaha Mikro Obat Tradisional (UMOT)"
+    } else if (factoryType === "UKOT") {
+      typeFactory = "Usaha Kecil Obat Tradisional (UKOT)"
+    } else if (factoryType === "IOT") {
+      typeFactory = "Industri Obat Tradisional (IOT)"
+    }
+
+
+    MySwal.fire({
+      title: `Konfirmasi Pendaftaran Pengguna`,
+      html: (
+        <div className='form-swal'>
+          <div className="row row--obat">
+            <div className="col">
+
+              <ul>
+                <li className="label label-1">
+                  <p>Role Pengguna</p>
+                </li>
+                <li className="input input-1">
+                  <p>{r}</p> 
+                </li>
+              </ul>
+
+              <ul>
+                <li className="label label-1">
+                  <p>Nama Pengguna</p>
+                </li>
+                <li className="input input-1">
+                  <p>{name}</p> 
+                </li>
+              </ul>
+
+              <ul>
+                <li className="label label-1">
+                  <p>Nama Instansi</p>
+                </li>
+                <li className="input input-1">
+                  <p>{instanceName}</p> 
+                </li>
+              </ul>
+
+              {factoryType? 
+              <ul>
+                <li className="label label-1">
+                  <p>Tipe Pabrik</p>
+                </li>
+                <li className="input input-1">
+                  <p>{typeFactory}</p> 
+                </li>
+              </ul>
+              
+              : <div></div>
+              }
+
+              <ul>
+                <li className="label label-1">
+                  <p>Lokasi Instansi</p> 
+                </li>
+                <li className="input input-1">
+                  <p>{locationInstance}</p> 
+                </li>
+              </ul>
+              {
+                !isBpom ? 
+                <div className="">
+                  <ul>
+                    <li className="label label-1">
+                      <p>Nomor NIB</p>
+                    </li>
+                    <li className="input input-1">
+                      <p>{nib}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label label-1">
+                      <p>Nomor NPWP</p>
+                    </li>
+                    <li className="input input-1">
+                      <p>{npwp}</p> 
+                    </li>
+                  </ul>
+
+                </div>
+              : <div className=""></div>
+              }
+
+            </div>
+          </div>
+        </div>
+      ),
+      width: '620',
+      showCancelButton: true,
+      confirmButtonText: 'Konfirmasi',
+      cancelButtonText: "Batal",
+      allowOutsideClick: false
+    }).then((result) => {
+      if(result.isConfirmed){
+        MySwal.fire({
+          title: "Menunggu koneksi Metamask...",
+          text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+          icon: 'info',
+          showCancelButton: false,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+        });
+        registerUser()
+      }
+    })
+
+
+  } 
   
   const registerUser = async (e) => {
 
@@ -238,8 +368,6 @@ function RegisterPage() {
       setInstanceName('BPOM Makassar')
       setRole(parseInt(2))
       setName('Sophie Doe') 
-      setNib('3333333333')
-      setNpwp('33.333.333.3-333.333')
       // setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
       setLocationInstance("Jl. Ini Alamat BPOM Makassar, Makassar")
       // setUserAddr('0xcbcD762c3C27212937314C1D46072a214346F2F3')
@@ -259,6 +387,12 @@ function RegisterPage() {
   function parseIntSelect(opt){
     const a = parseInt(opt);
     setRole(a);
+
+    if(a === 2) {
+      setIsBpom(true)
+    } else {
+      setIsBpom(false)
+    }
   }
 
   return (
@@ -268,7 +402,7 @@ function RegisterPage() {
           <div className="form-container">
             <h1>ot-blockchain.</h1>
 
-            <form className="register-form" onSubmit={registerUser}>
+            <form className="register-form" onSubmit={confirmData}>
               <input 
                 type="text" 
                 placeholder="Nama Pengguna" 
@@ -282,22 +416,6 @@ function RegisterPage() {
                 placeholder="Nama Instansi" 
                 value={instanceName} 
                 onChange={(e) => setInstanceName(e.target.value)} 
-                required 
-              />
-
-              <input 
-                type="text" 
-                placeholder="Nomor NIB" 
-                value={nib} 
-                onChange={(e) => setNib(e.target.value)} 
-                required 
-              />
-
-              <input 
-                type="text" 
-                placeholder="Nomor NPWP " 
-                value={npwp} 
-                onChange={(e) => setNpwp(e.target.value)} 
                 required 
               />
               
@@ -326,8 +444,32 @@ function RegisterPage() {
                 <option value="0">Pabrik</option>
                 <option value="1">PBF</option>
                 <option value="2">BPOM</option>
-                <option value="3">Retailer</option>
+                <option value="3">Pengecer</option>
               </select>
+
+              {!isBpom ? 
+                <div className="nibNpwp">
+                  <input 
+                    type="text" 
+                    placeholder="Nomor NIB" 
+                    value={nib} 
+                    className="nib"
+                    onChange={(e) => setNib(e.target.value)} 
+                    required 
+                  />
+      
+                  <input 
+                    type="text" 
+                    placeholder="Nomor NPWP " 
+                    value={npwp} 
+                    onChange={(e) => setNpwp(e.target.value)} 
+                    required 
+                  />
+
+                </div> : 
+                <div className=""></div>
+            }
+
 
               {role === 0 ? 
                 <select 

@@ -10,6 +10,8 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+import Loader from '../../components/Loader';
+import imgSad from '../../assets/images/3.png'
 
 const MySwal = withReactContent(Swal);
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
@@ -20,6 +22,9 @@ function CpotbApprove() {
   const [contracts, setContracts] = useState(null);
   const [dataCpotb, setDataCpotb] = useState([])
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
+  const [loading, setLoading] = useState(true);
+  const [fadeClass, setFadeClass] = useState('fade-in');
+  const [fadeOutLoader, setFadeOutLoader] = useState(false);
 
   const jenisSediaanMap = {
     0n: "Cairan Obat Dalam",
@@ -139,18 +144,31 @@ function CpotbApprove() {
               status: statusMap[item[4]]
             };
           })
-
-          console.log(reconstructedData);
-      
+          
           setDataCpotb(reconstructedData);
+          console.log(reconstructedData);
+
         } catch (e) {
           errAlert(e, "Can't Get The Data")
+        } finally{
+          setLoading(false);
         }
+        
       }
     }
 
     getAllCpotb()
   }, [contracts])
+
+  useEffect(() => {
+    if (!loading) {
+      setFadeOutLoader(true);
+  
+      setTimeout(() => {
+        setFadeClass('fade-in');
+      }, 400);
+    }
+  }, [loading]);
 
   const handleEventCpotb = (status, bpomInstance, bpomAddr, jenisSediaan, detail, timestamp, txHash) => {
 
@@ -1638,24 +1656,36 @@ function CpotbApprove() {
         </div>
         <div className="container-data">
           <div className="data-list">
-            {dataCpotb.length > 0 ? (
-              <ul>
-                {dataCpotb.map((item, index) => (
-                  <li key={index}>
-                    <button className='title' onClick={() => getDetailCpotb(item.cpotbId)}>{item.factoryInstance}: {item.jenisSediaan}</button>
-                    <p>
-                      { item.cpotbNumber !== null ? `Nomor CPOTB: ${item.cpotbNumber}` : "Nomor CPOTB: Tidak Tersedia"}
-                    </p>
-                    <button className={`statusPengajuan ${item.status}`}>
-                      {item.status}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <h2 className='small'>No Records Found</h2>
-            )}
-        </div>
+            <div className="fade-container">
+              <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
+                <Loader />
+              </div>
+
+              <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>
+              {dataCpotb.length > 0 ? (
+                  <ul>
+                    {dataCpotb.map((item, index) => (
+                      <li key={index}>
+                        <button className='title' onClick={() => getDetailCpotb(item.cpotbId)}>{item.factoryInstance}: {item.jenisSediaan}</button>
+                        <p>
+                          { item.cpotbNumber !== null ? `Nomor CPOTB: ${item.cpotbNumber}` : "Nomor CPOTB: Tidak Tersedia"}
+                        </p>
+                        <button className={`statusPengajuan ${item.status}`}>
+                          {item.status}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                  
+                ) : (
+                  <div className="image">
+                    <img src={imgSad}/>
+                    <p className='small'>Maaf, belum ada data sertifikat yang tersedia.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
