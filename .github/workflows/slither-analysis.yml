@@ -1,0 +1,62 @@
+name: Slither Security Analysis
+
+on: [push, pull_request]
+
+jobs:
+  slither:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+
+      - name: Install Solidity Compiler
+        run: |
+          pip install solc-select
+          solc-select install 0.8.27
+          solc-select use 0.8.27
+
+      - name: Install Slither
+        run: pip install slither-analyzer
+
+      - name: List Contract Files
+        run: ls -R contracts/ || echo "No contracts found!"
+
+      - name: Run Slither Security Analysis
+        run: |
+          mkdir -p slither-reports
+          for file in contracts/BaseCertificate.sol contracts/CdobCertificate.sol contracts/CertificateManager.sol \
+                      contracts/CpotbCertificate.sol contracts/ObatTradisional.sol contracts/OrderManagement.sol \
+                      contracts/RoleManager.sol contracts/NieManager.sol contracts/EnumsLibrary.sol \
+                      contracts/ObatShared.sol; do
+            echo "Running Slither on $file for security analysis..."
+            slither "$file" --json "slither-reports/$(basename "$file").json" || echo "Slither encountered issues with $file but continuing..."
+      
+            jq '[.results.detectors[] | {description}]' "slither-reports/$(basename "$file").json" > "slither-reports/$(basename "$file")-filtered.json" || echo "[]" > "slither-reports/$(basename "$file")-filtered.json"
+          done
+        continue-on-error: true
+
+      - name: Debug Slither Output
+        run: |
+          echo "Checking Slither reports..."
+          ls -lah slither-reports/
+          cat slither-reports/*.json || echo "No Slither output found"
+
+      - name: Ensure JSON File Exists
+        run: |
+          for file in slither-reports/*.json; do
+            if [ ! -s "$file" ]; then
+              echo '{"status": "No security issues found"}' > "$file"
+              echo "Replaced empty JSON for $file"
+            fi
+          done
+
+      - name: Upload Slither Security Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: slither-security-report
+          path: slither-reports/

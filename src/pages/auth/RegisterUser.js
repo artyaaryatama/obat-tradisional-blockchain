@@ -15,17 +15,21 @@ function RegisterPage() {
   const navigate = useNavigate(); 
   const [contract, setContract] = useState("");
   const [loader, setLoader] = useState(false)
+  const [isBpom, setIsBpom] = useState(true)
 
   const [name, setName] = useState("");
   const [instanceName, setInstanceName] = useState("");
-  const [userAddr, setUserAddr] = useState("");
+  // const [userAddr, setUserAddr] = useState("");
+  const [nib, setNib] = useState("");
+  const [npwp, setNpwp] = useState("");
   const [role, setRole] = useState("");
+  const [locationInstance, setLocationInstance] = useState("");
+  const [factoryType, setFactoryType] = useState("")
 
   useEffect(() => {
     document.title = "Sign Up"; 
   }, []);
 
-  // connect wallet
   useEffect(() => {
     async function connectWallet() {
       if (window.ethereum) {
@@ -33,12 +37,13 @@ function RegisterPage() {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const contr = new Contract(
-            contractData.MainSupplyChain.address, 
-            contractData.MainSupplyChain.abi, 
+            contractData.RoleManager.address, 
+            contractData.RoleManager.abi, 
             signer
           );
 
           setContract(contr)
+          console.log(signer);
 
         } catch (err) {
           console.error("User access denied!");
@@ -50,70 +55,257 @@ function RegisterPage() {
     }
     connectWallet();
 
-    // listener to change the user address automatically if the metamask active account change
-    // if (window.ethereum) {
-    //   window.ethereum.on("accountsChanged", () => {
-    //     connectWallet();
-    //     window.location.reload(); 
-    //   });
-    // }
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        connectWallet();
+        window.location.reload(); 
+      });
+    }
   
-    // return () => {
-    //   if (window.ethereum) {
-    //     window.ethereum.removeListener("accountsChanged", connectWallet);
-    //   }
-    // };
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", connectWallet);
+      }
+    };
   }, []);
 
-  // event user registration
-  useEffect(() => {
-    if (contract) {
-      contract.on("evt_UserRegistered", (_userAddr, _name, _instanceName, _role) => {
-        console.log("User Registered Event: ", { _userAddr, _name, _instanceName, _role});
+  const handleEventUserRegister = (_userAddr,_name, _instanceName, _role, _locationInstance, _nib, _npwp, txHash) => {
+    const roles = {
+      0n: "Factory",
+      1n: "PBF",
+      2n: "BPOM",
+      3n: "Retailer",
+    };
+  
+    MySwal.fire({
+      title: "User Sukses Terdaftar",
+      html: (
+        <div className='form-swal regist event'>
+          <ul>
+            <li className="label">
+              <p>Nama Pengguna</p> 
+            </li>
+            <li className="input">
+              <p>{_name}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Alamat Akun Pengguna</p> 
+            </li>
+            <li className="input">
+              <p>{_userAddr}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Asal Instansi</p> 
+            </li>
+            <li className="input">
+              <p>{_instanceName}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Role Pengguna</p> 
+            </li>
+            <li className="input">
+              <p>{roles[_role]}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>NPWP</p> 
+            </li>
+            <li className="input">
+              <p>{_npwp}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>NIB</p> 
+            </li>
+            <li className="input">
+              <p>{_nib}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Lokasi Instansi</p> 
+            </li>
+            <li className="input">
+              <p>{_locationInstance}</p> 
+            </li>
+          </ul>
+          <ul className="txHash">
+            <li className="label">
+              <p>Hash Transaksi</p>
+            </li>
+            <li className="input">
+              <a
+                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Lihat transaksi di Etherscan
+              </a>
+            </li>
+          </ul>
+        </div>
+      ),
+      icon: 'success',
+      width: '560',
+      showCancelButton: false,
+      confirmButtonText: 'Oke',
+      allowOutsideClick: true,
+      didOpen: () => {
+        const actions = Swal.getActions();
+       actions.style.justifyContent = "center";
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate('/login');
+      }
+    });
+  };
 
-        const roles = {
-          0n: "Factory",
-          1n: "PBF", 
-          2n: "BPOM",
-          3n: "Retailer"
-        }
-
-        MySwal.fire({
-          title:"Sign Up Success",
-          html: (
-            <div>
-                <ul className="noList">
-                  <li>{_name}</li>
-                  <li>{_instanceName}</li>
-                  <li>{roles[_role]}</li>
-                </ul>
-            </div>
-          ),
-          icon: 'success',
-          showCancelButton: false,
-          confirmButtonText: 'Oke',
-          allowOutsideClick: false,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate('/login');
-          }
-        });
-      });
-
-      return () => {
-        contract.removeAllListeners("evt_UserRegistered");
-      };
+  const confirmData = async(e) => {
+    e.preventDefault();
+    let r, typeFactory;
+    if(role===2){
+      setNib('0')
+      setNpwp('0')
+      r = 'Pabrik'
+    } else if(role ===0){
+      r= "Pabrik"
+    } else if (role===1){
+      r= "PBF"
+    } else if (role===3){
+      r= "Pengecer"
     }
-  }, [contract]);
 
+    if (factoryType === "UMOT") {
+      typeFactory = "Usaha Mikro Obat Tradisional (UMOT)"
+    } else if (factoryType === "UKOT") {
+      typeFactory = "Usaha Kecil Obat Tradisional (UKOT)"
+    } else if (factoryType === "IOT") {
+      typeFactory = "Industri Obat Tradisional (IOT)"
+    }
+
+
+    MySwal.fire({
+      title: `Konfirmasi Pendaftaran Pengguna`,
+      html: (
+        <div className='form-swal'>
+          <div className="row row--obat">
+            <div className="col">
+
+              <ul>
+                <li className="label label-1">
+                  <p>Role Pengguna</p>
+                </li>
+                <li className="input input-1">
+                  <p>{r}</p> 
+                </li>
+              </ul>
+
+              <ul>
+                <li className="label label-1">
+                  <p>Nama Pengguna</p>
+                </li>
+                <li className="input input-1">
+                  <p>{name}</p> 
+                </li>
+              </ul>
+
+              <ul>
+                <li className="label label-1">
+                  <p>Nama Instansi</p>
+                </li>
+                <li className="input input-1">
+                  <p>{instanceName}</p> 
+                </li>
+              </ul>
+
+              {factoryType? 
+              <ul>
+                <li className="label label-1">
+                  <p>Tipe Pabrik</p>
+                </li>
+                <li className="input input-1">
+                  <p>{typeFactory}</p> 
+                </li>
+              </ul>
+              
+              : <div></div>
+              }
+
+              <ul>
+                <li className="label label-1">
+                  <p>Lokasi Instansi</p> 
+                </li>
+                <li className="input input-1">
+                  <p>{locationInstance}</p> 
+                </li>
+              </ul>
+              {
+                !isBpom ? 
+                <div className="">
+                  <ul>
+                    <li className="label label-1">
+                      <p>Nomor NIB</p>
+                    </li>
+                    <li className="input input-1">
+                      <p>{nib}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label label-1">
+                      <p>Nomor NPWP</p>
+                    </li>
+                    <li className="input input-1">
+                      <p>{npwp}</p> 
+                    </li>
+                  </ul>
+
+                </div>
+              : <div className=""></div>
+              }
+
+            </div>
+          </div>
+        </div>
+      ),
+      width: '620',
+      showCancelButton: true,
+      confirmButtonText: 'Konfirmasi',
+      cancelButtonText: "Batal",
+      allowOutsideClick: false
+    }).then((result) => {
+      if(result.isConfirmed){
+        MySwal.fire({
+          title: "Menunggu koneksi Metamask...",
+          text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+          icon: 'info',
+          showCancelButton: false,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+        });
+        registerUser()
+      }
+    })
+
+
+  } 
+  
   const registerUser = async (e) => {
 
     e.preventDefault();
     setLoader(true)
     
     MySwal.fire({
-      title:"Please wait",
-      text: "Your registration is in progress. This will only take a moment! 🧙‍♂️🧙‍♀️",
+      title:"Menunggu koneksi Metamask...",
+      text:"Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
@@ -122,53 +314,86 @@ function RegisterPage() {
 
     try {
       const nameUpperCase = name.toUpperCase()
-      const tx = await contract.registerUser(nameUpperCase, instanceName, userAddr, role);
-      await tx.wait();
-      console.log("Transaction receipt:", tx);
-      console.log("User Registered Successfully!");
+      let registCt;
+      if(factoryType){
+        registCt = await contract.registerUser(nameUpperCase, instanceName, role, locationInstance, factoryType, nib, npwp);
+      } else {
+        registCt = await contract.registerUser(nameUpperCase, instanceName, role, locationInstance, "", nib, npwp);
+      }
+      console.log("Transaction receipt:", registCt);
+      console.log("Hash Transaksi:", registCt.hash);
 
+      if(registCt){
+        MySwal.update({
+          title: "Memproses transaksi...",
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
+        });
+        
+      }
+
+      contract.once("UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
+        handleEventUserRegister(_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp, registCt.hash);
+      });
       
     } catch (err) {
       setLoader(false)
-      errAlert(err, "Registration failed")
+      errAlert(err, "Pendaftaran gagal")
     }
   };
 
   function autoFilled(event, role) {
     event.preventDefault();
     console.log(role);
-    if(role===1){
+    if(role===0){
       setInstanceName('PT. Budi Pekerti')
-      setName('Takaki Yuya')
       setRole(parseInt(0))
-      setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+      setName('James Doe')
+      // setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+      setNib('1111111111')
+      setNpwp('11.111.111.1-111.111')
+      setLocationInstance("Jl. Ini Alamat Factory PT. Budi Pekerti, Jakarta Selatan")
+      // setUserAddr("0x6142E74121ADE0de3BEC1641e0318dBcCFcDe06A")
+      
+    } else if(role===1){
+      setInstanceName('PT. Mangga Arum')
+      setRole(parseInt(1))
+      setName('Charles Doe') 
+      setNib('2222222222')
+      setNpwp('22.222.222.2-222.222')
+      // setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
+      setLocationInstance("Jl. Ini Alamat PBF PT. Mangga Arum, Jakarta Selatan")
+      // setUserAddr("0x97CB6400E271e65150B2330ad27f213a4C9c31af")
+      
     } else if(role===2){
       setInstanceName('BPOM Makassar')
-      setName('NILOJURI')
       setRole(parseInt(2))
-      setUserAddr("0x70997970C51812dc3A010C7d01b50e0d17dc79C8")
-    } else if(role===3){
-      setInstanceName('PT. Mangga Arum')
-      setName('STIPEN JENSEN')
-      setRole(parseInt(1))
-      setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
-    } else if(role===4){
+      setName('Sophie Doe') 
+      // setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
+      setLocationInstance("Jl. Ini Alamat BPOM Makassar, Makassar")
+      // setUserAddr('0xcbcD762c3C27212937314C1D46072a214346F2F3')
+      
+    }  else if(role===3){
       setInstanceName('Apotek Sejahtera')
-      setName('かみき あさこ')
       setRole(parseInt(3))
-      setUserAddr("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65")
+      setName('Marlene Doe') 
+      setNib('4444444444')
+      setNpwp('44.444.444.4-444.444')
+      // setUserAddr('0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65')
+      setLocationInstance("Jl. Ini Alamat Apotek Sejahtera, Jakarta Selatan")
+      // setUserAddr('0xA3cE1983150Fade27518DF467a99a74FB4082dDa')
     }
   }
   
   function parseIntSelect(opt){
     const a = parseInt(opt);
     setRole(a);
-  }
 
-  const formattedAddress = (addr) => {
-    if (!addr) return "";
-    return `${addr.slice(0, 16)}...${addr.slice(-14)}`;
-  };
+    if(a === 2) {
+      setIsBpom(true)
+    } else {
+      setIsBpom(false)
+    }
+  }
 
   return (
     <>
@@ -177,10 +402,10 @@ function RegisterPage() {
           <div className="form-container">
             <h1>ot-blockchain.</h1>
 
-            <form className="register-form" onSubmit={registerUser}>
+            <form className="register-form" onSubmit={confirmData}>
               <input 
                 type="text" 
-                placeholder="Name" 
+                placeholder="Nama Pengguna" 
                 value={name} 
                 onChange={(e) => setName(e.target.value)} 
                 required 
@@ -188,17 +413,26 @@ function RegisterPage() {
 
               <input 
                 type="text" 
-                placeholder="Instance Name" 
+                placeholder="Nama Instansi" 
                 value={instanceName} 
                 onChange={(e) => setInstanceName(e.target.value)} 
                 required 
               />
               
-              <input 
+              {/* <input 
                 type="text" 
                 placeholder="Account E-Wallet Address" 
-                value={formattedAddress(userAddr)} 
+                value={userAddr} 
                 onChange={(e) => setUserAddr(e.target.value)} 
+                required
+              /> */}
+
+              <textarea 
+                type="text" 
+                placeholder="Lokasi Instansi" 
+                value={locationInstance} 
+                onChange={(e) => setLocationInstance(e.target.value)} 
+                rows="3"
                 required
               />
               
@@ -207,31 +441,85 @@ function RegisterPage() {
                 onChange={(e) => parseIntSelect(e.target.value)} 
                 required >
                 <option value="" disabled>Pilih role user</option>
-                <option value="0">Factory</option>
+                <option value="0">Pabrik</option>
                 <option value="1">PBF</option>
                 <option value="2">BPOM</option>
-                <option value="3">Retailer</option>
+                <option value="3">Pengecer</option>
               </select>
+
+              {!isBpom ? 
+                <div className="nibNpwp">
+                  <input 
+                    type="text" 
+                    placeholder="Nomor NIB" 
+                    value={nib} 
+                    className="nib"
+                    onChange={(e) => setNib(e.target.value)} 
+                    required 
+                  />
+      
+                  <input 
+                    type="text" 
+                    placeholder="Nomor NPWP " 
+                    value={npwp} 
+                    onChange={(e) => setNpwp(e.target.value)} 
+                    required 
+                  />
+
+                </div> : 
+                <div className=""></div>
+            }
+
+
+              {role === 0 ? 
+                <select 
+                value={factoryType} 
+                onChange={(e) => setFactoryType(e.target.value)} 
+                className="usaha"
+                required >
+                  <option value="" disabled>Pilih Jenis Usaha</option>
+                  <option value="UMOT">Usaha Mikro Obat Tradisional (UMOT) </option>
+                  <option value="UKOT">Usaha Kecil Obat Tradisional (UKOT) </option>
+                  <option value="IOT">Industri Obat Tradisional (IOT)</option>
+                </select> 
+              : <div className="empty"></div>
+            }
               
               <button type="submit">
               {
                   loader? (
                     <img src={imgLoader} alt="" />
                   ) : (
-                    "Sign Up"
+                    "Daftar"
                   )
                 }
               </button>
             </form>
 
             <p className="register-footer">
-              ALready have an account? <a href="/login">login here</a>
+              Sudah memiliki akun? <a href="/login">silahkan masuk disini.</a>
             </p>
 
-              <button className="test" onClick={(event) => autoFilled(event, 1)}>Auto Filled Factory</button>
-              <button className="test" onClick={(event) => autoFilled(event, 2)}>Auto Filled BPOM</button>
-              <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled PBF</button>
-              <button className="test" onClick={(event) => autoFilled(event, 4)}>Auto Filled Retailer</button>
+            <div className="btn-group">
+              <ul>
+                <li>
+                  <button className="test" onClick={(event) => autoFilled(event, 0)}>Auto Filled Factory</button>
+                </li>
+                <li>
+                  <button className="test" onClick={(event) => autoFilled(event, 1)}>Auto Filled PBF</button>
+                </li>
+              </ul>
+              <ul>
+                <li>
+                  <button className="test" onClick={(event) => autoFilled(event, 2)}>Auto Filled BPOM</button>
+                </li>
+
+                <li>
+                  <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled Retailer</button>
+                </li>
+              </ul>
+            </div>
+
           </div>
         </div>
       </div>
@@ -251,7 +539,11 @@ function errAlert(err, customMsg){
     title: errorObject.message,
     text: customMsg,
     icon: 'error',
-    confirmButtonText: 'Try Again'
+    confirmButtonText: 'Coba Lagi',
+    didOpen: () => {
+      const actions = Swal.getActions();
+      actions.style.justifyContent = "center";
+    }
   });
 
   console.error(customMsg)

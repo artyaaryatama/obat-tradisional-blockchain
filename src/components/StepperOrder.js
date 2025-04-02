@@ -12,17 +12,17 @@ export default function OrderStatusStepper({ orderStatus, timestamps }) {
 
   const steps = [
     {
-      label: 'Order Placed',
+      label: 'Order Diajukan',
       description: timestamps.timestampOrder ? timestamps.timestampOrder : '',
       isDisabled: timestamps.timestampOrder === 0
     },
     {
-      label: 'Order Shipped',
+      label: 'Order Dikirim',
       description: timestamps.timestampShipped ? timestamps.timestampShipped : '',
       isDisabled: timestamps.timestampShipped === 0
     },
     {
-      label: 'Order Completed',
+      label: 'Order Selesai',
       description: timestamps.timestampComplete ? timestamps.timestampComplete : '',
       isDisabled: timestamps.timestampComplete === 0
     }
@@ -46,7 +46,7 @@ export default function OrderStatusStepper({ orderStatus, timestamps }) {
               TransitionProps={{ unmountOnExit: false }}
             >
               <Typography>
-              {index === 0  || index === 1 ||index === activeStep ? step.description : ''}
+                {index === 0  || index === 1 ||index === activeStep ? step.description : ''}
               </Typography>
             </StepContent>
           </Step>

@@ -1,0 +1,54 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap");
+html, body {
+  font-family: "Instrument Sans", sans-serif;
+  background-color: white;
+  margin: 0;
+  padding: 0;
+  color: #1B1C1E;
+}
+
+.layout-page {
+  padding: 10px 110px;
+}
+
+.customLabelStepper {
+  font-size: 14px;
+}
+.customLabelStepper span.Mui-active, .customLabelStepper span.Mui-completed {
+  font-family: "Instrument Sans", sans-serif;
+  color: #1B1C1E;
+  font-weight: bold;
+}
+.customLabelStepper span.Mui-disabled, .customLabelStepper span.css-12eb3rq-MuiStepLabel-label {
+  font-family: "Instrument Sans", sans-serif;
+  font-weight: bold;
+}
+.customLabelStepper svg.css-3hpdci-MuiSvgIcon-root-MuiStepIcon-root.Mui-active, .customLabelStepper svg.css-3hpdci-MuiSvgIcon-root-MuiStepIcon-root.Mui-completed {
+  color: #530AF7;
+}
+.customLabelStepper svg.css-3hpdci-MuiSvgIcon-root-MuiStepIcon-root.Mui-active text, .customLabelStepper svg.css-3hpdci-MuiSvgIcon-root-MuiStepIcon-root.Mui-completed text {
+  font-family: "Instrument Sans", sans-serif;
+  color: #A6A6A6;
+}
+.customLabelStepper svg.css-3hpdci-MuiSvgIcon-root-MuiStepIcon-root.Mui-disabled {
+  color: rgba(242, 243, 245, 0.6196078431);
+}
+.customLabelStepper svg.css-3hpdci-MuiSvgIcon-root-MuiStepIcon-root.Mui-disabled text {
+  font-family: "Instrument Sans", sans-serif;
+  color: #A6A6A6;
+}
+
+.customDescStepper .css-14ek5zv-MuiCollapse-root-MuiStepContent-transition {
+  overflow: visible;
+  visibility: visible;
+  padding-bottom: 20px;
+}
+.customDescStepper .css-scib18-MuiCollapse-root-MuiStepContent-transition {
+  margin-bottom: -20px;
+}
+.customDescStepper p {
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 12px;
+  color: #A6A6A6;
+  text-align: left;
+}/*# sourceMappingURL=Mui-Override.css.map */

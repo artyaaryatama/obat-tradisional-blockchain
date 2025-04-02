@@ -1,0 +1,88 @@
+RoleManager deployed to: 0x9B26B853655e7F26828d25EAACFaFaC0caf8cC56
+ObatShared deployed to: 0xD88AA28325CcC3156353Eb2CAf9846ae28039964
+CpotbCertificate deployed to: 0x1543e9EE6e5Bdc64093f1df7480aDE70de0cBd97
+CdobCertificate deployed to: 0x6C5a3CA75c5Abb25201B42229daBa887e95322bF
+CertificateManager deployed to: 0xD9C8Aff5cd19e9d883261616f5E48C8CC7a67A2E
+NieManager deployed to: 0xD8622FF38245018583F75BCbD1aa880f1cae7a9C
+ObatTradisional deployed to: 0x44AC6209DD242A22Ed40CF4E25c1b455dC39efDf
+OrderManagement deployed to: 0x19c8510884E7A3A52a2e4ac1CB3ae5F49c16EE59
+
+bpom_sepolia 0xcbcD762c3C27212937314C1D46072a214346F2F3
+pabrik_sepolia 0x6142E74121ADE0de3BEC1641e0318dBcCFcDe06A
+pbf_sepolia 0x97CB6400E271e65150B2330ad27f213a4C9c31af
+retail_sepolia 0xA3cE1983150Fade27518DF467a99a74FB4082dDa
+
+register pabrik https://sepolia.etherscan.io/tx/0xd0ef69fdb3e26229beb57269e8467d487baf7104bbe67b2192331b09d6c08696
+register bpom https://sepolia.etherscan.io/tx/0x89f58639e480bcfcebd5bb5c08842562524099304201824bd94969548289ee79
+register retailer https://sepolia.etherscan.io/tx/0xebfdd4c6935c0a232f379d732da4a4ad7b419de3d92ecf4750dc0303c11edb79
+regsiter pbf https://sepolia.etherscan.io/tx/0xc80b934adb8b1f7b0cbda43b3190bb9e079b1a78488b97b8700a0de7e341c969
+
+parem cpotb request 0x15ac780b3283e264d4c66eaeadaf39b47ff417f2c671acf81265e632b9269c18
+parem cpotb approve https://sepolia.etherscan.io/tx/0x69d17335db2639c6630e78dba1a926ebfc863bc5500f25bb49b47a80fc1dfeb9
+rajangan cpotb request https://sepolia.etherscan.io/tx/0x034887f4784f9453022782c037b46b0bba08a9b7a2ead126665089834a7434ad
+rajangan cpotb reject https://sepolia.etherscan.io/tx/0x2841388833f99eb473aca4d62e375e50a14d112aa6382e88406e7708a8d5e374 
+rajangan cpotb renew request https://sepolia.etherscan.io/tx/0xbf581b8219107a33b1d7c0e2d9f74d8d0c49a968d0cee80ed3fe8be0744e1073
+rajangan cpotb approve https://sepolia.etherscan.io/tx/0x4d821da7f9abf3013bba9b85d685153b2072a266279f3a9a3004381ac9df1d08
+cairan obat luar request https://sepolia.etherscan.io/tx/0x8cb2c1343c52aa413f7a735de36841cb201568b9348df4d21bbe249769036a7f
+cairan obat luar approve https://sepolia.etherscan.io/tx/0x3e3e63e10c6e9ca55128871697d61dda3755ea12658c9026a8de722a5fbf8bd8
+
+
+ccp cdob request  https://sepolia.etherscan.io/tx/0x1a816526d042bb029eb8c5bd3eca792e7704c7c06f787078f884cc9606689977
+ccp cdob approve https://sepolia.etherscan.io/tx/0x5b8e07673cbf67b11348a84f0401fecb59811f77c4c3c261a1d6d08a5ad7e08d
+obat lain cdob request https://sepolia.etherscan.io/tx/0x2a4cabb275f97cb6615023617353dd1d1013eaf584d0f9ca5fe663c1edb8b214
+obat lain cdob reject https://sepolia.etherscan.io/tx/0xd9abbf62bfd7a9befc06a8f86120c5b394058b473a74add373743cc4baa47181
+obat lain renew request https://sepolia.etherscan.io/tx/0x7b58e9b935731049cf37e103feb812f30bd0348edd08ffb8aa867967bc97ee58
+obat lain reject lagi https://sepolia.etherscan.io/tx/0xb016f95e3f4e381e3d5370e82b266b2a3077200707eb30ec314b719a49551406
+obat lain renew request lagi https://sepolia.etherscan.io/tx/0x3a45315875405629e71df3fde08fc7b55dbb26ac2bcf5ad68e26e16a11f90f52
+obat lain approve https://sepolia.etherscan.io/tx/0x6abef1d29d86b11b42e69e2fdd19e8fe44882b50d9d6c2b74deb548fcdde84d2
+
+
+produksi obat herbal batuk pilek https://sepolia.etherscan.io/tx/0x102bb8ede64511f1fe469acb78d24e0417679813aa245ffb0bbecce69c9b1b9f
+pengajuan nie https://sepolia.etherscan.io/tx/0xa358fcabd9d26cc2ce98fd737f1761d6380970938040d5fb6e9c349c44c83299
+nie reject https://sepolia.etherscan.io/tx/0x782be01c19ecf83f35f6d417bcc2b7bc76131afa77bdbd596fc2618df706fcee
+nie renew request https://sepolia.etherscan.io/tx/0xce46b2c7effc1bf48a5bbad45cad7a801239bf35a84b1368bf4906193141a7a0
+nie approve https://sepolia.etherscan.io/tx/0xe8f5dbdbaea92edca2d8021131519b3f007696f51498ca579a81f5f4e1b70766
+
+produksi obat herbal anti alergi https://sepolia.etherscan.io/tx/0x41aece290bb730dc34b25256ea62f8285a445dd23994215e60997d53d59aa676
+pengajuan nie https://sepolia.etherscan.io/tx/0xf3e0ee574f43bb7826b3f36b0d709b302343032814717dbe24fea72a2e86d9cc
+approve nie https://sepolia.etherscan.io/tx/0xae6b959f08cf31bea4df8d0994b1cfa93800aec349870c49874d53626234b611
+
+produksi obat herbal demam reda https://sepolia.etherscan.io/tx/0x7f3fea31b7986bd9d3945bd0b5de63084e1948793b1566f37283cfcd0963c73b
+pengajuan nie https://sepolia.etherscan.io/tx/0xe1282f2edaee6b0d517fee1ab6bf91074445631e90eb479f390f4f3b0a82a2a2
+approve nie https://sepolia.etherscan.io/tx/0xd2d5ff220ea8200b3e107c3cbefe905a3f3e4aa7b893f941e920d0a0c4ccb2f3
+
+batch BN-6090-ZLOH
+- produksi https://sepolia.etherscan.io/tx/0x33bb1f9b2cad4caabcdb127041d13f767d7c3b78a7ccedce016cf88bab832459
+- order pbf https://sepolia.etherscan.io/tx/0x8e21b960a20f904a23752f5bf6d18ed510642b3025ade167829ea3e08cf9293b
+- send order pbf
+- complete order pbf
+- order retail
+- send order retail
+- complete order retail
+
+batch BN-1516-MEXF [HERBAL ANTI ALERGI]
+- produksi https://sepolia.etherscan.io/tx/0x1a1bf8bc0529dda9475bba47c66880a7b018e4ce15d6c2062b09a0f9c3447ee0
+- order pbf https://sepolia.etherscan.io/tx/0x470e22d1191c90f3f00da4767818c3343162165c3d5ea188307854f11398ed65
+- send order pbf https://sepolia.etherscan.io/tx/0x959ec4af06ea107a901dd03039de612cb9d964557297b59a7c26d028a375968e
+- complete order pbf https://sepolia.etherscan.io/tx/0xc10933807367b166359430aedbb6e0c223dd90792d492c713d6cc9fbe0fd01e7
+- order retail https://sepolia.etherscan.io/tx/0x370f8086cc78bcd97c9f869cfaadaefae240d010caff5bfe3713f2ebd31e9a4c
+- send order retail https://sepolia.etherscan.io/tx/0xb79ab47c2cd4656f1885b28efbcca50f4265d49dec1b0610636cd56af81ff892
+- complete order retail https://sepolia.etherscan.io/tx/0x3105e52b82f4f1a4932b8e6bd04d7c487699da25a070fbe03cdc8c29f5503e26
+
+batch BN-7597-UEEC
+- produksi https://sepolia.etherscan.io/tx/0x85fa3e99de5edfa83f79a9e94154291104b5775a7a4f726dc5996531e2bc702b
+- order pbf https://sepolia.etherscan.io/tx/0x3a8f68d074f85968e692b9361dd6c4ae4fbe4a24d7848a77b5304585c97e2fb7
+- send order pbf https://sepolia.etherscan.io/tx/0x496efb45f9de12b64cd9c2c9a625f106af4a803519fa17445ef8ab17abfbcfc9
+- complete order pbf
+- order retail
+- send order retail
+- complete order retail
+
+batch BN-0564-JWNR
+- produksi https://sepolia.etherscan.io/tx/0x6640131444f7eff370ada14a1e1c07d74338b5a44518f20e1e42d570f9803deb
+- order pbf https://sepolia.etherscan.io/tx/0xeac3163145f1e0e4487298218f15b76399098dbe55ce07e9e93d51619beddd92
+- send order pbf https://sepolia.etherscan.io/tx/0x4408ce00b26085f0d837992111bdafe8cbbd42e58a4bce83e7dabdcd2724bbbe
+- complete order pbf https://sepolia.etherscan.io/tx/0x700291644aa0e851a0eb250a90c2a364a2d281266b7178a31a51530ee8aca3d2
+- order retail https://sepolia.etherscan.io/tx/0xb980197b4db7b9ff2200b4d4e1d674c1e711ca4f543b54145a18ed5ea365b343
+- send order retail https://sepolia.etherscan.io/tx/0x61a2017da73a8f387c2cc0483bcf7f082e49599ced5028cb562448590930398a
+- complete order retail https://sepolia.etherscan.io/tx/0xf85032a0aa6fcfa3cb0173769b388d1ac8056bfef64895a153361016fbd79066

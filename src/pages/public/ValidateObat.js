@@ -1,0 +1,118 @@
+const prohibitedIngredients = [
+  "Abri Precatorii Semen",
+  "Aconiti Herba",
+  "Aconiti Radix",
+  "Adonis Vernalidis Herba",
+  "Adonis Vernalidis Radix",
+  "Arcangelisiae Flavae Caulis",
+  "Aristolochiae Herba",
+  "Aristolochiae Radix",
+  "Artemesiae Folium",
+  "Atropae Belladonnae Herba",
+  "Atropae Belladonnae Radix",
+  "Berberis Caulis",
+  "Catharanthi Rosei Herba",
+  "Catharanthi Rosei Radix",
+  "Chelidonii Majusi Herba",
+  "Chelidonii Majusi Radix",
+  "Cinchonae Cortex",
+  "Citrulli Colocynthidis Fructus",
+  "Citrulli Colocynthidis Semen",
+  "Colchici Autumnalis Semen",
+  "Scammoniae Radix",
+  "Scammoniae Semen",
+  "Coptis Rhizoma",
+  "Croton Tiglii Semen",
+  "Croton Tiglii Oleum",
+  "Daturae Herba",
+  "Daturae Radix",
+  "Delphinii Staphisagriae Semen",
+  "Digitalis Herba",
+  "Digitalis Radix",
+  "Dryopteridis Filisis Herba",
+  "Dryopteridis Filisis Radix",
+  "Ephedrae Herba",
+  "Ephedrae Radix",
+  "Euphorbiae Tirucallii Herba",
+  "Garciniae Hanburyii Radix",
+  "Garciniae Hanburyii Caulis",
+  "Garciniae Hanburyii Folium",
+  "Garciniae Hanburyii Flos",
+  "Garciniae Hanburyii Fructus",
+  "Garciniae Hanburyii Semen",
+  "Hydrastis Canadensidis Radix",
+  "Hydrastis Canadensidis Rhizoma",
+  "Hyperici Perforati Herba",
+  "Hyoscyami Nigeris Herba",
+  "Hyoscyami Nigeris Radix",
+  "Justiciae Gendarussae Folium",
+  "Lantanae Camarae Radix",
+  "Lantanae Camarae Herba",
+  "Lobeliae Chinensidis Herba",
+  "Lobeliae Chinensidis Radix",
+  "Mahoniae Radix",
+  "Mahoniae Cortex",
+  "Mahoniae Rhizoma",
+  "Mitragynae Speciosae Herba",
+  "Mitragynae Speciosae Radix",
+  "Nerii Oleanderis Herba",
+  "Nerii Oleanderis Radix",
+  "Pausinystaliae Johimbe Cortex",
+  "Phellodendronis Cortex",
+  "Pinneliae Tuber",
+  "Piperis Methystici Herba",
+  "Podophylli Emodii Folium",
+  "Podophylli Emodii Radix",
+  "Rauvolfiae Herba",
+  "Rauvolfiae Radix",
+  "Schoenocaulonis Officinalis Semen",
+  "Scillae Bulbus",
+  "Strophanthi Herba",
+  "Strophanthi Radix",
+  "Strycni Semen",
+  "Strycni Radix",
+  "Symphyti Folium",
+  "Tinosporae Crispae Radix",
+  "Angelicae Sinensis Radix",
+  "Ligustici Rhizoma",
+  "Cassiae Sennae Folium",
+  "Rhei Officinalis Radix",
+  "Bufo gargarizans",
+  "Bufo melanostictus",
+  "Bufo vulgaris",
+  "Lytta vesicatoria (Cantharis)",
+  "Mylabris phalerata",
+  "Mylabris cichorii",
+  "Chalcanthite",
+  "Litharge",
+  "Minium",
+  "Arsen trioksida",
+  "Arsen triklorida",
+  "Orpiment",
+  "Realgar",
+  "Kalomel",
+  "Sublimat",
+  "Cinnabaris",
+  "Sulfur"
+];
+
+export function validateObat(obatData) {
+
+  const invalidIngredients = obatData.komposisi.filter((ingredient) =>
+    prohibitedIngredients.includes(ingredient)
+  );
+
+  if (invalidIngredients.length > 0) {
+    const ingredientList = invalidIngredients.length === 1
+      ? `Obat tradisional dilarang mengandung ${invalidIngredients[0]}`
+      : `Obat tradisional dilarang mengandung : ${invalidIngredients.join(", ")}`;
+
+    return {
+      message: "Validation Failed",
+      reason: ingredientList,
+      title: "Kandungan obat tradisional tidak sesuai"
+    };
+  }
+
+  return { message: "Validation Passed", reason: "All checks passed." };
+}

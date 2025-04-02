@@ -17,7 +17,7 @@ function Navbar() {
 
   return (
     <>
-      <div className="layout-page">
+      <div className="layout-component">
         <nav className="navbar">
           <div className="navbar-menu">
             <div className="navbar-logo">
@@ -28,24 +28,24 @@ function Navbar() {
               <ul>
                 {userRole === '0' && (
                   <>
-                    <li className={currentPath === '/cpotb' || currentPath === '/request-cpotb' ? 'active' : ''}>
+                    <li className={currentPath === '/cpotb' || currentPath === '/request-cpotb' || currentPath === '/renew-request-cpotb' ? 'active' : ''}>
                       <Link to="/cpotb">CPOTB</Link>
                     </li>
-                    <li className={currentPath === '/obat-available-factory' || currentPath === '/create-obat' || currentPath === '/obat' || currentPath === '/manage-orders-factory' || currentPath === '/add-quantity-obat' ? 'active' : ''}>
+                    <li className={currentPath === '/obat-available-factory' || currentPath === '/request-nie' || currentPath === '/renew-request-nie'|| currentPath === '/create-obat' || currentPath === '/obat' || currentPath === '/manage-orders-factory' || currentPath === '/add-quantity-obat' ? 'active' : ''}>
                       <Link to="/obat">OBAT TRADISIONAL</Link>
                     </li>
                   </>
                 )}
                 {userRole === '1' && (
                   <>
-                    <li className={currentPath === '/cdob' || currentPath === '/request-cdob' ? 'active' : ''}>
+                    <li className={currentPath === '/cdob' || currentPath === '/request-cdob' || currentPath === '/renew-request-cdob' ? 'active' : ''}>
                       <Link to="/cdob">CDOB</Link>
                     </li>
-                    <li className={currentPath === '/pbf-orders' || currentPath=== '/create-pbf-order'? 'active' : ''}>
+                    <li className={currentPath === '/pbf-orders' || currentPath=== '/create-pbf-order' || currentPath === '/obat-available-pbf' ? 'active' : ''}>
                       <Link to="/create-pbf-order">ORDER OBAT</Link>
                     </li>
-                    <li className={currentPath === '/obat-available-pbf' || currentPath === '/manage-orders-pbf' ? 'active' : ''}>
-                      <Link to="/obat-available-pbf">SELL OBAT</Link>
+                    <li className={currentPath === '/manage-orders-pbf' ? 'active' : ''}>
+                      <Link to="/manage-orders-pbf">SELL OBAT</Link>
                     </li>
                   </>
                 )}
@@ -63,9 +63,6 @@ function Navbar() {
                   <>
                     <li className={currentPath === '/retailer-orders' || currentPath === '/create-retailer-order' || currentPath === '/obat-available-retailer' ? 'active' : ''}>
                       <Link to="/retailer-orders">ORDER OBAT</Link>
-                    </li>
-                    <li className={currentPath === '/nie-approval' ? 'active' : ''}>
-                      <Link to="/error">CEK OBAT</Link>
                     </li>
                   </>
                 )}

@@ -22,8 +22,7 @@
 .App {
   .container{
     background-color: $grey-light;
-    width: 400px;
-    padding: 48px 0;
+    padding: 48px 20px;
     border-radius: 10px;
 
     .form-container{
@@ -37,14 +36,25 @@
       }
 
       form{
-        // background-color: rgb(119, 195, 195);
         display: flex;
         flex-direction: column;
-        width: 272px;
+        width: 360px;
         padding: 14px;
 
-        &>*{
-          margin-top: 10px;
+        .empty{
+          display: none;
+        }
+
+        &>input, &>select, &>textarea{
+          margin-bottom: 10px;
+        }
+        
+        div.nibNpwp{
+          margin: 10px 0;
+
+          input.nib{
+            margin-bottom: 10px;
+          }
         }
 
         input{
@@ -58,12 +68,28 @@
           }
         }
         
+        textarea{
+          @include inputForm($grey, $white);
+          border: none;
+          color: $black;
+          width: auto;
+          font-family: "Instrument Sans", sans-serif;
+  
+          &:disabled{
+            background-color: $grey-secondary;
+            font-style: italic;
+          }
+
+        }
+        
         select{
-          @include selectForm($white)
+          @include selectForm($white);
+          margin: 0;
         }
 
         button{
-          @include btnUniversal($white, $black, 4px)
+          @include btnUniversal($white, $black, 4px);
+          margin-top: 10px;
         }
       }
 
@@ -83,10 +109,33 @@
         color: $purple;
         
       }
+
     }
-
+    
   }
+  
+}
 
+.btn-group{
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+
+  ul{
+    @include list();
+    gap: 16px;
+
+    li{
+      width: 50%;
+
+      button.test{
+        margin-top: 20px;
+        @include btnUniversal($white, $grey, 4px);
+        width: -webkit-fill-available;
+      }
+    }
+    
+  }
 }
 
 #LoginPage.App{
@@ -106,20 +155,68 @@
     .img-container{
       display: flex;
       align-items: center;
+      flex-direction: column;
       justify-content: center;
       margin-right: 20px;
       width: 56%;
       
       img {
-        width: 360px;
+        width: 310px;
+      }
+
+      .attribute{
+        margin-top: 10px;
+        span {
+          margin-bottom: 10px;
+          font-size: 12px;
+          a{
+            text-decoration: none;
+            color: $purple;
+          }
+        }
+    
+      }
+
+      .nav-group{
+        margin-top: 12px;
+        padding: 6px;
+        background-color: $grey-light;
+        border-radius: 10px;
+      
+        ul{
+          @include list();
+      
+          li{
+      
+            button{
+              padding: 10px 24px;
+              color: $purple;
+              font-size: 12px;
+              width: max-content;
+              border: none;
+              border-radius: 8px;
+              background-color: transparent;
+      
+              &:hover{
+                cursor: pointer;
+                background-color: $purple;
+                color: white;
+                transition: ease 300ms;
+              }
+      
+              i{
+                margin-right: 10px;
+              }
+            }
+          }
+        }
       }
     }
   
     .form-container{
       background-color: $grey-light;
-      padding: 48px 0;
+      padding: 48px 20px;
       border-radius: 10px;
-      width: 44%;
 
       form{
         button{

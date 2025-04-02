@@ -9,6 +9,9 @@ import Typography from '@mui/material/Typography';
 import "./../styles/Mui-Override.scss";
 
 export default function NieStatusStepper({ nieStatus, timestamps }) {
+  
+  const currentActiveStep = parseInt(nieStatus);
+  console.log(currentActiveStep);
 
   const steps = [
     {
@@ -22,20 +25,22 @@ export default function NieStatusStepper({ nieStatus, timestamps }) {
       isDisabled: timestamps.timestampNieRequest === 0
     },
     {
-      label: 'NIE Approved',
-      description: timestamps.timestampNieApprove ? timestamps.timestampNieApprove : '',
-      isDisabled: timestamps.timestampNieApprove === 0
+      label: nieStatus === 3 ? 'NIE Rejected' : 'NIE Approved',
+      description: nieStatus === 3
+        ? (timestamps.timestampNieReject ? timestamps.timestampNieReject : '')
+        : (timestamps.timestampNieApprove ? timestamps.timestampNieApprove : ''),
+      isDisabled: nieStatus === 3
+        ? timestamps.timestampNieReject === 0
+        : timestamps.timestampNieApprove === 0
     }
   ];
-  console.log(steps);
 
-  const currentActiveStep = parseInt(nieStatus);
 
   return (
     <Box sx={{ maxWidth: 700 }}>
       <Stepper activeStep={currentActiveStep} orientation="vertical">
         {steps.map((step, index) => (
-          <Step key={step.label} completed={currentActiveStep > index}>
+          <Step key={step.label}>
             <StepLabel className='customLabelStepper' TransitionProps={{ unmountOnExit: false }}>
               {step.label}
             </StepLabel>
@@ -44,7 +49,7 @@ export default function NieStatusStepper({ nieStatus, timestamps }) {
               TransitionProps={{ unmountOnExit: false }}
             >
               <Typography>
-                {index === 0  || index === 1 || index === currentActiveStep ? step.description : ''}
+                {index === 0  || index === 1 || index === 2 ? step.description : ''}
               </Typography>
             </StepContent>
           </Step>

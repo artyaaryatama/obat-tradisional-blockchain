@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { create } from 'ipfs-http-client';
-import ReactDOM from 'react-dom/client';
-import { CID } from 'multiformats/cid'
+import oht from '../../assets/images/oht.png';
+import fitofarmaka from '../../assets/images/fitofarmaka.png';
+import Jamu from '../../assets/images/jamu.png';
 
 import "../../styles/CheckObat.scss"
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
-
 
 function CheckObatIpfs() {
   const [batchName, setBatchName] = useState(null);
@@ -15,34 +16,42 @@ function CheckObatIpfs() {
   const [dataOrderRetailer, setDataOrderRetailer] = useState(false);
   const [detailOrderPbf, setDetailOrderPbf] = useState([]);
   const [detailOrderRetailer, setDetailOrderRetailer] = useState([]);
-  
-  // These states will be used for displaying detailed information
+  const [kemasanKeterangan, setKemasanKeterangan] = useState("")
   const [namaObat, setNamaObat] = useState("");
   const [merkObat, setMerkObat] = useState("");
   const [klaim, setKlaim] = useState([]);
+  const [jenisObat, setJenisObat] = useState("")
+  const [tipeObat, setTipeObat] = useState("")
   const [komposisi, setKomposisi] = useState([]);
+  const [kemasan, setKemasan] = useState("");
   const [factoryAddr, setFactoryAddr] = useState("");
   const [factoryInstanceName, setFactoryInstanceName] = useState("");
-  const [tipeProduk, setTipeProduk] = useState("");
+  const [factoryType, setFactoryType] = useState("")
   const [nieNumber, setNieNumber] = useState("");
   const [nieRequestDate, setNieRequestDate] = useState("");
   const [nieApprovalDate, setNieApprovalDate] = useState("");
   const [bpomAddr, setBpomAddr] = useState("");
-  const [bpomUserName, setBpomUserName] = useState("");
+  const [bpomInstanceName, setBpomInstanceName] = useState("");
+  const [statusNie, setStatusNie] = useState("");
+  const [cpotbHash, setCpotbHash] = useState("");
+  const [cdobHash, setCdobHash] = useState("");
+  const [bpomAddressInstance, setBpomAddressInstance] = useState("");
+  const [factoryAddressInstance, setFactoryAddressInstance] = useState("");
+  const [pbfInstanceAddress, setPbfInstanceAddress] = useState("");
+  const [retailerInstanceAddress, setRetailerInstanceAddress] = useState("");
+  const [retailerNPWP, setRetailerNPWP] = useState("");
+  const [pbfNPWP, setPBFNPWP] = useState("");
+  const [factoryNPWP, setFactoryNPWP] = useState("");
+  const [bpomNPWP, setBPOMNPWP] = useState("");
+  const [retailerNib, setRetailerNib] = useState("");
+  const [pbfNib, setPBFNib] = useState("");
+  const [factoryNib, setFactoryNib] = useState("");
+  const [bpomNib, setBPOMNib] = useState("");
 
-  const obatStatusMap = {
-    0: "In Local Production",
-    1: "Requested NIE",
-    2: "Approved NIE"
-  };
 
-  const tipeProdukMap = {
-    0: "Obat Tradisional",
-    1: "Suplemen Kesehatan"
-  };
 
   useEffect(() => {
-    document.title = "Check Obat Tradisional"; 
+    document.title = "Cek Obat Tradisional"; 
   }, []);
 
   const getHashFromUrl = () => {
@@ -51,9 +60,6 @@ function CheckObatIpfs() {
     return hash;
   };
 
-  // const obatDataFull = {"batchName":"BN-8047-JIGV","obatIdPackage":"OT-02838OL","dataObat":{"obatIdProduk":"ot-3385CI","namaProduk":"Buyung Upik Instan Rasa Coklat","merk":"Buyung Upik Instan Rasa Coklat","klaim":["Memelihara kesehatan","Membantu memperbaiki nafsu makan","Secara tradisional digunakan pada penderita kecacingan"],"kemasan":"Dus, 11 @Tablet (5 gram)","komposisi":["Cinnamomum Burmanii Cortex","Curcuma Aeruginosa Rhizoma","Curcuma Domestica Rhizoma","Curcuma Xanthorrhiza Rhizoma"],"factoryAddr":"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266","factoryInstanceName":"PT. Budi Pekerti","factoryUserName":"TAKAKI YUYA","tipeProduk":"Obat Tradisional","nieNumber":"TETSDFSDF","nieRequestDate":"-","nieApprovalDate":"-","bpomAddr":"-","bpomUserName":"-"},"datOrderPbf":{"orderQuantity":2,"senderInstanceName":"PT. Mangga Arum","targetInstanceName":"PT. Budi Pekerti","timestampOrder":"9 Desember 2024 pukul 00.29 WITA","timestampShipped":"9 Desember 2024 pukul 00.29 WITA","timestampComplete":"9 Desember 2024 pukul 00.30 WITA"},"dataOrderRetailer":{"orderQuantity":2,"senderInstanceName":"Apotek Sejahtera","targetInstanceName":"PT. Mangga Arum","timestampOrder":"9 Desember 2024 pukul 00.32 WITA","timestampShipped":"9 Desember 2024 pukul 00.32 WITA","timestampComplete":"9 Desember 2024 pukul 00.33 WITA"}}
-
-  
   useEffect(() => {
     const getDetailData = async () => {
 
@@ -67,7 +73,7 @@ function CheckObatIpfs() {
   
       const obatData = JSON.parse(data);
       console.log("Parsed Data from IPFS:", obatData);
-
+      
       const detailObat = {
         merk: obatData.dataObat.merk,
         namaObat: obatData.dataObat.namaProduk,
@@ -75,19 +81,44 @@ function CheckObatIpfs() {
         kemasan: obatData.dataObat.kemasan,
         komposisi: obatData.dataObat.komposisi,
         factoryAddr: obatData.dataObat.factoryAddr,
+        factoryType: obatData.dataObat.factoryType,
         factoryInstanceName: obatData.dataObat.factoryInstanceName,
-        factoryUserName: obatData.dataObat.factoryUserName,
-        tipeProduk: obatData.dataObat.tipeProduk, 
-        obatStatus: obatData.dataObat.obatStatus ? obatStatusMap[obatData.dataObat.obatStatus] : '-' ,
+        nieStatus: obatData.dataObat.obatStatus,
         nieRequestDate: obatData.dataObat.nieRequestDate, 
         nieApprovalDate: obatData.dataObat.nieApprovalDate,
         nieNumber: obatData.dataObat.nieNumber,
         bpomAddr: obatData.dataObat.bpomAddr,
-        bpomUserName:  obatData.dataObat.bpomUserName,
-        bpomInstanceNames:  obatData.dataObat.bpomInstanceName
+        bpomInstanceName: obatData.dataObat.bpomInstanceName,
+        factoryAddressInstance: obatData.dataObat.factoryAddressInstance, 
+        bpomAddressInstance: obatData.dataObat.bpomAddressInstance,
+        tipeObat: obatData.dataObat.tipeObat,
+        jenisObat: obatData.dataObat.jenisObat,
+        nibFactory :obatData.dataObat.nibFactory,
+        npwpFactory :obatData.dataObat.npwpFactory,
+        nibBpom :obatData.dataObat.nibBpom,
+        npwpBpom :obatData.dataObat.npwpBpom,
       };
+      
+      if(obatData.dataObat.obatStatus === 'NIE Approved'){
+        detailObat.nieStatus='Nie Disetujui'
 
-      console.log(detailObat);
+      }
+
+      if (detailObat.factoryType === "UMOT"){
+        setFactoryType("Usaha Mikro Obat Tradisional (UMOT)")
+      } else if (detailObat.factoryType === "UKOT"){
+        setFactoryType("Usaha Kecil Obat Tradisional (UKOT) ")
+      } else{
+        setFactoryType("Industri Obat Tradisional (IOT)")
+      }
+
+      if(detailObat.jenisObat === "OHT"){
+        setJenisObat("Obat Herbal Terstandar")
+      } else {
+        setJenisObat(detailObat.jenisObat)
+      }
+      
+      const ketmasanKet = detailObat.kemasan.match(/@(.+?)\s*\(/);
 
       if(obatData.dataOrderPbf && Object.keys(obatData.dataOrderPbf).length > 0) {
         setDataOrderPbf(true)
@@ -95,15 +126,24 @@ function CheckObatIpfs() {
           orderQuantity: obatData.dataOrderPbf.orderQuantity,
           senderInstanceName: obatData.dataOrderPbf.senderInstanceName,
           targetInstanceName : obatData.dataOrderPbf.targetInstanceName,
-          statusOrder : obatData.dataOrderPbf.statusOrder ? obatData.dataOrderPbf.statusOrder : '-',
+          statusOrder : obatData.dataOrderPbf.statusOrder ,
           timestampOrder: obatData.dataOrderPbf.timestampOrder,
-          senderAddress : obatData.dataOrderPbf.senderAddress,
+          senderAddress : obatData.dataOrderPbf.senderAddress === '0x0000000000000000000000000000000000000000' ? "-" : obatData.dataOrderPbf.senderAddress,
           targetAddress : obatData.dataOrderPbf.targetAddress,
           timestampShipped: obatData.dataOrderPbf.timestampShipped,
           timestampComplete: obatData.dataOrderPbf.timestampComplete ? obatData.dataOrderPbf.timestampComplete  : "-"
         }
-  
+        console.log(detailOrderPbf);
         setDetailOrderPbf(detailOrderPbf)
+        setPBFNPWP(obatData.dataOrderPbf.NpwpPbf)
+        setPBFNib(obatData.dataOrderPbf.NibPbf)
+        setCdobHash(obatData.cdobHash)
+        setPbfInstanceAddress(obatData.dataOrderPbf.pbfInstanceAddress)
+        if(obatData.dataOrderPbf.statusOrder === 'Order Completed'){
+          detailOrderPbf.statusOrder='Order Selesai'
+        } else if(obatData.dataOrderPbf.statusOrder === 'Order Shipped'){
+          detailOrderPbf.statusOrder='Order Dikirim'
+        }
       }
       
       if(obatData.dataOrderRetailer && Object.keys(obatData.dataOrderRetailer).length > 0) {
@@ -111,48 +151,70 @@ function CheckObatIpfs() {
         const detailOrderRetailer = {
           orderQuantity: obatData.dataOrderRetailer.orderQuantity,
           senderInstanceName: obatData.dataOrderRetailer.senderInstanceName,
-          statusOrder : obatData.dataOrderRetailer.statusOrder ? obatData.dataOrderRetailer.statusOrder : '-',
+          statusOrder : obatData.dataOrderRetailer.statusOrder,
           targetInstanceName : obatData.dataOrderRetailer.targetInstanceName,
-          senderAddress : obatData.dataOrderRetailer.senderAddress,
+          senderAddress : obatData.dataOrderRetailer.senderAddress === '0x0000000000000000000000000000000000000000' ? "-" : obatData.dataOrderRetailer.senderAddress,
           targetAddress : obatData.dataOrderRetailer.targetAddress,
           timestampOrder: obatData.dataOrderRetailer.timestampOrder,
           timestampShipped: obatData.dataOrderRetailer.timestampShipped,
-          timestampComplete: obatData.dataOrderRetailer.timestampComplete ?  obatData.dataOrderRetailer.timestampComplete : "-" 
+          timestampComplete: obatData.dataOrderRetailer.timestampComplete ?  obatData.dataOrderRetailer.timestampComplete : "-",
         }
-        
+        if(obatData.dataOrderRetailer.statusOrder === 'Order Completed'){
+          detailOrderRetailer.statusOrder='Order Selesai'
+        } else if(obatData.dataOrderRetailer.statusOrder === 'Order Shipped'){
+          detailOrderRetailer.statusOrder='Order Dikirim'
+        }
+        setRetailerNPWP(obatData.dataOrderRetailer.NpwpRetailer)
+        setRetailerNib(obatData.dataOrderRetailer.NibRetailer)
+        setRetailerInstanceAddress(obatData.dataOrderRetailer.retailerInstanceAddress)
         setDetailOrderRetailer(detailOrderRetailer)
       }
 
+      setKemasanKeterangan(ketmasanKet[1])
       setBatchName(obatData.batchName);
       setObatIdPackage(obatData.obatIdPackage);
       setNamaObat(detailObat.namaObat);
+      setTipeObat(detailObat.tipeObat);
       setMerkObat(detailObat.merk);
       setKlaim(detailObat.klaim);
+      setKemasan(detailObat.kemasan)
       setKomposisi(detailObat.komposisi);
       setFactoryAddr(detailObat.factoryAddr);
       setFactoryInstanceName(detailObat.factoryInstanceName);
-      setTipeProduk(detailObat.tipeProduk);
       setNieNumber(detailObat.nieNumber);
       setNieRequestDate(detailObat.nieRequestDate);
       setNieApprovalDate(detailObat.nieApprovalDate);
       setBpomAddr(detailObat.bpomAddr);
-      setBpomUserName(detailObat.bpomUserName);
-
+      setBpomInstanceName(detailObat.bpomInstanceName);
+      setStatusNie(detailObat.nieStatus);
+      setCpotbHash(obatData.cpotbHash);
+      setBpomAddressInstance(detailObat.bpomAddressInstance);
+      setBPOMNPWP(detailObat.npwpBpom)
+      setFactoryNPWP(detailObat.npwpFactory)
+      setFactoryNib(detailObat.nibFactory)
+      setBPOMNib(detailObat.nibBpom)
+      setFactoryAddressInstance(detailObat.factoryAddressInstance);
     }
 
     getDetailData();
   }, []);
 
-  function getData() {
-  }
-
-  getData()
+  const imageMap = {
+    "Jamu": Jamu,
+    "Obat Herbal Terstandar": oht, 
+    "Fitofarmaka": fitofarmaka,
+  };
+  
+  const imgSrc = imageMap[jenisObat]
 
   return (
     <>
       <div id="publicObat" className='layout-page'>
         <div className="title-menu">
-          <h2>{namaObat} <span>{tipeProduk}</span></h2>
+          <div className="logo-obat">
+          <img src={imgSrc} alt={jenisObat} />
+          </div>
+          <h2>{namaObat} <span>Obat Tradisional</span></h2>
 
         </div>
         <div className="container">
@@ -166,11 +228,11 @@ function CheckObatIpfs() {
                 <div className="list-detail">
                   <ul className="info-list">
                     <li className="info-item">
-                      <span className="label">Batch Name</span>
+                      <span className="label">Nama Batch</span>
                       <span>{batchName}</span>
                     </li>
                     <li className="info-item">
-                      <span className="label">Obat ID Package</span>
+                      <span className="label">ID Kemasan</span>
                       <span>{obatIdPackage}</span>
                     </li>
                     <li className="info-item">
@@ -178,17 +240,29 @@ function CheckObatIpfs() {
                       <span>{namaObat}</span>
                     </li>
                     <li className="info-item">
-                      <span className="label">Nomor NIE</span>
-                      <span>{nieNumber}</span>
-                    </li>
-                    <li className="info-item">
-                      <span className="label">Factory Instance</span>
-                      <span>{factoryInstanceName}</span>
-                      <span className='addr'> ({factoryAddr})</span>
-                    </li>
-                    <li className="info-item">
-                      <span className="label">Merk</span>
+                      <span className="label">Merk Obat</span>
                       <span>{merkObat}</span>
+                    </li>
+                    <li className="info-item">
+                      <span className="label">Jenis Obat</span>
+                      <span>{jenisObat}</span>
+                      <JenisSediaanTooltip
+                        jenisSediaan={jenisObat}
+                      />
+                    </li>
+                    <li className="info-item">
+                      <span className="label">Tipe Obat</span>
+                      <span>{tipeObat}</span>
+                      <JenisSediaanTooltip
+                        jenisSediaan={tipeObat}
+                      />
+                    </li>
+                    <li className="info-item">
+                      <span className="label">Kemasan Obat</span>
+                      <span>{kemasan}</span>
+                      <JenisSediaanTooltip
+                        jenisSediaan={kemasanKeterangan}
+                      />
                     </li>
                     <li className="info-item list-item">
                       <span className="label">Klaim</span>
@@ -216,6 +290,40 @@ function CheckObatIpfs() {
                         </ol>
                       </div>
                     </li>
+                    <li className="info-item">
+                      <span className="label">Nama Instansi Pabrik</span>
+                      <span>{factoryInstanceName}</span>
+                      <span className='addr'> ({factoryAddr})</span>
+                      <span className='linked'>
+                        <a
+                          href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Detail CPOTB
+                          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </span>
+                    </li>
+
+                    {/* <li className="info-item">
+                      <span className="label">NIB Pabrik</span>
+                      <span className='address'>{factoryNib}</span>
+                    </li>
+
+                    <li className="info-item">
+                      <span className="label">NPWP Pabrik</span>
+                      <span className='address'>{factoryNPWP}</span>
+                    </li> */}
+
+                    <li className="info-item">
+                      <span className="label">Tipe Industri Farmasi</span>
+                      <span className='address'>{factoryType}</span>
+                    </li>
+                    <li className="info-item">
+                      <span className="label">Lokasi Pabrik</span>
+                      <span className='address'>{factoryAddressInstance}</span>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -224,27 +332,40 @@ function CheckObatIpfs() {
             <div className="section">
               <div className="title">
                 <h5>Data NIE</h5>
+                <span className={statusNie}>{statusNie}</span>
               </div>
               <div className="content">
                 <div className="list-detail">
                   <ul className="info-list">
                     <li className="info-item">
-                      <span className="label">NIE Number</span>
+                      <span className="label">Nomor NIE</span>
                       <span>{nieNumber}</span>
                     </li>
                     <li className="info-item">
-                      <span className="label">NIE Request Date</span>
+                      <span className="label">Tanggal Pengajuan NIE</span>
                       <span>{nieRequestDate}</span>
                     </li>
                     <li className="info-item">
-                      <span className="label">NIE Approval Date</span>
+                      <span className="label">Tanggal Penerbitan NIE </span>
                       <span>{nieApprovalDate}</span>
                     </li>
                     <li className="info-item">
-                      <span className="label">BPOM Instance</span>
-                      <span>{bpomUserName}</span>
+                      <span className="label">Nama Instansi BPOM</span>
+                      <span>{bpomInstanceName}</span>
                       <span className='addr'>({bpomAddr})</span>
                     </li>
+                    <li className="info-item">
+                      <span className="label">Lokasi BPOM</span>
+                      <span>{bpomAddressInstance}</span>
+                    </li>
+                    {/* <li className="info-item">
+                      <span className="label">NIB BPOM</span>
+                      <span>{bpomNib}</span>
+                    </li>
+                    <li className="info-item">
+                      <span className="label">NPWP BPOM</span>
+                      <span>{bpomNPWP}</span>
+                    </li> */}
                   </ul>
                 </div>
               </div>
@@ -255,30 +376,48 @@ function CheckObatIpfs() {
                 <div className="section">
                   <div className="title">
                     <h5>Data Order PBF</h5>
+                    <span className={detailOrderPbf.statusOrder}>{detailOrderPbf.statusOrder}</span>
                   </div>
                   <div className="content">
                     <div className="list-detail">
                       <ul className="info-list">
                         <li className="info-item">
-                          <span className="label">Instance PBF</span>
+                          <span className="label">Nama Instansi PBF</span>
                           <span>{detailOrderPbf.senderInstanceName}</span>
                           <span className='addr'>({detailOrderPbf.senderAddress})</span>
+                          <span className='linked'>
+                            <a
+                              href={`http://localhost:3000/public/certificate/${cdobHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Detail CDOB
+                              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </span>
                         </li>
                         <li className="info-item">
-                          <span className="label">instance Factory</span>
-                          <span>{detailOrderPbf.targetInstanceName}</span>
-                          <span className='addr'>({detailOrderPbf.targetAddress})</span>
+                          <span className="label">Lokasi PBF</span>
+                          <span>{pbfInstanceAddress}</span>
+                        </li>
+                        {/* <li className="info-item">
+                          <span className="label">NIB PBF</span>
+                          <span>{pbfNib}</span>
                         </li>
                         <li className="info-item">
-                          <span className="label">Timestamp Order</span>
+                          <span className="label">NPWP PBF</span>
+                          <span>{pbfNPWP}</span>
+                        </li> */}
+                        <li className="info-item">
+                          <span className="label">Tangal order diajukan</span>
                           <span>{detailOrderPbf.timestampOrder}</span>
                         </li>
                         <li className="info-item">
-                          <span className="label">Timestamp Shipped</span>
+                          <span className="label">Tanggal order dikirim</span>
                           <span>{detailOrderPbf.timestampShipped}</span>
                         </li>
                         <li className="info-item">
-                          <span className="label">Timestamp Complete</span>
+                          <span className="label">Tanggal order selesai</span>
                           <span>{detailOrderPbf.timestampComplete}</span>
                         </li>
                       </ul>
@@ -295,30 +434,39 @@ function CheckObatIpfs() {
                 <div className="section">
                   <div className="title">
                     <h5>Data Order Retailer</h5>
+                    <span className={detailOrderRetailer.statusOrder}>{detailOrderRetailer.statusOrder}</span>
+
                   </div>
                   <div className="content">
                     <div className="list-detail">
                       <ul className="info-list">
                         <li className="info-item">
-                          <span className="label">Instance PBF</span>
+                          <span className="label">Nama Instansi Retailer</span>
                           <span>{detailOrderRetailer.senderInstanceName}</span>
                           <span className='addr'>({detailOrderRetailer.senderAddress})</span>
                         </li>
                         <li className="info-item">
-                          <span className="label">instance Factory</span>
-                          <span>{detailOrderRetailer.targetInstanceName}</span>
-                          <span className='addr'>({detailOrderRetailer.targetAddress})</span>
+                          <span className="label">Lokasi Retailer </span>
+                          <span>{retailerInstanceAddress}</span>
+                        </li>
+                        {/* <li className="info-item">
+                          <span className="label">NIB Retailer</span>
+                          <span>{retailerNib}</span>
                         </li>
                         <li className="info-item">
-                          <span className="label">Timestamp Order</span>
+                          <span className="label">NPWP Retailer</span>
+                          <span>{retailerNPWP}</span>
+                        </li> */}
+                        <li className="info-item">
+                          <span className="label">Tangal order diajukan</span>
                           <span>{detailOrderRetailer.timestampOrder}</span>
                         </li>
                         <li className="info-item">
-                          <span className="label">Timestamp Shipped</span>
+                          <span className="label">Tanggal order dikirim</span>
                           <span>{detailOrderRetailer.timestampShipped}</span>
                         </li>
                         <li className="info-item">
-                          <span className="label">Timestamp Complete</span>
+                          <span className="label">Tanggal order selesai</span>
                           <span>{detailOrderRetailer.timestampComplete}</span>
                         </li>
                       </ul>
@@ -331,10 +479,6 @@ function CheckObatIpfs() {
             }
 
           </div>
-
-          {/* <div className="data-timestamp">
-            <h3>INi data timestamp</h3>
-          </div> */}
 
         </div>
       </div>

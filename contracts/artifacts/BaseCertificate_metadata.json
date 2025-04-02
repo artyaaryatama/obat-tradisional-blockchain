@@ -1,0 +1,507 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"name": "certDetailById",
+				"outputs": [
+					{
+						"internalType": "enum EnumsLibrary.StatusCertificate",
+						"name": "status",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestampRequest",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestampApprove",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestampRejected",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestampRenewRequest",
+						"type": "uint256"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "userName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "userInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "userAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct BaseCertificate.UserCert",
+						"name": "sender",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "userName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "userInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "userAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct BaseCertificate.UserCert",
+						"name": "bpom",
+						"type": "tuple"
+					},
+					{
+						"internalType": "string",
+						"name": "ipfsCert",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "userName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "userInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "userAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct BaseCertificate.UserCert",
+						"name": "senderData",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "userName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "userInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "userAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct BaseCertificate.UserCert",
+						"name": "bpomData",
+						"type": "tuple"
+					},
+					{
+						"internalType": "string",
+						"name": "certId",
+						"type": "string"
+					}
+				],
+				"name": "createCertificateDetails",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "userName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "userInstance",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "userAddr",
+						"type": "address"
+					}
+				],
+				"name": "createUserCertificate",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "userName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "userInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "userAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct BaseCertificate.UserCert",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "certId",
+						"type": "string"
+					}
+				],
+				"name": "getCertDetail",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "enum EnumsLibrary.StatusCertificate",
+								"name": "status",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestampRequest",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestampApprove",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestampRejected",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestampRenewRequest",
+								"type": "uint256"
+							},
+							{
+								"components": [
+									{
+										"internalType": "string",
+										"name": "userName",
+										"type": "string"
+									},
+									{
+										"internalType": "string",
+										"name": "userInstance",
+										"type": "string"
+									},
+									{
+										"internalType": "address",
+										"name": "userAddr",
+										"type": "address"
+									}
+								],
+								"internalType": "struct BaseCertificate.UserCert",
+								"name": "sender",
+								"type": "tuple"
+							},
+							{
+								"components": [
+									{
+										"internalType": "string",
+										"name": "userName",
+										"type": "string"
+									},
+									{
+										"internalType": "string",
+										"name": "userInstance",
+										"type": "string"
+									},
+									{
+										"internalType": "address",
+										"name": "userAddr",
+										"type": "address"
+									}
+								],
+								"internalType": "struct BaseCertificate.UserCert",
+								"name": "bpom",
+								"type": "tuple"
+							},
+							{
+								"internalType": "string",
+								"name": "ipfsCert",
+								"type": "string"
+							}
+						],
+						"internalType": "struct BaseCertificate.CertificateDetails",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "certId",
+						"type": "string"
+					}
+				],
+				"name": "getRejectMsg",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "certId",
+						"type": "string"
+					}
+				],
+				"name": "getSenderDetail",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "userName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "userInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "userAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct BaseCertificate.UserCert",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"name": "rejectMsgById",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "certId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "ipfsCert",
+						"type": "string"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "userName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "userInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "userAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct BaseCertificate.UserCert",
+						"name": "bpomData",
+						"type": "tuple"
+					}
+				],
+				"name": "updateBpomApproveDetails",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "certId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "rejectMsg",
+						"type": "string"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "userName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "userInstance",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "userAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct BaseCertificate.UserCert",
+						"name": "bpomData",
+						"type": "tuple"
+					}
+				],
+				"name": "updateBpomRejectDetails",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "certId",
+						"type": "string"
+					}
+				],
+				"name": "updateRenewDetails",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/BaseCertificate.sol": "BaseCertificate"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/BaseCertificate.sol": {
+			"keccak256": "0x34b33194b2507f147eb27456a426d7cbe29f6dd7da73be35dd9ceb66191f9e65",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d29a6115fb384ad5732ad1c68d6d4e48dde278daae52c8b7ed829616605bcf9e",
+				"dweb:/ipfs/QmVbsuWf15vwP6FaT1xt7W9v3Dp1veVqTTK7wooaEgnWZh"
+			]
+		},
+		"contracts/EnumsLibrary.sol": {
+			"keccak256": "0x1a740b229e62312d4d231460a51990fe9a31b6682abb5223711f8f8e175662ac",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e157ce208bf0826d43a77eb6a5d72c03f5bd75a2e70b0d9788d155f4e99e99d7",
+				"dweb:/ipfs/QmZGZUPNZJy61YuAaLxRA9zZLPS4XZ9zmfeycwU1gy4UFL"
+			]
+		}
+	},
+	"version": 1
+}

@@ -15,7 +15,6 @@ import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
-// import "./../styles/DataTable.scss"
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -104,7 +103,7 @@ export default function TableHash({ ipfsHashes = [] }) {
   );
 
   const handleMouseEnter = (e) => {
-    e.target.style.color = "#530AF7";
+    e.target.style.color = "#1d61d6";
     e.target.style.textDecoration = "underline"; 
   };
 
@@ -122,7 +121,7 @@ export default function TableHash({ ipfsHashes = [] }) {
               No.
             </TableCell>
             <TableCell align="left" sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontSize: '14px' }}>
-              IPFS Hash
+              Data obat per-kemasan
             </TableCell>
           </TableRow>
         </TableHead>
@@ -131,13 +130,12 @@ export default function TableHash({ ipfsHashes = [] }) {
           {ipfsHashes.length === 0 ? (
             <TableRow>
               <TableCell colSpan={2} align="center" sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontSize: '14px', color: '#777' }}>
-                No entry found
+                Data tidak ditemukan
               </TableCell>
             </TableRow>
           ) : (
             rowsToDisplay.map((hash, index) => (
               <TableRow key={index}>
-                {/* Add the row number */}
                 <TableCell align="left" sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontWeight: 'normal', fontStyle: 'normal', fontSize: '12px' }}>
                   {page * rowsPerPage + index + 1}.
                 </TableCell>
@@ -155,7 +153,7 @@ export default function TableHash({ ipfsHashes = [] }) {
                     onMouseEnter={handleMouseEnter}   
                     onMouseLeave={handleMouseLeave}
                   >
-                  {hash}
+                    {hash}
                   </a>
                 </TableCell>
               </TableRow>

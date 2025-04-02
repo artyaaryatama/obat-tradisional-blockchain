@@ -2,20 +2,66 @@
 @import 'mixin';
 
 #publicObat{
-  .title-menu{
-    h2{
+  padding: 20px;
+
+  form{
+    background-color: #f2f2f36a;
+    border-radius: 6px;
+    padding: 20px 16px;
+
+    h3{
       font-size: 26px;
+      margin: 0 0 12px 0;
+    }
+
+    .group{
+      display: flex;
+      gap: 10px;
+
+      input{
+        @include inputForm();
+        width: 500px;
+      }
+
+      button{
+        @include btnUniversal($white, $purple, 4px);
+      }
+    }
+  }
+
+  &.txHash{
+    .container{
+      display: block;
+    }
+  }
+
+  .title-menu{
+    display: flex;
+    align-items: center;
+    padding-left: 13px;
+
+    .logo-obat{
+      margin-right: 20px;
+      img{
+        // width: 64px;
+        width: 92px;
+      }
+    }
+
+    h2{
+      font-size: 30px;
       display: flex;
 
-      span{
-        margin-left: 20px;
-        font-size: 14px;
-        color: $white;
-        background-color: $purple;
-        padding: 6px 12px;
-        width: fit-content;
-        border-radius: 10px;
-      }
+    }
+    span{
+      margin-left: 20px;
+      font-size: 14px;
+      color: $white;
+      background-color: $purple;
+      padding: 6px 12px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
     }
   } 
 
@@ -23,23 +69,42 @@
     flex-direction: row;
     align-items: flex-start;
     gap: 12px;
+    margin: 20px 0 0 0;
 
     .data-obat{
       flex: 2;
 
       .section{
        background-color: #f2f2f36a; 
-       padding: 10px;
+       padding: 20px 16px;
        margin-bottom: 20px;
+       border-radius: 6px;
 
        .title{
          padding: 8px 0;
          margin-bottom: 12px;
          border-bottom: solid 2px $grey-secondary;
+         display: flex;
+         align-items: center;
    
-         h5{
+        h5{
           font-size: 20px;
-         }
+        }
+        span{
+          margin-left: 20px;
+          font-size: 12px;
+          font-weight: 600;
+          color: $black;
+          padding: 6px 12px;
+          width: fit-content;
+          border-radius: 10px;
+          background-color: $yellow;
+          
+          &.Selesai, &.Disetujui {
+            background-color: $green;
+            color: $white;
+          }
+        }
        }
    
        .content{
@@ -53,6 +118,10 @@
    
              li{
                margin-bottom: 16px;
+
+               .empty{
+                display: none;
+               }
    
                span.label{
                  display: inline-block;
@@ -62,6 +131,24 @@
 
                span.addr{
                 margin-left: 23px;
+               }
+
+               span.linked{
+                margin-left: 23px;
+
+                a{
+                  color: $black;
+                  text-decoration: none;
+                  
+                  &:hover{
+                    color: $blue;
+                    text-decoration: underline;
+                  }
+        
+                  i{
+                    margin-left: 6px;
+                  }
+                }
                }
  
                &.list-item{
@@ -87,15 +174,140 @@
          }
        }
 
+       pre {
+        white-space: pre-wrap; /* Allows the text to wrap to the next line */
+        word-wrap: break-word; /* Breaks long words */
+        width: 100%; /* Ensures the <pre> element spans the full width of its parent */
+        box-sizing: border-box; /* Includes padding and border in the width calculation */
+        overflow-wrap: break-word; /* Prevents text from overflowing */
+        overflow: auto; /* Adds a scrollbar if content still overflows */
+      }
+
+
       }
       
     }
 
-    .data-timestamp{
-      background-color: aqua;
-      flex: 1;
+  }
+  
+  .form-container{
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+
+    form{
+      padding: 0;
+      background-color: transparent;
+    }
+
+    h1{
+      font-size: 26px;
+      margin: 0 0 18px 0;
+    }
+
+    p{
+      font-style: italic;
+      font-size: 12px;
+      margin: 4px 0;
+
+      :hover{
+        font-weight: 600;
+        text-decoration: underline;
+      }
+    }
+    
+    a{
+      text-decoration: none;
+      color: $purple;
+      
     }
 
   }
+
+  button{
+    &.view{
+      @include btnUniversal($white, $blue);
+
+      i{
+        margin-right: 8px;
+      }
+    }
+    &.copy{
+      @include btnUniversal($white, $purple);
+
+      i{
+        margin-right: 8px;
+      }
+    }
+  }
+
+  p{
+    b{
+      margin-right: 10px
+    }
+  }
+
+  select{
+    @include selectForm($white);
+    margin: 10px 0 0 0;
+    border: solid 1px $grey !important;
+    padding: 13px 10px;
+    width: 500px;
+  }
+
+  table, th, td{
+    border: solid 1px $grey;
+  }
+
+  table {
+    width: 100%; /* Optional: to set the width of the table */
+    border-collapse: collapse; /* Optional: to remove gaps between table borders */
+  }
   
+  th, td {
+    text-align: center; /* Centers the text horizontally */
+    vertical-align: middle; /* Centers the text vertically */
+    padding: 10px; /* Optional: adds padding inside the cells for better spacing */
+  }
+  
+  tr {
+    text-align: center; /* Aligns all rows in the table */
+  }
+  td button {
+    margin: 5px; /* Adds space around each button */
+  }
+  
+  
+}
+
+.document-selection{
+  // background-color: beige;
+  // select{
+  //   background-color: aqua;
+  //   margin: 0;
+  // }
+
+  // h3{
+  //   margin: 10px 0;
+  // }
+}
+
+.batch-summary{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.document-details{
+
+  hr{
+    margin-top: 1em;
+    border: solid 1px $grey;
+  }
+  p{
+    margin: 14px 0;
+    color: $black;
+    font-weight: 600;
+    font-size: 14px;
+  }
 }
