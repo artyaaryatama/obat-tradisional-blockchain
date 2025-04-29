@@ -113,22 +113,29 @@ function RegisterPage() {
               <p>{roles[_role]}</p> 
             </li>
           </ul>
-          <ul>
-            <li className="label">
-              <p>NPWP</p> 
-            </li>
-            <li className="input">
-              <p>{_npwp}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <p>NIB</p> 
-            </li>
-            <li className="input">
-              <p>{_nib}</p> 
-            </li>
-          </ul>
+
+          {!isBpom ? 
+            <ul>
+              <li className="label">
+                <p>NPWP</p> 
+              </li>
+              <li className="input">
+                <p>{_npwp}</p> 
+              </li>
+            </ul> : 
+            <div className=""></div>
+          }
+          {!isBpom ? 
+            <ul>
+              <li className="label">
+                <p>NIB</p> 
+              </li>
+              <li className="input">
+                <p>{_nib}</p> 
+              </li>
+            </ul> : 
+            <div className=""></div>
+          }
           <ul>
             <li className="label">
               <p>Lokasi Instansi</p> 
@@ -175,7 +182,7 @@ function RegisterPage() {
     if(role===2){
       setNib('0')
       setNpwp('0')
-      r = 'Pabrik'
+      r = 'BPOM'
     } else if(role ===0){
       r= "Pabrik"
     } else if (role===1){
@@ -191,7 +198,6 @@ function RegisterPage() {
     } else if (factoryType === "IOT") {
       typeFactory = "Industri Obat Tradisional (IOT)"
     }
-
 
     MySwal.fire({
       title: `Konfirmasi Pendaftaran Pengguna`,
@@ -300,7 +306,6 @@ function RegisterPage() {
   
   const registerUser = async (e) => {
 
-    e.preventDefault();
     setLoader(true)
     
     MySwal.fire({
@@ -352,6 +357,7 @@ function RegisterPage() {
       setNib('1111111111')
       setNpwp('11.111.111.1-111.111')
       setLocationInstance("Jl. Ini Alamat Factory PT. Budi Pekerti, Jakarta Selatan")
+      setIsBpom(false)
       // setUserAddr("0x6142E74121ADE0de3BEC1641e0318dBcCFcDe06A")
       
     } else if(role===1){
@@ -362,6 +368,7 @@ function RegisterPage() {
       setNpwp('22.222.222.2-222.222')
       // setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
       setLocationInstance("Jl. Ini Alamat PBF PT. Mangga Arum, Jakarta Selatan")
+      setIsBpom(false)
       // setUserAddr("0x97CB6400E271e65150B2330ad27f213a4C9c31af")
       
     } else if(role===2){
@@ -370,6 +377,7 @@ function RegisterPage() {
       setName('Sophie Doe') 
       // setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
       setLocationInstance("Jl. Ini Alamat BPOM Makassar, Makassar")
+      setIsBpom(true)
       // setUserAddr('0xcbcD762c3C27212937314C1D46072a214346F2F3')
       
     }  else if(role===3){
@@ -380,6 +388,7 @@ function RegisterPage() {
       setNpwp('44.444.444.4-444.444')
       // setUserAddr('0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65')
       setLocationInstance("Jl. Ini Alamat Apotek Sejahtera, Jakarta Selatan")
+      setIsBpom(false)
       // setUserAddr('0xA3cE1983150Fade27518DF467a99a74FB4082dDa')
     }
   }

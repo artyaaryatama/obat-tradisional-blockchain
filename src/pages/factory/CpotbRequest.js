@@ -431,7 +431,7 @@ function CpotbRequest() {
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
-      allowOutsideClick: true,
+      allowOutsideClick: false,
     });
     try {
       

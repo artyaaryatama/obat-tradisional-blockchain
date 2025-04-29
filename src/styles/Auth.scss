@@ -85,6 +85,10 @@
         select{
           @include selectForm($white);
           margin: 0;
+
+          &.usaha{
+            margin-top: 10px;
+          }
         }
 
         button{

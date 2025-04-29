@@ -1,6 +1,6 @@
 {
   "ObatTradisional": {
-    "address": "0x44AC6209DD242A22Ed40CF4E25c1b455dC39efDf",
+    "address": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
     "abi": [
       {
         "inputs": [
@@ -561,7 +561,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0x19c8510884E7A3A52a2e4ac1CB3ae5F49c16EE59",
+    "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
     "abi": [
       {
         "inputs": [
@@ -1305,7 +1305,7 @@
     ]
   },
   "RoleManager": {
-    "address": "0x9B26B853655e7F26828d25EAACFaFaC0caf8cC56",
+    "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
     "abi": [
       {
         "anonymous": false,
@@ -1561,7 +1561,7 @@
     ]
   },
   "CertificateManager": {
-    "address": "0xD9C8Aff5cd19e9d883261616f5E48C8CC7a67A2E",
+    "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
     "abi": [
       {
         "inputs": [
@@ -2860,7 +2860,7 @@
     ]
   },
   "NieManager": {
-    "address": "0xD8622FF38245018583F75BCbD1aa880f1cae7a9C",
+    "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
     "abi": [
       {
         "inputs": [
@@ -3618,7 +3618,7 @@
     ]
   },
   "ObatShared": {
-    "address": "0xD88AA28325CcC3156353Eb2CAf9846ae28039964",
+    "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
     "abi": [
       {
         "inputs": [
@@ -4405,7 +4405,7 @@
     ]
   },
   "CdobCertificate": {
-    "address": "0x6C5a3CA75c5Abb25201B42229daBa887e95322bF",
+    "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
     "abi": [
       {
         "inputs": [
