@@ -368,7 +368,7 @@ function CpotbRenewRequest() {
         });
       }
   
-      contracts.certificateManager.once("CertRenewRequest", (_isntanceName, _instanceAddr, _jenisSediaan, _timestampRenew) => {
+      contracts.certificateManager.once("CertRenewRequest", (_isntanceName, _instanceAddr, _timestampRenew) => {
         handleEventCpotbRenewRequested(_isntanceName, _instanceAddr, _timestampRenew, renewRequestCpotbCt.hash);
       });
   

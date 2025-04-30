@@ -116,7 +116,7 @@ function CreateOrderRetailer() {
             pbfInstance: item[5],
           }));
 
-          // setDataObat(reconstructedData)
+          setDataObat(reconstructedData)
           console.log(reconstructedData);
 
         } catch (error) {
