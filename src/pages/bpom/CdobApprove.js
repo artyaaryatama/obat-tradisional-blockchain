@@ -49,7 +49,7 @@ function CdobApprove() {
   }
 
   useEffect(() => {
-  document.title = "CDOB List"; 
+    document.title = "CDOB List"; 
   }, []);
 
   useEffect(() => {
