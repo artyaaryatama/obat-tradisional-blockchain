@@ -299,37 +299,7 @@ function CreateObat() {
       "ObatLain" : 0n,
       "CCP" : 1n
     };
-
-    // const jenisSediaanMapReverse = {
-    //   "Cairan Obat Dalam": 0n,
-    //   "Rajangan": 1n,
-    //   "Serbuk": 2n,
-    //   "Serbuk Instan": 3n,
-    //   "Efervesen": 4n,
-    //   "Pil": 5n,
-    //   "Kapsul": 6n,
-    //   "Kapsul Lunak": 7n,
-    //   "Tablet atau Kaplet": 8n,
-    //   "Granul": 9n,
-    //   "Pastiles": 10n,
-    //   "Dodol atau Jenang": 11n,
-    //   "Film Strip": 12n,
-    //   "Cairan Obat Luar": 13n,
-    //   "Losio": 14n,
-    //   "Parem": 15n,
-    //   "Salep": 16n,
-    //   "Krim": 17n,
-    //   "Gel": 18n,
-    //   "Serbuk Obat Luar": 19n,
-    //   "Tapel": 20n,
-    //   "Pilis": 21n,
-    //   "Plaster atau Koyok": 22n,
-    //   "Supositoria": 23n,
-    //   "Rajangan Obat Luar": 24n
-    // };
     
-    // const kemasanPrimSelected = jenisSediaanMapReverse[kemasanPrim]
-
     const kemasanPrimData = dataCpotb.find((item) => item.jenisSediaan === kemasanPrim) || false;
     const newObatName = namaObatExisted.find((item) => item.namaProduk === namaProduk) || false;
 
@@ -361,9 +331,7 @@ function CreateObat() {
         console.log('Receipt:', createObatCt);
           
         if(createObatCt){
-
-          createObatFb(userdata.instanceName, namaProduk, createObatCt.hash, kemasanPrim, tipeObat)
-
+          
           MySwal.update({
             title: "Memproses transaksi...",
             text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
@@ -371,6 +339,7 @@ function CreateObat() {
         }
   
         contracts.obatTradisional.once("ObatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
+          createObatFb(userdata.instanceName, namaProduk, createObatCt.hash, kemasanPrim, tipeObat)
           handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);
         });
   
@@ -383,16 +352,16 @@ function CreateObat() {
 
   const createObatFb = async (instanceName, namaProduk, obatHash, kemasanPrim, tipeObat) => {
     try {
-      const documentId = `[OT] ${namaProduk}`;
-      const factoryDocRef = doc(db, instanceName, documentId); 
+      const docRef = doc(db, 'obatProduct', instanceName)
 
-      await setDoc(factoryDocRef, {
+      await setDoc(docRef, {
+        [`${namaProduk}`]: {
         jenisSediaan: `${kemasanPrim}`,
         tipeObat: `${tipeObat}`,
         historyNie: {
-          createObat: obatHash,
+          createObatHash: obatHash,
           createObatTimestamp: Date.now(),
-        },
+        },}
       }, { merge: true }); 
   
     } catch (err) {
@@ -407,7 +376,7 @@ function CreateObat() {
 
   const handleAutoFill1 = () => {
     const autoFillValues = {
-      namaProduk: "OBAT HERBAL BATUK PILEK",
+      namaProduk: "HERBAL BATUK PILEK",
       merk: "Bapil Herbal",
       klaim: [
           "Membantu meredakan batuk kering dan berdahak",

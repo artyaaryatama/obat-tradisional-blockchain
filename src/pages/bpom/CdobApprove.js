@@ -150,7 +150,6 @@ function CdobApprove() {
 
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
   
-    // detail can be the cpotb number or rejectMsg
     if(status === 'Disetujui'){
       MySwal.fire({
         title: "Pengajuan CDOB disetujui",
@@ -1669,7 +1668,6 @@ function CdobApprove() {
       const approveCt = await contracts.certificateManager.approveCdob([certNumber, certTd, userdata.name, userdata.instanceName, userdata.address], cdobIpfs, tpMap[tp])
       
       if(approveCt){
-        updateCdobFb(pbfName, tpMap[tp], approveCt.hash, true)
         
         MySwal.update({
           title: "Memproses transaksi...",
@@ -1678,6 +1676,7 @@ function CdobApprove() {
       }
       
       contracts.certificateManager.once('CertApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
+        updateCdobFb(pbfName, tpMap[tp], approveCt.hash, Number(timestampApprove), cdobNumber, cdobIpfs, true)
         handleEventCdob("Disetujui", bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, approveCt.hash);
       });
     } catch (error) {
@@ -1692,15 +1691,15 @@ function CdobApprove() {
       const rejectCt = await contracts.certificateManager.rejectCdob( cdobId, rejectMsg, userdata.name, userdata.instanceName, tipePermohonan);
 
       if(rejectCt){
-        updateCdobFb(pbfName, tipePermohonan, rejectCt.hash, false)
-
+        
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-
+      
       contracts.certificateManager.once("CertRejected", (_instanceName, _instanceAddr, _tipePermohonan, timestampRejected, _rejectMsg) => {
+        updateCdobFb(pbfName, tipePermohonan, rejectCt.hash, Number(timestampRejected), "", "" , false)
         handleEventCdob( "Tidak Disetujui", _instanceAddr, _instanceName, _tipePermohonan, _rejectMsg, timestampRejected, rejectCt.hash);
       });
     } catch (error) {
@@ -1708,25 +1707,30 @@ function CdobApprove() {
     }
   }
 
-  const updateCdobFb = async (instanceName, tipePermohonan, cdobHash, status) => {
+  const updateCdobFb = async (pbfName, tipePermohonan, cdobHash, timestamp, cdobNumber, cdobIpfs, status) => {
     const tpMap = {
       0n: 'ObatLain',
       1n: 'CCP'
     }
     
     try {
-      const documentId = `cdob-lists`; 
-      const pbfDocRef = doc(db, instanceName, documentId);
+      const pbfDocRef = doc(db, 'cdobList', pbfName);
+
+      console.log({pbfName, tipePermohonan, cdobHash, timestamp, cdobNumber, cdobIpfs, status});
 
       if(status){
         await updateDoc(pbfDocRef, {
-          [`${tpMap[tipePermohonan]}.approvedCdob`]: cdobHash,
-        [`${tpMap[tipePermohonan]}.approvedTimestamp`]: Date.now(),
+        [`${tpMap[tipePermohonan]}.approvedHash`]: cdobHash,
+        [`${tpMap[tipePermohonan]}.approvedTimestamp`]: timestamp,
+        [`${tpMap[tipePermohonan]}.cdobNumber`]: cdobNumber,
+        [`${tpMap[tipePermohonan]}.ipfsCid`]: cdobIpfs,
+        [`${tpMap[tipePermohonan]}.bpomInstance`]: userdata.instanceName,
+        [`${tpMap[tipePermohonan]}.status`]: 1,
         }); 
       } else {
         await updateDoc(pbfDocRef, {
           [`${tpMap[tipePermohonan]}.rejectedCdob`]: cdobHash,
-        [`${tpMap[tipePermohonan]}.rejectedTimestamp`]: Date.now(),
+        [`${tpMap[tipePermohonan]}.rejectedTimestamp`]: timestamp,
         });  
 
       }

@@ -195,6 +195,7 @@ function NieRequest() {
         hashDocs.desain_kemasan,
         hashDocs.data_pendukung_keamanan
       ]);
+
     try {
       const requestNieCt = await contracts.nieManager.requestNie(
         obatData.obatId,
@@ -218,15 +219,15 @@ function NieRequest() {
       );
       
       if(requestNieCt){
-        updateObatFb(userdata.instanceName, obatData.namaObat, requestNieCt.hash)
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳",
           allowOutsideClick: false
         });
       }
-
+      
       contracts.nieManager.once("NieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
+        updateObatFb(userdata.instanceName, obatData.namaObat, requestNieCt.hash, Number(_timestampRequestNie))
         handleEventNieRequsted(obatData.namaObat, _factoryAddr, _factoryInstance,_timestampRequestNie, requestNieCt.hash)
       });
       
@@ -235,15 +236,17 @@ function NieRequest() {
     }
   }
 
-  const updateObatFb = async (instanceName, namaProduk, obatHash ) => {
+  const updateObatFb = async (instanceName, namaProduk, obatHash, timestamp ) => {
     try {
-      const documentId = `[OT] ${namaProduk}`;
-      const factoryDocRef = doc(db, instanceName, documentId); 
+      const docRef = doc(db, 'obatProduct', instanceName)
 
-      await updateDoc(factoryDocRef, {
-        "historyNie.requestNie": obatHash, 
-        "historyNie.requestNieTimestamp": Date.now(), 
-      }); 
+      console.log(instanceName, namaProduk, obatHash, timestamp );
+
+      await updateDoc(docRef, {
+        [`${namaProduk}.historyNie.requestHash`]: obatHash,
+        [`${namaProduk}.historyNie.requestTimestamp`]: timestamp,
+        [`${namaProduk}.status`]: 0
+      })
   
     } catch (err) {
       console.error("Error writing cpotb data:", err);
@@ -435,41 +438,75 @@ function NieRequest() {
     return uploadedHashes;
   };
 
-  const handleAutoUploadClickDummy3 = (setName) => {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'application/pdf';
-    
-    // Mengatur file input untuk secara otomatis mengisi file
-    fileInput.files = createFileList([dummyPdf3]);
-    
-    handleFileChange({ target: { files: fileInput.files } }, setName);
+  const handleAutoFillAndUploadToIPFS = async () => {
+    const dummyFiles = {
+      "Dokumen Master Formula": new File([dummyPdf3], "master-formula.pdf", { type: "application/pdf" }),
+      "Surat Kuasa": new File([dummyPdf], "surat-kuasa.pdf", { type: "application/pdf" }),
+      "Surat Pernyataan": new File([dummyPdf2], "surat-pernyataan.pdf", { type: "application/pdf" }),
+      "Dokumen Komposisi Produk": new File([dummyPdf], "komposisi-produk.pdf", { type: "application/pdf" }),
+      "Dokumen Cara Pembuatan Produk": new File([dummyPdf2], "cara-pembuatan.pdf", { type: "application/pdf" }),
+      "Dokumen Spesifikasi Produk Jadi": new File([dummyPdf], "spesifikasi-produk.pdf", { type: "application/pdf" }),
+      "Dokumen Sistem Penomoran Bets": new File([dummyPdf3], "penomoran-bets.pdf", { type: "application/pdf" }),
+      "Sertifikat Analisa Bahan Baku": new File([dummyPdf], "sertif-bahan-baku.pdf", { type: "application/pdf" }),
+      "Sertifikat Analisa Produk Jadi": new File([dummyPdf2], "sertif-produk-jadi.pdf", { type: "application/pdf" }),
+      "Dokumen Hasil Uji Stabilitas": new File([dummyPdf], "uji-stabilitas.pdf", { type: "application/pdf" }),
+      "Dokumen Spesifikasi Kemasan": new File([dummyPdf2], "spesifikasi-kemasan.pdf", { type: "application/pdf" }),
+      "Desain Kemasan": new File([dummyPdf3], "desain-kemasan.pdf", { type: "application/pdf" }),
+      "Data Pendukung Keamanan": new File([dummyPdf], "data-keamanan.pdf", { type: "application/pdf" }),
+    };
+  
+    const uploadedHashes = {};
+  
+    try {
+      for (const [docName, file] of Object.entries(dummyFiles)) {
+        const result = await client.add(file);
+        uploadedHashes[docName] = result.path;
+      }
+  
+      const hashDocs = reconstructedHashes(uploadedHashes);
+  
+      MySwal.fire({
+        title: "Dummy Dokumen Terunggah ke IPFS",
+        html: `
+          <div class="form-swal">
+            ${Object.entries(uploadedHashes).map(([docName, hash]) => `
+              <ul>
+                <li class="label"><p>${docName}</p></li>
+                <li class="input">
+                  <a href="http://localhost:8080/ipfs/${hash}" target="_blank">${hash}</a>
+                </li>
+              </ul>
+            `).join("")}
+          </div>
+        `,
+        width: 700,
+        confirmButtonText: 'Konfirmasi',
+        cancelButtonText: "Batal",
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          MySwal.fire({
+            title: "Menunggu koneksi Metamask...",
+            text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+            icon: "info",
+            showConfirmButton: false,
+            allowOutsideClick: false
+          });
+          requestNie(hashDocs);
+        } else {
+          setLoader(false);
+        }
+      });
+  
+    } catch (error) {
+      MySwal.fire({
+        title: "Gagal Upload",
+        text: "Terjadi kesalahan saat upload ke IPFS.",
+        icon: "error"
+      });
+    }
   };
-
-  const handleAutoFill = () => {
-    handleAutoUploadClickDummy3(setMasterFormula); // Dokumen Master Formula
-    handleAutoUploadClickDummy3(setSuratKuasa); // Surat Kuasa
-    handleAutoUploadClickDummy3(setSuratPernyataan); // Surat Pernyataan
-    handleAutoUploadClickDummy3(setKomposisiProduk); // Dokumen Komposisi Produk
-    handleAutoUploadClickDummy3(setCaraPembuatanProduk); // Dokumen Cara Pembuatan Produk
-    handleAutoUploadClickDummy3(setSpesifikasiProdukJadi); // Dokumen Spesifikasi Produk Jadi
-    handleAutoUploadClickDummy3(setSistemPenomoranBets); // Dokumen Sistem Penomoran Bets
-    handleAutoUploadClickDummy3(setSertifikatAnalisaBahanBaku); // Sertifikat Analisa Bahan Baku
-    handleAutoUploadClickDummy3(setSertifikatAnalisaProdukJadi); // Sertifikat Analisa Produk Jadi
-    handleAutoUploadClickDummy3(setHasilUjiStabilitas); // Dokumen Hasil Uji Stabilitas
-    handleAutoUploadClickDummy3(setSpesifikasiKemasan); // Spesifikasi Kemasan
-    handleAutoUploadClickDummy3(setDesainKemasan); // Desain Kemasan
-    handleAutoUploadClickDummy3(setDataPendukungKeamanan); // Data Pendukung Keamanan
-  };
-
-  const createFileList = (files) => {
-    const dataTransfer = new DataTransfer();
-    files.forEach((file) => {
-      dataTransfer.items.add(file);
-    });
-    return dataTransfer.files;
-  };
-
+  
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>
       <div className="title-menu">
@@ -636,9 +673,10 @@ function NieRequest() {
           }
             </button>
 
-            {/* <button type='button' onClick={handleAutoFill}>
-              Isi Semua Field dengan Dummy
-            </button> */}
+            <button type='button' onClick={handleAutoFillAndUploadToIPFS} className='auto-filled'>
+              Isi Semua Field dengan Dummy File
+            </button>
+
         </form>
       </div>
     </div>

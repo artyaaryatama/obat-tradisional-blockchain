@@ -1580,16 +1580,16 @@ function CpotbApprove() {
 
       if(approveCt){
 
-        updateCpotbFb( factoryInstanceName, jenisSediaan, approveCt.hash, true );
-
+        
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
 
-      contracts.certificateManager.on('CertApproved',  (bpomInstance, bpomAddr, jenisSediaan, cpotbNumber, timestampApprove) => {
-        handleEventCpotb("Disetujui", bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, timestampApprove, approveCt.hash);
+      contracts.certificateManager.on('CertApproved',  (bpomInstance, bpomAddr, jenisSediaan, cpotbNumber, _timestampApprove) => {
+        updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], approveCt.hash, Number(_timestampApprove), cpotbNumber, cpotbIpfs, true );
+        handleEventCpotb("Disetujui", bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, _timestampApprove, approveCt.hash);
       });
     } catch (error) {
       errAlert(error, "Can't Approve CPOTB")
@@ -1603,35 +1603,38 @@ function CpotbApprove() {
       const rejectCt = await contracts.certificateManager.rejectCpotb( id, rejectMsg, userdata.name, userdata.instanceName, jenisSediaan);
 
       if(rejectCt){
-        updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, false);
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-
-      contracts.certificateManager.once("CertRejected", (_instanceName, _instanceAddr, _jenisSediaan, timestampRejected, _rejectMsg) => {
-        handleEventCpotb( "Tidak Disetujui", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, timestampRejected, rejectCt.hash);
+      
+      contracts.certificateManager.once("CertRejected", (_instanceName, _instanceAddr, _jenisSediaan, _timestampRejected, _rejectMsg) => {
+        handleEventCpotb( "Tidak Disetujui", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, _timestampRejected, rejectCt.hash);
+        updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), "", "", false);
       });
     } catch (error) {
       errAlert(error, `Gagal menolak pengajuan CPOTB ${factoryInstanceName} dengan Jenis Sediaan ${jenisSediaan}`)
     }
   }
 
-  const updateCpotbFb = async (instanceName, jenisSediaan, cpotbHash, status) => {
+  const updateCpotbFb = async (factoryName, jenisSediaan, cpotbHash, timestamp, cpotbNumber, cpotbIpfs, status) => {
     try {
-      const documentId = `cpotb-lists`; 
-      const factoryDocRef = doc(db, instanceName, documentId);
+      const docRef = doc(db, 'cpotbList', factoryName);
 
       if(status){
-        await updateDoc(factoryDocRef, {
-          [`${jenisSediaan}.approvedCpotb`]: cpotbHash,
-          [`${jenisSediaan}.approvedTimestamp`]: Date.now(), 
+        await updateDoc(docRef, {
+          [`${jenisSediaan}.approvedHash`]: cpotbHash,
+          [`${jenisSediaan}.approvedTimestamp`]: timestamp, 
+          [`${jenisSediaan}.cpotbNumber`]: cpotbNumber,
+          [`${jenisSediaan}.ipfsCid`]: cpotbIpfs,
+          [`${jenisSediaan}.bpomInstance`]: userdata.instanceName, 
+          [`${jenisSediaan}.status`]: 1, 
         }); 
       } else {
-        await updateDoc(factoryDocRef, {
-          [`${jenisSediaan}.rejectedCpotb`]: cpotbHash,
-          [`${jenisSediaan}.rejectedTimestamp`]: Date.now(),
+        await updateDoc(docRef, {
+          [`${jenisSediaan}.rejectedHash`]: cpotbHash,
+          [`${jenisSediaan}.rejectedTimestamp`]: timestamp,
         });  
 
       }
