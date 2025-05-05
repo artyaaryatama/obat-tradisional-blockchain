@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { create } from 'ipfs-http-client';
 import "../../styles/CheckObat.scss";
-import TableData from '../../components/TablePublicData';
+import TableData from '../../components/TablePublicDataSertifikat';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 import { collection, getDocs, doc as docRef, getDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig"; 
@@ -64,14 +64,14 @@ function CheckCertificateIpfs() {
   }, []);
 
   const renderTableCdob = async () => {
-    const snapshot = await getDocs(collection(db, "cdobList"));
+    const snapshot = await getDocs(collection(db, "cdob_list"));
     const rowsData = [];
 
     for (const doc of snapshot.docs) {
       const companyName = doc.id;
       const docData = doc.data();
 
-      const companyDoc = await getDoc(docRef(db, "companyData", companyName));
+      const companyDoc = await getDoc(docRef(db, "company_data", companyName));
       const company = companyDoc.exists() ? companyDoc.data() : {};
       const alamat = company?.userLocation || "-";
       const nib = company?.userNib || "-";
@@ -101,14 +101,14 @@ function CheckCertificateIpfs() {
   };
 
   const renderTableCpotb = async() => {
-    const snapshot = await getDocs(collection(db, "cpotbList"));
+    const snapshot = await getDocs(collection(db, "cpotb_list"));
     const rowsData = [];
 
     for (const doc of snapshot.docs) {
       const factoryName = doc.id;
       const docData = doc.data();
 
-      const companyDoc = await getDoc(docRef(db, "companyData", factoryName));
+      const companyDoc = await getDoc(docRef(db, "company_data", factoryName));
       const company = companyDoc.exists() ? companyDoc.data() : {};
       const alamat = company?.userLocation || "-";
       const nib = company?.userNib || "-";

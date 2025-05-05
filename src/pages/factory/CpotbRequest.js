@@ -136,7 +136,7 @@ function CpotbRequest() {
         label: jenisSediaanMap[key]
       }));
 
-      console.log(filtered);
+      console.log('==>',filtered);
       setFilteredJenisSediaan(filtered);
     } else {
       setFilteredJenisSediaan([]);
@@ -302,6 +302,7 @@ function CpotbRequest() {
       contract.once("CertRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
         handleEventCpotbRequested(_name, _userAddr, _jenisSediaan, _timestampRequest, requestCpotbCt.hash);
         writeCpotbFb( userdata.instanceName, jenisSediaanMap[jenisSediaan], requestCpotbCt.hash, Number(_timestampRequest));
+        recordHashFb(jenisSediaanMap[jenisSediaan], requestCpotbCt.hash, Number(_timestampRequest))
       });
   
     } catch (err) {
@@ -313,16 +314,15 @@ function CpotbRequest() {
 
   const checkEligiblePabrik = (jenisSediaan) => {
     console.log(jenisSediaan);
-    const isSediaanValid = filteredJenisSediaan.some(item => item.key === jenisSediaan || false);
-
+    const isSediaanValid = filteredJenisSediaan.some(item => item.key === jenisSediaan || console.log(item.key));
     console.log(isSediaanValid);
     return isSediaanValid
   }
 
   const writeCpotbFb = async (instanceName, jenisSediaan, requestCpotbCtHash, timestamp) => {
     try {
-      const docRef = doc(db, 'cpotbList', instanceName);
-      const docRefUser = doc(db, 'companyData', instanceName)
+      const docRef = doc(db, 'cpotb_list', instanceName);
+      const docRefUser = doc(db, 'company_data', instanceName)
 
       const companyData = await getDoc(docRefUser);
 
@@ -349,11 +349,31 @@ function CpotbRequest() {
     }
   };
 
+  const recordHashFb = async(jenisSediaan, txHash, timestamp) => {
+    try {
+      const collectionName = `pengajuan_cpotb_${userdata.instanceName}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRef, {
+        [`${jenisSediaan}`]: {
+          'request': {
+            requestHash: txHash,
+            requestTimestamp: timestamp,
+          }
+        },
+      }, { merge: true }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  }
+
   const handleOptionJenisSediaan = (e) => {;
     const selectedValue = e.target.value;
     setJenisSediaan(selectedValue); 
     console.log("Selected Jenis Sediaan (string):", selectedValue);
     console.log("Selected Jenis Sediaan (uint8):", parseInt(selectedValue));
+    checkEligiblePabrik(jenisSediaan);
+
   };
 
   const handleFileChange = (e, setFile) => {

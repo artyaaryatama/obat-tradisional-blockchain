@@ -3,7 +3,6 @@ import { create } from 'ipfs-http-client';
 import oht from '../../assets/images/oht.png';
 import fitofarmaka from '../../assets/images/fitofarmaka.png';
 import Jamu from '../../assets/images/jamu.png';
-
 import "../../styles/CheckObat.scss"
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
@@ -47,8 +46,6 @@ function CheckObatIpfs() {
   const [pbfNib, setPBFNib] = useState("");
   const [factoryNib, setFactoryNib] = useState("");
   const [bpomNib, setBPOMNib] = useState("");
-
-
 
   useEffect(() => {
     document.title = "Cek Obat Tradisional"; 

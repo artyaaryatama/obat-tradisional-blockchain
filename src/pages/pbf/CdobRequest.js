@@ -435,6 +435,7 @@ function CdobRequest() {
       
       contract.once("CertRequested", (_instanceName, _userAddr, _tipePermohonan, _timestampRequest) => {
         writeCdobFb(userdata.instanceName, tipePermohonan, requestCdobCt.hash, Number(_timestampRequest))
+        recordHashFb(tipePermohonan, requestCdobCt.hash, Number(_timestampRequest))
         handleEventCdobRequested(_instanceName, _userAddr, _tipePermohonan, _timestampRequest, requestCdobCt.hash);
       });
 
@@ -451,8 +452,8 @@ function CdobRequest() {
 
   const writeCdobFb = async (instanceName, tipePermohonan, requestCdobCtHash, timestamp) => {
     try {
-      const docRef = doc(db, 'cdobList', instanceName);
-      const docRefUser = doc(db, 'companyData', instanceName)
+      const docRef = doc(db, 'cdob_list', instanceName);
+      const docRefUser = doc(db, 'company_data', instanceName)
 
       const companyData = await getDoc(docRefUser);
 
@@ -477,6 +478,24 @@ function CdobRequest() {
       errAlert(err);
     }
   };
+
+  const recordHashFb = async(tp, txHash, timestamp) => {
+    try {
+      const collectionName = `pengajuan_cdob_${userdata.instanceName}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRef, {
+        [`${tp}`]: {
+          'request': {
+            requestHash: txHash,
+            requestTimestamp: timestamp,
+          }
+        },
+      }, { merge: true }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  }
 
   const handleFileChange = (e, setFile) => {
     const file = e.target.files[0];

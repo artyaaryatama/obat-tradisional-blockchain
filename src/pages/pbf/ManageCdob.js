@@ -43,7 +43,7 @@ function ManageCdob() {
   }
 
   useEffect(() => {
-    document.title = "CDOB List"; 
+    document.title = "CDOB List - PBF"; 
   }, []);
 
   useEffect(() => {

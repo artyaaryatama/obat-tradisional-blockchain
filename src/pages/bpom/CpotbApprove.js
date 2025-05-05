@@ -3,7 +3,7 @@ import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig"; 
 import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
@@ -71,7 +71,7 @@ function CpotbApprove() {
   }
 
   useEffect(() => {
-    document.title = "CPOTB List"; 
+    document.title = "CPOTB List - BPOM"; 
   }, []);
 
   useEffect(() => {
@@ -1589,6 +1589,7 @@ function CpotbApprove() {
 
       contracts.certificateManager.on('CertApproved',  (bpomInstance, bpomAddr, jenisSediaan, cpotbNumber, _timestampApprove) => {
         updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], approveCt.hash, Number(_timestampApprove), cpotbNumber, cpotbIpfs, true );
+        recordHashFb(jenisSediaanMap[jenisSediaan], approveCt.hash, Number(_timestampApprove), factoryInstanceName, true)
         handleEventCpotb("Disetujui", bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, _timestampApprove, approveCt.hash);
       });
     } catch (error) {
@@ -1611,6 +1612,7 @@ function CpotbApprove() {
       
       contracts.certificateManager.once("CertRejected", (_instanceName, _instanceAddr, _jenisSediaan, _timestampRejected, _rejectMsg) => {
         handleEventCpotb( "Tidak Disetujui", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, _timestampRejected, rejectCt.hash);
+        recordHashFb(jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), factoryInstanceName, false)
         updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), "", "", false);
       });
     } catch (error) {
@@ -1620,7 +1622,7 @@ function CpotbApprove() {
 
   const updateCpotbFb = async (factoryName, jenisSediaan, cpotbHash, timestamp, cpotbNumber, cpotbIpfs, status) => {
     try {
-      const docRef = doc(db, 'cpotbList', factoryName);
+      const docRef = doc(db, 'cpotb_list', factoryName);
 
       if(status){
         await updateDoc(docRef, {
@@ -1643,6 +1645,35 @@ function CpotbApprove() {
       errAlert(err);
     }
   };
+
+  const recordHashFb = async(jenisSediaan, txHash, timestamp, factoryName, status) => {
+    try {
+      const collectionName = `pengajuan_cpotb_${factoryName}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+  
+      if(status === true){
+        await setDoc(docRef, {
+          [`${jenisSediaan}`]: {
+            'approve': {
+              approveHash: txHash,
+              approveTimestamp: timestamp,
+            }
+          },
+        }, { merge: true }); 
+      } else {
+        await setDoc(docRef, {
+          [`${jenisSediaan}`]: {
+            'reject': {
+              rejectHash: txHash,
+              rejectTimestamp: timestamp,
+            }
+          },
+        }, { merge: true }); 
+      }
+    } catch (err) {
+      errAlert(err);
+    }
+  }
 
   return (
     <>

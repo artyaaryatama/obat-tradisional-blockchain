@@ -3,7 +3,7 @@ import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig"; 
 import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
@@ -49,7 +49,7 @@ function CdobApprove() {
   }
 
   useEffect(() => {
-    document.title = "CDOB List"; 
+    document.title = "CDOB List - BPOM"; 
   }, []);
 
   useEffect(() => {
@@ -1677,6 +1677,7 @@ function CdobApprove() {
       
       contracts.certificateManager.once('CertApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
         updateCdobFb(pbfName, tpMap[tp], approveCt.hash, Number(timestampApprove), cdobNumber, cdobIpfs, true)
+        recordHashFb(pbfName, tpMap[tp], approveCt.hash, Number(timestampApprove), true)
         handleEventCdob("Disetujui", bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, approveCt.hash);
       });
     } catch (error) {
@@ -1700,6 +1701,7 @@ function CdobApprove() {
       
       contracts.certificateManager.once("CertRejected", (_instanceName, _instanceAddr, _tipePermohonan, timestampRejected, _rejectMsg) => {
         updateCdobFb(pbfName, tipePermohonan, rejectCt.hash, Number(timestampRejected), "", "" , false)
+        recordHashFb(pbfName, tipePermohonan, rejectCt.hash, Number(timestampRejected), false)
         handleEventCdob( "Tidak Disetujui", _instanceAddr, _instanceName, _tipePermohonan, _rejectMsg, timestampRejected, rejectCt.hash);
       });
     } catch (error) {
@@ -1714,7 +1716,7 @@ function CdobApprove() {
     }
     
     try {
-      const pbfDocRef = doc(db, 'cdobList', pbfName);
+      const pbfDocRef = doc(db, 'cdob_list', pbfName);
 
       console.log({pbfName, tipePermohonan, cdobHash, timestamp, cdobNumber, cdobIpfs, status});
 
@@ -1739,6 +1741,39 @@ function CdobApprove() {
       console.error("Error writing CDOB data:", err);
     }
   };
+
+  const recordHashFb = async(pbfName, tp, txHash, timestamp, status) => {
+    const tpMap = {
+      0n: 'ObatLain',
+      1n: 'CCP'
+    }
+    try {
+      const collectionName = `pengajuan_cdob_${pbfName}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+    
+      if(status === true){
+        await setDoc(docRef, {
+          [`${tpMap[tp]}`]: {
+            'approve': {
+              approveHash: txHash,
+              approveTimestamp: timestamp,
+            }
+          },
+        }, { merge: true }); 
+      } else {
+        await setDoc(docRef, {
+          [`${tpMap[tp]}`]: {
+            'reject': {
+              rejectHash: txHash,
+              rejectTimestamp: timestamp,
+            }
+          },
+        }, { merge: true }); 
+      }
+    } catch (err) {
+      errAlert(err);
+    }
+  }
 
   return (
     <>

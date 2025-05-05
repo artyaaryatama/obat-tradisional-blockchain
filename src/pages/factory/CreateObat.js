@@ -352,7 +352,7 @@ function CreateObat() {
 
   const createObatFb = async (instanceName, namaProduk, obatHash, kemasanPrim, tipeObat) => {
     try {
-      const docRef = doc(db, 'obatProduct', instanceName)
+      const docRef = doc(db, 'obat_data', instanceName)
 
       await setDoc(docRef, {
         [`${namaProduk}`]: {

@@ -69,7 +69,7 @@ function ManageCpotb() {
   }
 
   useEffect(() => {
-    document.title = "CPOTB List"; 
+    document.title = "CPOTB List - Pabrik"; 
   }, []);
 
   useEffect(() => {

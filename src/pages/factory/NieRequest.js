@@ -238,7 +238,7 @@ function NieRequest() {
 
   const updateObatFb = async (instanceName, namaProduk, obatHash, timestamp ) => {
     try {
-      const docRef = doc(db, 'obatProduct', instanceName)
+      const docRef = doc(db, 'obat_data', instanceName)
 
       console.log(instanceName, namaProduk, obatHash, timestamp );
 
