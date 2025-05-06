@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import Loader from '../../components/Loader';
 import imgSad from '../../assets/images/3.png'
@@ -812,14 +812,14 @@ function ManageOrderPbfRetailer() {
       console.log(acceptOrderCt);
 
       if(acceptOrderCt){
-        updateBatchHistoryHash(instanceName, namaProduk, batchName, acceptOrderCt.hash, retailerInstance)
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-
+      
       contracts.orderManagementRetail.once("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+        updateBatchHistoryHash(instanceName, namaProduk, acceptOrderCt.hash, batchName, Number(_timestampOrder))
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, acceptOrderCt.hash)
       });
 
@@ -1021,34 +1021,34 @@ function ManageOrderPbfRetailer() {
 
   }
 
-  const updateBatchHistoryHash = async(factoryInstance, namaProduk, batchName, hash, retailerInstance) => {
-    const documentId = `[OT] ${namaProduk}`;
-    const factoryDocRef = doc(db, factoryInstance, documentId); 
-
+  const updateBatchHistoryHash = async (factoryInstance, namaProduk, obatHash, batchName, timestamp) => {
     try {
-      const docSnap = await getDoc(factoryDocRef);
-      if (docSnap.exists()) {
+      const collectionName = `obat_${namaProduk}_${factoryInstance}`
+      const docRef = doc(db, 'obat_data', factoryInstance)
+      const docRefTx = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRefTx, {
+        [`batch_${batchName}`]: {
+          'order_retailer': {
+            sendHash: obatHash,
+            sendTimestamp: timestamp,
+          }
+        },
+      }, { merge: true }); 
 
-        const data = docSnap.data();
-
-        if (data.batchData && data.batchData[batchName]) {
-          await updateDoc(factoryDocRef, {
-            [`batchData.${batchName}.historyHash.orderShippedRetailer`]: hash,
-            [`batchData.${batchName}.historyHash.orderShippedRetailerTimestamp`]: Date.now(),
-            [`batchData.${batchName}.retailerInstance`]: retailerInstance
-          });
-          console.log(`Batch ${batchName} updated successfully.`);
-        } else {
-          errAlert({ reason: `Batch ${batchName} not found in batchData!` });
+      await setDoc(docRef, {
+        [`${namaProduk}`]: {
+          [`batch_${batchName}`]: {
+            orderRetSendHash: obatHash,
+            orderRetSendTimestamp: timestamp,
+          },
         }
-      
-      } else {
-        errAlert({ reason: `Document ${documentId} not found!` });
-      }
-    } catch (error) {
-      errAlert(error)
+      }, { merge: true }); 
+  
+    } catch (err) {
+      errAlert(err);
     }
-  }
+  };
 
   return (
     <>

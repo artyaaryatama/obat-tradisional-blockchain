@@ -522,13 +522,12 @@ function AddQuantityObat() {
 
       await setDoc(docRef, {
         [`${namaProduk}`]: {
-        batchName: `${batchName}`,
-        quantity: `${quantity}`,
-        history_batch: {
-          batchCreated: obatHash,
-          batchCreatedTimestamp: Date.now(),
-        },}
-      }, { merge: true }); 
+          [`batch_${batchName}`]: {
+            quantity: `${quantity}`,
+            batchCreatedHash: obatHash,
+            batchCreatedTimestamp: Date.now(),
+          },}
+        }, { merge: true }); 
   
     } catch (err) {
       errAlert(err);
@@ -541,7 +540,7 @@ function AddQuantityObat() {
       const docRef = doc(db, 'transaction_hash', collectionName);
   
       await setDoc(docRef, {
-        [`batch_obat`]: {
+        [`batch_${batchName}`]: {
           'batch_created': {
             hash: txHash,
             timestamp: Date.now(),

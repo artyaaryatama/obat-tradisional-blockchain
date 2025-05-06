@@ -4,7 +4,7 @@ import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import DataIpfsHash from '../../components/TableHash';
 import OrderStatusStepper from '../../components/StepperOrder';
@@ -768,15 +768,14 @@ function ManageOrderPbf() {
       const completeOrderCt = await contracts.OrderManagement.completeOrderPbf(orderId, ipfsHashes)
 
       if(completeOrderCt){
-        updateBatchHistoryHash(factoryInstance, namaObat, batchName, completeOrderCt.hash)
         MySwal.update({ 
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-
+      
       contracts.OrderManagement.once("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
-
+        updateBatchHistoryHash(factoryInstance, namaObat, batchName, completeOrderCt.hash, Number(_timestampOrder))
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, completeOrderCt.hash); 
       });
 
@@ -950,31 +949,34 @@ function ManageOrderPbf() {
     }
   }
 
-  const updateBatchHistoryHash = async(factoryInstance, namaProduk, batchName, hash) => {
-    const documentId = `[OT] ${namaProduk}`;
-    const factoryDocRef = doc(db, factoryInstance, documentId); 
-
+  const updateBatchHistoryHash = async (factoryInstance, namaProduk, batchName, obatHash, timestamp) => {
     try {
-      const docSnap = await getDoc(factoryDocRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
+      const collectionName = `obat_${namaProduk}_${factoryInstance}`
+      const docRef = doc(db, 'obat_data', factoryInstance)
+      const docRefTx = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRefTx, {
+        [`batch_${batchName}`]: {
+          'order_pbf': {
+            completedHash: obatHash,
+            completedTimestamp: timestamp,
+          }
+        },
+      }, { merge: true }); 
 
-        if (data.batchData && data.batchData[batchName]) {
-          await updateDoc(factoryDocRef, {
-            [`batchData.${batchName}.historyHash.orderCompletedPbf`]: hash,
-            [`batchData.${batchName}.historyHash.orderCompletedPbfTimestamp`]: Date.now(),
-          });
-          console.log(`Batch ${batchName} updated successfully.`);
-        } else {
-          errAlert({ reason: `Batch ${batchName} not found in batchData!` });
+      await setDoc(docRef, {
+        [`${namaProduk}`]: {
+          [`batch_${batchName}`]: {
+            OrderPbfCompletedHash: obatHash,
+            OrderPbfCompletedTimestamp: timestamp
+          },
         }
-      } else {
-        errAlert({ reason: `Document ${documentId} not found!` });
-      }
-    } catch (error) {
-      errAlert(error);
+      }, { merge: true }); 
+  
+    } catch (err) {
+      errAlert(err);
     }
-  }
+  };
 
   return (
     <>

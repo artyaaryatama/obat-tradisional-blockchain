@@ -352,13 +352,21 @@ function CreateObat() {
   };
 
   const createObatFb = async (instanceName, namaProduk, obatHash, kemasanPrim, tipeObat) => {
+
+    const tpMap = {
+      "ObatLain": 'Obat Lain',
+      "CCP": 'Cold Chain Product'
+    };
+
+    const tipeP = tpMap[tipeObat]
+
     try {
       const docRef = doc(db, 'obat_data', instanceName)
 
       await setDoc(docRef, {
         [`${namaProduk}`]: {
         jenisSediaan: `${kemasanPrim}`,
-        tipeObat: `${tipeObat}`,
+        tipeObat: `${tipeP}`,
         historyNie: {
           createObatHash: obatHash,
           createObatTimestamp: Date.now(),
