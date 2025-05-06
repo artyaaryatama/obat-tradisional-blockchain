@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { create } from 'ipfs-http-client';
 import imgLoader from '../../assets/images/loader.svg';
@@ -228,6 +228,7 @@ function NieRequest() {
       
       contracts.nieManager.once("NieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
         updateObatFb(userdata.instanceName, obatData.namaObat, requestNieCt.hash, Number(_timestampRequestNie))
+        recordHashFb(obatData.namaObat, requestNieCt.hash, Number(_timestampRequestNie))
         handleEventNieRequsted(obatData.namaObat, _factoryAddr, _factoryInstance,_timestampRequestNie, requestNieCt.hash)
       });
       
@@ -252,6 +253,24 @@ function NieRequest() {
       console.error("Error writing cpotb data:", err);
     }
   };
+
+  const recordHashFb = async(namaProduk, txHash, timestamp) => {
+    try {
+      const collectionName = `obat_${namaProduk}_${userdata.instanceName}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRef, {
+        [`produksi`]: {
+          'request_nie': {
+            hash: txHash,
+            timestamp: timestamp,
+          }
+        },
+      }, { merge: true }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  }
 
   const handleFileChange = (e, setFile) => {
     const file = e.target.files[0];

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { create } from 'ipfs-http-client';
 import imgLoader from '../../assets/images/loader.svg';
@@ -290,14 +290,15 @@ function NieRenewRequest() {
       );
       
       if(renewRequestNieCt){
-        updateObatFb(userdata.instanceName, obatData.namaObat, renewRequestNieCt.hash)
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-
+      
       contracts.nieManager.once("NieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
+        createObatFb(userdata.instanceName, obatData.namaObat, renewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
+        recordHashFb(obatData.namaObat, renewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
         handleEventNieRenewRequest( _factoryInstance, _factoryAddr,_timestampRenewRequestNie, renewRequestNieCt.hash)
       });
       
@@ -306,20 +307,39 @@ function NieRenewRequest() {
     }
   }
 
-  const updateObatFb = async (instanceName, namaProduk, obatHash ) => {
+  const createObatFb = async (instanceName, namaProduk, obatHash, timestamp) => {
     try {
-      const documentId = `[OT] ${namaProduk}`;
-      const factoryDocRef = doc(db, instanceName, documentId); 
+      const docRef = doc(db, 'obat_data', instanceName)
 
-      await updateDoc(factoryDocRef, {
-        "historyNie.RenewRequestNie": obatHash, 
-        "historyNie.RenewRequestNieTimestamp": Date.now(), 
-      }); 
+      await updateDoc(docRef, {
+        [`${namaProduk}.historyNie.renewRequestHash`]: obatHash,
+        [`${namaProduk}.historyNie.renewRequestTimestamp`]: timestamp,
+        [`${namaProduk}.status`]: 0
+      }, { merge: true }); 
   
     } catch (err) {
-      console.error("Error writing cpotb data:", err);
+      errAlert(err);
     }
   };
+
+  const recordHashFb = async(namaProduk, txHash, timestamp) => {
+    try {
+      const collectionName = `obat_${namaProduk}_${userdata.instanceName}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRef, {
+        [`produksi`]: {
+          'renew_request_nie': {
+            hash: txHash,
+            timestamp: timestamp,
+          }
+        },
+      }, { merge: true }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  }
+
   
   const handleSubmit = async (e) => {
     e.preventDefault();

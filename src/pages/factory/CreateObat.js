@@ -340,6 +340,7 @@ function CreateObat() {
   
         contracts.obatTradisional.once("ObatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
           createObatFb(userdata.instanceName, namaProduk, createObatCt.hash, kemasanPrim, tipeObat)
+          recordHashFb(namaProduk, createObatCt.hash)
           handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);
         });
   
@@ -368,6 +369,24 @@ function CreateObat() {
       errAlert(err);
     }
   };
+
+  const recordHashFb = async(namaProduk, txHash) => {
+    try {
+      const collectionName = `obat_${namaProduk}_${userdata.instanceName}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRef, {
+        [`produksi`]: {
+          'create_obat': {
+            hash: txHash,
+            timestamp: Date.now(),
+          }
+        },
+      }, { merge: true }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  }
 
   const handleKlaimChange = (e) => {
     const lines = e.target.value.split("\n"); 

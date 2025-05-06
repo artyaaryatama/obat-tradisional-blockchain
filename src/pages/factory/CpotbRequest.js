@@ -357,8 +357,8 @@ function CpotbRequest() {
       await setDoc(docRef, {
         [`${jenisSediaan}`]: {
           'request': {
-            requestHash: txHash,
-            requestTimestamp: timestamp,
+            hash: txHash,
+            timestamp: timestamp,
           }
         },
       }, { merge: true }); 

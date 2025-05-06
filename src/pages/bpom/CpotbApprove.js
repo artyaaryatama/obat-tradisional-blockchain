@@ -1655,8 +1655,8 @@ function CpotbApprove() {
         await setDoc(docRef, {
           [`${jenisSediaan}`]: {
             'approve': {
-              approveHash: txHash,
-              approveTimestamp: timestamp,
+              hash: txHash,
+              timestamp: timestamp,
             }
           },
         }, { merge: true }); 
@@ -1664,8 +1664,8 @@ function CpotbApprove() {
         await setDoc(docRef, {
           [`${jenisSediaan}`]: {
             'reject': {
-              rejectHash: txHash,
-              rejectTimestamp: timestamp,
+              hash: txHash,
+              timestamp: timestamp,
             }
           },
         }, { merge: true }); 

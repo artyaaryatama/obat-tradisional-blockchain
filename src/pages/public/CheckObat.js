@@ -224,14 +224,20 @@ function CheckObatIpfs() {
               <div className="content">
                 <div className="list-detail">
                   <ul className="info-list">
-                    <li className="info-item">
-                      <span className="label">Nama Batch</span>
-                      <span>{batchName}</span>
-                    </li>
-                    <li className="info-item">
-                      <span className="label">ID Kemasan</span>
-                      <span>{obatIdPackage}</span>
-                    </li>
+                    {batchName? 
+                      <li className="info-item">
+                        <span className="label">Nama Batch</span>
+                        <span>{batchName}</span>
+                      </li>
+                    : <div></div>
+                  }
+                    {obatIdPackage? 
+                      <li className="info-item">
+                        <span className="label">ID Kemasan</span>
+                        <span>{obatIdPackage}</span>
+                      </li>
+                    : <div></div>
+                  }
                     <li className="info-item">
                       <span className="label">Nama Obat</span>
                       <span>{namaObat}</span>

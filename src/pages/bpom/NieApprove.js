@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { create } from 'ipfs-http-client';
-import { doc, updateDoc, collection, query, getDoc} from "firebase/firestore";
+import { doc, updateDoc, collection, setDoc, getDoc} from "firebase/firestore";
 import { db } from "../../firebaseConfig"; 
 import "../../styles/MainLayout.scss"; 
 import Swal from 'sweetalert2';
@@ -339,7 +339,6 @@ function NieApprove() {
     }
   }
   
-
   const getDetailObat = async (id) => {
     
     console.log(id); 
@@ -2163,6 +2162,7 @@ function NieApprove() {
       
       contracts.nieManager.once('NieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
         updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, approveNieCt.hash, Number(_timestampApprove),  true)
+        recordHashFb(namaObat, factoryInstance, approveNieCt.hash, Number(_timestampApprove),  true)
         handleEventNieApproved("Approved", namaObat, _instanceAddr, _instanceName, _nieNumber, _timestampApprove, approveNieCt.hash)
       });
 
@@ -2185,7 +2185,8 @@ function NieApprove() {
       }
       
       contracts.nieManager.once('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
-        updateObatFb(factoryInstance, namaObat, "", "", rejectCt.hash, Number(_timestampRejected), false)
+        updateObatFb(namaObat, factoryInstance, "", "", rejectCt.hash, Number(_timestampRejected), false)
+        recordHashFb(namaObat, factoryInstance, rejectCt.hash, Number(_timestampRejected), false)
         handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, rejectCt.hash)
       });
 
@@ -2200,8 +2201,8 @@ function NieApprove() {
 
       if(status){
         await updateDoc(docRef, {
-          [`${namaObat}.historyNie.approveHash`]: nieHash,
-          [`${namaObat}.historyNie.approveTimestamp`]: timestamp,
+          [`${namaObat}.historyNie.approvedHash`]: nieHash,
+          [`${namaObat}.historyNie.approvedTimestamp`]: timestamp,
           [`${namaObat}.historyNie.bpomInstance`]: userdata.instanceName,
           [`${namaObat}.historyNie.nieNumber`]: nieNumber,
           [`${namaObat}.historyNie.ipfsCid`]: nieIpfs,
@@ -2219,6 +2220,37 @@ function NieApprove() {
       errAlert(err);
     }
   };
+
+  const recordHashFb = async(namaProduk, factoryInstance, txHash, timestamp, status) => {
+    try {
+      const collectionName = `obat_${namaProduk}_${factoryInstance}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+
+      if (status === true) {
+        await setDoc(docRef, {
+          [`produksi`]: {
+            'approve_nie': {
+              hash: txHash,
+              timestamp: timestamp,
+            }
+          },
+        }, { merge: true }); 
+      } else {
+        await setDoc(docRef, {
+          [`produksi`]: {
+            'reject_nie': {
+              hash: txHash,
+              timestamp: timestamp,
+            }
+          },
+        }, { merge: true }); 
+        
+      }
+
+    } catch (err) {
+      errAlert(err);
+    }
+  }
 
   return (
     <>

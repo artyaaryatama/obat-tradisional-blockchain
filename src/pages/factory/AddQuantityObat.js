@@ -3,7 +3,7 @@ import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import DataIpfsHash from '../../components/TableHash';
 import imgLoader from '../../assets/images/loader.svg';
@@ -497,15 +497,16 @@ function AddQuantityObat() {
       const addBatchCt = await contracts.obatTradisional.addBatchProduction(dataObat.obatId, dataObat.namaProduk, batchNameObat, quantity, newIpfsHashes,  dataObat.factoryInstanceName);
 
       if(addBatchCt){
-        addBatchObatFb(userdata.instanceName, dataObat.namaProduk, addBatchCt.hash, batchNameObat, quantity)
-
+        
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-
+      
       contracts.obatTradisional.once('AddObatBatchProduction',  (_batchName, _obatQuantity, _namaProduk, _factoryInstance) => {
+        createBatchFb(userdata.instanceName, dataObat.namaProduk, addBatchCt.hash, batchNameObat, quantity)
+        recordHashFb( dataObat.namaProduk, addBatchCt.hash)
         handleEventAddBatchProduction(_batchName, _obatQuantity, _namaProduk, _factoryInstance, addBatchCt.hash)
       });
   
@@ -515,25 +516,42 @@ function AddQuantityObat() {
     }
   }
 
-  const addBatchObatFb = async (instanceName, namaProduk, hash, batchName, quantity) => {
+  const createBatchFb = async (instanceName, namaProduk, obatHash, batchName, quantity) => {
     try {
-      const documentId = `[OT] ${namaProduk}`;
-      const factoryDocRef = doc(db, instanceName, documentId);
-      
-      await updateDoc(factoryDocRef, {
-        [`batchData.${batchName}`]: {
-          quantity: quantity,
-          historyHash: {
-            batchCreated: hash,
-            batchCreatedTimestamp: Date.now()
-          },
-        }
-      });
+      const docRef = doc(db, 'obat_data', instanceName)
+
+      await setDoc(docRef, {
+        [`${namaProduk}`]: {
+        batchName: `${batchName}`,
+        quantity: `${quantity}`,
+        history_batch: {
+          batchCreated: obatHash,
+          batchCreatedTimestamp: Date.now(),
+        },}
+      }, { merge: true }); 
   
     } catch (err) {
       errAlert(err);
     }
   };
+
+  const recordHashFb = async(namaProduk, txHash) => {
+    try {
+      const collectionName = `obat_${namaProduk}_${userdata.instanceName}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRef, {
+        [`batch_obat`]: {
+          'batch_created': {
+            hash: txHash,
+            timestamp: Date.now(),
+          }
+        },
+      }, { merge: true }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  }
 
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>

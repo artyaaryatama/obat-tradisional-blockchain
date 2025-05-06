@@ -1711,28 +1711,28 @@ function CdobApprove() {
 
   const updateCdobFb = async (pbfName, tipePermohonan, cdobHash, timestamp, cdobNumber, cdobIpfs, status) => {
     const tpMap = {
-      0n: 'ObatLain',
-      1n: 'CCP'
-    }
+      0n: 'Obat Lain',
+      1n: 'Cold Chain Product'
+    };
+
+    const tipeP = tpMap[tipePermohonan]
     
     try {
       const pbfDocRef = doc(db, 'cdob_list', pbfName);
 
-      console.log({pbfName, tipePermohonan, cdobHash, timestamp, cdobNumber, cdobIpfs, status});
-
       if(status){
         await updateDoc(pbfDocRef, {
-        [`${tpMap[tipePermohonan]}.approvedHash`]: cdobHash,
-        [`${tpMap[tipePermohonan]}.approvedTimestamp`]: timestamp,
-        [`${tpMap[tipePermohonan]}.cdobNumber`]: cdobNumber,
-        [`${tpMap[tipePermohonan]}.ipfsCid`]: cdobIpfs,
-        [`${tpMap[tipePermohonan]}.bpomInstance`]: userdata.instanceName,
-        [`${tpMap[tipePermohonan]}.status`]: 1,
+        [`${tipeP}.approvedHash`]: cdobHash,
+        [`${tipeP}.approvedTimestamp`]: timestamp,
+        [`${tipeP}.cdobNumber`]: cdobNumber,
+        [`${tipeP}.ipfsCid`]: cdobIpfs,
+        [`${tipeP}.bpomInstance`]: userdata.instanceName,
+        [`${tipeP}.status`]: 1,
         }); 
       } else {
         await updateDoc(pbfDocRef, {
-          [`${tpMap[tipePermohonan]}.rejectedCdob`]: cdobHash,
-        [`${tpMap[tipePermohonan]}.rejectedTimestamp`]: timestamp,
+          [`${tipeP}.rejectedHash`]: cdobHash,
+        [`${tipeP}.rejectedTimestamp`]: timestamp,
         });  
 
       }
@@ -1744,8 +1744,8 @@ function CdobApprove() {
 
   const recordHashFb = async(pbfName, tp, txHash, timestamp, status) => {
     const tpMap = {
-      0n: 'ObatLain',
-      1n: 'CCP'
+      0n: 'Obat Lain',
+      1n: 'Cold Chain Product'
     }
     try {
       const collectionName = `pengajuan_cdob_${pbfName}`
@@ -1755,8 +1755,8 @@ function CdobApprove() {
         await setDoc(docRef, {
           [`${tpMap[tp]}`]: {
             'approve': {
-              approveHash: txHash,
-              approveTimestamp: timestamp,
+              hash: txHash,
+              timestamp: timestamp,
             }
           },
         }, { merge: true }); 
@@ -1764,8 +1764,8 @@ function CdobApprove() {
         await setDoc(docRef, {
           [`${tpMap[tp]}`]: {
             'reject': {
-              rejectHash: txHash,
-              rejectTimestamp: timestamp,
+              hash: txHash,
+              timestamp: timestamp,
             }
           },
         }, { merge: true }); 

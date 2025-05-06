@@ -451,6 +451,14 @@ function CdobRequest() {
   };
 
   const writeCdobFb = async (instanceName, tipePermohonan, requestCdobCtHash, timestamp) => {
+
+    const tp = {
+      "ObatLain": "Obat Lain",
+      "CCP": "Cold Chain Product"
+    };
+
+    const tipeP = tp[tipePermohonan]
+
     try {
       const docRef = doc(db, 'cdob_list', instanceName);
       const docRefUser = doc(db, 'company_data', instanceName)
@@ -468,8 +476,8 @@ function CdobRequest() {
       } 
 
       await setDoc(docRef, {
-        [`${tipePermohonan}`]: {
-          requestCdob: requestCdobCtHash,
+        [`${tipeP}`]: {
+          requestHash: requestCdobCtHash,
           requestTimestamp: timestamp,
           status: 0
         },
@@ -480,15 +488,23 @@ function CdobRequest() {
   };
 
   const recordHashFb = async(tp, txHash, timestamp) => {
+
+    const tpMap = {
+      "ObatLain": "Obat Lain",
+      "CCP": "Cold Chain Product"
+    };
+
+    const tipeP = tpMap[tipePermohonan]
+
     try {
       const collectionName = `pengajuan_cdob_${userdata.instanceName}`
       const docRef = doc(db, 'transaction_hash', collectionName);
   
       await setDoc(docRef, {
-        [`${tp}`]: {
+        [`${tipeP}`]: {
           'request': {
-            requestHash: txHash,
-            requestTimestamp: timestamp,
+            hash: txHash,
+            timestamp: timestamp,
           }
         },
       }, { merge: true }); 
