@@ -774,7 +774,7 @@ function ManageOrderPbf() {
         });
       }
       
-      contracts.OrderManagement.once("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.OrderManagement.on("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
         updateBatchHistoryHash(factoryInstance, namaObat, batchName, completeOrderCt.hash, Number(_timestampOrder))
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, completeOrderCt.hash); 
       });

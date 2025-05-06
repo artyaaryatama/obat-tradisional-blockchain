@@ -296,7 +296,7 @@ function NieRenewRequest() {
         });
       }
       
-      contracts.nieManager.once("NieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
+      contracts.nieManager.on("NieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
         createObatFb(userdata.instanceName, obatData.namaObat, renewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
         recordHashFb(obatData.namaObat, renewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
         handleEventNieRenewRequest( _factoryInstance, _factoryAddr,_timestampRenewRequestNie, renewRequestNieCt.hash)

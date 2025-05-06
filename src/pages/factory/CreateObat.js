@@ -338,7 +338,7 @@ function CreateObat() {
           });
         }
   
-        contracts.obatTradisional.once("ObatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
+        contracts.obatTradisional.on("ObatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
           createObatFb(userdata.instanceName, namaProduk, createObatCt.hash, kemasanPrim, tipeObat)
           recordHashFb(namaProduk, createObatCt.hash)
           handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);

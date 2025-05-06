@@ -336,7 +336,7 @@ function RegisterPage() {
         
       }
 
-      contract.once("UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
+      contract.on("UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
         handleEventUserRegister(_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp, registCt.hash);
       });
       

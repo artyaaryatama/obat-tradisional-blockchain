@@ -433,7 +433,7 @@ function CdobRequest() {
         });
       }
       
-      contract.once("CertRequested", (_instanceName, _userAddr, _tipePermohonan, _timestampRequest) => {
+      contract.on("CertRequested", (_instanceName, _userAddr, _tipePermohonan, _timestampRequest) => {
         writeCdobFb(userdata.instanceName, tipePermohonan, requestCdobCt.hash, Number(_timestampRequest))
         recordHashFb(tipePermohonan, requestCdobCt.hash, Number(_timestampRequest))
         handleEventCdobRequested(_instanceName, _userAddr, _tipePermohonan, _timestampRequest, requestCdobCt.hash);

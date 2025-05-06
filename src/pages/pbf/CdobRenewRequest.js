@@ -353,7 +353,7 @@ function CdobRenewRequest() {
         });
       }
       
-      contracts.certificateManager.once("CertRenewRequest", (_instance, _userAddr, _timestampRenew) => {
+      contracts.certificateManager.on("CertRenewRequest", (_instance, _userAddr, _timestampRenew) => {
         writeCdobFb( userdata.instanceName, tipePermohonan, renewRequestCdobCt.hash, Number(_timestampRenew) );
         recordHashFb(tipePermohonan, renewRequestCdobCt.hash, Number(_timestampRenew) );
         handleEventCdobRenewRequested(_instance, _userAddr, _timestampRenew, renewRequestCdobCt.hash);

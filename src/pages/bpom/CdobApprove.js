@@ -1675,7 +1675,7 @@ function CdobApprove() {
         });
       }
       
-      contracts.certificateManager.once('CertApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
+      contracts.certificateManager.on('CertApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
         updateCdobFb(pbfName, tpMap[tp], approveCt.hash, Number(timestampApprove), cdobNumber, cdobIpfs, true)
         recordHashFb(pbfName, tpMap[tp], approveCt.hash, Number(timestampApprove), true)
         handleEventCdob("Disetujui", bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, approveCt.hash);
@@ -1699,7 +1699,7 @@ function CdobApprove() {
         });
       }
       
-      contracts.certificateManager.once("CertRejected", (_instanceName, _instanceAddr, _tipePermohonan, timestampRejected, _rejectMsg) => {
+      contracts.certificateManager.on("CertRejected", (_instanceName, _instanceAddr, _tipePermohonan, timestampRejected, _rejectMsg) => {
         updateCdobFb(pbfName, tipePermohonan, rejectCt.hash, Number(timestampRejected), "", "" , false)
         recordHashFb(pbfName, tipePermohonan, rejectCt.hash, Number(timestampRejected), false)
         handleEventCdob( "Tidak Disetujui", _instanceAddr, _instanceName, _tipePermohonan, _rejectMsg, timestampRejected, rejectCt.hash);

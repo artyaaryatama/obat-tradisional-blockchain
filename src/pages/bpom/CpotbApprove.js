@@ -1610,7 +1610,7 @@ function CpotbApprove() {
         });
       }
       
-      contracts.certificateManager.once("CertRejected", (_instanceName, _instanceAddr, _jenisSediaan, _timestampRejected, _rejectMsg) => {
+      contracts.certificateManager.on("CertRejected", (_instanceName, _instanceAddr, _jenisSediaan, _timestampRejected, _rejectMsg) => {
         handleEventCpotb( "Tidak Disetujui", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, _timestampRejected, rejectCt.hash);
         recordHashFb(jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), factoryInstanceName, false)
         updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), "", "", false);

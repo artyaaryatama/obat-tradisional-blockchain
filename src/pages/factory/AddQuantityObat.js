@@ -504,7 +504,7 @@ function AddQuantityObat() {
         });
       }
       
-      contracts.obatTradisional.once('AddObatBatchProduction',  (_batchName, _obatQuantity, _namaProduk, _factoryInstance) => {
+      contracts.obatTradisional.on('AddObatBatchProduction',  (_batchName, _obatQuantity, _namaProduk, _factoryInstance) => {
         createBatchFb(userdata.instanceName, dataObat.namaProduk, addBatchCt.hash, batchNameObat, quantity)
         recordHashFb( dataObat.namaProduk, addBatchCt.hash)
         handleEventAddBatchProduction(_batchName, _obatQuantity, _namaProduk, _factoryInstance, addBatchCt.hash)

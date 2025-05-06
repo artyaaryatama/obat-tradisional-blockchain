@@ -367,7 +367,7 @@ function CpotbRenewRequest() {
         });
       }
       
-      contracts.certificateManager.once("CertRenewRequest", (_isntanceName, _instanceAddr, _timestampRenew) => {
+      contracts.certificateManager.on("CertRenewRequest", (_isntanceName, _instanceAddr, _timestampRenew) => {
         writeCpotbFb( userdata.instanceName, jenisSediaanMap[parseInt(cpotbData.jenisSediaan)], renewRequestCpotbCt.hash, Number(_timestampRenew) );
         recordHashFb(jenisSediaanMap[parseInt(cpotbData.jenisSediaan)], renewRequestCpotbCt.hash, Number(_timestampRenew) );
         handleEventCpotbRenewRequested(_isntanceName, _instanceAddr, _timestampRenew, renewRequestCpotbCt.hash);

@@ -818,7 +818,7 @@ function ManageOrderPbfRetailer() {
         });
       }
       
-      contracts.orderManagementRetail.once("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.orderManagementRetail.on("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
         updateBatchHistoryHash(instanceName, namaProduk, acceptOrderCt.hash, batchName, Number(_timestampOrder))
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, acceptOrderCt.hash)
       });

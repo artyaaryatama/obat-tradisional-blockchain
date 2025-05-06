@@ -299,7 +299,7 @@ function CpotbRequest() {
         });
       }
       
-      contract.once("CertRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
+      contract.on("CertRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
         handleEventCpotbRequested(_name, _userAddr, _jenisSediaan, _timestampRequest, requestCpotbCt.hash);
         writeCpotbFb( userdata.instanceName, jenisSediaanMap[jenisSediaan], requestCpotbCt.hash, Number(_timestampRequest));
         recordHashFb(jenisSediaanMap[jenisSediaan], requestCpotbCt.hash, Number(_timestampRequest))

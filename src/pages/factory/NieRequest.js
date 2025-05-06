@@ -226,7 +226,7 @@ function NieRequest() {
         });
       }
       
-      contracts.nieManager.once("NieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
+      contracts.nieManager.on("NieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
         updateObatFb(userdata.instanceName, obatData.namaObat, requestNieCt.hash, Number(_timestampRequestNie))
         recordHashFb(obatData.namaObat, requestNieCt.hash, Number(_timestampRequestNie))
         handleEventNieRequsted(obatData.namaObat, _factoryAddr, _factoryInstance,_timestampRequestNie, requestNieCt.hash)

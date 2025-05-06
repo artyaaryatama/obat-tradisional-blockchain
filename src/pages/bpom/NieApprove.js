@@ -2160,7 +2160,7 @@ function NieApprove() {
         });
       }
       
-      contracts.nieManager.once('NieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
+      contracts.nieManager.on('NieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
         updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, approveNieCt.hash, Number(_timestampApprove),  true)
         recordHashFb(namaObat, factoryInstance, approveNieCt.hash, Number(_timestampApprove),  true)
         handleEventNieApproved("Approved", namaObat, _instanceAddr, _instanceName, _nieNumber, _timestampApprove, approveNieCt.hash)
@@ -2184,7 +2184,7 @@ function NieApprove() {
         });
       }
       
-      contracts.nieManager.once('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
+      contracts.nieManager.on('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
         updateObatFb(namaObat, factoryInstance, "", "", rejectCt.hash, Number(_timestampRejected), false)
         recordHashFb(namaObat, factoryInstance, rejectCt.hash, Number(_timestampRejected), false)
         handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, rejectCt.hash)
