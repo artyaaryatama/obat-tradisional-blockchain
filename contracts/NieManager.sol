@@ -19,6 +19,8 @@ contract NieManager {
     uint256 timestampNieApprove;  
     uint256 timestampNieRejected;  
     uint256 timestampNieRenewRequest;  
+    uint256 timestampNieExpired;  
+    uint256 timestampNieExtendRequest;  
     string factoryInstance;
     string bpomInstance;      
     address bpomAddr;
@@ -74,6 +76,12 @@ contract NieManager {
     uint timestamp
   );
 
+  event NieExtendRequest(
+    string factoryInstance, 
+    address factoryAddr, 
+    uint timestamp
+  );
+
   modifier onlyFactory() {
     require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.Factory), "Only Factory");
     _;
@@ -97,6 +105,8 @@ contract NieManager {
       timestampNieApprove: 0,
       timestampNieRejected: 0,
       timestampNieRenewRequest: 0,
+      timestampNieExpired: 0,
+      timestampNieExtendRequest: 0,
       factoryInstance: factoryInstance,
       bpomInstance: "",
       bpomAddr: address(0)
@@ -143,6 +153,7 @@ contract NieManager {
     nieData.timestampNieApprove = block.timestamp;
     nieData.bpomInstance = bpomInstance;
     nieData.bpomAddr = msg.sender;
+    nieData.timestampNieExpired= block.timestamp + (2 * 60); 
     
     emit NieApproved(
       bpomInstance,
@@ -200,6 +211,26 @@ contract NieManager {
     emit NieRenewRequest(
       nieDetailById[obatId].factoryInstance, 
       msg.sender, 
+      block.timestamp
+    );
+  }
+
+  function extemdRequestNie(
+    string memory obatId,
+    uint256 expiredTimestamp
+  ) 
+    public 
+    onlyFactory 
+  {
+    require(block.timestamp > expiredTimestamp, "NIE masih berlaku");
+    NieDetail storage nieData = nieDetailById[obatId];
+
+    nieData.nieStatus = EnumsLibrary.NieStatus.ExtendRequestNie; 
+    nieData.timestampNieExtendRequest = block.timestamp;
+
+    emit NieExtendRequest(
+      nieDetailById[obatId].factoryInstance, 
+      msg.sender,  
       block.timestamp
     );
   }

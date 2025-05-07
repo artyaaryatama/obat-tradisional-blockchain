@@ -22,6 +22,7 @@ contract CpotbCertificate is BaseCertificate {
     uint8 tipePermohonan;
     EnumsLibrary.StatusCertificate status;
     string certHash;
+    uint256 expiredTimestamp;
   }
 
   struct DokumenAdministrasi {
@@ -88,7 +89,8 @@ contract CpotbCertificate is BaseCertificate {
       instanceName: factoryInstance,
       tipePermohonan: jenisSediaan,
       status: EnumsLibrary.StatusCertificate.Requested,
-      certHash: ""
+      certHash: "",
+      expiredTimestamp: 0
     }));
 
     dokuAdminById[certId] = dokuAdmin;
@@ -101,7 +103,8 @@ contract CpotbCertificate is BaseCertificate {
     string memory bpomName,
     string memory bpomInstance,
     address bpomAddr,
-    string memory ipfsCert
+    string memory ipfsCert,
+    uint256 timestampExp
   ) public { 
 
     UserCert memory userBpom = createUserCertificate(
@@ -125,6 +128,7 @@ contract CpotbCertificate is BaseCertificate {
         allCpotbData[i].certNumber = certNumber;
         allCpotbData[i].status = EnumsLibrary.StatusCertificate.Approved; 
         allCpotbData[i].certHash = ipfsCert;
+        allCpotbData[i].expiredTimestamp = timestampExp;
       }  
     }
   } 
@@ -176,6 +180,45 @@ contract CpotbCertificate is BaseCertificate {
       }  
     } 
   }
+
+  function extendCpotb(
+    string memory certId,
+    uint256 expTimestamp
+  ) public {
+
+    updateExtendRenewDetails(
+      certId,
+      expTimestamp
+    );  
+
+    uint length = allCpotbData.length;
+
+    for (uint i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
+        allCpotbData[i].status = EnumsLibrary.StatusCertificate.ExtendRequest; 
+      }  
+    }
+  }
+
+  function approveExtendCpotb(
+    string memory certId, 
+    string memory ipfsCert
+  ) public {
+
+    updateBpomExtendCertificateDetails(
+      certId,
+      ipfsCert
+    );
+
+    uint length = allCpotbData.length;
+
+    for (uint i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
+        allCpotbData[i].status = EnumsLibrary.StatusCertificate.Extended; 
+      }  
+    }
+  }
+
 
   function getAllCpotbByInstance(string memory instanceName) public view returns (CertificateList[] memory) {
 

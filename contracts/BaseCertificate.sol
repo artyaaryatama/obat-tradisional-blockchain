@@ -19,6 +19,8 @@ contract BaseCertificate {
     uint timestampApprove;
     uint timestampRejected;
     uint timestampRenewRequest; 
+    uint timestampExpired; 
+    uint timestampExtendRequest; 
     UserCert sender;  
     UserCert bpom; 
     string ipfsCert;
@@ -56,6 +58,8 @@ contract BaseCertificate {
       timestampApprove: 0,
       timestampRejected: 0,
       timestampRenewRequest: 0,
+      timestampExpired: 0,
+      timestampExtendRequest: 0,
       sender: senderData,
       bpom: bpomData,
       ipfsCert: ""
@@ -69,13 +73,28 @@ contract BaseCertificate {
   ) 
     public 
   { 
+
     CertificateDetails storage certData = certDetailById[certId];
     
     certData.bpom.userName = bpomData.userName;
     certData.bpom.userAddr = bpomData.userAddr;
     certData.bpom.userInstance = bpomData.userInstance;
     certData.timestampApprove = block.timestamp;
+    certData.timestampExpired = block.timestamp + (2 * 60); 
     certData.status = EnumsLibrary.StatusCertificate.Approved;
+    certData.ipfsCert = ipfsCert; 
+  } 
+
+  function updateBpomExtendCertificateDetails(
+    string memory certId, 
+    string memory ipfsCert
+  ) 
+    public 
+  { 
+    CertificateDetails storage certData = certDetailById[certId];
+    certData.timestampApprove = block.timestamp;
+    certData.timestampExpired = block.timestamp + (2 * 60); 
+    certData.status = EnumsLibrary.StatusCertificate.Extended; 
     certData.ipfsCert = ipfsCert; 
   } 
 
@@ -105,6 +124,19 @@ contract BaseCertificate {
   
     certData.timestampRenewRequest = block.timestamp;
     certData.status = EnumsLibrary.StatusCertificate.RenewRequest;
+  }
+
+  function updateExtendRenewDetails( 
+    string memory certId,
+    uint256 expiredTimestamp
+  ) 
+    public  
+  { 
+    require(block.timestamp > expiredTimestamp, "Sertifikat masih berlaku");
+    CertificateDetails storage certData = certDetailById[certId];
+  
+    certData.timestampExtendRequest = block.timestamp;
+    certData.status = EnumsLibrary.StatusCertificate.ExtendRequest; 
   }
 
   function getCertDetail(string memory certId) public view returns (CertificateDetails memory) {

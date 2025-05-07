@@ -39,6 +39,12 @@ export default function DataGridDemo({ rowsData }) {
       ),
     },
     {
+      field: 'jenisSertifikasi',
+      headerName: 'Jenis Sertifikasi',
+      width: 210,
+      flex: 0,
+    },
+    {
       field: 'approvedTimestamp',
       headerName: 'Tanggal Diterbitkan',
       width: 170,

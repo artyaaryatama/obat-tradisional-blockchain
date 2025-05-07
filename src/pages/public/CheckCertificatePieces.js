@@ -115,13 +115,16 @@ function CheckCertificateIpfs() {
       const factoryType= company?.factoryType || '-';
 
       Object.entries(docData).forEach(([jenisSediaan, permohonanData]) => {
-        if (permohonanData?.status !== 1) return; 
+        if (permohonanData?.status !== 1 && permohonanData?.status !== 3) return; 
+
+        // edit dlu status certificate
 
         rowsData.push({
           id: rowsData.length + 1,
           // nomor: rowsData.length + 1,
           fixedNumber: rowsData.length + 1,
           certNumber: permohonanData.cpotbNumber || "-",
+          jenisSertifikasi: permohonanData?.status === 1? "Sertifikasi Baru" : "Resertifikasi",
           approvedTimestamp: permohonanData.approvedTimestamp || null,
           tipePermohonan: jenisSediaan,
           companyName: factoryName,

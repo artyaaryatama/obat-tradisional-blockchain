@@ -227,12 +227,12 @@
               border-radius: 30px;
             }
 
-            &.Dalam, &.Diajukan, &.Kosong{
+            &.Dalam, &.Diajukan, &.Kosong, &.Sertifikat.Kadaluarsa{
               background-color: $grey;
               color: $white;
             }
 
-            &.Tersedia{
+            &.Tersedia, &.Pengajuan.Resertifikasi{
               background-color: $blue;
               color: $white;
             }
@@ -246,7 +246,8 @@
               background-color: #e39c33;
               color: $black;
             }
-            &.Disetujui, &.Selesai{
+
+            &.Disetujui, &.Selesai, &.Resertifikasi{
               background-color: $green;
               color: $white;
             }

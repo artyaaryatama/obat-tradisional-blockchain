@@ -68,6 +68,16 @@ contract CertificateManager is ReentrancyGuard {
     address senderAddr, 
     uint timestamp
   );
+  
+  event CertExtendRequest(
+    address senderAddr, 
+    uint timestamp
+  );
+
+  event CertApprovedExtendRequest(
+    address bpomAddr,  
+    uint timestamp
+  );
 
   modifier onlyFactory() { 
     require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.Factory), "Only Factory can do this transaction!");
@@ -128,7 +138,8 @@ contract CertificateManager is ReentrancyGuard {
       approveData.bpomName, 
       approveData.bpomInstance, 
       approveData.bpomAddr, 
-      ipfsCert
+      ipfsCert,
+      block.timestamp + (2 * 60)
     ); 
 
     emit CertApproved(
@@ -189,6 +200,44 @@ contract CertificateManager is ReentrancyGuard {
       block.timestamp
     );
   }
+
+  function extendCpotb( 
+    string memory cpotbId,
+    uint256 expTimestamp
+  ) 
+    public 
+    onlyFactory 
+    nonReentrant 
+  {  
+    cpotbCertificate.extendCpotb(
+      cpotbId,
+      expTimestamp
+    );  
+ 
+    emit CertExtendRequest(
+      msg.sender,
+      block.timestamp
+    );
+  } 
+
+  function approveExtendCpotb( 
+    string memory cpotbId,
+    string memory ipfsCert
+  ) 
+    public 
+    onlyBPOM 
+    nonReentrant 
+  {  
+    cpotbCertificate.approveExtendCpotb(
+      cpotbId,
+      ipfsCert
+    );  
+ 
+    emit CertApprovedExtendRequest(
+      msg.sender,
+      block.timestamp
+    );
+  } 
  
   function getCpotbByInstance(string memory instanceName) public view returns (CpotbCertificate.CertificateList[] memory){ 
     return cpotbCertificate.getAllCpotbByInstance(instanceName); 

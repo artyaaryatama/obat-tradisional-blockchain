@@ -50,14 +50,16 @@ contract ObatTradisional is ReentrancyGuard{
     string namaProduk, 
     uint tipeObat, 
     string factoryInstance, 
-    address factoryAddresses
+    address factoryAddresses,
+    uint256 timestamp
   );
 
   event AddObatBatchProduction(
     string batchName, 
     uint8 quantity, 
     string namaProduk, 
-    string factoryInstance
+    string factoryInstance,
+    uint256 timestamp 
   );
 
   modifier onlyFactory() { 
@@ -111,7 +113,8 @@ contract ObatTradisional is ReentrancyGuard{
       namaProduk, 
       uint8(tipeObat),  
       factoryInstance, 
-      msg.sender
+      msg.sender,
+      block.timestamp
     );
   } 
 
@@ -200,7 +203,8 @@ contract ObatTradisional is ReentrancyGuard{
       batchName, 
       obatQuantity, 
       namaProduk, 
-      factoryInstance
+      factoryInstance,
+      block.timestamp 
     );
   } 
 

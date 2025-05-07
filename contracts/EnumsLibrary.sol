@@ -7,7 +7,9 @@ library EnumsLibrary {
     RequestedNie, 
     ApprovedNie, 
     RejectedNie, 
-    RenewRequestNie 
+    RenewRequestNie,
+    ExpiredNie,
+    ExtendRequestNie
   } 
 
   enum OrderStatus { 
@@ -20,7 +22,10 @@ library EnumsLibrary {
     Requested, 
     Approved, 
     Rejected, 
-    RenewRequest 
+    RenewRequest, 
+    Expired,
+    ExtendRequest, 
+    Extended
   }
 
   enum ObatAvailability { 
