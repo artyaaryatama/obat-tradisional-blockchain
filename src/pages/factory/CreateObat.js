@@ -401,26 +401,26 @@ function CreateObat() {
     setKlaim(lines);
   };
 
-  const handleAutoFill1 = () => {
+  const handleAutoFill4 = () => {
     const autoFillValues = {
-      namaProduk: "HERBAL BATUK PILEK",
-      merk: "Bapil Herbal",
+      namaProduk: "SARI LANGIT",
+      merk: "Langit Alami",
       klaim: [
-          "Membantu meredakan batuk kering dan berdahak",
-          "Membantu melegakan tenggorokan",
-          "Membantu mengatasi hidung tersumbat"
+          "Diproses dari ekstrak nabati pilihan",
+          "Dapat dikonsumsi secara rutin",
+          "Mudah diseduh kapan saja"
       ],
-      ketKemasanPrim: "5",
-      satuanKemasanPrim: "sachet",
-      kemasanSeku: "Box",
-      ketKemasanSeku: "12",
+      ketKemasanPrim: "2",
+      satuanKemasanPrim: "gram",
+      kemasanSeku: "Pouch",
+      ketKemasanSeku: "10",
       komposisi: [
+          "Clitoria Ternatea Flos",
           "Zingiber Officinale Rhizoma",
-          "Glycyrrhiza Glabra Radix",
-          "Ocimum Sanctum Folium"
+          "Cymbopogon Citratus Folium"
       ]
     };
-
+  
     setNamaProduk(autoFillValues.namaProduk);
     setMerk(autoFillValues.merk);
     setKlaim(autoFillValues.klaim);
@@ -430,62 +430,60 @@ function CreateObat() {
     setKetKemasanSeku(autoFillValues.ketKemasanSeku);
     setKomposisi(autoFillValues.komposisi);
   };
-
-  const handleAutoFill2 = () => {
+  
+  const handleAutoFill5 = () => {
     const autoFillValues = {
-      namaProduk: "HERBAL DEMAM REDA",
-      merk: "Demam Reda",
+      namaProduk: "HERBAL TIDUR NYENYAK",
+      merk: "Nyenyak Natural",
       klaim: [
-          "Membantu menurunkan panas tubuh",
-          "Meredakan gejala flu dan menggigil",
-          "Membantu meningkatkan daya tahan tubuh"
+          "Membantu mengatasi susah tidur",
+          "Meningkatkan kualitas tidur malam",
+          "Membantu menenangkan pikiran dan tubuh"
       ],
-      ketKemasanPrim: "10",
-      satuanKemasanPrim: "ml",
-      kemasanSeku: "Dus",
-      ketKemasanSeku: "20",
-      komposisi: [
-          "Andrographis Paniculata Herba",
-          "Echinacea Purpurea Herba",
-          "Mentha Arvensis Folium"
-      ]
-    };
-
-    setNamaProduk(autoFillValues.namaProduk);
-    setMerk(autoFillValues.merk);
-    setKlaim(autoFillValues.klaim);
-    // setKemasanPrim(autoFillValues.kemasanPrim);
-    setKetKemasanPrim(autoFillValues.ketKemasanPrim);
-    setSatuanKemasanPrim(autoFillValues.satuanKemasanPrim);
-    setKemasanSeku(autoFillValues.kemasanSeku);
-    setKetKemasanSeku(autoFillValues.ketKemasanSeku);
-    setKomposisi(autoFillValues.komposisi);
-  };
-
-  const handleAutoFill3 = () => {
-    const autoFillValues = {
-      namaProduk: "HERBAL ANTI ALERGI",
-      merk: "Anti Alergi",
-      klaim: [
-          "Membantu meredakan gejala alergi seperti gatal-gatal",
-          "Mengurangi peradangan akibat reaksi alergi",
-          "Membantu memperkuat sistem imun tubuh"
-      ],
-      ketKemasanPrim: "15",
-      satuanKemasanPrim: "mg",
+      ketKemasanPrim: "1",
+      satuanKemasanPrim: "tablet",
       kemasanSeku: "Botol",
-      ketKemasanSeku: "30",
+      ketKemasanSeku: "60",
       komposisi: [
-          "Curcuma Longa Rhizoma",
-          "Nigella Sativa Semen",
-          "Perilla Frutescens Folium"
+          "Valeriana Officinalis Radix",
+          "Passiflora Incarnata Herba",
+          "Matricaria Chamomilla Flos"
       ]
     };
-
+    
     setNamaProduk(autoFillValues.namaProduk);
     setMerk(autoFillValues.merk);
     setKlaim(autoFillValues.klaim);
-    // setKemasanPrim(autoFillValues.kemasanPrim);
+    setKetKemasanPrim(autoFillValues.ketKemasanPrim);
+    setSatuanKemasanPrim(autoFillValues.satuanKemasanPrim);
+    setKemasanSeku(autoFillValues.kemasanSeku);
+    setKetKemasanSeku(autoFillValues.ketKemasanSeku);
+    setKomposisi(autoFillValues.komposisi);
+  };
+  
+  const handleAutoFill6 = () => {
+    const autoFillValues = {
+      namaProduk: "HERBAL SAKIT PERUT",
+      merk: "Perut Aman",
+      klaim: [
+          "Membantu meredakan sakit perut ringan",
+          "Mengatasi perut kembung dan mual",
+          "Menormalkan pencernaan secara alami"
+      ],
+      ketKemasanPrim: "2",
+      satuanKemasanPrim: "kapsul",
+      kemasanSeku: "Strip",
+      ketKemasanSeku: "10",
+      komposisi: [
+          "Kaempferia Galanga Rhizoma",
+          "Piper Betle Folium",
+          "Cuminum Cyminum Semen"
+      ]
+    };
+  
+    setNamaProduk(autoFillValues.namaProduk);
+    setMerk(autoFillValues.merk);
+    setKlaim(autoFillValues.klaim);
     setKetKemasanPrim(autoFillValues.ketKemasanPrim);
     setSatuanKemasanPrim(autoFillValues.satuanKemasanPrim);
     setKemasanSeku(autoFillValues.kemasanSeku);
@@ -765,9 +763,9 @@ function CreateObat() {
           }
             </button>
           <div className="auto-filled-btn">
-            <button className='auto-filled' type='button' onClick={handleAutoFill1}>Auto Fill Form 1</button>
-            <button className='auto-filled' type='button' onClick={handleAutoFill2}>Auto Fill Form 2</button>
-            <button className='auto-filled' type='button' onClick={handleAutoFill3}>Auto Fill Form 3</button>
+            <button className='auto-filled' type='button' onClick={handleAutoFill4}>Auto Fill Form 1</button>
+            <button className='auto-filled' type='button' onClick={handleAutoFill5}>Auto Fill Form 2</button>
+            <button className='auto-filled' type='button' onClick={handleAutoFill6}>Auto Fill Form 3</button>
 
           </div>
         </form>
