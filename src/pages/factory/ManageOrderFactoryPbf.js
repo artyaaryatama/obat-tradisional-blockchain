@@ -4,7 +4,7 @@ import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'ipfs-http-client';
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import DataIpfsHash from '../../components/TableHash';
 import OrderStatusStepper from '../../components/StepperOrder';
@@ -771,14 +771,14 @@ function ManageOrderFactoryPbf() {
       console.log(acceptOrderCt);
       
       if(acceptOrderCt){
-        updateBatchHistoryHash(userdata.instanceName, namaObat, batchName, acceptOrderCt.hash , tipeObat, pbfInstance)
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-
+      
       contracts.orderManagement.on("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+        updateBatchHistoryHash(userdata.instanceName, namaObat, acceptOrderCt.hash, batchName, Number(_timestampOrder))
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, acceptOrderCt.hash); 
       });
       
@@ -951,38 +951,34 @@ function ManageOrderFactoryPbf() {
 
   }
 
-  const updateBatchHistoryHash = async(factoryInstance, namaProduk, batchName, hash, tipeObat, pbfInstance) => {
-    const documentId = `[OT] ${namaProduk}`;
-    const factoryDocRef = doc(db, factoryInstance, documentId); 
-    const tipeObatMap = {
-      'Obat Lain': "ObatLain",
-      'Cold Chain Product': "CCP"
-    };
-
-    const tipeObats = tipeObatMap[tipeObat]
-
+  const updateBatchHistoryHash = async (factoryInstance, namaProduk, obatHash, batchName, timestamp) => {
     try {
-      const docSnap = await getDoc(factoryDocRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
+      const collectionName = `obat_${namaProduk}_${factoryInstance}`
+      const docRef = doc(db, 'obat_data', factoryInstance)
+      const docRefTx = doc(db, 'transaction_hash', collectionName);
   
-        if (data.batchData && data.batchData[batchName]) {
-          await updateDoc(factoryDocRef, {
-            [`batchData.${batchName}.historyHash.orderShippedPbf`]: hash,
-            [`batchData.${batchName}.historyHash.orderShippedPbfTimestamp`]: Date.now(),
-            [`batchData.${batchName}.pbfInstance`]:pbfInstance,
-          });
-          console.log(`Batch ${batchName} updated successfully.`);
-        } else {
-          errAlert({ reason: `Batch ${batchName} not found in batchData!` });
+      await setDoc(docRefTx, {
+        [`batch_${batchName}`]: {
+          'order_pbf': {
+            sendHash: obatHash,
+            sendTimestamp: timestamp,
+          }
+        },
+      }, { merge: true }); 
+
+      await setDoc(docRef, {
+        [`${namaProduk}`]: {
+          [`batch_${batchName}`]: {
+            OrderPbfSendHash: obatHash,
+            OrderPbfSendTimestamp: timestamp
+          },
         }
-      } else {
-        errAlert({ reason: `Document ${documentId} not found!` });
-      }
-    } catch (error) {
-      errAlert(error);
+      }, { merge: true }); 
+  
+    } catch (err) {
+      errAlert(err);
     }
-  }
+  };
 
   return (
     <>

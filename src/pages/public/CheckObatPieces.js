@@ -3,7 +3,9 @@ import { create } from 'ipfs-http-client';
 import oht from '../../assets/images/oht.png';
 import fitofarmaka from '../../assets/images/fitofarmaka.png';
 import Jamu from '../../assets/images/jamu.png';
-
+import TableObat from '../../components/TablePublicDataObat';
+import { collection, getDocs, doc as docRef, getDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig"; 
 import "../../styles/CheckObat.scss"
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
@@ -48,22 +50,15 @@ function CheckObatPieces() {
   const [factoryNib, setFactoryNib] = useState("");
   const [bpomNib, setBPOMNib] = useState("");
   const [url, setUrl] = useState("")
-
-
+  const [rowsData, setRowsData] = useState([])
 
   useEffect(() => {
     document.title = "Pencarian Obat Tradisional"; 
   }, []);
 
-  // const getHashFromUrl = () => {
-
-  // };
-
-  // useEffect(() => {
-  //   
-
-  //   getDetailData();
-  // }, []);
+  useEffect(() => {
+    renderTableObat()
+  }, []);
 
   const imageMap = {
     "Jamu": Jamu,
@@ -213,6 +208,45 @@ function CheckObatPieces() {
       console.error("Error fetching data from IPFS:", error);
     }
   }
+
+  const renderTableObat = async () => {
+    const snapshot = await getDocs(collection(db, "obat_data"));
+    const rowsData = [];
+
+    for (const doc of snapshot.docs) {
+      const companyName = doc.id;
+      const docData = doc.data();
+
+      const companyDoc = await getDoc(docRef(db, "company_data", companyName));
+      const company = companyDoc.exists() ? companyDoc.data() : {};
+      const alamat = company?.userLocation || "-";
+      const nib = company?.userNib || "-";
+
+      Object.entries(docData).forEach(([namaProduk, obatData]) => {
+        if (obatData?.status !== 1) return; 
+        console.log(namaProduk)
+        console.log(obatData)
+
+        rowsData.push({
+          id: rowsData.length + 1,
+          // nomor: rowsData.length + 1,
+          fixedNumber: rowsData.length + 1,
+          approvedTimestamp: obatData.historyNie.approveTimestamp || null,
+          nieNumber: obatData.historyNie.nieNumber || "-",
+          namaProduk:namaProduk,
+          companyName: companyName,
+          approvedHash: obatData.historyNie.approveHash || "-",
+          ipfsCid: obatData.historyNie.ipfsCid || "-",
+          bpomInstance: obatData.historyNie.bpomInstance || "-",
+          companyAddress: alamat,
+          companyNib: nib,
+        });
+      });
+    }
+
+    console.log("HASIL rowsData:", rowsData);
+    setRowsData(rowsData);
+  };
 
   const returnData = () => {
     return (
@@ -507,6 +541,12 @@ function CheckObatPieces() {
         </form>
 
         {namaObat? returnData() : <div></div>}
+
+        <div className="container-table">
+          <h3>List Data Izin Edar Obat Tradisional</h3>
+  
+          <TableObat rowsData={rowsData} />
+        </div>
       </div>
 
 

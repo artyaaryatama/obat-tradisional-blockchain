@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig"; 
 import { create } from 'ipfs-http-client';
 import imgLoader from '../../assets/images/loader.svg';
@@ -346,15 +346,16 @@ function CdobRenewRequest() {
       console.log('Receipt:', renewRequestCdobCt);
   
       if(renewRequestCdobCt){
-        writeCdobFb( userdata.instanceName, renewRequestCdobCt.hash );
-
+        
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-  
-      contracts.certificateManager.once("CertRenewRequest", (_instance, _userAddr, _timestampRenew) => {
+      
+      contracts.certificateManager.on("CertRenewRequest", (_instance, _userAddr, _timestampRenew) => {
+        writeCdobFb( userdata.instanceName, tipePermohonan, renewRequestCdobCt.hash, Number(_timestampRenew) );
+        recordHashFb(tipePermohonan, renewRequestCdobCt.hash, Number(_timestampRenew) );
         handleEventCdobRenewRequested(_instance, _userAddr, _timestampRenew, renewRequestCdobCt.hash);
       });
   
@@ -363,20 +364,55 @@ function CdobRenewRequest() {
     }
   }
 
-  const writeCdobFb = async (instanceName, cdobHash) => {
-    try {
-      const documentId = `cdob-lists`; 
-      const pbfDocRef = doc(db, instanceName, documentId);
-      const tipePermohon = tipePermohonanMap[tipePermohonan]
+  const writeCdobFb = async (instanceName, tipePermohonan, requestCdobCtHash, timestamp) => {
 
-      await updateDoc(pbfDocRef, {
-        [`${tipePermohon}.RenewRequestCdob`]: cdobHash,
-      [`${tipePermohon}.RenewRequestTimestamp`]: Date.now(),
-      });
+    const tp = {
+      0n: 'Obat Lain',
+      1n: 'Cold Chain Product'
+    };
+
+    const tipeP = tp[tipePermohonan]
+
+    try {
+      const docRef = doc(db, 'cdob_list', instanceName);
+
+      await setDoc(docRef, {
+        [`${tipeP}`]: {
+          renewRequestHash: requestCdobCtHash,
+          renewRequestTimestamp: timestamp,
+          status: 0
+        },
+      }, { merge: true }); 
     } catch (err) {
       errAlert(err);
     }
   };
+
+  const recordHashFb = async(tp, txHash, timestamp) => {
+
+    const tpMap = {
+      0n: 'Obat Lain',
+      1n: 'Cold Chain Product'
+    };
+
+    const tipeP = tpMap[tp]
+
+    try {
+      const collectionName = `pengajuan_cdob_${userdata.instanceName}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRef, {
+        [`${tipeP}`]: {
+          'renew_request': {
+            hash: txHash,
+            timestamp: timestamp,
+          }
+        },
+      }, { merge: true }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  }
 
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>

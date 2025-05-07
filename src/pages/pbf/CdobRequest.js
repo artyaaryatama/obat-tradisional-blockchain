@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { doc, setDoc  } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { create } from 'ipfs-http-client';
 import imgLoader from '../../assets/images/loader.svg';
@@ -426,15 +426,16 @@ function CdobRequest() {
       console.log('Receipt:', requestCdobCt);
 
       if(requestCdobCt){
-        writeCpotbFb(userdata.instanceName, tipePermohonan, requestCdobCt.hash)
-
+        
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-
-      contract.once("CertRequested", (_instanceName, _userAddr, _tipePermohonan, _timestampRequest) => {
+      
+      contract.on("CertRequested", (_instanceName, _userAddr, _tipePermohonan, _timestampRequest) => {
+        writeCdobFb(userdata.instanceName, tipePermohonan, requestCdobCt.hash, Number(_timestampRequest))
+        recordHashFb(tipePermohonan, requestCdobCt.hash, Number(_timestampRequest))
         handleEventCdobRequested(_instanceName, _userAddr, _tipePermohonan, _timestampRequest, requestCdobCt.hash);
       });
 
@@ -449,21 +450,68 @@ function CdobRequest() {
     console.log("Selected value:", e.target.value);
   };
 
-  const writeCpotbFb = async (instanceName, tipePermohonan, requestCdobCtHash) => {
+  const writeCdobFb = async (instanceName, tipePermohonan, requestCdobCtHash, timestamp) => {
+
+    const tp = {
+      "ObatLain": "Obat Lain",
+      "CCP": "Cold Chain Product"
+    };
+
+    const tipeP = tp[tipePermohonan]
+
     try {
-      const documentId = `cdob-lists`; 
-      const pbfDocRef = doc(db, instanceName, documentId);
-  
-      await setDoc(pbfDocRef, {
-        [`${tipePermohonan}`]: {
-          requestCdob: requestCdobCtHash,
-          requestTimestamp: Date.now(),
+      const docRef = doc(db, 'cdob_list', instanceName);
+      const docRefUser = doc(db, 'company_data', instanceName)
+
+      const companyData = await getDoc(docRefUser);
+
+      if (!companyData.exists()) {
+        await setDoc(docRefUser, {
+          userNib: userdata.nib,
+          userLocation: userdata.location,
+          userAddr: userdata.address
+        });
+      } else {
+        console.log("Data perusahaan telah tersimpan di database.");
+      } 
+
+      await setDoc(docRef, {
+        [`${tipeP}`]: {
+          requestHash: requestCdobCtHash,
+          requestTimestamp: timestamp,
+          status: 0
         },
       }, { merge: true }); 
     } catch (err) {
       errAlert(err);
     }
   };
+
+  const recordHashFb = async(tp, txHash, timestamp) => {
+
+    const tpMap = {
+      "ObatLain": "Obat Lain",
+      "CCP": "Cold Chain Product"
+    };
+
+    const tipeP = tpMap[tipePermohonan]
+
+    try {
+      const collectionName = `pengajuan_cdob_${userdata.instanceName}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRef, {
+        [`${tipeP}`]: {
+          'request': {
+            hash: txHash,
+            timestamp: timestamp,
+          }
+        },
+      }, { merge: true }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  }
 
   const handleFileChange = (e, setFile) => {
     const file = e.target.files[0];
@@ -486,36 +534,97 @@ function CdobRequest() {
     setFile(file);
   };
 
-  const createFileList = (files) => {
-    const dataTransfer = new DataTransfer();
-    files.forEach((file) => {
-      dataTransfer.items.add(file);
-    });
-    return dataTransfer.files;
-  };
+  const handleAutoFillAndUploadToIPFS = async () => {
+    const dummyFiles = {
+      "Surat Permohonan CDOB": new File([dummyPdf], "permohonan.pdf", { type: "application/pdf" }),
+      "Bukti Pembayaran Pajak": new File([dummyPdf2], "bukti-pajak.pdf", { type: "application/pdf" }),
+      "Surat Izin": new File([dummyPdf], "surat-izin.pdf", { type: "application/pdf" }),
+      "Denah PBF": new File([dummyPdf2], "denah.pdf", { type: "application/pdf" }),
+      "Struktur Organisasi": new File([dummyPdf3], "struktur.pdf", { type: "application/pdf" }),
+      "Daftar Personalia": new File([dummyPdf], "personalia.pdf", { type: "application/pdf" }),
+      "Daftar Peralatan": new File([dummyPdf2], "peralatan.pdf", { type: "application/pdf" }),
+      "Ringkasan Eksekutif Quality Management System": new File([dummyPdf3], "ringkasan-qms.pdf", { type: "application/pdf" }),
+      "Surat Izin Apoteker": new File([dummyPdf], "izin-apoteker.pdf", { type: "application/pdf" }),
+      "Dokumen Self Assessment": new File([dummyPdf2], "self-assessment.pdf", { type: "application/pdf" }),
+    };
   
-  const handleAutoFill = () => {
-    handleAutoUploadClickDummy(setSuratPermohonan, dummyPdf); // Surat Permohonan CDOB
-    handleAutoUploadClickDummy(setBuktiPembayaran, dummyPdf2); // Bukti Pembayaran Pajak
-    handleAutoUploadClickDummy(setSuratIzin, dummyPdf); // Surat Izin
-    handleAutoUploadClickDummy(setDenah, dummyPdf2); // Denah Bangunan PBF
-    handleAutoUploadClickDummy(setStrukturOrganisasi, dummyPdf3); // Struktur Organisasi
-    handleAutoUploadClickDummy(setDaftarPersonalia, dummyPdf); // Daftar Personalia
-    handleAutoUploadClickDummy(setDaftarPeraltan, dummyPdf2); // Daftar Peralatan
-    handleAutoUploadClickDummy(setEksekutifQualityManagement, dummyPdf3); // Ringkasan Eksekutif Quality Management System
-    handleAutoUploadClickDummy(setSuratIzinApoteker, dummyPdf); // Surat Izin Apoteker
-    handleAutoUploadClickDummy(setDokSelfAsses, dummyPdf2); // Dokumen Self Assessment
-  };
-
-  const handleAutoUploadClickDummy = (setFile, dummyFile) => {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'application/pdf';
-    
-    // Set the file input to automatically fill with the dummy file
-    fileInput.files = createFileList([dummyFile]);
-    
-    handleFileChange({ target: { files: fileInput.files } }, setFile);
+    const uploadedHashes = {};
+  
+    try {
+      setLoader(true);
+      MySwal.fire({
+        title: "Mengunggah semua dummy dokumen ke IPFS...",
+        text: "Harap tunggu. Jika proses ini memakan waktu terlalu lama, coba periksa koneksi IPFS. 🚀",
+        icon: 'info',
+        showCancelButton: false,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+      });
+  
+      for (const [docName, file] of Object.entries(dummyFiles)) {
+        const result = await client.add(file);
+        uploadedHashes[docName] = result.path;
+      }
+  
+      MySwal.fire({
+        title: `Konfirmasi pengajuan CDOB`,
+        html: `
+          <div class="form-swal">
+            <div class="row row--obat table-like">
+              <div class="col doku">
+                <ul>
+                  <li class="label label-2"><p>Nama PBF</p></li>
+                  <li class="input input-2"><p>${userdata.instanceName}</p></li>
+                </ul>
+                <ul>
+                  <li class="label label-2"><p>Tipe Permohonan</p></li>
+                  <li class="input input-2"><p>${tipePermohonanMap[tipePermohonan]}</p></li>
+                </ul>
+                <div class="doku">
+                  ${Object.entries(uploadedHashes).map(([docName, hash]) => `
+                    <ul>
+                      <li class="label label-2"><p>${docName}</p></li>
+                      <li class="input input-2">
+                        <a href="http://localhost:8080/ipfs/${hash}" target="_blank">
+                          Lihat dokumen ↗ (${hash})
+                        </a>
+                      </li>
+                    </ul>
+                  `).join("")}
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+        width: '900',
+        showCancelButton: true,
+        confirmButtonText: 'Konfirmasi',
+        cancelButtonText: "Batal",
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          MySwal.fire({
+            title: "Menunggu koneksi Metamask...",
+            text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+            icon: "info",
+            showConfirmButton: false,
+            allowOutsideClick: false
+          });
+          const hashDocs = reconstructedHashes(uploadedHashes);
+          requestCdob(hashDocs);
+        } else {
+          setLoader(false);
+        }
+      });
+  
+    } catch (error) {
+      setLoader(false);
+      MySwal.fire({
+        title: "Gagal Upload",
+        text: "Terjadi kesalahan saat upload ke IPFS.",
+        icon: "error"
+      });
+    }
   };
 
   return (
@@ -674,9 +783,9 @@ function CdobRequest() {
           }
             </button>
 
-            {/* <button type='button' onClick={handleAutoFill}>
-              Isi Semua Field dengan Dummy
-            </button> */}
+            <button type='button' onClick={handleAutoFillAndUploadToIPFS} className='auto-filled'>
+              Isi Semua Field dengan Dummy File
+            </button>
         </form>
       </div>
     </div>

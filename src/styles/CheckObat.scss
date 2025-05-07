@@ -4,10 +4,47 @@
 #publicObat{
   padding: 20px;
 
+  .container-form{
+    background-color: #f2f2f36a;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    .btn-wrapper{
+      padding: 20px 16px;
+
+      button{
+        margin: 0 20px;
+        @include btnUniversal($purple, transparent, 4px);
+        font-style: italic;
+        font-weight: 600;
+        border: solid 1px $purple;
+        
+        &.active{
+          background-color: $purple;
+          color: $white;
+        }
+
+        &:hover{
+          background-color: $purple;
+          color: $white;
+
+        }
+      }
+    }
+  }
+
+  .container-table{
+    margin-top: 14px;
+    background-color: #f2f2f36a;
+    padding: 6px 16px;
+    border-radius: 6px;
+  }
+
   form{
     background-color: #f2f2f36a;
-    border-radius: 6px;
     padding: 20px 16px;
+    border-radius: 6px;
 
     h3{
       font-size: 26px;
