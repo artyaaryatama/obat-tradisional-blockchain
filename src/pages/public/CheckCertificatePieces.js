@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { create } from 'ipfs-http-client';
 import "../../styles/CheckObat.scss";
+import TableData from '../../components/TablePublicDataSertifikat';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
+import { collection, getDocs, doc as docRef, getDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig"; 
 
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 
@@ -21,6 +24,9 @@ function CheckCertificateIpfs() {
   const [senderInstanceAddress, setSenderInstanceAddress] = useState("");
   const [factoryType, setFactoryType] = useState("");
   const [url, setUrl] = useState("")
+  const [rowsData, setRowsData] = useState([])
+  const [isActive, setIsActive] = useState(null);
+  const [isChoosen, setIsChoosen] = useState('');
 
   useEffect(() => {
     document.title = "Pencarian Sertifikat";
@@ -52,6 +58,85 @@ function CheckCertificateIpfs() {
     setNpwp(certData.senderNPWP);
     setNib(certData.senderNIB);
   };
+
+  useEffect(() => {
+    renderTableCdob();
+  }, []);
+
+  const renderTableCdob = async () => {
+    const snapshot = await getDocs(collection(db, "cdob_list"));
+    const rowsData = [];
+
+    for (const doc of snapshot.docs) {
+      const companyName = doc.id;
+      const docData = doc.data();
+
+      const companyDoc = await getDoc(docRef(db, "company_data", companyName));
+      const company = companyDoc.exists() ? companyDoc.data() : {};
+      const alamat = company?.userLocation || "-";
+      const nib = company?.userNib || "-";
+
+      Object.entries(docData).forEach(([tipePermohonan, permohonanData]) => {
+        if (permohonanData?.status !== 1) return; 
+
+        rowsData.push({
+          id: rowsData.length + 1,
+          // nomor: rowsData.length + 1,
+          fixedNumber: rowsData.length + 1,
+          approvedTimestamp: permohonanData.approvedTimestamp || null,
+          certNumber: permohonanData.cdobNumber || "-",
+          tipePermohonan: tipePermohonan,
+          companyName: companyName,
+          approvedHash: permohonanData.approvedHash || "-",
+          ipfsCid: permohonanData.ipfsCid || "-",
+          bpomInstance: permohonanData.bpomInstance || "-",
+          companyAddress: alamat,
+          companyNib: nib,
+        });
+      });
+    }
+
+    console.log("HASIL rowsData:", rowsData);
+    setRowsData(rowsData);
+  };
+
+  const renderTableCpotb = async() => {
+    const snapshot = await getDocs(collection(db, "cpotb_list"));
+    const rowsData = [];
+
+    for (const doc of snapshot.docs) {
+      const factoryName = doc.id;
+      const docData = doc.data();
+
+      const companyDoc = await getDoc(docRef(db, "company_data", factoryName));
+      const company = companyDoc.exists() ? companyDoc.data() : {};
+      const alamat = company?.userLocation || "-";
+      const nib = company?.userNib || "-";
+      const factoryType= company?.factoryType || '-';
+
+      Object.entries(docData).forEach(([jenisSediaan, permohonanData]) => {
+        if (permohonanData?.status !== 1) return; 
+
+        rowsData.push({
+          id: rowsData.length + 1,
+          // nomor: rowsData.length + 1,
+          fixedNumber: rowsData.length + 1,
+          certNumber: permohonanData.cpotbNumber || "-",
+          approvedTimestamp: permohonanData.approvedTimestamp || null,
+          tipePermohonan: jenisSediaan,
+          companyName: factoryName,
+          approvedHash: permohonanData.approvedHash || "-",
+          ipfsCid: permohonanData.ipfsCid || "-",
+          bpomInstance: permohonanData.bpomInstance || "-",
+          companyAddress: alamat,
+          companyNib: nib,
+        });
+      });
+    }
+
+    console.log("HASIL rowsData:", rowsData);
+    setRowsData(rowsData);
+  }
 
   const renderCpotbDetails = () => (
     <>
@@ -138,12 +223,29 @@ function CheckCertificateIpfs() {
         </div>
       </div>
 
-    )}
+  )}
+
+  const dataChosen = (e, num) => {
+    e.preventDefault();
+    
+    setIsActive(num);
+
+    if (num === 1) {
+      setIsChoosen('CPOTB')
+      renderTableCpotb()
+    } else {
+      setIsChoosen('CDOB')
+      renderTableCdob()
+    }
+  }
+
+  console.log("ISI ROWS:", rowsData);
 
   return (
     <div id="publicObat" className="layout-page">
 
-          <form className="register-form" onSubmit={(e) => { e.preventDefault(); searchData(); }}>
+      <div className="container-form">
+        <form className="register-form" onSubmit={(e) => { e.preventDefault(); searchData(); }}>
           <h3>Pencarian Detail Sertifikat</h3>
 
           <div className="group">
@@ -159,9 +261,23 @@ function CheckCertificateIpfs() {
               Cari Data Obat
             </button>
           </div>
+
         </form>
 
-        {certName? returnData() : <div></div>}
+        <div className="btn-wrapper">
+          <button type='button' className={`btn ${isActive === 2 ? 'active' : ''}`} onClick={(e) => {dataChosen(e, 2)}}>CDOB</button>
+          <button type='button' className={`btn ${isActive === 1 ? 'active' : ''}`} onClick={(e) => {dataChosen(e, 1)}}>CPOTB</button>
+        </div>
+      </div>
+
+
+      {certName? returnData() : <div></div>}
+      
+      <div className="container-table">
+        <h3>List Data {isChoosen? isChoosen: 'CDOB'}</h3>
+
+        <TableData rowsData={rowsData} />
+      </div>
     </div>
   );
 }

@@ -30,6 +30,7 @@ function CheckCertificateIpfs() {
     return urlPath.split('/').pop();
   };
 
+  
   useEffect(() => {
     const getDetailData = async () => {
       const ipfsCid = getHashFromUrl();
@@ -150,6 +151,7 @@ function CheckCertificateIpfs() {
           </div>
         </div>
       </div>
+
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { create } from 'ipfs-http-client';
 import imgLoader from '../../assets/images/loader.svg';
@@ -136,7 +136,7 @@ function CpotbRequest() {
         label: jenisSediaanMap[key]
       }));
 
-      console.log(filtered);
+      console.log('==>',filtered);
       setFilteredJenisSediaan(filtered);
     } else {
       setFilteredJenisSediaan([]);
@@ -279,6 +279,7 @@ function CpotbRequest() {
       [hashDocs.surat_permohonan_cpotb, hashDocs.bukti_pembayaran_negara_bukan_pajak, hashDocs.surat_pernyataan_komitmen],
       [hashDocs.denah_bangunan_pabrik, hashDocs.dokumen_sistem_mutu_cpotb]
     );
+
     try {
       const requestCpotbCt = await contract.requestCpotb(
         [id, userdata.name, userdata.instanceName, userdata.address], 
@@ -290,17 +291,18 @@ function CpotbRequest() {
       console.log('Receipt:', requestCpotbCt);
   
       if(requestCpotbCt){
-        writeCpotbFb( userdata.instanceName, jenisSediaanMap[jenisSediaan], requestCpotbCt.hash );
-
+        
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳",
           allowOutsideClick: false
         });
       }
-  
-      contract.once("CertRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
+      
+      contract.on("CertRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
         handleEventCpotbRequested(_name, _userAddr, _jenisSediaan, _timestampRequest, requestCpotbCt.hash);
+        writeCpotbFb( userdata.instanceName, jenisSediaanMap[jenisSediaan], requestCpotbCt.hash, Number(_timestampRequest));
+        recordHashFb(jenisSediaanMap[jenisSediaan], requestCpotbCt.hash, Number(_timestampRequest))
       });
   
     } catch (err) {
@@ -312,21 +314,34 @@ function CpotbRequest() {
 
   const checkEligiblePabrik = (jenisSediaan) => {
     console.log(jenisSediaan);
-    const isSediaanValid = filteredJenisSediaan.some(item => item.key === jenisSediaan || false);
-
+    const isSediaanValid = filteredJenisSediaan.some(item => item.key === jenisSediaan || console.log(item.key));
     console.log(isSediaanValid);
     return isSediaanValid
   }
 
-  const writeCpotbFb = async (instanceName, jenisSediaan, requestCpotbCtHash) => {
+  const writeCpotbFb = async (instanceName, jenisSediaan, requestCpotbCtHash, timestamp) => {
     try {
-      const documentId = `cpotb-lists`; 
-      const factoryDocRef = doc(db, instanceName, documentId);
+      const docRef = doc(db, 'cpotb_list', instanceName);
+      const docRefUser = doc(db, 'company_data', instanceName)
+
+      const companyData = await getDoc(docRefUser);
+
+      if (!companyData.exists()) {
+        await setDoc(docRefUser, {
+          userNib: userdata.nib,
+          userLocation: userdata.location,
+          userAddr: userdata.address,
+          factoryType: userdata.factoryType,
+        });
+      } else {
+        console.log("Data perusahaan telah tersimpan di database.");
+      } 
   
-      await setDoc(factoryDocRef, {
+      await setDoc(docRef, {
         [`${jenisSediaan}`]: {
-          requestCpotb: requestCpotbCtHash,
-          requestTimestamp: Date.now(),
+          requestHash: requestCpotbCtHash,
+          requestTimestamp: timestamp,
+          status: 0
         },
       }, { merge: true }); 
     } catch (err) {
@@ -334,11 +349,31 @@ function CpotbRequest() {
     }
   };
 
+  const recordHashFb = async(jenisSediaan, txHash, timestamp) => {
+    try {
+      const collectionName = `pengajuan_cpotb_${userdata.instanceName}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRef, {
+        [`${jenisSediaan}`]: {
+          'request': {
+            hash: txHash,
+            timestamp: timestamp,
+          }
+        },
+      }, { merge: true }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  }
+
   const handleOptionJenisSediaan = (e) => {;
     const selectedValue = e.target.value;
     setJenisSediaan(selectedValue); 
     console.log("Selected Jenis Sediaan (string):", selectedValue);
     console.log("Selected Jenis Sediaan (uint8):", parseInt(selectedValue));
+    checkEligiblePabrik(jenisSediaan);
+
   };
 
   const handleFileChange = (e, setFile) => {
@@ -420,7 +455,6 @@ function CpotbRequest() {
   }
   
 
-
   const uploadDocuIpfs = async () => {
     console.log(34);
     let uploadedHashes;
@@ -431,7 +465,7 @@ function CpotbRequest() {
       icon: 'info',
       showCancelButton: false,
       showConfirmButton: false,
-      allowOutsideClick: true,
+      allowOutsideClick: false,
     });
     try {
       
@@ -526,7 +560,7 @@ function CpotbRequest() {
       "Surat Pernyataan Komitmen": suratKomitmen,
     };
 
-    const uploadedHashes = {};
+    let uploadedHashes = {};
 
     const fileEntries = Object.entries(files).filter(([_, file]) => file);
 
@@ -549,40 +583,68 @@ function CpotbRequest() {
     return uploadedHashes;
   };
 
-  const createFileList = (files) => {
-    const dataTransfer = new DataTransfer();
-    files.forEach((file) => {
-      dataTransfer.items.add(file);
-    });
-    return dataTransfer.files;
-  };
+  const handleAutoFillAndUploadToIPFS = async () => {
 
-  const handleAutoUploadClickDummy = (setFile, dummyFile) => {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'application/pdf';
+    const dummyFiles = {
+      "Denah Bangunan Pabrik": new File([dummyPdf2], "denah.pdf", { type: "application/pdf" }),
+      "Dokumen Sistem Mutu CPOTB": new File([dummyPdf3], "sistem-mutu.pdf", { type: "application/pdf" }),
+      "Surat Permohonan CPOTB": new File([dummyPdf], "permohonan.pdf", { type: "application/pdf" }),
+      "Bukti Pembayaran Negara Bukan Pajak": new File([dummyPdf2], "bukti-pnbp.pdf", { type: "application/pdf" }),
+      "Surat Pernyataan Komitmen": new File([dummyPdf], "komitmen.pdf", { type: "application/pdf" }),
+    };
   
-    // Create a new File object from the dummy file
-    const file = new File([dummyFile], dummyFile.name, { type: 'application/pdf' });
+    const uploadedHashes = {};
   
-    // Set the file input to automatically fill with the dummy file
-    const dataTransfer = new DataTransfer();
-    dataTransfer.items.add(file);
-    fileInput.files = dataTransfer.files;
+    try {
+      for (const [docName, file] of Object.entries(dummyFiles)) {
+        const result = await client.add(file);
+        uploadedHashes[docName] = result.path;
+      }
   
-    // Call handleFileChange with the correct parameters
-    handleFileChange({ target: { files: fileInput.files } }, setFile);
+      MySwal.fire({
+        title: "Dummy Dokumen Terunggah ke IPFS",
+        html: `
+          <div class="form-swal">
+            ${Object.entries(uploadedHashes).map(([docName, hash]) => `
+              <ul>
+                <li class="label"><p>${docName}</p></li>
+                <li class="input">
+                  <a href="http://localhost:8080/ipfs/${hash}" target="_blank">${hash}</a>
+                </li>
+              </ul>
+            `).join("")}
+          </div>
+        `,
+        width: 700,
+        confirmButtonText: 'Konfirmasi',
+        cancelButtonText: "Batal",
+        allowOutsideClick: false,
+      }).then((result) => {
+          if (result.isConfirmed) {
+            MySwal.fire({
+              title: "Menunggu koneksi Metamask...",
+              text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+              icon: "info",
+              showConfirmButton: false,
+              allowOutsideClick: false
+            });
+            const hashDocs = reconstructedHashes(uploadedHashes);
+            console.log(hashDocs);
+            requestCpotb(hashDocs);
+          }
+          else {
+            setLoader(false)
+          }
+      })
+    } catch (error) {
+      MySwal.fire({
+        title: "Gagal Upload",
+        text: "Terjadi kesalahan saat upload ke IPFS.",
+        icon: "error"
+      });
+    }
   };
   
-  const handleAutoFill = () => {
-    console.log("Auto-fill button clicked"); // Log to check if the button is clicked
-    handleAutoUploadClickDummy(setSuratPermohonan, dummyPdf); // Surat Permohonan CPOTB
-    handleAutoUploadClickDummy(setBuktiPembayaranNegaraBukanPajak, dummyPdf2); // Bukti Pembayaran Negara Bukan Pajak
-    handleAutoUploadClickDummy(setSuratKomitmen, dummyPdf); // Surat Komitmen
-    handleAutoUploadClickDummy(setDenahBangunan, dummyPdf2); // Denah Bangunan
-    handleAutoUploadClickDummy(setSistemMutu, dummyPdf3); // Dokumen Sistem Mutu
-  };
-
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>
       <div className="title-menu">
@@ -716,9 +778,11 @@ function CpotbRequest() {
             )
           }
             </button>
-            {/* <button type='button' onClick={handleAutoFill}>
-              Isi Semua Field dengan Dummy
-            </button> */}
+
+          <button type='button' onClick={handleAutoFillAndUploadToIPFS} className='auto-filled'>
+            Isi Semua Field dengan Dummy File
+          </button>
+
         </form>
       </div>
     </div>

@@ -91,7 +91,6 @@ export default function TableHash({ ipfsHashes = [] }) {
     setPage(0);
   };
 
-  // Avoid a layout jump when reaching the last page with empty rows
   const emptyRows =
     page > 0
       ? Math.max(0, (1 + page) * rowsPerPage - ipfsHashes.length)
@@ -126,7 +125,6 @@ export default function TableHash({ ipfsHashes = [] }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {/* Check if there are no IPFS hashes */}
           {ipfsHashes.length === 0 ? (
             <TableRow>
               <TableCell colSpan={2} align="center" sx={{ padding: '8px 16px', fontFamily: 'Instrument Sans, sans-serif', fontSize: '14px', color: '#777' }}>
