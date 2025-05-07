@@ -299,37 +299,7 @@ function CreateObat() {
       "ObatLain" : 0n,
       "CCP" : 1n
     };
-
-    // const jenisSediaanMapReverse = {
-    //   "Cairan Obat Dalam": 0n,
-    //   "Rajangan": 1n,
-    //   "Serbuk": 2n,
-    //   "Serbuk Instan": 3n,
-    //   "Efervesen": 4n,
-    //   "Pil": 5n,
-    //   "Kapsul": 6n,
-    //   "Kapsul Lunak": 7n,
-    //   "Tablet atau Kaplet": 8n,
-    //   "Granul": 9n,
-    //   "Pastiles": 10n,
-    //   "Dodol atau Jenang": 11n,
-    //   "Film Strip": 12n,
-    //   "Cairan Obat Luar": 13n,
-    //   "Losio": 14n,
-    //   "Parem": 15n,
-    //   "Salep": 16n,
-    //   "Krim": 17n,
-    //   "Gel": 18n,
-    //   "Serbuk Obat Luar": 19n,
-    //   "Tapel": 20n,
-    //   "Pilis": 21n,
-    //   "Plaster atau Koyok": 22n,
-    //   "Supositoria": 23n,
-    //   "Rajangan Obat Luar": 24n
-    // };
     
-    // const kemasanPrimSelected = jenisSediaanMapReverse[kemasanPrim]
-
     const kemasanPrimData = dataCpotb.find((item) => item.jenisSediaan === kemasanPrim) || false;
     const newObatName = namaObatExisted.find((item) => item.namaProduk === namaProduk) || false;
 
@@ -361,16 +331,16 @@ function CreateObat() {
         console.log('Receipt:', createObatCt);
           
         if(createObatCt){
-
-          createObatFb(userdata.instanceName, namaProduk, createObatCt.hash, kemasanPrim, tipeObat)
-
+          
           MySwal.update({
             title: "Memproses transaksi...",
             text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
           });
         }
   
-        contracts.obatTradisional.once("ObatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
+        contracts.obatTradisional.on("ObatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
+          createObatFb(userdata.instanceName, namaProduk, createObatCt.hash, kemasanPrim, tipeObat)
+          recordHashFb(namaProduk, createObatCt.hash)
           handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);
         });
   
@@ -382,17 +352,25 @@ function CreateObat() {
   };
 
   const createObatFb = async (instanceName, namaProduk, obatHash, kemasanPrim, tipeObat) => {
-    try {
-      const documentId = `[OT] ${namaProduk}`;
-      const factoryDocRef = doc(db, instanceName, documentId); 
 
-      await setDoc(factoryDocRef, {
+    const tpMap = {
+      "ObatLain": 'Obat Lain',
+      "CCP": 'Cold Chain Product'
+    };
+
+    const tipeP = tpMap[tipeObat]
+
+    try {
+      const docRef = doc(db, 'obat_data', instanceName)
+
+      await setDoc(docRef, {
+        [`${namaProduk}`]: {
         jenisSediaan: `${kemasanPrim}`,
-        tipeObat: `${tipeObat}`,
+        tipeObat: `${tipeP}`,
         historyNie: {
-          createObat: obatHash,
+          createObatHash: obatHash,
           createObatTimestamp: Date.now(),
-        },
+        },}
       }, { merge: true }); 
   
     } catch (err) {
@@ -400,31 +378,49 @@ function CreateObat() {
     }
   };
 
+  const recordHashFb = async(namaProduk, txHash) => {
+    try {
+      const collectionName = `obat_${namaProduk}_${userdata.instanceName}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRef, {
+        [`produksi`]: {
+          'create_obat': {
+            hash: txHash,
+            timestamp: Date.now(),
+          }
+        },
+      }, { merge: true }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  }
+
   const handleKlaimChange = (e) => {
     const lines = e.target.value.split("\n"); 
     setKlaim(lines);
   };
 
-  const handleAutoFill1 = () => {
+  const handleAutoFill4 = () => {
     const autoFillValues = {
-      namaProduk: "OBAT HERBAL BATUK PILEK",
-      merk: "Bapil Herbal",
+      namaProduk: "SARI LANGIT",
+      merk: "Langit Alami",
       klaim: [
-          "Membantu meredakan batuk kering dan berdahak",
-          "Membantu melegakan tenggorokan",
-          "Membantu mengatasi hidung tersumbat"
+          "Diproses dari ekstrak nabati pilihan",
+          "Dapat dikonsumsi secara rutin",
+          "Mudah diseduh kapan saja"
       ],
-      ketKemasanPrim: "5",
-      satuanKemasanPrim: "sachet",
-      kemasanSeku: "Box",
-      ketKemasanSeku: "12",
+      ketKemasanPrim: "2",
+      satuanKemasanPrim: "gram",
+      kemasanSeku: "Pouch",
+      ketKemasanSeku: "10",
       komposisi: [
+          "Clitoria Ternatea Flos",
           "Zingiber Officinale Rhizoma",
-          "Glycyrrhiza Glabra Radix",
-          "Ocimum Sanctum Folium"
+          "Cymbopogon Citratus Folium"
       ]
     };
-
+  
     setNamaProduk(autoFillValues.namaProduk);
     setMerk(autoFillValues.merk);
     setKlaim(autoFillValues.klaim);
@@ -434,62 +430,60 @@ function CreateObat() {
     setKetKemasanSeku(autoFillValues.ketKemasanSeku);
     setKomposisi(autoFillValues.komposisi);
   };
-
-  const handleAutoFill2 = () => {
+  
+  const handleAutoFill5 = () => {
     const autoFillValues = {
-      namaProduk: "HERBAL DEMAM REDA",
-      merk: "Demam Reda",
+      namaProduk: "HERBAL TIDUR NYENYAK",
+      merk: "Nyenyak Natural",
       klaim: [
-          "Membantu menurunkan panas tubuh",
-          "Meredakan gejala flu dan menggigil",
-          "Membantu meningkatkan daya tahan tubuh"
+          "Membantu mengatasi susah tidur",
+          "Meningkatkan kualitas tidur malam",
+          "Membantu menenangkan pikiran dan tubuh"
       ],
-      ketKemasanPrim: "10",
-      satuanKemasanPrim: "ml",
-      kemasanSeku: "Dus",
-      ketKemasanSeku: "20",
-      komposisi: [
-          "Andrographis Paniculata Herba",
-          "Echinacea Purpurea Herba",
-          "Mentha Arvensis Folium"
-      ]
-    };
-
-    setNamaProduk(autoFillValues.namaProduk);
-    setMerk(autoFillValues.merk);
-    setKlaim(autoFillValues.klaim);
-    // setKemasanPrim(autoFillValues.kemasanPrim);
-    setKetKemasanPrim(autoFillValues.ketKemasanPrim);
-    setSatuanKemasanPrim(autoFillValues.satuanKemasanPrim);
-    setKemasanSeku(autoFillValues.kemasanSeku);
-    setKetKemasanSeku(autoFillValues.ketKemasanSeku);
-    setKomposisi(autoFillValues.komposisi);
-  };
-
-  const handleAutoFill3 = () => {
-    const autoFillValues = {
-      namaProduk: "HERBAL ANTI ALERGI",
-      merk: "Anti Alergi",
-      klaim: [
-          "Membantu meredakan gejala alergi seperti gatal-gatal",
-          "Mengurangi peradangan akibat reaksi alergi",
-          "Membantu memperkuat sistem imun tubuh"
-      ],
-      ketKemasanPrim: "15",
-      satuanKemasanPrim: "mg",
+      ketKemasanPrim: "1",
+      satuanKemasanPrim: "tablet",
       kemasanSeku: "Botol",
-      ketKemasanSeku: "30",
+      ketKemasanSeku: "60",
       komposisi: [
-          "Curcuma Longa Rhizoma",
-          "Nigella Sativa Semen",
-          "Perilla Frutescens Folium"
+          "Valeriana Officinalis Radix",
+          "Passiflora Incarnata Herba",
+          "Matricaria Chamomilla Flos"
       ]
     };
-
+    
     setNamaProduk(autoFillValues.namaProduk);
     setMerk(autoFillValues.merk);
     setKlaim(autoFillValues.klaim);
-    // setKemasanPrim(autoFillValues.kemasanPrim);
+    setKetKemasanPrim(autoFillValues.ketKemasanPrim);
+    setSatuanKemasanPrim(autoFillValues.satuanKemasanPrim);
+    setKemasanSeku(autoFillValues.kemasanSeku);
+    setKetKemasanSeku(autoFillValues.ketKemasanSeku);
+    setKomposisi(autoFillValues.komposisi);
+  };
+  
+  const handleAutoFill6 = () => {
+    const autoFillValues = {
+      namaProduk: "HERBAL SAKIT PERUT",
+      merk: "Perut Aman",
+      klaim: [
+          "Membantu meredakan sakit perut ringan",
+          "Mengatasi perut kembung dan mual",
+          "Menormalkan pencernaan secara alami"
+      ],
+      ketKemasanPrim: "2",
+      satuanKemasanPrim: "kapsul",
+      kemasanSeku: "Strip",
+      ketKemasanSeku: "10",
+      komposisi: [
+          "Kaempferia Galanga Rhizoma",
+          "Piper Betle Folium",
+          "Cuminum Cyminum Semen"
+      ]
+    };
+  
+    setNamaProduk(autoFillValues.namaProduk);
+    setMerk(autoFillValues.merk);
+    setKlaim(autoFillValues.klaim);
     setKetKemasanPrim(autoFillValues.ketKemasanPrim);
     setSatuanKemasanPrim(autoFillValues.satuanKemasanPrim);
     setKemasanSeku(autoFillValues.kemasanSeku);
@@ -769,9 +763,9 @@ function CreateObat() {
           }
             </button>
           <div className="auto-filled-btn">
-            <button className='auto-filled' type='button' onClick={handleAutoFill1}>Auto Fill Form 1</button>
-            <button className='auto-filled' type='button' onClick={handleAutoFill2}>Auto Fill Form 2</button>
-            <button className='auto-filled' type='button' onClick={handleAutoFill3}>Auto Fill Form 3</button>
+            <button className='auto-filled' type='button' onClick={handleAutoFill4}>Auto Fill Form 1</button>
+            <button className='auto-filled' type='button' onClick={handleAutoFill5}>Auto Fill Form 2</button>
+            <button className='auto-filled' type='button' onClick={handleAutoFill6}>Auto Fill Form 3</button>
 
           </div>
         </form>

@@ -90,13 +90,17 @@ function StockObatFactory() {
     };
   }, []);
 
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  
   useEffect(() => {
+
     const loadData = async () => {
       if (contracts && userdata.instanceName) {
         try {
-
+          console.log(userdata.instanceName);
+          await delay(500)
           const listProducedObatCt = await contracts.obatTradisional.getAllBatchProductionByInstance(userdata.instanceName);
-          
+
           console.log(listProducedObatCt);
           const reconstructedData = listProducedObatCt.map((item) => {
             return {
@@ -106,20 +110,21 @@ function StockObatFactory() {
               obatQuantity: parseInt(item[3]),
               statusStok: stokStatusMap[item[4]],
               factoryInstanceName: item[5]
-            }
-          })
-          setDataObat(reconstructedData)
-
+            };
+          });
+          setDataObat(reconstructedData);
         } catch (error) {
           console.error("Error loading data: ", error);
-        } finally{
+        } finally {
           setLoading(false);
-        }        
+        }
       }
     };
   
-    loadData();
-  }, [contracts, userdata.instanceName]);
+    if (contracts && userdata.instanceName) {
+      loadData();  
+    }
+  }, [contracts, userdata.instanceName]);  
 
   useEffect(() => {
     if (!loading) {

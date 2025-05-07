@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc} from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import Loader from '../../components/Loader';
 import imgSad from '../../assets/images/3.png'
@@ -113,10 +113,10 @@ function CreateOrderRetailer() {
             namaProduk: item[2],
             batchName: item[3],
             obatQuantity: item[4],
-            pbfInstance: item[5],
+            pbfInstance: item[6],
           }));
 
-          // setDataObat(reconstructedData)
+          setDataObat(reconstructedData)
           console.log(reconstructedData);
 
         } catch (error) {
@@ -548,14 +548,14 @@ function CreateOrderRetailer() {
       const createOrderCt = await contracts.orderManagement.createOrder(prevOrderIdPbf, orderId, id, batchName, namaProduk, userdata.instanceName, pbfInstance, orderQuantity, '');
       
       if(createOrderCt){
-        updateBatchHistoryHash(factoryInstance, namaProduk, batchName, createOrderCt.hash)
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-
-      contracts.orderManagement.once("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      
+      contracts.orderManagement.on("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+        updateBatchHistoryHash(factoryInstance, namaProduk, createOrderCt.hash, batchName, Number(_timestampOrder))
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, createOrderCt.hash);
       });
 
@@ -565,31 +565,35 @@ function CreateOrderRetailer() {
 
   }
 
-  const updateBatchHistoryHash = async(factoryInstance, namaProduk, batchName, hash) => {
-    const documentId = `[OT] ${namaProduk}`;
-    const factoryDocRef = doc(db, factoryInstance, documentId); 
-   
+  const updateBatchHistoryHash = async (factoryInstance, namaProduk, obatHash, batchName, timestamp) => {
     try {
-      const docSnap = await getDoc(factoryDocRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
+      const collectionName = `obat_${namaProduk}_${factoryInstance}`
+      const docRef = doc(db, 'obat_data', factoryInstance)
+      const docRefTx = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRefTx, {
+        [`batch_${batchName}`]: {
+          'order_retailer': {
+            createdHash: obatHash,
+            createdTimestamp: timestamp,
+          }
+        },
+      }, { merge: true }); 
 
-        if (data.batchData && data.batchData[batchName]) {
-          await updateDoc(factoryDocRef, {
-            [`batchData.${batchName}.historyHash.orderCreatedRetailer`]: hash,
-            [`batchData.${batchName}.historyHash.orderCreatedRetailerTimestamp`]: Date.now()
-          });
-          console.log(`Batch ${batchName} updated successfully.`);
-        } else {
-          errAlert({ reason: `Batch ${batchName} not found in batchData!` });
+      await setDoc(docRef, {
+        [`${namaProduk}`]: {
+          [`batch_${batchName}`]: {
+            OrderRetCreatedHash: obatHash,
+            OrderRetCreatedTimestamp: timestamp,
+            retailer: userdata.instanceName,
+          },
         }
-      } else {
-        errAlert({ reason: `Document ${documentId} not found!` });
-      }
-    } catch (error) {
-      errAlert(error);
+      }, { merge: true }); 
+  
+    } catch (err) {
+      errAlert(err);
     }
-  }
+  };
 
   return (
     <>

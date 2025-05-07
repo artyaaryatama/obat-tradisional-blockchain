@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
-import { doc, updateDoc } from "firebase/firestore";
+import { create } from 'ipfs-http-client';
+import { doc, updateDoc, collection, setDoc, getDoc} from "firebase/firestore";
 import { db } from "../../firebaseConfig"; 
 import "../../styles/MainLayout.scss"; 
 import Swal from 'sweetalert2';
@@ -12,6 +13,7 @@ import Loader from '../../components/Loader';
 import imgSad from '../../assets/images/3.png'
 
 const MySwal = withReactContent(Swal);
+const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
 
 function NieApprove() {
   const [contracts, setContracts] = useState(null);
@@ -66,9 +68,16 @@ function NieApprove() {
             signer
           );
           
+          const RoleManager = new Contract(
+            contractData.RoleManager.address, 
+            contractData.RoleManager.abi, 
+            signer
+          );
+          
           setContracts({
             obatTradisional: ObatTradisional,
-            nieManager: NieManager
+            nieManager: NieManager,
+            roleManager: RoleManager
           });
             
         } catch (err) {
@@ -304,6 +313,32 @@ function NieApprove() {
     }
   }
 
+  const getNieCID = async (namaObat, factoryInstance) => {
+  
+    // Construct document reference
+    const docRef = doc(db, "obat_data", factoryInstance, namaObat, "historyNie");
+  
+    // Log the path of the document reference
+    console.log("Document Path:", docRef.path);
+  
+    // Fetch the document snapshot
+    const docSnap = await getDoc(docRef);
+  
+    // Log the snapshot and check if the document exists
+    console.log("Document Snapshot:", docSnap);
+    console.log("Document Exists:", docSnap.exists());
+  
+    // If the document exists, extract the IPFS CID
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      console.log("Document Data:", data);
+      const ipfsCid = data.ipfsCid;
+      console.log("IPFS CID:", ipfsCid);
+    } else {
+      console.log("No such document!");
+    }
+  }
+  
   const getDetailObat = async (id) => {
     
     console.log(id); 
@@ -312,12 +347,13 @@ function NieApprove() {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       let rejectMsg;
-
+      
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
       const [nieDetails, dokumenObat, dokumenSpesifikasi] = detailNieCt;
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstancee, bpomInstance, bpomAddr] = nieDetails;
       const [masterFormula, suratKuasa, suratPernyataan, komposisiProduk, caraPembuatanProduk, spesifikasiKemasan, hasilUjiStabilitas] = dokumenObat;
       const [sertifikatAnalisaBahanBaku, sertifikatAnalisaProdukJadi, spesifikasiProdukJadi, sistemPenomoranBets, desainKemasan, dataPendukungKeamanan] = dokumenSpesifikasi;
+      getNieCID(namaProduk, factoryInstance)
       
       const detailObat = {
         obatId: id,
@@ -1927,7 +1963,7 @@ function NieApprove() {
                 });
 
                 console.log(updatedNieNumber);
-                approveNie(id, updatedNieNumber, detailObat.namaObat, factoryInstance)
+                generateIpfs(id, updatedNieNumber, detailObat, cpotbHash)
               }
             })
           
@@ -2058,21 +2094,75 @@ function NieApprove() {
     }
   }
 
-  const approveNie = async(id, nieNumber, namaObat, factoryInstance) => {
+  const generateIpfs = async(id, updatedNie, dataObat, cpotbHash) => {
+
+    console.log(dataObat.factoryAddr);
+
+    const userFactoryCt = await contracts.roleManager.getUserData(dataObat.factoryAddr);
+
+    console.log(userFactoryCt);
+ 
+    const obat = {
+      cpotbHash: cpotbHash,
+      dataObat:  {
+        nieNumber: updatedNie,
+        namaProduk: dataObat.namaObat,
+        merk: dataObat.merk,
+        klaim: dataObat.klaim,
+        kemasan: dataObat.kemasan,
+        komposisi: dataObat.komposisi,
+        factoryAddr: dataObat.factoryAddr,
+        factoryInstanceName: dataObat.factoryInstanceName,
+        factoryAddressInstance: userFactoryCt[4], 
+        factoryType:  userFactoryCt[5],
+        tipeObat: dataObat.tipeObat,
+        obatStatus: "NIE Approved",
+        nieRequestDate: dataObat.timestampNieRequest,
+        nieApprovalDate: Date.now(),
+        nibFactory: userFactoryCt[6],
+        npwpFactory: userFactoryCt[7],
+        bpomAddr: userdata.address,
+        bpomInstanceName: userdata.instanceName,
+        bpomAddressInstance: userdata.location,
+        jenisObat: dataObat.jenisObat
+      }
+    };
+
+    console.log(obat, id);
+    
+    const result = await client.add(JSON.stringify(obat), 
+      { progress: (bytes) => 
+        console.log(`Uploading data NIE: ${bytes} bytes uploaded`) }
+    ); 
+    
+    if (result.path) {
+      console.log("IPFS Hash:", result.path);
+
+      MySwal.update({
+        title: "Menunggu koneksi Metamask...",
+        text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+      });
+      
+      approveNie(id, updatedNie, dataObat.namaObat, dataObat.factoryInstanceName, result.path);
+    }
+  }
+
+  const approveNie = async(id, nieNumber, namaObat, factoryInstance, nieIpfs) => {
 
     console.log(id, nieNumber, userdata.instanceName);
     try {
       const approveNieCt =  await contracts.nieManager.approveNie(id, nieNumber, userdata.instanceName)
 
       if(approveNieCt){
-        updateObatFb(factoryInstance, namaObat, approveNieCt.hash, true)
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-
-      contracts.nieManager.once('NieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
+      
+      contracts.nieManager.on('NieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
+        updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, approveNieCt.hash, Number(_timestampApprove),  true)
+        recordHashFb(namaObat, factoryInstance, approveNieCt.hash, Number(_timestampApprove),  true)
         handleEventNieApproved("Approved", namaObat, _instanceAddr, _instanceName, _nieNumber, _timestampApprove, approveNieCt.hash)
       });
 
@@ -2088,14 +2178,15 @@ function NieApprove() {
       const rejectCt = await contracts.nieManager.rejectNie(id, userdata.instanceName, rejectMsg);
 
       if(rejectCt){
-        updateObatFb(factoryInstance, namaObat, rejectCt.hash, false)
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-
-      contracts.nieManager.once('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
+      
+      contracts.nieManager.on('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
+        updateObatFb(namaObat, factoryInstance, "", "", rejectCt.hash, Number(_timestampRejected), false)
+        recordHashFb(namaObat, factoryInstance, rejectCt.hash, Number(_timestampRejected), false)
         handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, rejectCt.hash)
       });
 
@@ -2104,20 +2195,23 @@ function NieApprove() {
     }
   }
 
-  const updateObatFb = async (instanceName, namaProduk, obatHash, status) => {
+  const updateObatFb = async (namaObat, factoryInstance, nieNumber, nieIpfs, nieHash, timestamp, status) => {
     try {
-      const documentId = `[OT] ${namaProduk}`;
-      const factoryDocRef = doc(db, instanceName, documentId);
+      const docRef = doc(db, 'obat_data', factoryInstance)
 
       if(status){
-        await updateDoc(factoryDocRef, {
-          "historyNie.approvedNie": obatHash, 
-          "historyNie.approvedNieTimestamp": Date.now(), 
+        await updateDoc(docRef, {
+          [`${namaObat}.historyNie.approvedHash`]: nieHash,
+          [`${namaObat}.historyNie.approvedTimestamp`]: timestamp,
+          [`${namaObat}.historyNie.bpomInstance`]: userdata.instanceName,
+          [`${namaObat}.historyNie.nieNumber`]: nieNumber,
+          [`${namaObat}.historyNie.ipfsCid`]: nieIpfs,
+          [`${namaObat}.status`]: 1
         }); 
       } else {
-        await updateDoc(factoryDocRef, {
-          "historyNie.rejectedNie": obatHash, 
-          "historyNie.rejectedNieTimestamp": Date.now(), 
+        await updateDoc(docRef, {
+          [`${namaObat}.historyNie.rejectedHash`]: nieHash, 
+          [`${namaObat}.historyNie.rejectedTimestamp`]: timestamp, 
         });  
 
       }
@@ -2126,6 +2220,37 @@ function NieApprove() {
       errAlert(err);
     }
   };
+
+  const recordHashFb = async(namaProduk, factoryInstance, txHash, timestamp, status) => {
+    try {
+      const collectionName = `obat_${namaProduk}_${factoryInstance}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+
+      if (status === true) {
+        await setDoc(docRef, {
+          [`produksi`]: {
+            'approve_nie': {
+              hash: txHash,
+              timestamp: timestamp,
+            }
+          },
+        }, { merge: true }); 
+      } else {
+        await setDoc(docRef, {
+          [`produksi`]: {
+            'reject_nie': {
+              hash: txHash,
+              timestamp: timestamp,
+            }
+          },
+        }, { merge: true }); 
+        
+      }
+
+    } catch (err) {
+      errAlert(err);
+    }
+  }
 
   return (
     <>

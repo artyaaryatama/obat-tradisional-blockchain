@@ -3,7 +3,6 @@ import { create } from 'ipfs-http-client';
 import oht from '../../assets/images/oht.png';
 import fitofarmaka from '../../assets/images/fitofarmaka.png';
 import Jamu from '../../assets/images/jamu.png';
-
 import "../../styles/CheckObat.scss"
 import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
@@ -47,8 +46,6 @@ function CheckObatIpfs() {
   const [pbfNib, setPBFNib] = useState("");
   const [factoryNib, setFactoryNib] = useState("");
   const [bpomNib, setBPOMNib] = useState("");
-
-
 
   useEffect(() => {
     document.title = "Cek Obat Tradisional"; 
@@ -227,14 +224,20 @@ function CheckObatIpfs() {
               <div className="content">
                 <div className="list-detail">
                   <ul className="info-list">
-                    <li className="info-item">
-                      <span className="label">Nama Batch</span>
-                      <span>{batchName}</span>
-                    </li>
-                    <li className="info-item">
-                      <span className="label">ID Kemasan</span>
-                      <span>{obatIdPackage}</span>
-                    </li>
+                    {batchName? 
+                      <li className="info-item">
+                        <span className="label">Nama Batch</span>
+                        <span>{batchName}</span>
+                      </li>
+                    : <div></div>
+                  }
+                    {obatIdPackage? 
+                      <li className="info-item">
+                        <span className="label">ID Kemasan</span>
+                        <span>{obatIdPackage}</span>
+                      </li>
+                    : <div></div>
+                  }
                     <li className="info-item">
                       <span className="label">Nama Obat</span>
                       <span>{namaObat}</span>

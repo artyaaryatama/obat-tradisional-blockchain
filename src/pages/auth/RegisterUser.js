@@ -113,22 +113,29 @@ function RegisterPage() {
               <p>{roles[_role]}</p> 
             </li>
           </ul>
-          <ul>
-            <li className="label">
-              <p>NPWP</p> 
-            </li>
-            <li className="input">
-              <p>{_npwp}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <p>NIB</p> 
-            </li>
-            <li className="input">
-              <p>{_nib}</p> 
-            </li>
-          </ul>
+
+          {!isBpom ? 
+            <ul>
+              <li className="label">
+                <p>NPWP</p> 
+              </li>
+              <li className="input">
+                <p>{_npwp}</p> 
+              </li>
+            </ul> : 
+            <div className=""></div>
+          }
+          {!isBpom ? 
+            <ul>
+              <li className="label">
+                <p>NIB</p> 
+              </li>
+              <li className="input">
+                <p>{_nib}</p> 
+              </li>
+            </ul> : 
+            <div className=""></div>
+          }
           <ul>
             <li className="label">
               <p>Lokasi Instansi</p> 
@@ -175,7 +182,7 @@ function RegisterPage() {
     if(role===2){
       setNib('0')
       setNpwp('0')
-      r = 'Pabrik'
+      r = 'BPOM'
     } else if(role ===0){
       r= "Pabrik"
     } else if (role===1){
@@ -191,7 +198,6 @@ function RegisterPage() {
     } else if (factoryType === "IOT") {
       typeFactory = "Industri Obat Tradisional (IOT)"
     }
-
 
     MySwal.fire({
       title: `Konfirmasi Pendaftaran Pengguna`,
@@ -300,7 +306,6 @@ function RegisterPage() {
   
   const registerUser = async (e) => {
 
-    e.preventDefault();
     setLoader(true)
     
     MySwal.fire({
@@ -331,7 +336,7 @@ function RegisterPage() {
         
       }
 
-      contract.once("UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
+      contract.on("UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
         handleEventUserRegister(_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp, registCt.hash);
       });
       
@@ -341,48 +346,93 @@ function RegisterPage() {
     }
   };
 
+  // function autoFilled(event, role) {
+  //   event.preventDefault();
+  //   console.log(role);
+  //   if(role===0){
+  //     setInstanceName('PT. Lorem ')
+  //     setRole(parseInt(0))
+  //     setName('Ja Doe')
+  //     // setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+  //     setNib('1111111111')
+  //     setNpwp('11.111.111.1-111.111')
+  //     setLocationInstance("Jl. Ini Alamat Factory PT. Lorem , Jakarta Selatan")
+  //     setIsBpom(false)
+  //     // setUserAddr("0x6142E74121ADE0de3BEC1641e0318dBcCFcDe06A")
+      
+  //   } else if(role===1){
+  //     setInstanceName('PT. Ipsum Arum')
+  //     setRole(parseInt(1))
+  //     setName('Cha Doe') 
+  //     setNib('2222222222')
+  //     setNpwp('22.222.222.2-222.222')
+  //     // setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
+  //     setLocationInstance("Jl. Ini Alamat PBF PT. Ipsum Arum, Jakarta Selatan")
+  //     setIsBpom(false)
+  //     // setUserAddr("0x97CB6400E271e65150B2330ad27f213a4C9c31af")
+      
+  //   } else if(role===2){
+  //     setInstanceName('BPOM Gowa')
+  //     setRole(parseInt(2))
+  //     setName('So Doe') 
+  //     // setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
+  //     setLocationInstance("Jl. Ini Alamat BPOM Gowa, Makassar")
+  //     setIsBpom(true)
+  //     // setUserAddr('0xcbcD762c3C27212937314C1D46072a214346F2F3')
+      
+  //   }  else if(role===3){
+  //     setInstanceName('Apotek Amet')
+  //     setRole(parseInt(3))
+  //     setName('Mar Doe') 
+  //     setNib('4444444444')
+  //     setNpwp('44.444.444.4-444.444')
+  //     // setUserAddr('0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65')
+  //     setLocationInstance("Jl. Ini Alamat Apotek Amet, Jakarta Selatan")
+  //     setIsBpom(false)
+  //     // setUserAddr('0xA3cE1983150Fade27518DF467a99a74FB4082dDa')
+  //   }
+  // }
+
   function autoFilled(event, role) {
     event.preventDefault();
     console.log(role);
-    if(role===0){
-      setInstanceName('PT. Budi Pekerti')
-      setRole(parseInt(0))
-      setName('James Doe')
-      // setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
-      setNib('1111111111')
-      setNpwp('11.111.111.1-111.111')
-      setLocationInstance("Jl. Ini Alamat Factory PT. Budi Pekerti, Jakarta Selatan")
-      // setUserAddr("0x6142E74121ADE0de3BEC1641e0318dBcCFcDe06A")
-      
-    } else if(role===1){
-      setInstanceName('PT. Mangga Arum')
-      setRole(parseInt(1))
-      setName('Charles Doe') 
-      setNib('2222222222')
-      setNpwp('22.222.222.2-222.222')
-      // setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
-      setLocationInstance("Jl. Ini Alamat PBF PT. Mangga Arum, Jakarta Selatan")
-      // setUserAddr("0x97CB6400E271e65150B2330ad27f213a4C9c31af")
-      
-    } else if(role===2){
-      setInstanceName('BPOM Makassar')
-      setRole(parseInt(2))
-      setName('Sophie Doe') 
-      // setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
-      setLocationInstance("Jl. Ini Alamat BPOM Makassar, Makassar")
-      // setUserAddr('0xcbcD762c3C27212937314C1D46072a214346F2F3')
-      
-    }  else if(role===3){
-      setInstanceName('Apotek Sejahtera')
-      setRole(parseInt(3))
-      setName('Marlene Doe') 
-      setNib('4444444444')
-      setNpwp('44.444.444.4-444.444')
-      // setUserAddr('0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65')
-      setLocationInstance("Jl. Ini Alamat Apotek Sejahtera, Jakarta Selatan")
-      // setUserAddr('0xA3cE1983150Fade27518DF467a99a74FB4082dDa')
+  
+    if (role === 0) {
+      setInstanceName('PT. Sehat Sentosa');
+      setRole(0);
+      setName('Rina Sari');
+      setNib('6666666666');
+      setNpwp('66.666.666.6-666.666');
+      setLocationInstance('Jl. Sehat No.10, Jakarta Selatan');
+      setIsBpom(false);
+    } else if (role === 1) {
+      setInstanceName('PT. Obat Makmur');
+      setRole(1);
+      setName('Agus Raharjo');
+      setNib('7777777777');
+      setNpwp('77.777.777.7-777.777');
+      setLocationInstance('Jl. PBF Makmur No.20, Jakarta Barat');
+      setIsBpom(false);
+      // setUserAddr('');
+    } else if (role === 2) {
+      setInstanceName('BPOM Malino');
+      setRole(2);
+      setName('Sri Lestari');
+      setLocationInstance('Jl. Pengawasan BPOM, Malino, Sulawesi Selatan');
+      setIsBpom(true);
+      // setUserAddr('');
+    } else if (role === 3) {
+      setInstanceName('Apotek Nusantara');
+      setRole(3);
+      setName('Budi Hartono');
+      setNib('8888888888');
+      setNpwp('88.888.888.8-888.888');
+      setLocationInstance('Jl. Apotek Sejahtera No.5, Jakarta Timur');
+      setIsBpom(false);
+      // setUserAddr('');
     }
   }
+  
   
   function parseIntSelect(opt){
     const a = parseInt(opt);

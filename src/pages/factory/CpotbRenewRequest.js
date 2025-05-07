@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig"; 
 import { create } from 'ipfs-http-client';
 import imgLoader from '../../assets/images/loader.svg';
@@ -360,15 +360,16 @@ function CpotbRenewRequest() {
       console.log('Receipt:', renewRequestCpotbCt);
   
       if(renewRequestCpotbCt){
-        writeCpotbFb( userdata.instanceName, jenisSediaanMap[parseInt(cpotbData.jenisSediaan)], renewRequestCpotbCt.hash );
-
+        
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-  
-      contracts.certificateManager.once("CertRenewRequest", (_isntanceName, _instanceAddr, _jenisSediaan, _timestampRenew) => {
+      
+      contracts.certificateManager.on("CertRenewRequest", (_isntanceName, _instanceAddr, _timestampRenew) => {
+        writeCpotbFb( userdata.instanceName, jenisSediaanMap[parseInt(cpotbData.jenisSediaan)], renewRequestCpotbCt.hash, Number(_timestampRenew) );
+        recordHashFb(jenisSediaanMap[parseInt(cpotbData.jenisSediaan)], renewRequestCpotbCt.hash, Number(_timestampRenew) );
         handleEventCpotbRenewRequested(_isntanceName, _instanceAddr, _timestampRenew, renewRequestCpotbCt.hash);
       });
   
@@ -377,19 +378,41 @@ function CpotbRenewRequest() {
     }
   }
 
-  const writeCpotbFb = async (instanceName, jenisSediaan, cpotbHash) => {
+  const writeCpotbFb = async (instanceName, jenisSediaan, requestCpotbCtHash, timestamp) => {
     try {
-      const documentId = `cpotb-lists`; 
-      const pbfDocRef = doc(db, instanceName, documentId);
+      const docRef = doc(db, 'cpotb_list', instanceName);
 
-      await updateDoc(pbfDocRef, {
-        [`${jenisSediaan}.RenewRequestCpotb`]: cpotbHash,
-      [`${jenisSediaan}.RenewRequestTimestamp`]: Date.now(),
-      });
+      console.log(jenisSediaan);
+  
+      await setDoc(docRef, {
+        [`${jenisSediaan}`]: {
+          renewRequestHash: requestCpotbCtHash,
+          renewRequestTimestamp: timestamp,
+          status: 0
+        },
+      }, { merge: true }); 
     } catch (err) {
       errAlert(err);
     }
   };
+
+  const recordHashFb = async(jenisSediaan, txHash, timestamp) => {
+    try {
+      const collectionName = `pengajuan_cpotb_${userdata.instanceName}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRef, {
+        [`${jenisSediaan}`]: {
+          'renew_request': {
+            hash: txHash,
+            timestamp: timestamp,
+          }
+        },
+      }, { merge: true }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  }
 
 
   return (
