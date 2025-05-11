@@ -25,6 +25,8 @@ contract CertificateManager is ReentrancyGuard {
 
   using EnumsLibrary for EnumsLibrary.Roles;
 
+  uint constant extTimestamp = (2*60) + 10;
+
   struct CertificateRequest { 
     string certId;
     string senderName;
@@ -139,7 +141,7 @@ contract CertificateManager is ReentrancyGuard {
       approveData.bpomInstance, 
       approveData.bpomAddr, 
       ipfsCert,
-      block.timestamp + (2 * 60)
+      block.timestamp + extTimestamp
     ); 
 
     emit CertApproved(

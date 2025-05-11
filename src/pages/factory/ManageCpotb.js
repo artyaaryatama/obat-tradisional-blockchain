@@ -23,7 +23,6 @@ function ManageCpotb() {
   const [fadeClass, setFadeClass] = useState('fade-in');
   const [fadeOutLoader, setFadeOutLoader] = useState(false);
 
-
   const jenisSediaanMap = {
     0n: "Cairan Obat Dalam",
     1n: "Rajangan",
@@ -136,25 +135,20 @@ function ManageCpotb() {
             if (item[4] === 2n) {
               cpotbNumber = null;
             }
-
+            
             let statusCert;
             if (item[4] === 1n || item[4] === 6n) {
-              if (Number(item[6]) !== 0 && Math.floor(Date.now() / 1000) > Number(item[6])) {
-                statusCert = statusMap[4];
+              if (Math.floor(Date.now() / 1000) > Number(item[6])) {
+                statusCert = statusMap[4n];  
               } else {
-                statusCert = statusMap[item[4]];
+                statusCert = statusMap[item[4]]; 
               }
             } else if (item[4] === 5n) {
-              statusCert = statusMap[item[4]];
-            } else if (item[6] !== 0) {
-              if (Math.floor(Date.now() / 1000) > Number(item[6])) {
-                statusCert = statusMap[4];
-              } else {
-                statusCert = statusMap[item[4]];
-              }
+              statusCert = statusMap[5];
             } else {
               statusCert = statusMap[item[4]];
             }
+          
             
             console.log(statusCert);
             return {
@@ -273,20 +267,14 @@ function ManageCpotb() {
       console.log(timestampRenewRequest);
 
       let statusCert;
-      if (status === 1n || status === 6n) {
-        if (Number(timestampExpired) !== 0 && Math.floor(Date.now() / 1000) > Number(timestampExpired)) {
-          statusCert = statusMap[4];
-        } else {
-          statusCert = statusMap[status];
-        }
-      } else if (status === 5n) {
-        statusCert = statusMap[status];
-      } else if (timestampExpired !== 0) {
+      if (status=== 1n || status=== 6n) {
         if (Math.floor(Date.now() / 1000) > Number(timestampExpired)) {
-          statusCert = statusMap[4];
+          statusCert = statusMap[4n];  
         } else {
-          statusCert = statusMap[status];
+          statusCert = statusMap[status]; 
         }
+      } else if (status=== 5n) {
+        statusCert = statusMap[5];
       } else {
         statusCert = statusMap[status];
       }

@@ -151,14 +151,16 @@ function CpotbApprove() {
             });
             
             if (item[4] === 1n || item[4] === 6n) {
-              if (Number(item[6]) !== 0 && Math.floor(Date.now() / 1000) > Number(item[6])) {
-                if (item[4] === 6n) {
-                  statusCert = statusMap[6];  
-                } else {
-                  statusCert = statusMap[item[4]];  
-                }
-                console.log(item[4]);
-              } 
+              if (Math.floor(Date.now() / 1000) > Number(item[6])) {
+                console.log('ini obatnya => ',jenisSediaanMap[item[3]]);
+                console.log('ini brp => ', item[4]);
+                statusCert = statusMap[4n];  
+                console.log('ini dri date.now => ', Math.floor(Date.now() / 1000))
+                console.log('ini dri value bc => ', Number(item[6]))
+                console.log(statusCert);
+              } else {
+                statusCert = statusMap[item[4]]; 
+              }
             } else if (item[4] === 5n) {
               statusCert = statusMap[5];
             } else {
@@ -445,23 +447,21 @@ function CpotbApprove() {
       }
 
       let statusCert;
-      if (status === 1n || status === 6n) {
-        if (Number(timestampExpired) !== 0 && Math.floor(Date.now() / 1000) > Number(timestampExpired)) {
-          statusCert = statusMap[4];
-        } else {
-          statusCert = statusMap[status];
-        }
-      } else if (status === 5n) {
-        statusCert = statusMap[status];
-      } else if (timestampExpired !== 0) {
+      if (status=== 1n || status=== 6n) {
         if (Math.floor(Date.now() / 1000) > Number(timestampExpired)) {
-          statusCert = statusMap[4];
+          statusCert = statusMap[4n];  
+          console.log('tes');
         } else {
-          statusCert = statusMap[status];
+          statusCert = statusMap[status]; 
         }
+      } else if (status=== 5n) {
+        statusCert = statusMap[5];
       } else {
         statusCert = statusMap[status];
       }
+
+      console.log(status)
+      console.log(statusCert)
 
       const detailCpotb = {
         cpotbId: cpotbId,

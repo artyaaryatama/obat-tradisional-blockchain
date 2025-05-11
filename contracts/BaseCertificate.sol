@@ -7,6 +7,8 @@ contract BaseCertificate {
 
   using EnumsLibrary for EnumsLibrary.StatusCertificate;
 
+  uint constant extTimestamp = (2*60) + 10;
+
   struct UserCert {
     string userName;
     string userInstance;
@@ -80,7 +82,7 @@ contract BaseCertificate {
     certData.bpom.userAddr = bpomData.userAddr;
     certData.bpom.userInstance = bpomData.userInstance;
     certData.timestampApprove = block.timestamp;
-    certData.timestampExpired = block.timestamp + (2 * 60); 
+    certData.timestampExpired = block.timestamp + extTimestamp; 
     certData.status = EnumsLibrary.StatusCertificate.Approved;
     certData.ipfsCert = ipfsCert; 
   } 
@@ -93,7 +95,7 @@ contract BaseCertificate {
   { 
     CertificateDetails storage certData = certDetailById[certId];
     certData.timestampApprove = block.timestamp;
-    certData.timestampExpired = block.timestamp + (2 * 60); 
+    certData.timestampExpired = block.timestamp + extTimestamp; 
     certData.status = EnumsLibrary.StatusCertificate.Extended; 
     certData.ipfsCert = ipfsCert; 
   } 

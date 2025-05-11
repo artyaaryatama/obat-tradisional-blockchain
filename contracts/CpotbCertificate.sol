@@ -103,8 +103,7 @@ contract CpotbCertificate is BaseCertificate {
     string memory bpomName,
     string memory bpomInstance,
     address bpomAddr,
-    string memory ipfsCert,
-    uint256 timestampExp
+    string memory ipfsCert
   ) public { 
 
     UserCert memory userBpom = createUserCertificate(
@@ -128,7 +127,7 @@ contract CpotbCertificate is BaseCertificate {
         allCpotbData[i].certNumber = certNumber;
         allCpotbData[i].status = EnumsLibrary.StatusCertificate.Approved; 
         allCpotbData[i].certHash = ipfsCert;
-        allCpotbData[i].expiredTimestamp = timestampExp;
+        allCpotbData[i].expiredTimestamp = block.timestamp + extTimestamp;
       }  
     }
   } 
@@ -215,6 +214,7 @@ contract CpotbCertificate is BaseCertificate {
     for (uint i = 0; i < length; i++) {
       if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
         allCpotbData[i].status = EnumsLibrary.StatusCertificate.Extended; 
+        allCpotbData[i].expiredTimestamp = block.timestamp + extTimestamp;
       }  
     }
   }
