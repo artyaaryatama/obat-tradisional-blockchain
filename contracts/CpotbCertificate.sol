@@ -219,7 +219,6 @@ contract CpotbCertificate is BaseCertificate {
     }
   }
 
-
   function getAllCpotbByInstance(string memory instanceName) public view returns (CertificateList[] memory) {
 
     uint8 count = 0;

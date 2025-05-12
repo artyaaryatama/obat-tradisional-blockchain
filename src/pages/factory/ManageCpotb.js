@@ -209,7 +209,7 @@ function ManageCpotb() {
           </ul>
           <ul>
             <li className="label">
-              <p>Tanggal Dikirim</p> 
+              <p>Tanggal Dikirim Perpanjangan</p> 
             </li>
             <li className="input">
               <p>{formattedTimestamp}</p> 
@@ -549,7 +549,7 @@ function ManageCpotb() {
             navigate('/renew-request-cpotb')
           }
         })
-      } else if(Math.floor(Date.now() / 1000) > Number(timestampExpired)) {
+      } else if(detailCpotb.status === 'Sertifikat Kadaluarsa') {
         MySwal.fire({
           title: "Detail Sertifikat CPOTB",
           html: (

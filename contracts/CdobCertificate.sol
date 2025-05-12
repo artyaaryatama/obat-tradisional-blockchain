@@ -37,6 +37,7 @@ contract CdobCertificate is BaseCertificate {
     uint8 tipePermohonan;
     EnumsLibrary.StatusCertificate status;
     string certHash;
+    uint256 expiredTimestamp;
   }
 
   CertificateList[] public allCdobData;
@@ -87,7 +88,8 @@ contract CdobCertificate is BaseCertificate {
       instanceName: pbfInstance,
       tipePermohonan: tipePermohonan,
       status: EnumsLibrary.StatusCertificate.Requested, 
-      certHash: ""
+      certHash: "",
+      expiredTimestamp: 0
     }));
 
     dokuAdminById[certId] = dokuAdmin;
@@ -126,6 +128,7 @@ contract CdobCertificate is BaseCertificate {
         allCdobData[i].certNumber = certNumber;
         allCdobData[i].status = EnumsLibrary.StatusCertificate.Approved; 
         allCdobData[i].certHash = ipfsCert;
+        allCdobData[i].expiredTimestamp = block.timestamp + extTimestamp;
       }  
     }
   } 
@@ -178,6 +181,45 @@ contract CdobCertificate is BaseCertificate {
         allCdobData[i].status = EnumsLibrary.StatusCertificate.RenewRequest; 
         dokuAdminById[allCdobData[i].certId] = newDokuAdmin;
         dokuTeknisById[allCdobData[i].certId] = newDokuTeknis;
+      }  
+    }
+  }
+  
+  function extendCdob(
+    string memory certId,
+    uint256 expTimestamp
+  ) public {
+
+    updateExtendRenewDetails(
+      certId,
+      expTimestamp
+    );  
+
+    uint length = allCdobData.length;
+
+    for (uint i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCdobData[i].certId)) == keccak256(abi.encodePacked(certId))) {
+        allCdobData[i].status = EnumsLibrary.StatusCertificate.ExtendRequest; 
+      }  
+    }
+  }
+
+  function approveExtendCdob(
+    string memory certId, 
+    string memory ipfsCert
+  ) public {
+
+    updateBpomExtendCertificateDetails(
+      certId,
+      ipfsCert
+    );
+
+    uint length = allCdobData.length;
+
+    for (uint i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCdobData[i].certId)) == keccak256(abi.encodePacked(certId))) {
+        allCdobData[i].status = EnumsLibrary.StatusCertificate.Extended; 
+        allCdobData[i].expiredTimestamp = block.timestamp + extTimestamp;
       }  
     }
   }

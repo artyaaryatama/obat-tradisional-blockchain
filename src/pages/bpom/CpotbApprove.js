@@ -143,21 +143,10 @@ function CpotbApprove() {
             }
 
             let statusCert;
-            console.log({
-              id: item[0],
-              now: Math.floor(Date.now() / 1000),
-              expiredAt: Number(item[6]),
-              status: item[4]
-            });
             
             if (item[4] === 1n || item[4] === 6n) {
               if (Math.floor(Date.now() / 1000) > Number(item[6])) {
-                console.log('ini obatnya => ',jenisSediaanMap[item[3]]);
-                console.log('ini brp => ', item[4]);
                 statusCert = statusMap[4n];  
-                console.log('ini dri date.now => ', Math.floor(Date.now() / 1000))
-                console.log('ini dri value bc => ', Number(item[6]))
-                console.log(statusCert);
               } else {
                 statusCert = statusMap[item[4]]; 
               }
@@ -2198,7 +2187,7 @@ function CpotbApprove() {
 
       contracts.certificateManager.on('CertApprovedExtendRequest',  (bpomAddr, _timestampApprove) => {
         updateExtendCpotbFb(factoryName, jenisSediaan, cpotbIpfs, approveExtendCt.hash, Number(_timestampApprove));
-        recordExtendHashFb(factoryName, jenisSediaan, approveExtendCt.hash, Number(_timestampApprove), true)
+        recordExtendHashFb(factoryName, jenisSediaan, approveExtendCt.hash, Number(_timestampApprove))
         handleEventCpotb("Diperpanjang", bpomAddr, '', '', '', _timestampApprove, approveExtendCt.hash);
       });
     } catch (error) {
@@ -2277,7 +2266,7 @@ function CpotbApprove() {
     }
   };
 
-  const recordExtendHashFb = async(factoryName, jenisSediaan, txHash, timestamp,) => {
+  const recordExtendHashFb = async(factoryName, jenisSediaan, txHash, timestamp) => {
     try {
       const collectionName = `pengajuan_cpotb_${factoryName}`
       const docRef = doc(db, 'transaction_hash', collectionName);

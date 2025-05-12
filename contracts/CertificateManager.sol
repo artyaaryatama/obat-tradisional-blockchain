@@ -140,8 +140,7 @@ contract CertificateManager is ReentrancyGuard {
       approveData.bpomName, 
       approveData.bpomInstance, 
       approveData.bpomAddr, 
-      ipfsCert,
-      block.timestamp + extTimestamp
+      ipfsCert
     ); 
 
     emit CertApproved(
@@ -198,7 +197,7 @@ contract CertificateManager is ReentrancyGuard {
  
     emit CertRenewRequest(
       reqData.senderInstance, 
-      reqData.senderAddr, 
+      reqData.senderAddr,
       block.timestamp
     );
   }
@@ -380,6 +379,44 @@ contract CertificateManager is ReentrancyGuard {
       block.timestamp
     );
   }
+
+  function extendCdob( 
+    string memory cdobId,
+    uint256 expTimestamp
+  ) 
+    public 
+    onlyPBF 
+    nonReentrant 
+  {  
+    cdobCertificate.extendCdob(
+      cdobId,
+      expTimestamp
+    );  
+ 
+    emit CertExtendRequest(
+      msg.sender,
+      block.timestamp
+    );
+  } 
+
+  function approveExtendCdob( 
+    string memory cdobId,
+    string memory ipfsCert
+  ) 
+    public 
+    onlyBPOM 
+    nonReentrant 
+  {  
+    cdobCertificate.approveExtendCdob(
+      cdobId,
+      ipfsCert
+    );  
+ 
+    emit CertApprovedExtendRequest(
+      msg.sender,
+      block.timestamp
+    );
+  } 
  
   function getCdobByInstance(string memory instanceName) public view returns (CdobCertificate.CertificateList[] memory){ 
     return cdobCertificate.getAllCdobByInstance(instanceName);  

@@ -1,6 +1,6 @@
 {
   "ObatTradisional": {
-    "address": "0x9A676e781A523b5d0C0e43731313A708CB607508",
+    "address": "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8",
     "abi": [
       {
         "inputs": [
@@ -573,7 +573,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
+    "address": "0x851356ae760d987E095750cCeb3bC6014560891C",
     "abi": [
       {
         "inputs": [
@@ -1317,7 +1317,7 @@
     ]
   },
   "RoleManager": {
-    "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+    "address": "0x67d269191c92Caf3cD7723F116c85e6E9bf55933",
     "abi": [
       {
         "anonymous": false,
@@ -1573,7 +1573,7 @@
     ]
   },
   "CertificateManager": {
-    "address": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+    "address": "0x9E545E3C0baAB3E08CdfD552C960A1050f373042",
     "abi": [
       {
         "inputs": [
@@ -1873,6 +1873,24 @@
         "inputs": [
           {
             "internalType": "string",
+            "name": "cdobId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "ipfsCert",
+            "type": "string"
+          }
+        ],
+        "name": "approveExtendCdob",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
             "name": "cpotbId",
             "type": "string"
           },
@@ -1911,6 +1929,24 @@
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "cdobId",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expTimestamp",
+            "type": "uint256"
+          }
+        ],
+        "name": "extendCdob",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -1966,6 +2002,11 @@
                 "internalType": "string",
                 "name": "certHash",
                 "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "expiredTimestamp",
+                "type": "uint256"
               }
             ],
             "internalType": "struct CdobCertificate.CertificateList[]",
@@ -2067,6 +2108,11 @@
                 "internalType": "string",
                 "name": "certHash",
                 "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "expiredTimestamp",
+                "type": "uint256"
               }
             ],
             "internalType": "struct CdobCertificate.CertificateList[]",
@@ -2976,7 +3022,7 @@
     ]
   },
   "NieManager": {
-    "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
+    "address": "0xa82fF9aFd8f496c3d6ac40E2a0F282E47488CFc9",
     "abi": [
       {
         "inputs": [
@@ -3797,7 +3843,7 @@
     ]
   },
   "ObatShared": {
-    "address": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+    "address": "0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E",
     "abi": [
       {
         "inputs": [
@@ -4584,7 +4630,7 @@
     ]
   },
   "CdobCertificate": {
-    "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
+    "address": "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB",
     "abi": [
       {
         "inputs": [
@@ -4625,6 +4671,11 @@
             "internalType": "string",
             "name": "certHash",
             "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expiredTimestamp",
+            "type": "uint256"
           }
         ],
         "stateMutability": "view",
@@ -4664,6 +4715,24 @@
           }
         ],
         "name": "approveCdob",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "certId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "ipfsCert",
+            "type": "string"
+          }
+        ],
+        "name": "approveExtendCdob",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -4977,6 +5046,24 @@
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "certId",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expTimestamp",
+            "type": "uint256"
+          }
+        ],
+        "name": "extendCdob",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "getAllCdob",
         "outputs": [
@@ -5011,6 +5098,11 @@
                 "internalType": "string",
                 "name": "certHash",
                 "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "expiredTimestamp",
+                "type": "uint256"
               }
             ],
             "internalType": "struct CdobCertificate.CertificateList[]",
@@ -5062,6 +5154,11 @@
                 "internalType": "string",
                 "name": "certHash",
                 "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "expiredTimestamp",
+                "type": "uint256"
               }
             ],
             "internalType": "struct CdobCertificate.CertificateList[]",
