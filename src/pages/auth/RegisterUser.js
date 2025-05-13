@@ -406,12 +406,12 @@ function RegisterPage() {
       setLocationInstance('Jl. Sehat No.10, Jakarta Selatan');
       setIsBpom(false);
     } else if (role === 1) {
-      setInstanceName('PT. Obat Makmur');
-      setRole(1);
-      setName('Agus Raharjo');
-      setNib('7777777777');
-      setNpwp('77.777.777.7-777.777');
-      setLocationInstance('Jl. PBF Makmur No.20, Jakarta Barat');
+      setInstanceName('PT. Cahaya Farma Raya');
+      setRole(1); 
+      setName('Fajar Nugroho');
+      setNib('1212121212');
+      setNpwp('12.121.212.1-212.121');
+      setLocationInstance('Jl. Areum-areum No.20, Jakarta Barat');
       setIsBpom(false);
       // setUserAddr('');
     } else if (role === 2) {

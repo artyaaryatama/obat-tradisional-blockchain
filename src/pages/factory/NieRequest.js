@@ -458,72 +458,45 @@ function NieRequest() {
   };
 
   const handleAutoFillAndUploadToIPFS = async () => {
-    const dummyFiles = {
-      "Dokumen Master Formula": new File([dummyPdf3], "master-formula.pdf", { type: "application/pdf" }),
-      "Surat Kuasa": new File([dummyPdf], "surat-kuasa.pdf", { type: "application/pdf" }),
-      "Surat Pernyataan": new File([dummyPdf2], "surat-pernyataan.pdf", { type: "application/pdf" }),
-      "Dokumen Komposisi Produk": new File([dummyPdf], "komposisi-produk.pdf", { type: "application/pdf" }),
-      "Dokumen Cara Pembuatan Produk": new File([dummyPdf2], "cara-pembuatan.pdf", { type: "application/pdf" }),
-      "Dokumen Spesifikasi Produk Jadi": new File([dummyPdf], "spesifikasi-produk.pdf", { type: "application/pdf" }),
-      "Dokumen Sistem Penomoran Bets": new File([dummyPdf3], "penomoran-bets.pdf", { type: "application/pdf" }),
-      "Sertifikat Analisa Bahan Baku": new File([dummyPdf], "sertif-bahan-baku.pdf", { type: "application/pdf" }),
-      "Sertifikat Analisa Produk Jadi": new File([dummyPdf2], "sertif-produk-jadi.pdf", { type: "application/pdf" }),
-      "Dokumen Hasil Uji Stabilitas": new File([dummyPdf], "uji-stabilitas.pdf", { type: "application/pdf" }),
-      "Dokumen Spesifikasi Kemasan": new File([dummyPdf2], "spesifikasi-kemasan.pdf", { type: "application/pdf" }),
-      "Desain Kemasan": new File([dummyPdf3], "desain-kemasan.pdf", { type: "application/pdf" }),
-      "Data Pendukung Keamanan": new File([dummyPdf], "data-keamanan.pdf", { type: "application/pdf" }),
+    const fetchBlob = async (url) => {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Failed to fetch dummy file from ${url}`);
+      return await res.blob();
     };
-  
-    const uploadedHashes = {};
-  
-    try {
-      for (const [docName, file] of Object.entries(dummyFiles)) {
-        const result = await client.add(file);
-        uploadedHashes[docName] = result.path;
-      }
-  
-      const hashDocs = reconstructedHashes(uploadedHashes);
-  
-      MySwal.fire({
-        title: "Dummy Dokumen Terunggah ke IPFS",
-        html: `
-          <div class="form-swal">
-            ${Object.entries(uploadedHashes).map(([docName, hash]) => `
-              <ul>
-                <li class="label"><p>${docName}</p></li>
-                <li class="input">
-                  <a href="http://localhost:8080/ipfs/${hash}" target="_blank">${hash}</a>
-                </li>
-              </ul>
-            `).join("")}
-          </div>
-        `,
-        width: 700,
-        confirmButtonText: 'Konfirmasi',
-        cancelButtonText: "Batal",
-        allowOutsideClick: false,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          MySwal.fire({
-            title: "Menunggu koneksi Metamask...",
-            text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
-            icon: "info",
-            showConfirmButton: false,
-            allowOutsideClick: false
-          });
-          requestNie(hashDocs);
-        } else {
-          setLoader(false);
-        }
-      });
-  
-    } catch (error) {
-      MySwal.fire({
-        title: "Gagal Upload",
-        text: "Terjadi kesalahan saat upload ke IPFS.",
-        icon: "error"
-      });
-    }
+    const [blob1, blob2, blob3] = await Promise.all([
+      fetchBlob(dummyPdf),
+      fetchBlob(dummyPdf2),
+      fetchBlob(dummyPdf3),
+    ]);
+    const filesMap = {
+      masterFormula: new File([blob3], "master-formula.pdf", { type: "application/pdf" }),
+      suratKuasa: new File([blob1], "surat-kuasa.pdf", { type: "application/pdf" }),
+      suratPernyataan: new File([blob2], "surat-pernyataan.pdf", { type: "application/pdf" }),
+      komposisiProduk: new File([blob1], "komposisi-produk.pdf", { type: "application/pdf" }),
+      caraPembuatanProduk: new File([blob2], "cara-pembuatan.pdf", { type: "application/pdf" }),
+      spesifikasiProdukJadi: new File([blob1], "spesifikasi-produk.pdf", { type: "application/pdf" }),
+      sistemPenomoranBets: new File([blob3], "penomoran-bets.pdf", { type: "application/pdf" }),
+      sertifikatAnalisaBahanBaku: new File([blob1], "sertifikat-bahan-baku.pdf", { type: "application/pdf" }),
+      sertifikatAnalisaProdukJadi: new File([blob2], "sertifikat-produk-jadi.pdf", { type: "application/pdf" }),
+      spesifikasiKemasan: new File([blob1], "spesifikasi-kemasan.pdf", { type: "application/pdf" }),
+      hasilUjiStabilitas: new File([blob2], "uji-stabilitas.pdf", { type: "application/pdf" }),
+      desainKemasan: new File([blob3], "desain-kemasan.pdf", { type: "application/pdf" }),
+      dataPendukungKeamanan: new File([blob1], "data-keamanan.pdf", { type: "application/pdf" }),
+    };
+    setMasterFormula(filesMap.masterFormula);
+    setSuratKuasa(filesMap.suratKuasa);
+    setSuratPernyataan(filesMap.suratPernyataan);
+    setKomposisiProduk(filesMap.komposisiProduk);
+    setCaraPembuatanProduk(filesMap.caraPembuatanProduk);
+    setSpesifikasiProdukJadi(filesMap.spesifikasiProdukJadi);
+    setSistemPenomoranBets(filesMap.sistemPenomoranBets);
+    setSertifikatAnalisaBahanBaku(filesMap.sertifikatAnalisaBahanBaku);
+    setSertifikatAnalisaProdukJadi(filesMap.sertifikatAnalisaProdukJadi);
+    setSpesifikasiKemasan(filesMap.spesifikasiKemasan);
+    setHasilUjiStabilitas(filesMap.hasilUjiStabilitas);
+    setDesainKemasan(filesMap.desainKemasan);
+    setDataPendukungKeamanan(filesMap.dataPendukungKeamanan);
+    await uploadDocuIpfs();
   };
   
   return (

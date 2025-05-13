@@ -403,21 +403,28 @@ function CreateObat() {
 
   const handleAutoFill4 = () => {
     const autoFillValues = {
-      namaProduk: "SARI LANGIT",
-      merk: "Langit Alami",
+      namaProduk: "Tapel Rempah Sehat",
+      merk: "HerbiCare",
       klaim: [
-          "Diproses dari ekstrak nabati pilihan",
-          "Dapat dikonsumsi secara rutin",
-          "Mudah diseduh kapan saja"
+        "Membantu mengencangkan perut setelah melahirkan",
+        "Mengurangi rasa pegal dan nyeri otot",
+        "Menyegarkan tubuh dengan aroma rempah alami"
       ],
-      ketKemasanPrim: "2",
-      satuanKemasanPrim: "gram",
-      kemasanSeku: "Pouch",
-      ketKemasanSeku: "10",
+      ketKemasanPrim: "1",
+      satuanKemasanPrim: "lembar",
+      kemasanSeku: "Pack",
+      ketKemasanSeku: "5",
       komposisi: [
-          "Clitoria Ternatea Flos",
-          "Zingiber Officinale Rhizoma",
-          "Cymbopogon Citratus Folium"
+        "Kaempferia galanga",
+        "Zingiber officinale",
+        "Curcuma longa",
+        "Cinnamomum burmannii",
+        "Piper nigrum",
+        "Capsicum frutescens",
+        "Foeniculum vulgare",
+        "Cocos nucifera",
+        "Cymbopogon citratus",
+        "Pogostemon cablin"
       ]
     };
   
@@ -433,24 +440,31 @@ function CreateObat() {
   
   const handleAutoFill5 = () => {
     const autoFillValues = {
-      namaProduk: "HERBAL TIDUR NYENYAK",
-      merk: "Nyenyak Natural",
+      namaProduk: "NeuroTab Herbal",
+      merk: "BrainWell",
       klaim: [
-          "Membantu mengatasi susah tidur",
-          "Meningkatkan kualitas tidur malam",
-          "Membantu menenangkan pikiran dan tubuh"
+        "Meningkatkan fokus dan daya ingat",
+        "Membantu mengurangi kelelahan mental",
+        "Mendukung fungsi otak secara alami"
       ],
-      ketKemasanPrim: "1",
+      ketKemasanPrim: "30",
       satuanKemasanPrim: "tablet",
-      kemasanSeku: "Botol",
-      ketKemasanSeku: "60",
+      kemasanSeku: "Blister",
+      ketKemasanSeku: "1",
       komposisi: [
-          "Valeriana Officinalis Radix",
-          "Passiflora Incarnata Herba",
-          "Matricaria Chamomilla Flos"
+        "Bacopa monnieri",
+        "Centella asiatica",
+        "Panax ginseng",
+        "Withania somnifera",
+        "Ginkgo biloba",
+        "Mucuna pruriens",
+        "Curcuma longa",
+        "Piper nigrum",
+        "Zingiber officinale",
+        "Eleutherococcus senticosus"
       ]
     };
-    
+
     setNamaProduk(autoFillValues.namaProduk);
     setMerk(autoFillValues.merk);
     setKlaim(autoFillValues.klaim);
@@ -463,21 +477,28 @@ function CreateObat() {
   
   const handleAutoFill6 = () => {
     const autoFillValues = {
-      namaProduk: "HERBAL SAKIT PERUT",
-      merk: "Perut Aman",
+      namaProduk: "CoolRub Herbal Solution",
+      merk: "SariAlami",
       klaim: [
-          "Membantu meredakan sakit perut ringan",
-          "Mengatasi perut kembung dan mual",
-          "Menormalkan pencernaan secara alami"
+        "Memberikan sensasi dingin untuk mengurangi nyeri otot",
+        "Membantu meredakan pegal dan capek",
+        "Cocok untuk pijat atau digunakan setelah aktivitas fisik"
       ],
-      ketKemasanPrim: "2",
-      satuanKemasanPrim: "kapsul",
-      kemasanSeku: "Strip",
-      ketKemasanSeku: "10",
+      ketKemasanPrim: "120",
+      satuanKemasanPrim: "ml",
+      kemasanSeku: "Botol Roll-On",
+      ketKemasanSeku: "1",
       komposisi: [
-          "Kaempferia Galanga Rhizoma",
-          "Piper Betle Folium",
-          "Cuminum Cyminum Semen"
+        "Mentha arvensis",
+        "Gaultheria procumbens",
+        "Eucalyptus globulus",
+        "Zingiber officinale",
+        "Cymbopogon citratus",
+        "Capsicum frutescens",
+        "Pogostemon cablin",
+        "Cinnamomum burmannii",
+        "Lavandula angustifolia",
+        "Aqua"
       ]
     };
   
@@ -677,7 +698,9 @@ function CreateObat() {
                   <option value="ml">ml</option>
                   <option value="mg">mg</option>
                   <option value="gram">gram</option>
-                  <option value="sachet">Kapsul</option>
+                  <option value="strip">Strip</option>
+                  <option value="sachet">Sachet</option>
+                  <option value="kapsul">Kapsul</option>
                 </select>
 
               </div>
@@ -699,6 +722,8 @@ function CreateObat() {
                 >
                   <option value="Dus">Dus</option>
                   <option value="Sachet">Sachet</option>
+                  <option value="Botol Roll-On">Botol Roll-On</option>
+                  <option value="Botol">Botol</option>
                 </select>
 
                 <input 

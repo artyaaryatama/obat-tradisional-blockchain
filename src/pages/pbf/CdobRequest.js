@@ -535,96 +535,39 @@ function CdobRequest() {
   };
 
   const handleAutoFillAndUploadToIPFS = async () => {
-    const dummyFiles = {
-      "Surat Permohonan CDOB": new File([dummyPdf], "permohonan.pdf", { type: "application/pdf" }),
-      "Bukti Pembayaran Pajak": new File([dummyPdf2], "bukti-pajak.pdf", { type: "application/pdf" }),
-      "Surat Izin": new File([dummyPdf], "surat-izin.pdf", { type: "application/pdf" }),
-      "Denah PBF": new File([dummyPdf2], "denah.pdf", { type: "application/pdf" }),
-      "Struktur Organisasi": new File([dummyPdf3], "struktur.pdf", { type: "application/pdf" }),
-      "Daftar Personalia": new File([dummyPdf], "personalia.pdf", { type: "application/pdf" }),
-      "Daftar Peralatan": new File([dummyPdf2], "peralatan.pdf", { type: "application/pdf" }),
-      "Ringkasan Eksekutif Quality Management System": new File([dummyPdf3], "ringkasan-qms.pdf", { type: "application/pdf" }),
-      "Surat Izin Apoteker": new File([dummyPdf], "izin-apoteker.pdf", { type: "application/pdf" }),
-      "Dokumen Self Assessment": new File([dummyPdf2], "self-assessment.pdf", { type: "application/pdf" }),
-    };
-  
-    const uploadedHashes = {};
-  
-    try {
-      setLoader(true);
-      MySwal.fire({
-        title: "Mengunggah semua dummy dokumen ke IPFS...",
-        text: "Harap tunggu. Jika proses ini memakan waktu terlalu lama, coba periksa koneksi IPFS. 🚀",
-        icon: 'info',
-        showCancelButton: false,
-        showConfirmButton: false,
-        allowOutsideClick: false,
-      });
-  
-      for (const [docName, file] of Object.entries(dummyFiles)) {
-        const result = await client.add(file);
-        uploadedHashes[docName] = result.path;
-      }
-  
-      MySwal.fire({
-        title: `Konfirmasi pengajuan CDOB`,
-        html: `
-          <div class="form-swal">
-            <div class="row row--obat table-like">
-              <div class="col doku">
-                <ul>
-                  <li class="label label-2"><p>Nama PBF</p></li>
-                  <li class="input input-2"><p>${userdata.instanceName}</p></li>
-                </ul>
-                <ul>
-                  <li class="label label-2"><p>Tipe Permohonan</p></li>
-                  <li class="input input-2"><p>${tipePermohonanMap[tipePermohonan]}</p></li>
-                </ul>
-                <div class="doku">
-                  ${Object.entries(uploadedHashes).map(([docName, hash]) => `
-                    <ul>
-                      <li class="label label-2"><p>${docName}</p></li>
-                      <li class="input input-2">
-                        <a href="http://localhost:8080/ipfs/${hash}" target="_blank">
-                          Lihat dokumen ↗ (${hash})
-                        </a>
-                      </li>
-                    </ul>
-                  `).join("")}
-                </div>
-              </div>
-            </div>
-          </div>
-        `,
-        width: '900',
-        showCancelButton: true,
-        confirmButtonText: 'Konfirmasi',
-        cancelButtonText: "Batal",
-        allowOutsideClick: false,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          MySwal.fire({
-            title: "Menunggu koneksi Metamask...",
-            text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
-            icon: "info",
-            showConfirmButton: false,
-            allowOutsideClick: false
-          });
-          const hashDocs = reconstructedHashes(uploadedHashes);
-          requestCdob(hashDocs);
-        } else {
-          setLoader(false);
-        }
-      });
-  
-    } catch (error) {
-      setLoader(false);
-      MySwal.fire({
-        title: "Gagal Upload",
-        text: "Terjadi kesalahan saat upload ke IPFS.",
-        icon: "error"
-      });
-    }
+  const fetchBlob = async (url) => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Failed to fetch dummy file from ${url}`);
+    return await res.blob();
+  };
+  const [blob1, blob2, blob3] = await Promise.all([
+    fetchBlob(dummyPdf),
+    fetchBlob(dummyPdf2),
+    fetchBlob(dummyPdf3),
+  ]);
+  const filesMap = {
+    suratPermohonan: new File([blob1], "permohonan_cdob.pdf", { type: "application/pdf" }),
+    buktiPembayaran: new File([blob2], "bukti_pajak_cdob.pdf", { type: "application/pdf" }),
+    suratIzin: new File([blob1], "surat_izin_cdob.pdf", { type: "application/pdf" }),
+    denah: new File([blob2], "denah_pbf_cdob.pdf", { type: "application/pdf" }),
+    strukturOrganisasi: new File([blob3], "struktur_organisasi_cdob.pdf", { type: "application/pdf" }),
+    daftarPersonalia: new File([blob1], "daftar_personalia_cdob.pdf", { type: "application/pdf" }),
+    daftarPeralatan: new File([blob2], "daftar_peralatan_cdob.pdf", { type: "application/pdf" }),
+    eksekutifQualityManagement: new File([blob3], "ringkasan_qms_cdob.pdf", { type: "application/pdf" }),
+    suratIzinApoteker: new File([blob1], "izin_apoteker_cdob.pdf", { type: "application/pdf" }),
+    dokSelfAsses: new File([blob2], "self_assessment_cdob.pdf", { type: "application/pdf" }),
+  };
+  setSuratPermohonan(filesMap.suratPermohonan);
+  setBuktiPembayaran(filesMap.buktiPembayaran);
+  setSuratIzin(filesMap.suratIzin);
+  setDenah(filesMap.denah);
+  setStrukturOrganisasi(filesMap.strukturOrganisasi);
+  setDaftarPersonalia(filesMap.daftarPersonalia);
+  setDaftarPeraltan(filesMap.daftarPeralatan);
+  setEksekutifQualityManagement(filesMap.eksekutifQualityManagement);
+  setSuratIzinApoteker(filesMap.suratIzinApoteker);
+  setDokSelfAsses(filesMap.dokSelfAsses);
+  await uploadDocuIpfs();
   };
 
   return (
