@@ -338,9 +338,9 @@ function CreateObat() {
           });
         }
   
-        contracts.obatTradisional.on("ObatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
-          createObatFb(userdata.instanceName, namaProduk, createObatCt.hash, kemasanPrim, tipeObat)
-          recordHashFb(namaProduk, createObatCt.hash)
+        contracts.obatTradisional.on("ObatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, _timestamp) => {
+          createObatFb(userdata.instanceName, namaProduk, createObatCt.hash, kemasanPrim, tipeObat, Number(_timestamp))
+          recordHashFb(namaProduk, createObatCt.hash, Number(_timestamp))
           handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);
         });
   
@@ -351,7 +351,7 @@ function CreateObat() {
     }
   };
 
-  const createObatFb = async (instanceName, namaProduk, obatHash, kemasanPrim, tipeObat) => {
+  const createObatFb = async (instanceName, namaProduk, obatHash, kemasanPrim, tipeObat, timestamp) => {
 
     const tpMap = {
       "ObatLain": 'Obat Lain',
@@ -369,7 +369,7 @@ function CreateObat() {
         tipeObat: `${tipeP}`,
         historyNie: {
           createObatHash: obatHash,
-          createObatTimestamp: Date.now(),
+          createObatTimestamp: timestamp,
         },}
       }, { merge: true }); 
   
@@ -378,7 +378,7 @@ function CreateObat() {
     }
   };
 
-  const recordHashFb = async(namaProduk, txHash) => {
+  const recordHashFb = async(namaProduk, txHash, timestamp) => {
     try {
       const collectionName = `obat_${namaProduk}_${userdata.instanceName}`
       const docRef = doc(db, 'transaction_hash', collectionName);
@@ -387,7 +387,7 @@ function CreateObat() {
         [`produksi`]: {
           'create_obat': {
             hash: txHash,
-            timestamp: Date.now(),
+            timestamp: timestamp,
           }
         },
       }, { merge: true }); 
@@ -403,28 +403,23 @@ function CreateObat() {
 
   const handleAutoFill4 = () => {
     const autoFillValues = {
-      namaProduk: "Tapel Rempah Sehat",
-      merk: "HerbiCare",
+      namaProduk: "[TEST] Rajangan Daun Sirih Wangi",
+      merk: "AlamHijau",
       klaim: [
-        "Membantu mengencangkan perut setelah melahirkan",
-        "Mengurangi rasa pegal dan nyeri otot",
-        "Menyegarkan tubuh dengan aroma rempah alami"
+        "Membantu menjaga kesehatan area kewanitaan",
+        "Mengurangi bau tidak sedap",
+        "Mengandung antiseptik alami"
       ],
-      ketKemasanPrim: "1",
-      satuanKemasanPrim: "lembar",
-      kemasanSeku: "Pack",
-      ketKemasanSeku: "5",
+      ketKemasanPrim: "50",
+      satuanKemasanPrim: "gram",
+      kemasanSeku: "Pouch",
+      ketKemasanSeku: "1",
       komposisi: [
-        "Kaempferia galanga",
-        "Zingiber officinale",
-        "Curcuma longa",
-        "Cinnamomum burmannii",
-        "Piper nigrum",
-        "Capsicum frutescens",
-        "Foeniculum vulgare",
-        "Cocos nucifera",
+        "Piper betle",
+        "Syzygium aromaticum",
         "Cymbopogon citratus",
-        "Pogostemon cablin"
+        "Foeniculum vulgare",
+        "Curcuma domestica"
       ]
     };
   
@@ -440,28 +435,23 @@ function CreateObat() {
   
   const handleAutoFill5 = () => {
     const autoFillValues = {
-      namaProduk: "NeuroTab Herbal",
-      merk: "BrainWell",
+      namaProduk: "[TEST] Rajangan Sari Pegagan",
+      merk: "HerbaSari",
       klaim: [
-        "Meningkatkan fokus dan daya ingat",
-        "Membantu mengurangi kelelahan mental",
-        "Mendukung fungsi otak secara alami"
+        "Membantu meningkatkan daya ingat dan konsentrasi",
+        "Menjaga sirkulasi darah",
+        "Mengurangi kelelahan"
       ],
-      ketKemasanPrim: "30",
-      satuanKemasanPrim: "tablet",
-      kemasanSeku: "Blister",
+      ketKemasanPrim: "100",
+      satuanKemasanPrim: "gram",
+      kemasanSeku: "Ziplock",
       ketKemasanSeku: "1",
       komposisi: [
-        "Bacopa monnieri",
         "Centella asiatica",
-        "Panax ginseng",
-        "Withania somnifera",
-        "Ginkgo biloba",
-        "Mucuna pruriens",
-        "Curcuma longa",
-        "Piper nigrum",
+        "Andrographis paniculata",
         "Zingiber officinale",
-        "Eleutherococcus senticosus"
+        "Moringa oleifera",
+        "Camellia sinensis"
       ]
     };
 
@@ -477,28 +467,24 @@ function CreateObat() {
   
   const handleAutoFill6 = () => {
     const autoFillValues = {
-      namaProduk: "CoolRub Herbal Solution",
-      merk: "SariAlami",
+      namaProduk: "[TEST] Rajangan Rempah Pencernaan",
+      merk: "RasaSehat",
       klaim: [
-        "Memberikan sensasi dingin untuk mengurangi nyeri otot",
-        "Membantu meredakan pegal dan capek",
-        "Cocok untuk pijat atau digunakan setelah aktivitas fisik"
+        "Membantu melancarkan pencernaan",
+        "Meredakan perut kembung dan mual",
+        "Menghangatkan tubuh dari dalam"
       ],
-      ketKemasanPrim: "120",
-      satuanKemasanPrim: "ml",
-      kemasanSeku: "Botol Roll-On",
+      ketKemasanPrim: "75",
+      satuanKemasanPrim: "gram",
+      kemasanSeku: "Kaleng",
       ketKemasanSeku: "1",
       komposisi: [
-        "Mentha arvensis",
-        "Gaultheria procumbens",
-        "Eucalyptus globulus",
         "Zingiber officinale",
-        "Cymbopogon citratus",
-        "Capsicum frutescens",
-        "Pogostemon cablin",
+        "Curcuma longa",
+        "Foeniculum vulgare",
         "Cinnamomum burmannii",
-        "Lavandula angustifolia",
-        "Aqua"
+        "Amomum compactum",
+        "Mentha arvensis"
       ]
     };
   

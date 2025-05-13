@@ -143,8 +143,6 @@ function ManageCpotb() {
               } else {
                 statusCert = statusMap[item[4]]; 
               }
-            } else if (item[4] === 5n) {
-              statusCert = statusMap[5];
             } else {
               statusCert = statusMap[item[4]];
             }
@@ -157,7 +155,7 @@ function ManageCpotb() {
               factoryInstance: item[2],
               jenisSediaan: jenisSediaanMap[item[3]],
               status: statusCert
-            };
+            };  
           });
           
           setDataCpotb(reconstructedData);
@@ -183,7 +181,7 @@ function ManageCpotb() {
     }
   }, [loading]);
 
-  const handleEventCpotb = (factoryAddr, timestamp, txHash) => {
+  const handleEventCpotb = (factoryAddr, timestamp, txHash, certNumber) => {
 
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
 
@@ -191,6 +189,14 @@ function ManageCpotb() {
       title: "Permintaan perpanjangan CPOTB terkirim",
       html: (
         <div className='form-swal event'>
+          <ul className='klaim'>
+            <li className="label">
+              <p>Nomor CPOTB</p> 
+            </li>
+            <li className="input">
+              <p>{certNumber}</p> 
+            </li>
+          </ul>
           <ul>
             <li className="label">
               <p>Nama Instansi Pabrik</p> 
@@ -945,7 +951,7 @@ function ManageCpotb() {
                   allowOutsideClick: false,
                 });
 
-                extendCertificate(id, timestampExpired, detailCpotb.jenisSediaan)
+                extendCertificate(id, detailCpotb.cpotbNumber, timestampExpired, detailCpotb.jenisSediaan)
                 
               }
             })
@@ -1234,11 +1240,11 @@ function ManageCpotb() {
     }
   }
   
-  const extendCertificate = async(cpotbId, expTimestamp, jenisSediaan) =>{
+  const extendCertificate = async(cpotbId, cpotbNumber, expTimestamp, jenisSediaan) =>{
 
     console.log(cpotbId, expTimestamp, jenisSediaan);
     try {
-      const extendCertificateCt = await contracts.certificateManager.extendCpotb(cpotbId, expTimestamp)
+      const extendCertificateCt = await contracts.certificateManager.extendCpotb(cpotbId, cpotbNumber, expTimestamp)
       console.log(extendCertificateCt);
 
       if (extendCertificateCt) {
@@ -1248,10 +1254,10 @@ function ManageCpotb() {
         });
       }
 
-      contracts.certificateManager.on('CertExtendRequest',  (factoryAddr, _timestamp) => {
+      contracts.certificateManager.on('CertExtendRequest',  (factoryAddr, _certNumber,  _timestamp) => {
         updateCpotbFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaan);
         recordHashFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaan)
-        handleEventCpotb(factoryAddr, _timestamp, extendCertificateCt.hash)
+        handleEventCpotb(factoryAddr, _timestamp, extendCertificateCt.hash, _certNumber)
       });
     } catch (error) {
       errAlert(error)

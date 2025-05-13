@@ -9,7 +9,8 @@ library EnumsLibrary {
     RejectedNie, 
     RenewRequestNie,
     ExpiredNie,
-    ExtendRequestNie
+    ExtendRequestNie,
+    extendedNie
   } 
 
   enum OrderStatus { 

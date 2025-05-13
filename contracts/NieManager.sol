@@ -11,6 +11,8 @@ contract NieManager {
     roleManager = RoleManager(roleManagerAddr);
   }
 
+  uint constant extTimestamp = (3*60) + 10;
+
   struct NieDetail {
     string nieNumber; 
     EnumsLibrary.NieStatus nieStatus;   
@@ -77,8 +79,14 @@ contract NieManager {
   );
 
   event NieExtendRequest(
-    string factoryInstance, 
     address factoryAddr, 
+    string nieNumber,  
+    uint timestamp
+  );
+
+  event NieApprovedExtendRequest(
+    address factoryAddr, 
+    string nieNumber,  
     uint timestamp
   );
 
@@ -153,7 +161,7 @@ contract NieManager {
     nieData.timestampNieApprove = block.timestamp;
     nieData.bpomInstance = bpomInstance;
     nieData.bpomAddr = msg.sender;
-    nieData.timestampNieExpired= block.timestamp + (2 * 60); 
+    nieData.timestampNieExpired= block.timestamp + extTimestamp; 
     
     emit NieApproved(
       bpomInstance,
@@ -215,7 +223,7 @@ contract NieManager {
     );
   }
 
-  function extemdRequestNie(
+  function extendRequestNie(
     string memory obatId,
     uint256 expiredTimestamp
   ) 
@@ -226,14 +234,35 @@ contract NieManager {
     NieDetail storage nieData = nieDetailById[obatId];
 
     nieData.nieStatus = EnumsLibrary.NieStatus.ExtendRequestNie; 
-    nieData.timestampNieExtendRequest = block.timestamp;
+    nieData.timestampNieExtendRequest = block.timestamp + extTimestamp; 
 
     emit NieExtendRequest(
-      nieDetailById[obatId].factoryInstance, 
       msg.sender,  
+      nieDetailById[obatId].nieNumber, 
       block.timestamp
     );
   }
+
+  function approveExtendRequest(
+    string memory obatId,
+    string memory ipfsNie,
+    uint256 expiredTimestamp
+  ) 
+    public 
+    onlyBPOM 
+  {
+    require(block.timestamp > expiredTimestamp, "NIE masih berlaku");
+    NieDetail storage nieData = nieDetailById[obatId];
+
+    nieData.nieStatus = EnumsLibrary.NieStatus.extendedNie; 
+    nieData.timestampNieExtendRequest = block.timestamp + extTimestamp;  
+
+    emit NieApprovedExtendRequest(
+      msg.sender,   
+      nieDetailById[obatId].nieNumber, 
+      block.timestamp
+    ); 
+  } 
 
   function getNieDetail(string memory obatId) public view returns (
     NieDetail memory,
@@ -249,11 +278,14 @@ contract NieManager {
 
   function getNieNumberAndStatus(string memory obatId) public view returns (
     string memory, 
-    uint8
+    uint8, 
+    uint256
   ){
     return (
       nieDetailById[obatId].nieNumber, 
-      uint8(nieDetailById[obatId].nieStatus));
+      uint8(nieDetailById[obatId].nieStatus), 
+      nieDetailById[obatId].timestampNieExpired 
+    );  
   }
 
   function getRejectMsgNie(string memory obatId) public view returns (string memory) {

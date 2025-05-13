@@ -191,7 +191,7 @@ function CpotbApprove() {
     }
   }, [loading]);
 
-  const handleEventCpotb = (status, bpomInstance, bpomAddr, jenisSediaan, detail, timestamp, txHash) => {
+  const handleEventCpotb = (status, bpomInstance, bpomAddr, jenisSediaan, detail, timestamp, txHash, certNumber) => {
 
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
     
@@ -276,6 +276,14 @@ function CpotbApprove() {
         title: "Perpanjangan CPOTB disetujui",
         html: (
           <div className='form-swal event'>
+            <ul className='klaim'>
+              <li className="label">
+                <p>Nomor CPOTB</p> 
+              </li>
+              <li className="input">
+                <p>{certNumber}</p> 
+              </li>
+            </ul>
             <ul>
               <li className="label">
                 <p>Nama Instansi BPOM</p> 
@@ -2021,9 +2029,9 @@ function CpotbApprove() {
           tipePermohonan: detailCpotb.jenisSediaan,
           certNumber: cpotbNumber,
           timestampRequest: detailCpotb.timestampRequest, 
-          timestampApprove: formattedDate,
+          timestampApprove: detailCpotb.timestampApprove,
           timestampExpired: detailCpotb.timestampExpired,
-          timestampExtendRequest: detailCpotb.timestampExtendRequest,
+          timestampExtendRequest: formattedDate,
           senderInstance: detailCpotb.factoryInstanceName,
           senderAddress: detailCpotb.factoryAddr,
           factoryType: detailCpotb.factoryType,
@@ -2066,7 +2074,7 @@ function CpotbApprove() {
           text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
         });
         if (msg=== "Perpanjangan") {
-          approveExtendCpotb(detailCpotb.factoryInstanceName, detailCpotb.jenisSediaan, detailCpotb.cpotbId, result.path)
+          approveExtendCpotb(detailCpotb.factoryInstanceName, cpotbNumber, detailCpotb.jenisSediaan, detailCpotb.cpotbId, result.path)
         } else {
           approveCpotb(cpotbNumber, detailCpotb.cpotbId, detailCpotb.jenisSediaan, result.path, detailCpotb.factoryInstanceName);
         }
@@ -2134,7 +2142,7 @@ function CpotbApprove() {
       contracts.certificateManager.on('CertApproved',  (bpomInstance, bpomAddr, jenisSediaan, cpotbNumber, _timestampApprove) => {
         updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], approveCt.hash, Number(_timestampApprove), cpotbNumber, cpotbIpfs, true );
         recordHashFb(jenisSediaanMap[jenisSediaan], approveCt.hash, Number(_timestampApprove), factoryInstanceName, true)
-        handleEventCpotb("Disetujui", bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, _timestampApprove, approveCt.hash);
+        handleEventCpotb("Disetujui", bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, _timestampApprove, approveCt.hash, '');
       });
     } catch (error) {
       errAlert(error, "Can't Approve CPOTB")
@@ -2155,7 +2163,7 @@ function CpotbApprove() {
       }
       
       contracts.certificateManager.on("CertRejected", (_instanceName, _instanceAddr, _jenisSediaan, _timestampRejected, _rejectMsg) => {
-        handleEventCpotb( "Tidak Disetujui", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, _timestampRejected, rejectCt.hash);
+        handleEventCpotb( "Tidak Disetujui", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, _timestampRejected, rejectCt.hash, '');
         recordHashFb(jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), factoryInstanceName, false)
         updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), "", "", false);
       });
@@ -2164,7 +2172,7 @@ function CpotbApprove() {
     }
   }
 
-  const approveExtendCpotb = async(factoryName, jenisSediaan, certTd, cpotbIpfs) => {
+  const approveExtendCpotb = async(factoryName, cpotbNumber, jenisSediaan, certTd, cpotbIpfs) => {
 
     console.log(certTd, cpotbIpfs);
 
@@ -2172,6 +2180,7 @@ function CpotbApprove() {
       
       const approveExtendCt = await contracts.certificateManager.approveExtendCpotb(
         certTd, 
+        cpotbNumber,
         cpotbIpfs
       )
 
@@ -2185,10 +2194,10 @@ function CpotbApprove() {
         });
       }
 
-      contracts.certificateManager.on('CertApprovedExtendRequest',  (bpomAddr, _timestampApprove) => {
+      contracts.certificateManager.on('CertApprovedExtendRequest',  (bpomAddr, _certNumber, _timestampApprove) => {
         updateExtendCpotbFb(factoryName, jenisSediaan, cpotbIpfs, approveExtendCt.hash, Number(_timestampApprove));
         recordExtendHashFb(factoryName, jenisSediaan, approveExtendCt.hash, Number(_timestampApprove))
-        handleEventCpotb("Diperpanjang", bpomAddr, '', '', '', _timestampApprove, approveExtendCt.hash);
+        handleEventCpotb("Diperpanjang", bpomAddr, '', '', '', _timestampApprove, approveExtendCt.hash, _certNumber);
       });
     } catch (error) {
       errAlert(error, "Can't Approve CPOTB")

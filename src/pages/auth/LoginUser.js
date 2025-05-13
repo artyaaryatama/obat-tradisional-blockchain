@@ -148,28 +148,24 @@ function LoginPage() {
   const autoFilled = async(event, role) => {
     event.preventDefault();
     if(role===0){
+      setName('Nadia Zahra');
       // setName('James Doe')
-      setName('Rina Sari');
-      // setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
-      // setUserAddr("0x6142E74121ADE0de3BEC1641e0318dBcCFcDe06A")
+      // setName('Rina Sari');
 
     } else if(role===1){ 
+      setName('Andi Wicaksono');
       // setName('Charles Doe') 
-      setName('Fajar Nugroho');
-      // setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
-      // setUserAddr("0x97CB6400E271e65150B2330ad27f213a4C9c31af")
+      // setName('Fajar Nugroho');
 
     } else if(role===2){ 
+      setName('Ratna Dewi');
       // setName('Sophie Doe') 
-      setName('Sri Lestari');
-      // setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
-      // setUserAddr('0xcbcD762c3C27212937314C1D46072a214346F2F3')
+      // setName('Sri Lestari');
 
     } else if(role===3){
+      setName('Gilang Saputra');
       // setName('Marlene Doe') 
-      setName('Budi Hartono');
-      // setUserAddr('0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65')
-      // setUserAddr('0xA3cE1983150Fade27518DF467a99a74FB4082dDa')
+      // setName('Budi Hartono');
       
     }
     

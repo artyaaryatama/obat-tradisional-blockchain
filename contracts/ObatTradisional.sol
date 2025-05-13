@@ -33,6 +33,7 @@ contract ObatTradisional is ReentrancyGuard{
     string nieNumber;
     uint8 nieStatus;
     string factoryInstance;
+    uint256 timestampExpired;
   }
 
   struct ObatOutputBatch {
@@ -106,7 +107,7 @@ contract ObatTradisional is ReentrancyGuard{
 
     nieManager.createObatNie(
       obatId, 
-      factoryInstance
+      factoryInstance 
     );
 
     emit ObatCreated(
@@ -131,7 +132,8 @@ contract ObatTradisional is ReentrancyGuard{
 
       ( 
         string memory nieNumber, 
-        uint8 nieStatus
+        uint8 nieStatus,
+        uint256 timestampNieExpired
       ) = nieManager.getNieNumberAndStatus(obatId);
       
       obatList[i] = ObatOutputNie({
@@ -139,7 +141,8 @@ contract ObatTradisional is ReentrancyGuard{
         namaProduk: details.namaProduk,
         nieNumber: nieNumber, 
         nieStatus: nieStatus,
-        factoryInstance: details.factoryInstance
+        factoryInstance: details.factoryInstance,
+        timestampExpired: timestampNieExpired 
       });
     }
 
@@ -160,14 +163,19 @@ contract ObatTradisional is ReentrancyGuard{
 
         // Filter only matching instances
         if (keccak256(abi.encodePacked(details.factoryInstance)) == instanceHash) {
-            (string memory nieNumber, uint8 nieStatus) = nieManager.getNieNumberAndStatus(obatId);
+            (
+              string memory nieNumber, 
+              uint8 nieStatus,
+              uint256 timestampNieExpired
+              ) = nieManager.getNieNumberAndStatus(obatId);
 
             obatList[index] = ObatOutputNie({
                 obatId: obatId,
                 namaProduk: details.namaProduk,
                 nieNumber: nieNumber,
                 nieStatus: nieStatus,
-                factoryInstance: details.factoryInstance
+                factoryInstance: details.factoryInstance,
+                timestampExpired: timestampNieExpired
             });
 
             index++;

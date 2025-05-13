@@ -157,7 +157,7 @@ function ManageCdob() {
     }
   }, [loading]);
 
-  const handleEventCdob = (pbfAddr, timestamp, txHash) => {
+  const handleEventCdob = (pbfAddr, timestamp, txHash, certNumber) => {
 
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
   
@@ -165,6 +165,14 @@ function ManageCdob() {
       title: "Permintaan perpanjangan CDOB terkirim",
       html: (
         <div className='form-swal event'>
+          <ul className='klaim'>
+            <li className="label">
+              <p>Nomor CDOB</p> 
+            </li>
+            <li className="input">
+              <p>{certNumber}</p> 
+            </li>
+          </ul>
           <ul>
             <li className="label">
               <p>Nama Instansi PBF</p> 
@@ -1055,7 +1063,7 @@ function ManageCdob() {
                   allowOutsideClick: false,
                 });
 
-                extendCertificate(id, timestampExpired, detailCdob.tipePermohonan)
+                extendCertificate(id, timestampExpired, tipePermohonan, detailCdob.cdobNumber)
                 
               }
             })
@@ -1397,38 +1405,50 @@ function ManageCdob() {
     }
   }
 
-  const extendCertificate = async(cdobId, expTimestamp, tipePermohonan) =>{
+  const extendCertificate = async(cdobId, expTimestamp, tipePermohonan, cdobNumber) =>{
 
     console.log(cdobId, expTimestamp, tipePermohonan);
-    // try {
-    //   const extendCertificateCt = await contracts.certificateManager.extendCdob(cdobId, expTimestamp)
-    //   console.log(extendCertificateCt);
+    try {
+      const extendCertificateCt = await contracts.certificateManager.extendCdob(
+        cdobId, 
+        cdobNumber, 
+        expTimestamp
+      )
+      console.log(extendCertificateCt);
 
-    //   if (extendCertificateCt) {
-    //     MySwal.update({
-    //       title: "Memproses transaksi...",
-    //       text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
-    //     });
-    //   }
+      if (extendCertificateCt) {
+        MySwal.update({
+          title: "Memproses transaksi...",
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
+        });
+      }
 
-    //   contracts.certificateManager.on('CertExtendRequest',  (_pbfAddr, _timestamp) => {
-    //     // updateCdobFb(extendCertificateCt.hash, Number(_timestamp), tipePermohonan);
-    //     // recordHashFb(extendCertificateCt.hash, Number(_timestamp), tipePermohonan)
-    //     handleEventCdob(_pbfAddr, _timestamp, extendCertificateCt.hash)
-    //   }); 
-    // } catch (error) {
-    //   errAlert(error)
-    // }
+      contracts.certificateManager.on('CertExtendRequest',  (_pbfAddr, _cdobNumber, _timestamp) => {
+        updateCdobFb(extendCertificateCt.hash, Number(_timestamp), tipePermohonan);
+        recordHashFb(extendCertificateCt.hash, Number(_timestamp), tipePermohonan)
+        handleEventCdob(_pbfAddr, _timestamp, extendCertificateCt.hash, _cdobNumber)
+      }); 
+    } catch (error) {
+      errAlert(error)
+    }
   }
 
-  const updateCdobFb = async (cdobHash, timestamp, jenisSediaan) => {
+  const updateCdobFb = async (cdobHash, timestamp, tp) => {
+
+    const tpMap = {
+      0n: 'Obat Lain',
+      1n: 'Cold Chain Product'
+    };
+
+    const tipeP = tpMap[tp]
+
     try {
       const docRef = doc(db, 'cdob_list', userdata.instanceName);
 
       await updateDoc(docRef, {
-        [`${jenisSediaan}.extendHash`]: cdobHash,
-        [`${jenisSediaan}.extendTimestamp`]: timestamp, 
-        [`${jenisSediaan}.status`]: 2 
+        [`${tipeP}.extendHash`]: cdobHash,
+        [`${tipeP}.extendTimestamp`]: timestamp, 
+        [`${tipeP}.status`]: 2 
       }); 
   
     } catch (err) {
@@ -1436,13 +1456,21 @@ function ManageCdob() {
     }
   };
 
-  const recordHashFb = async(txHash, timestamp, jenisSediaan) => {
+  const recordHashFb = async(txHash, timestamp, tp) => {
+
+    const tpMap = {
+      0n: 'Obat Lain',
+      1n: 'Cold Chain Product'
+    };
+
+    const tipeP = tpMap[tp]
+
     try {
-      const collectionName = `pengajuan_cpotb_${userdata.instanceName}`
+      const collectionName = `pengajuan_cdob_${userdata.instanceName}`
       const docRef = doc(db, 'transaction_hash', collectionName);
   
       await setDoc(docRef, {
-        [`${jenisSediaan}`]: {
+        [`${tp}`]: {
           'extend_request': {
             hash: txHash,
             timestamp: timestamp,

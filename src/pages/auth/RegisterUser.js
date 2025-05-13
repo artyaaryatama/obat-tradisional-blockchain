@@ -396,41 +396,71 @@ function RegisterPage() {
   function autoFilled(event, role) {
     event.preventDefault();
     console.log(role);
-  
+
     if (role === 0) {
-      setInstanceName('PT. Sehat Sentosa');
+      setInstanceName('[TEST] PT. Alam Hijau Farma');
       setRole(0);
-      setName('Rina Sari');
-      setNib('6666666666');
-      setNpwp('66.666.666.6-666.666');
-      setLocationInstance('Jl. Sehat No.10, Jakarta Selatan');
+      setName('Nadia Zahra');
+      setNib('1414141414');
+      setNpwp('14.141.414.1-414.141');
+      setLocationInstance('Jl. Merdeka No.11, Bogor');
       setIsBpom(false);
     } else if (role === 1) {
-      setInstanceName('PT. Cahaya Farma Raya');
+      setInstanceName('[TEST] PT. Natural Farma Sejahtera');
       setRole(1); 
-      setName('Fajar Nugroho');
-      setNib('1212121212');
-      setNpwp('12.121.212.1-212.121');
-      setLocationInstance('Jl. Areum-areum No.20, Jakarta Barat');
+      setName('Andi Wicaksono');
+      setNib('1313131313');
+      setNpwp('13.131.313.1-313.131');
+      setLocationInstance('Jl. Sukamulya No.15, Surabaya');
       setIsBpom(false);
-      // setUserAddr('');
     } else if (role === 2) {
-      setInstanceName('BPOM Malino');
+      setInstanceName('[TEST] BPOM Singaraja');
       setRole(2);
-      setName('Sri Lestari');
-      setLocationInstance('Jl. Pengawasan BPOM, Malino, Sulawesi Selatan');
+      setName('Ratna Dewi');
+      setLocationInstance('Jl. Pengawasan BPOM, Singaraja, Bali');
       setIsBpom(true);
-      // setUserAddr('');
     } else if (role === 3) {
-      setInstanceName('Apotek Nusantara');
+      setInstanceName('[TEST] Apotek Sehat Utama');
       setRole(3);
-      setName('Budi Hartono');
-      setNib('8888888888');
-      setNpwp('88.888.888.8-888.888');
-      setLocationInstance('Jl. Apotek Sejahtera No.5, Jakarta Timur');
+      setName('Gilang Saputra');
+      setNib('1919191919');
+      setNpwp('19.191.919.1-919.191');
+      setLocationInstance('Jl. Kartini No.9, Medan');
       setIsBpom(false);
-      // setUserAddr('');
     }
+
+    // the user info for master branch 
+    // if (role === 0) {
+    //   setInstanceName('PT. Sehat Sentosa');
+    //   setRole(0);
+    //   setName('Rina Sari');
+    //   setNib('6666666666');
+    //   setNpwp('66.666.666.6-666.666');
+    //   setLocationInstance('Jl. Sehat No.10, Jakarta Selatan');
+    //   setIsBpom(false);
+    // } else if (role === 1) {
+    //   setInstanceName('PT. Cahaya Farma Raya');
+    //   setRole(1); 
+    //   setName('Fajar Nugroho');
+    //   setNib('1212121212');
+    //   setNpwp('12.121.212.1-212.121');
+    //   setLocationInstance('Jl. Areum-areum No.20, Jakarta Barat');
+    //   setIsBpom(false);
+    // } else if (role === 2) {
+    //   setInstanceName('BPOM Malino');
+    //   setRole(2);
+    //   setName('Sri Lestari');
+    //   setLocationInstance('Jl. Pengawasan BPOM, Malino, Sulawesi Selatan');
+    //   setIsBpom(true);
+    // } else if (role === 3) {
+    //   setInstanceName('Apotek Nusantara');
+    //   setRole(3);
+    //   setName('Budi Hartono');
+    //   setNib('8888888888');
+    //   setNpwp('88.888.888.8-888.888');
+    //   setLocationInstance('Jl. Apotek Sejahtera No.5, Jakarta Timur');
+    //   setIsBpom(false);
+    // }
   }
   
   

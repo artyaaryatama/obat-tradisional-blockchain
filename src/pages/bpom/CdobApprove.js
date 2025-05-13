@@ -163,7 +163,7 @@ function CdobApprove() {
     }
   }, [loading]);
 
-  const handleEventCdob = (status, bpomAddr, bpomInstance, tipePermohonan, detail, timestamp, txHash) => {
+  const handleEventCdob = (status, bpomAddr, bpomInstance, tipePermohonan, detail, timestamp, txHash, certNumber) => {
 
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
   
@@ -247,12 +247,20 @@ function CdobApprove() {
         title: "Perpanjangan CDOB disetujui",
         html: (
           <div className='form-swal event'>
+            <ul className='klaim'>
+              <li className="label">
+                <p>Nomor CDOB</p> 
+              </li>
+              <li className="input">
+                <p>{certNumber}</p> 
+              </li>
+            </ul>
             <ul>
               <li className="label">
                 <p>Nama Instansi BPOM</p> 
               </li>
               <li className="input">
-                <p>{bpomInstance}</p> 
+                <p>{userdata.instanceName}</p> 
               </li>
             </ul>
             <ul className='klaim'>
@@ -392,7 +400,7 @@ function CdobApprove() {
       const [surat_permohonan_cdob, bukti_pembayaran_pajak] = docsAdministrasi;
       const [surat_izin_cdob, denah_pbf, struktur_organisasi, daftar_personalia, daftar_peralatan, eksekutif_quality_management, surat_izin_apoteker, dokumen_self_assessment] = docsTeknis
       const [cdobId, cdobNumber, tipePermohonan] = cdobDetails
-      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, , pbf, bpom, cdobIpfs] = certDetails
+      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, pbf, bpom, cdobIpfs] = certDetails
 
       const detailUserPbfCt = await contracts.roleManager.getUserData(pbf[2]);
       if (timestampRejected !== 0n) {
@@ -2190,8 +2198,8 @@ function CdobApprove() {
           certNumber: cdobNumber,
           timestampRequest: detailCdob.timestampRequest, 
           timestampExpired: detailCdob.timestampExpired,
-          timestampExtendRequest: detailCdob.timestampExtendRequest,
-          timestampApprove: formattedDate,
+          timestampExtendRequest: formattedDate,
+          timestampApprove: detailCdob.timestampApprove,
           senderInstance: detailCdob.pbfName,
           senderAddress: detailCdob.pbfAddr,
           senderNIB: detailCdob.pbfNIB,
@@ -2237,7 +2245,7 @@ function CdobApprove() {
         });
         
         if(msg === "Perpanjangan"){
-          approveExtendCdob(detailCdob.pbfName, detailCdob.tipePermohonan, detailCdob.cdobId, result.path)
+          approveExtendCdob(detailCdob.pbfName, detailCdob.tipePermohonan, detailCdob.cdobId, result.path, cdobNumber)
         } else {
           approveCdob(cdobNumber, detailCdob.cdobId, detailCdob.tipePermohonan, result.path, detailCdob.pbfName);
         }
@@ -2249,7 +2257,7 @@ function CdobApprove() {
     }
   } 
 
-  const approveExtendCdob = async(pbfName, tp, certTd, cdobIpfs) => {
+  const approveExtendCdob = async(pbfName, tp, certTd, cdobIpfs, cdobNumber) => {
 
     const tpMap = {
       "Obat Lain" : 0n,
@@ -2261,6 +2269,7 @@ function CdobApprove() {
     try {
       const approveExtendCt = await contracts.certificateManager.approveExtendCdob(
         certTd,
+        cdobNumber,
         cdobIpfs
       )
       
@@ -2272,10 +2281,10 @@ function CdobApprove() {
         });
       }
       
-      contracts.certificateManager.on('CertApprovedExtendRequest',  (bpomAddr, timestampExtendApprove) => {
+      contracts.certificateManager.on('CertApprovedExtendRequest',  (bpomAddr, _cdobNumber, timestampExtendApprove) => {
         updateExtendCdobFb(pbfName, tpMap[tp], approveExtendCt.hash, Number(timestampExtendApprove), cdobIpfs)
         recordExtendHashFb(pbfName, tpMap[tp], approveExtendCt.hash, Number(timestampExtendApprove))
-        handleEventCdob("Diperpanjang",bpomAddr,  '', '', '', timestampExtendApprove, approveExtendCt.hash);
+        handleEventCdob("Diperpanjang",bpomAddr,  '', '', '', timestampExtendApprove, approveExtendCt.hash, _cdobNumber);
       });
     } catch (error) {
       errAlert(error, "Can't Approve CDOB")
@@ -2305,7 +2314,7 @@ function CdobApprove() {
       contracts.certificateManager.on('CertApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
         updateCdobFb(pbfName, tpMap[tp], approveCt.hash, Number(timestampApprove), cdobNumber, cdobIpfs, true)
         recordHashFb(pbfName, tpMap[tp], approveCt.hash, Number(timestampApprove), true)
-        handleEventCdob("Disetujui", bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, approveCt.hash);
+        handleEventCdob("Disetujui", bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, approveCt.hash, '');
       });
     } catch (error) {
       errAlert(error, "Can't Approve CDOB")
@@ -2329,7 +2338,7 @@ function CdobApprove() {
       contracts.certificateManager.on("CertRejected", (_instanceName, _instanceAddr, _tipePermohonan, timestampRejected, _rejectMsg) => {
         updateCdobFb(pbfName, tipePermohonan, rejectCt.hash, Number(timestampRejected), "", "" , false)
         recordHashFb(pbfName, tipePermohonan, rejectCt.hash, Number(timestampRejected), false)
-        handleEventCdob( "Tidak Disetujui", _instanceAddr, _instanceName, _tipePermohonan, _rejectMsg, timestampRejected, rejectCt.hash);
+        handleEventCdob( "Tidak Disetujui", _instanceAddr, _instanceName, _tipePermohonan, _rejectMsg, timestampRejected, rejectCt.hash, '');
       });
     } catch (error) {
       errAlert(error, `Gagal menolak pengajuan CDOB ${pbfName} dengan Tipe Permohonan ${tipePermohonan}`)
@@ -2458,7 +2467,7 @@ function CdobApprove() {
         </div>
         <div className="tab-menu">
           <ul>
-            <li><button onClick={() => navigate('/CDOB-approval')}>List CDOB</button></li>
+            <li><button onClick={() => navigate('/cpotb-approval')}>List CPOTB</button></li>
             <li><button className='active' onClick={() => navigate('/cdob-approval')}>List CDOB</button></li>
           </ul>
         </div>
