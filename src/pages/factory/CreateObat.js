@@ -403,22 +403,28 @@ function CreateObat() {
 
   const handleAutoFill4 = () => {
     const autoFillValues = {
-      namaProduk: "AcneFree Gel",
-      merk: "Dermaclear",
+      namaProduk: "Tapel Rempah Sehat",
+      merk: "HerbiCare",
       klaim: [
-        "Membantu mengeringkan jerawat secara alami",
-        "Mengurangi kemerahan dan peradangan pada kulit",
-        "Memberikan sensasi dingin dan menyegarkan"
+        "Membantu mengencangkan perut setelah melahirkan",
+        "Mengurangi rasa pegal dan nyeri otot",
+        "Menyegarkan tubuh dengan aroma rempah alami"
       ],
-      ketKemasanPrim: "20",
-      satuanKemasanPrim: "gram",
-      kemasanSeku: "Tube",
-      ketKemasanSeku: "1",
+      ketKemasanPrim: "1",
+      satuanKemasanPrim: "lembar",
+      kemasanSeku: "Pack",
+      ketKemasanSeku: "5",
       komposisi: [
-        "Tea tree oil",
-        "Aloe vera gel",
-        "Salicylic acid",
-        "Centella asiatica extract"
+        "Kaempferia galanga",
+        "Zingiber officinale",
+        "Curcuma longa",
+        "Cinnamomum burmannii",
+        "Piper nigrum",
+        "Capsicum frutescens",
+        "Foeniculum vulgare",
+        "Cocos nucifera",
+        "Cymbopogon citratus",
+        "Pogostemon cablin"
       ]
     };
   
@@ -434,23 +440,28 @@ function CreateObat() {
   
   const handleAutoFill5 = () => {
     const autoFillValues = {
-      namaProduk: "Pelembab Kulit",
-      merk: "AlamiCare",
+      namaProduk: "NeuroTab Herbal",
+      merk: "BrainWell",
       klaim: [
-        "Melembapkan dan menyegarkan kulit",
-        "Membantu meredakan iritasi ringan pada kulit",
-        "Mengandung bahan alami untuk perawatan kulit harian"
+        "Meningkatkan fokus dan daya ingat",
+        "Membantu mengurangi kelelahan mental",
+        "Mendukung fungsi otak secara alami"
       ],
-      ketKemasanPrim: "100",
-      satuanKemasanPrim: "ml",
-      kemasanSeku: "Botol plastik",
+      ketKemasanPrim: "30",
+      satuanKemasanPrim: "tablet",
+      kemasanSeku: "Blister",
       ketKemasanSeku: "1",
       komposisi: [
-        "Aloe vera extract",
-        "Chamomile flower extract",
-        "Olive oil",
-        "Vitamin E",
-        "Menthol"
+        "Bacopa monnieri",
+        "Centella asiatica",
+        "Panax ginseng",
+        "Withania somnifera",
+        "Ginkgo biloba",
+        "Mucuna pruriens",
+        "Curcuma longa",
+        "Piper nigrum",
+        "Zingiber officinale",
+        "Eleutherococcus senticosus"
       ]
     };
 
@@ -466,22 +477,28 @@ function CreateObat() {
   
   const handleAutoFill6 = () => {
     const autoFillValues = {
-      namaProduk: "Dermazol Ointment",
-      merk: "Pharmalabs",
+      namaProduk: "CoolRub Herbal Solution",
+      merk: "SariAlami",
       klaim: [
-        "Mengatasi infeksi jamur pada kulit seperti panu dan kurap",
-        "Mengurangi rasa gatal dan kemerahan akibat infeksi",
-        "Membantu mempercepat pemulihan lapisan kulit luar"
+        "Memberikan sensasi dingin untuk mengurangi nyeri otot",
+        "Membantu meredakan pegal dan capek",
+        "Cocok untuk pijat atau digunakan setelah aktivitas fisik"
       ],
-      ketKemasanPrim: "10",
-      satuanKemasanPrim: "gram",
-      kemasanSeku: "Botol",
+      ketKemasanPrim: "120",
+      satuanKemasanPrim: "ml",
+      kemasanSeku: "Botol Roll-On",
       ketKemasanSeku: "1",
       komposisi: [
-        "Ketoconazole",
-        "Propylene glycol",
-        "Petrolatum",
-        "Lanolin"
+        "Mentha arvensis",
+        "Gaultheria procumbens",
+        "Eucalyptus globulus",
+        "Zingiber officinale",
+        "Cymbopogon citratus",
+        "Capsicum frutescens",
+        "Pogostemon cablin",
+        "Cinnamomum burmannii",
+        "Lavandula angustifolia",
+        "Aqua"
       ]
     };
   
@@ -681,7 +698,9 @@ function CreateObat() {
                   <option value="ml">ml</option>
                   <option value="mg">mg</option>
                   <option value="gram">gram</option>
-                  <option value="sachet">Kapsul</option>
+                  <option value="strip">Strip</option>
+                  <option value="sachet">Sachet</option>
+                  <option value="kapsul">Kapsul</option>
                 </select>
 
               </div>
@@ -703,6 +722,7 @@ function CreateObat() {
                 >
                   <option value="Dus">Dus</option>
                   <option value="Sachet">Sachet</option>
+                  <option value="Botol Roll-On">Botol Roll-On</option>
                   <option value="Botol">Botol</option>
                 </select>
 

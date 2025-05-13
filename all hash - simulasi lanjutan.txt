@@ -1,0 +1,217 @@
+// Registrasi User
+register pabrik_2 https://sepolia.etherscan.io/tx/0x897f2992595c846f7ef2ddfae9a10fd7ea17cf044e5540f1327f1abf3de81eb5
+register bpom_2 https://sepolia.etherscan.io/tx/0x0cce50b4a39b513ad8b9e3f426859bc2320c5f2794c0296696c36c42610051a4
+register retailer_2
+register pbf_2 https://sepolia.etherscan.io/tx/0x155517f0c72e885d40b37c8fb18c09bd8b15c271672040d6abf6a3778bbd6f96 --> not used
+register pbf_3 https://sepolia.etherscan.io/tx/0x3a44cdac12370c82e634bcf4df006bb4ed2c6728aee6aececa87edbbb4c886bc --> not used
+register pbf_4 https://sepolia.etherscan.io/tx/0x986aeeca276aad739fb466b0286d187adafec02e5e26c95680cf4f50a4603adc --> not used 
+register pbf_5 https://sepolia.etherscan.io/tx/0x9e42230c63d6949b658420d72cdd4f681a6bfbe4983dbb51af600351828c269c
+
+// Pengajuan dan Persetujuan CPOTB oleh pabrik_2
+1. Rajangan
+   - request cpotb https://sepolia.etherscan.io/tx/0x950fe6c0190debfeef9fead1dd1863e7e24ba5f5fca28a1776dc684341f8f440
+   - approve cpotb https://sepolia.etherscan.io/tx/0x4c516410ce70fcbf045d071a6236e0e65e9a3a72edfac479c39880b5463e9810
+
+2. cairan obat dalam
+   - request cpotb https://sepolia.etherscan.io/tx/0x61a3326f8173276d27e326f741de7451e9ab9a1415460f716fefc6d5fde0c292
+   - approve cpotb https://sepolia.etherscan.io/tx/0x4c80d0ffa38d6c45130baa1a888e2509cf5eb1075ef7139949f6da3a0f0f6b1b
+
+3. cairan obat luar
+   - request cpotb https://sepolia.etherscan.io/tx/0xbcdc245c2886f80b456fb199304f518c9463438e678258ce08722d73197f5337
+   - reject cpotb https://sepolia.etherscan.io/tx/0x8ce70ec6c93bb6b9f3a147ce584465d62b0639c3bab533906aba95935f0c9f53
+   - renew request cpotb https://sepolia.etherscan.io/tx/0xb22ab03efa3ae994193283683dc9f4e0b646a5e584cccf5c21fe1bce5f7e0573
+   - approve cpotb https://sepolia.etherscan.io/tx/0x08a08f9e0e674ca498f1f105a64ae06aa8f7b28540bd6cb25e2c06a33bc5e5c2
+
+4. kapsul
+   - request cpotb https://sepolia.etherscan.io/tx/0x9c0126a54f8c743b31152c791a62b5b41fc7964d729bcc46edbf655b2c0b7fe2
+   - approve cpotb https://sepolia.etherscan.io/tx/0x7ac153862e00b693f3332400aa626b91c32f1dc204787adf4914d0e8dc69fd56
+
+5. Pastiles
+   - request cpotb https://sepolia.etherscan.io/tx/0x7a7ccfb7769446301ec01952806a7569c9b24d5ebfd26808dc7c34481d334b80
+   - approve cpotb https://sepolia.etherscan.io/tx/0xcdabca20d270bc9ea806ff71ac24f4d665d42a3bbd90f5b3befe26724d8278c6
+
+6. granul
+   - request cpotb https://sepolia.etherscan.io/tx/0xaeb08a3e76051521af6be32e427c6d28a784e207fb8104a135eab12b1510b938
+   - reject https://sepolia.etherscan.io/tx/0x3b556509ae0f520020c528458a848f601fad7e30f0f06e6a3ef43404e17c2dba
+   - renew request 
+   - approve cpotb
+
+7. film strip
+   - request cpotb https://sepolia.etherscan.io/tx/0xef21caa56f648934f17ecee9302aca61ebe844b1dd9ffc4365de743f2762312a
+   - approve cpotb https://sepolia.etherscan.io/tx/0xe97ca29675f5b6d76d43ed7c1e415fb08662c5cbceb12f2078446f343c4873e5
+
+8. Losio
+   - request cpotb https://sepolia.etherscan.io/tx/0xe4204150aaf4bf0fe8eeb0c489f8c5e7134d45e59659797a9c3485a2c7409f48
+   - approve cpotb https://sepolia.etherscan.io/tx/0x066da2ba6fecf4629a6d7195027c34f507e4cc57882ae56037f5d3af85f67774
+
+9. Tapel
+   - request cpotb https://sepolia.etherscan.io/tx/0x7ab03c43d806f63b3355021b538ac671d8e574db76adbfd4c65d87e049bb2556
+   - approve cpotb https://sepolia.etherscan.io/tx/0x8a1cde1da430f13da3f50a7b31c69be828388510319075ed15768c9308df8a1e
+
+10. tablet
+   - request cpotb https://sepolia.etherscan.io/tx/0xab6b7a42be74859bce1fe499f735dcad59bb209ecc2210f465bf4f64db235332
+   - approve cpotb https://sepolia.etherscan.io/tx/0xecda003f26e38eb67ae42e4ddf873930e283d1fd2dc7475aa4c7e32b69005865
+
+// CDOB OK
+- request ccp cdob https://sepolia.etherscan.io/tx/0x831f968f78c7949be1a2757b32920db9bd4c791ecfd0391228b42e5480320eb3
+- approve ccp cdob https://sepolia.etherscan.io/tx/0x100d002897370bb2aca704a7d5d6c2af3edad55614575562eaddbb494f97848d
+
+- request obat lain cdob https://sepolia.etherscan.io/tx/0x027705c77cf71857094614ab69b9ac8c01bcfb549254f9ed5ab502be04b6b9b7
+- reject obat lain cdob https://sepolia.etherscan.io/tx/0x54ada1bd3647d53e33181f009ce38737cd71c8fb438a2212679f3950a134bae8
+- renew request obat lain https://sepolia.etherscan.io/tx/0x363a0032105464f8266a76409747b639a452f80032f67bc0a91455e83332007a
+- approve obat lain https://sepolia.etherscan.io/tx/0xaba3f4fe7c60da3f750553de900d5f84499f0a5581dcdd57fc9d2b2f05756347
+
+
+
+1. Herba Daun Jinten  
+- produksi obat https://sepolia.etherscan.io/tx/0x21148c973fbe4488afc58e1ebb7ade9088e4c0df332b40430b8ef22e8e7ca44d  
+- pengajuan NIE https://sepolia.etherscan.io/tx/0x53637fcd9f9f357b19de5125f423f6f810ef3c3a8205b02b506ffcf08b492f61  
+- NIE reject  https://sepolia.etherscan.io/tx/0x8d5481ca52b3ef910d52b8f73bfe8812947b81283005ccbe013146b7b1d49c7e
+- renew request NIE  
+- approve NIE  
+
+2. Sirup Jahe Merah Plus  
+- produksi obat https://sepolia.etherscan.io/tx/0xf090266ea3aca41d981afc96b42d679032b76fb4213813353b739fa69acf19ab  
+- pengajuan NIE  https://sepolia.etherscan.io/tx/0xd9858029742c3185625c32eca241bcdcc64c1d0943f25a08fd5b83255943d05e
+- approve NIE https://sepolia.etherscan.io/tx/0xe2c55822b9292536e9b919d3272b827706d6d71dacb83bbfe45e355f39241793
+
+3. Dermazol Ointment  
+- produksi obat https://sepolia.etherscan.io/tx/0x7161a70b32f325bc309e09c983e23c57b978817423afd4e1f0eaef766af0072d  
+- pengajuan NIE https://sepolia.etherscan.io/tx/0xec497e50b6475228b96c2e22ca1069d73ae2270127eabb1214418a1f2cd57346
+- REJECT NIE https://sepolia.etherscan.io/tx/0x46001eb5fd25459dedd42d471794353ac6991c3f2b8310d5a8dda5e17dc13814
+- renew request https://sepolia.etherscan.io/tx/0x975e50dc64a829ee0935321ab19fe751d530c90374993ca7682ea7e70b77c8ff
+- approve NIE  
+
+4. ImmunoCaps Herbal
+- produksi obat https://sepolia.etherscan.io/tx/0x89a87b9b4dde0e2934c0a4e780e00c3735e2995a3431ef4bcec739915ac3fda3
+- pengajuan NIE  https://sepolia.etherscan.io/tx/0xc4384966d6ab70027d66d033194fb2f0de57c430138513a4a615ebe29e24ce47
+- approve NIE  https://sepolia.etherscan.io/tx/0x11ec5ed727d8cabe65b7434f92b7db38fd99e33729203f4e28f09976966187b6
+
+5. GastroFilm Herbal
+- produksi obat  https://sepolia.etherscan.io/tx/0x5310fed4fb0adee5118a9e50f817ba9728209e198ab8095ad8c41b0abb5b8e91
+- pengajuan NIE  https://sepolia.etherscan.io/tx/0x0de244b7dd7ced0707f5ed10418527588cbd10d1e36c2addf541357d59cb3b51
+- approve NIE  https://sepolia.etherscan.io/tx/0x17cd6412c77aa9ccd791ff4bfbf347923fda8c4ebf003226780db6ef617ef87d
+
+6. NeuroCaps Plus
+- produksi obat  https://sepolia.etherscan.io/tx/0x42fd79e015b2f42bbc00d41f8f70db7df6043b1bd2970596d1bf133c24c49666
+- pengajuan NIE  https://sepolia.etherscan.io/tx/0x8336746856e4b4c86be876a1381c414f5a2e3e602dbadb6d1952630723d3ab8c
+- approve NIE  https://sepolia.etherscan.io/tx/0xb7f8ad6e64e6cda0c1fb32008ad2060b57c79c5260755c93e64fdabd87bcda48
+
+7.  Tapel Rempah Sehat
+- produksi obat  https://sepolia.etherscan.io/tx/0x241322bf3fddb9fbdbb17ec99ade53b7c21e9bb0d2b48f001c56e45c8e0ee9ff
+- pengajuan NIE  https://sepolia.etherscan.io/tx/0x2a6439dee898ae0d33313b68f7cad8d18283f831a72622fa330e8cd9f48882f8
+- approve NIE  
+
+8.  DermaHerb Lotion
+- produksi obat  https://sepolia.etherscan.io/tx/0x70e17b43a7106dd800feea381b56a69099cb637e7a3c287015afda36102a910d
+- pengajuan NIE  https://sepolia.etherscan.io/tx/0x31e4cba326b9368d511e60e4a6e1d95fc40146fc6f44e9eb252cfff9669bdec3
+- approve NIE  
+
+9.  NeuroTab Herbal
+- produksi obat  https://sepolia.etherscan.io/tx/0xd3d3fb4ca6fb7ba503c20d6b92ea0e72abdad2963912bd7b7db4b76ed769890a
+- pengajuan NIE  
+- approve NIE  
+
+10.  CoolRub Herbal Solution
+- produksi obat  https://sepolia.etherscan.io/tx/0x5e37f497211638bee098b4113f8e89868c8cfc8fcba5272f8bffd4fcce80355d
+- pengajuan NIE  
+- approve NIE  
+
+
+
+1.  BN-3920-ZWGB [Sirup Jahe Merah Plus]
+- produksi  https://sepolia.etherscan.io/tx/0x65df161e81725184e3037ca028b4884b543325ffab9f3c7ec069d992874f93e4
+- order pbf  
+- send order pbf  
+- complete order pbf  
+- order retail  
+- send order retail  
+- complete order retail  
+
+2.  
+- produksi  
+- order pbf  
+- send order pbf  
+- complete order pbf  
+- order retail  
+- send order retail  
+- complete order retail  
+
+3.  
+- produksi  
+- order pbf  
+- send order pbf  
+- complete order pbf  
+- order retail  
+- send order retail  
+- complete order retail  
+
+4.  
+- produksi  
+- order pbf  
+- send order pbf  
+- complete order pbf  
+- order retail  
+- send order retail  
+- complete order retail  
+
+5.  
+- produksi  
+- order pbf  
+- send order pbf  
+- complete order pbf  
+- order retail  
+- send order retail  
+- complete order retail  
+
+6.  
+- produksi  
+- order pbf  
+- send order pbf  
+- complete order pbf  
+- order retail  
+- send order retail  
+- complete order retail  
+
+7.  
+- produksi  
+- order pbf  
+- send order pbf  
+- complete order pbf  
+- order retail  
+- send order retail  
+- complete order retail  
+
+8.  
+- produksi  
+- order pbf  
+- send order pbf  
+- complete order pbf  
+- order retail  
+- send order retail  
+- complete order retail  
+
+9.  
+- produksi  
+- order pbf  
+- send order pbf  
+- complete order pbf  
+- order retail  
+- send order retail  
+- complete order retail  
+
+10.  
+- produksi  
+- order pbf  
+- send order pbf  
+- complete order pbf  
+- order retail  
+- send order retail  
+- complete order retail  
+
+approve bpom cpotb 
+PT. Sehat Sentosa: Salep -> https://sepolia.etherscan.io/tx/0x492c109c7172e6f3aa4b7fb65729b5b3ddd2b31763e550f4adbb266e9e58165a
+PT. Sehat Sentosa: PIL -> https://sepolia.etherscan.io/tx/0x69e3dcd28a065bb71a9327cd1e468e82e73315c7c29e4d67fd94fcbba2c9939c
+
+APPROVE BPOM NIE
+PT. Sehat Sentosa: HERBAL WASIR SEHAT -> https://sepolia.etherscan.io/tx/0x96bbfa63ef6771495cbe862b25af5c34671f06e62d0be5442c24adfcfac08688
