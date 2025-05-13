@@ -585,66 +585,35 @@ function CpotbRequest() {
 
   const handleAutoFillAndUploadToIPFS = async () => {
 
-    const dummyFiles = {
-      "Denah Bangunan Pabrik": new File([dummyPdf2], "denah.pdf", { type: "application/pdf" }),
-      "Dokumen Sistem Mutu CPOTB": new File([dummyPdf3], "sistem-mutu.pdf", { type: "application/pdf" }),
-      "Surat Permohonan CPOTB": new File([dummyPdf], "permohonan.pdf", { type: "application/pdf" }),
-      "Bukti Pembayaran Negara Bukan Pajak": new File([dummyPdf2], "bukti-pnbp.pdf", { type: "application/pdf" }),
-      "Surat Pernyataan Komitmen": new File([dummyPdf], "komitmen.pdf", { type: "application/pdf" }),
+    const fetchBlob = async (url) => {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Failed to fetch file from ${url}`);
+      return await res.blob();
     };
-  
-    const uploadedHashes = {};
-  
-    try {
-      for (const [docName, file] of Object.entries(dummyFiles)) {
-        const result = await client.add(file);
-        uploadedHashes[docName] = result.path;
-      }
-  
-      MySwal.fire({
-        title: "Dummy Dokumen Terunggah ke IPFS",
-        html: `
-          <div class="form-swal">
-            ${Object.entries(uploadedHashes).map(([docName, hash]) => `
-              <ul>
-                <li class="label"><p>${docName}</p></li>
-                <li class="input">
-                  <a href="http://localhost:8080/ipfs/${hash}" target="_blank">${hash}</a>
-                </li>
-              </ul>
-            `).join("")}
-          </div>
-        `,
-        width: 700,
-        confirmButtonText: 'Konfirmasi',
-        cancelButtonText: "Batal",
-        allowOutsideClick: false,
-      }).then((result) => {
-          if (result.isConfirmed) {
-            MySwal.fire({
-              title: "Menunggu koneksi Metamask...",
-              text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
-              icon: "info",
-              showConfirmButton: false,
-              allowOutsideClick: false
-            });
-            const hashDocs = reconstructedHashes(uploadedHashes);
-            console.log(hashDocs);
-            requestCpotb(hashDocs);
-          }
-          else {
-            setLoader(false)
-          }
-      })
-    } catch (error) {
-      MySwal.fire({
-        title: "Gagal Upload",
-        text: "Terjadi kesalahan saat upload ke IPFS.",
-        icon: "error"
-      });
-    }
+
+    const [blob1, blob2, blob3] = await Promise.all([
+      fetchBlob(dummyPdf),
+      fetchBlob(dummyPdf2),
+      fetchBlob(dummyPdf3),
+    ]);
+
+    const filesMap = {
+      suratPermohonan: new File([blob1], "surat_permohonan.pdf", { type: "application/pdf" }),
+      buktiPembayaranNegaraBukanPajak: new File([blob2], "bukti_pnbp.pdf", { type: "application/pdf" }),
+      suratKomitmen: new File([blob1], "surat_komitmen.pdf", { type: "application/pdf" }),
+      denahBangunan: new File([blob2], "denah_bangunan.pdf", { type: "application/pdf" }),
+      sistemMutu: new File([blob3], "sistem_mutu.pdf", { type: "application/pdf" }),
+    };
+
+    setSuratPermohonan(filesMap.suratPermohonan);
+    setBuktiPembayaranNegaraBukanPajak(filesMap.buktiPembayaranNegaraBukanPajak);
+    setSuratKomitmen(filesMap.suratKomitmen);
+    setDenahBangunan(filesMap.denahBangunan);
+    setSistemMutu(filesMap.sistemMutu);
+
+    await uploadDocuIpfs();
   };
-  
+
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>
       <div className="title-menu">

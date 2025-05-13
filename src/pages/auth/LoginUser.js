@@ -155,7 +155,7 @@ function LoginPage() {
 
     } else if(role===1){ 
       // setName('Charles Doe') 
-      setName('Agus Raharjo');
+      setName('Fajar Nugroho');
       // setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
       // setUserAddr("0x97CB6400E271e65150B2330ad27f213a4C9c31af")
 

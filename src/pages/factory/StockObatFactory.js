@@ -95,10 +95,9 @@ function StockObatFactory() {
   useEffect(() => {
 
     const loadData = async () => {
-      if (contracts && userdata.instanceName) {
+      if (contracts) {
         try {
           console.log(userdata.instanceName);
-          await delay(500)
           const listProducedObatCt = await contracts.obatTradisional.getAllBatchProductionByInstance(userdata.instanceName);
 
           console.log(listProducedObatCt);
@@ -120,11 +119,9 @@ function StockObatFactory() {
         }
       }
     };
-  
-    if (contracts && userdata.instanceName) {
-      loadData();  
-    }
-  }, [contracts, userdata.instanceName]);  
+
+    loadData();  
+  }, [contracts]);  
 
   useEffect(() => {
     if (!loading) {

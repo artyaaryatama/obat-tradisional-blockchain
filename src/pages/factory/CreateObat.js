@@ -403,21 +403,22 @@ function CreateObat() {
 
   const handleAutoFill4 = () => {
     const autoFillValues = {
-      namaProduk: "SARI LANGIT",
-      merk: "Langit Alami",
+      namaProduk: "AcneFree Gel",
+      merk: "Dermaclear",
       klaim: [
-          "Diproses dari ekstrak nabati pilihan",
-          "Dapat dikonsumsi secara rutin",
-          "Mudah diseduh kapan saja"
+        "Membantu mengeringkan jerawat secara alami",
+        "Mengurangi kemerahan dan peradangan pada kulit",
+        "Memberikan sensasi dingin dan menyegarkan"
       ],
-      ketKemasanPrim: "2",
+      ketKemasanPrim: "20",
       satuanKemasanPrim: "gram",
-      kemasanSeku: "Pouch",
-      ketKemasanSeku: "10",
+      kemasanSeku: "Tube",
+      ketKemasanSeku: "1",
       komposisi: [
-          "Clitoria Ternatea Flos",
-          "Zingiber Officinale Rhizoma",
-          "Cymbopogon Citratus Folium"
+        "Tea tree oil",
+        "Aloe vera gel",
+        "Salicylic acid",
+        "Centella asiatica extract"
       ]
     };
   
@@ -433,24 +434,26 @@ function CreateObat() {
   
   const handleAutoFill5 = () => {
     const autoFillValues = {
-      namaProduk: "HERBAL TIDUR NYENYAK",
-      merk: "Nyenyak Natural",
+      namaProduk: "Pelembab Kulit",
+      merk: "AlamiCare",
       klaim: [
-          "Membantu mengatasi susah tidur",
-          "Meningkatkan kualitas tidur malam",
-          "Membantu menenangkan pikiran dan tubuh"
+        "Melembapkan dan menyegarkan kulit",
+        "Membantu meredakan iritasi ringan pada kulit",
+        "Mengandung bahan alami untuk perawatan kulit harian"
       ],
-      ketKemasanPrim: "1",
-      satuanKemasanPrim: "tablet",
-      kemasanSeku: "Botol",
-      ketKemasanSeku: "60",
+      ketKemasanPrim: "100",
+      satuanKemasanPrim: "ml",
+      kemasanSeku: "Botol plastik",
+      ketKemasanSeku: "1",
       komposisi: [
-          "Valeriana Officinalis Radix",
-          "Passiflora Incarnata Herba",
-          "Matricaria Chamomilla Flos"
+        "Aloe vera extract",
+        "Chamomile flower extract",
+        "Olive oil",
+        "Vitamin E",
+        "Menthol"
       ]
     };
-    
+
     setNamaProduk(autoFillValues.namaProduk);
     setMerk(autoFillValues.merk);
     setKlaim(autoFillValues.klaim);
@@ -463,21 +466,22 @@ function CreateObat() {
   
   const handleAutoFill6 = () => {
     const autoFillValues = {
-      namaProduk: "HERBAL SAKIT PERUT",
-      merk: "Perut Aman",
+      namaProduk: "Dermazol Ointment",
+      merk: "Pharmalabs",
       klaim: [
-          "Membantu meredakan sakit perut ringan",
-          "Mengatasi perut kembung dan mual",
-          "Menormalkan pencernaan secara alami"
+        "Mengatasi infeksi jamur pada kulit seperti panu dan kurap",
+        "Mengurangi rasa gatal dan kemerahan akibat infeksi",
+        "Membantu mempercepat pemulihan lapisan kulit luar"
       ],
-      ketKemasanPrim: "2",
-      satuanKemasanPrim: "kapsul",
-      kemasanSeku: "Strip",
-      ketKemasanSeku: "10",
+      ketKemasanPrim: "10",
+      satuanKemasanPrim: "gram",
+      kemasanSeku: "Botol",
+      ketKemasanSeku: "1",
       komposisi: [
-          "Kaempferia Galanga Rhizoma",
-          "Piper Betle Folium",
-          "Cuminum Cyminum Semen"
+        "Ketoconazole",
+        "Propylene glycol",
+        "Petrolatum",
+        "Lanolin"
       ]
     };
   
@@ -699,6 +703,7 @@ function CreateObat() {
                 >
                   <option value="Dus">Dus</option>
                   <option value="Sachet">Sachet</option>
+                  <option value="Botol">Botol</option>
                 </select>
 
                 <input 
