@@ -248,7 +248,7 @@ function NieApprove() {
           window.location.reload()
         }
       });
-    } else if (status === 'Diperpanjang') {
+    } else if (status === 'Extend') {
       MySwal.fire({
         title: "Sukses Menyetujui Perpanjangan NIE",
         html: (
@@ -400,32 +400,6 @@ function NieApprove() {
       });
     }
   }
-
-  const getNieCID = async (namaObat, factoryInstance) => {
-  
-    // Construct document reference
-    const docRef = doc(db, "obat_data", factoryInstance, namaObat, "historyNie");
-  
-    // Log the path of the document reference
-    console.log("Document Path:", docRef.path);
-  
-    // Fetch the document snapshot
-    const docSnap = await getDoc(docRef);
-  
-    // Log the snapshot and check if the document exists
-    console.log("Document Snapshot:", docSnap);
-    console.log("Document Exists:", docSnap.exists());
-  
-    // If the document exists, extract the IPFS CID
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      console.log("Document Data:", data);
-      const ipfsCid = data.ipfsCid;
-      console.log("IPFS CID:", ipfsCid);
-    } else {
-      console.log("No such document!");
-    }
-  }
   
   const getDetailObat = async (id) => {
     
@@ -438,10 +412,10 @@ function NieApprove() {
       
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
       const [nieDetails, dokumenObat, dokumenSpesifikasi] = detailNieCt;
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest, factoryInstancee, bpomInstance, bpomAddr] = nieDetails;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest, factoryInstancee, bpomInstance, bpomAddr, nieIpfs] = nieDetails;
       const [masterFormula, suratKuasa, suratPernyataan, komposisiProduk, caraPembuatanProduk, spesifikasiKemasan, hasilUjiStabilitas] = dokumenObat;
       const [sertifikatAnalisaBahanBaku, sertifikatAnalisaProdukJadi, spesifikasiProdukJadi, sistemPenomoranBets, desainKemasan, dataPendukungKeamanan] = dokumenSpesifikasi;
-      getNieCID(namaProduk, factoryInstance)
+      
       
       let statusNie;
       if (nieStatus === 2n || nieStatus === 7n) {
@@ -490,7 +464,8 @@ function NieApprove() {
           hasilUjiStabilitas: hasilUjiStabilitas ? hasilUjiStabilitas : "-",
           desainKemasan: desainKemasan ? desainKemasan : "-",
           dataPendukungKeamanan: dataPendukungKeamanan ? dataPendukungKeamanan : "-"          
-        }
+        }, 
+        nieIpfs: nieIpfs
       };
 
       const kemasanKeterangan = kemasan.match(/@(.+?)\s*\(/);
@@ -509,7 +484,7 @@ function NieApprove() {
             <div className='form-swal'>
               <div className="row row--row">
                 
-              <div className="col col1">
+                <div className="col col1">
                   <ul className='status'>
                     <li className="label">
                       <p>Status Izin Edar</p>
@@ -657,6 +632,25 @@ function NieApprove() {
                       <p>{detailObat.bpomAddr}</p> 
                     </li>
                   </ul>
+
+                  {
+                    detailObat.nieIpfs === "-" ? <div></div> : 
+                      <ul>
+                        <li className="label">
+                          <p>IPFS NIE</p> 
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:3000/public/certificate/${detailObat.nieIpfs}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Liat data NIE di IPFS
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                  }
 
                 </div>
                 <div className="col col2">
@@ -1567,6 +1561,24 @@ function NieApprove() {
                     </li>
                   </ul>
 
+                  {
+                    detailObat.nieIpfs === "-" ? <div></div> : 
+                      <ul>
+                        <li className="label">
+                          <p>IPFS NIE</p> 
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:3000/public/certificate/${detailObat.nieIpfs}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Liat data NIE di IPFS
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                  }
                 </div>
                 <div className="col col2">
                   <ul>
@@ -2886,12 +2898,14 @@ function NieApprove() {
     console.log(dataObat.factoryAddr);
 
     const userFactoryCt = await contracts.roleManager.getUserData(dataObat.factoryAddr);
+    console.log(userFactoryCt);
     const date = new Date();
     const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
-    console.log(userFactoryCt);
-
+    const expireDate = new Date(date.getTime() + 2 * 60 * 1000);
+    const formattedDateExp = new Intl.DateTimeFormat('id-ID', options).format(expireDate)
+    
     let obat
- 
+    
     if(msg === 'Perpanjangan') {
       obat = {
         cpotbHash: cpotbHash,
@@ -2910,8 +2924,9 @@ function NieApprove() {
           obatStatus: "NIE Approved",
           nieRequestDate: dataObat.timestampNieRequest,
           nieApprovalDate: dataObat.timestampNieApprove,
-          nieExtendRequestDate: dataObat.timestampNieExpired,
-          nieApproveExtendDate: formattedDate,
+          nieExpiredDate: formattedDateExp,
+          nieExtendRequest: dataObat.timestampNieExtendRequest,
+          nieExtendApprove: formattedDate,
           nibFactory: userFactoryCt[6],
           npwpFactory: userFactoryCt[7],
           bpomAddr: userdata.address,
@@ -2937,7 +2952,10 @@ function NieApprove() {
           tipeObat: dataObat.tipeObat,
           obatStatus: "NIE Approved",
           nieRequestDate: dataObat.timestampNieRequest,
-          nieApprovalDate: Date.now(),
+          nieApprovalDate: formattedDate,
+          nieExpiredDate: formattedDateExp,
+          nieExtendRequest: '',
+          nieExtendApprove: '',
           nibFactory: userFactoryCt[6],
           npwpFactory: userFactoryCt[7],
           bpomAddr: userdata.address,
@@ -2977,20 +2995,21 @@ function NieApprove() {
   const extendNie = async(id, nieNumber, namaObat, factoryInstance, nieIpfs) => {
 
     console.log(id, nieNumber, userdata.instanceName);
+    const dateNow = Date.now()
     try {
-      const approveNieCt =  await contracts.nieManager.approveExtendRequest(id, nieNumber, userdata.instanceName)
+      const extendNieCt =  await contracts.nieManager.approveExtendRequest(id, dateNow, nieIpfs)
 
-      if(approveNieCt){
+      if(extendNieCt){
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
       
-      contracts.nieManager.on('NieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
-        updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, approveNieCt.hash, Number(_timestampApprove),  true)
-        recordHashFb(namaObat, factoryInstance, approveNieCt.hash, Number(_timestampApprove),  true)
-        handleEventNieApproved("Approved", namaObat, _instanceAddr, _instanceName, _nieNumber, _timestampApprove, approveNieCt.hash)
+      contracts.nieManager.on('NieExtendRequest',  (_instanceName, _instanceAddr, _timestampApprove) => {
+        updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, extendNieCt.hash, Number(_timestampApprove),  'Perpanjangan')
+        recordHashFb(namaObat, factoryInstance, extendNieCt.hash, Number(_timestampApprove),  'Perpanjangan')
+        handleEventNieApproved("Extend", namaObat, _instanceAddr, _instanceName, nieNumber, _timestampApprove, extendNieCt.hash)
       });
 
     } catch (error) {
@@ -3002,7 +3021,7 @@ function NieApprove() {
 
     console.log(id, nieNumber, userdata.instanceName);
     try {
-      const approveNieCt =  await contracts.nieManager.approveNie(id, nieNumber, userdata.instanceName)
+      const approveNieCt =  await contracts.nieManager.approveNie(id, nieNumber, userdata.instanceName, nieIpfs)
 
       if(approveNieCt){
         MySwal.update({
@@ -3012,8 +3031,8 @@ function NieApprove() {
       }
       
       contracts.nieManager.on('NieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
-        updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, approveNieCt.hash, Number(_timestampApprove),  true)
-        recordHashFb(namaObat, factoryInstance, approveNieCt.hash, Number(_timestampApprove),  true)
+        updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, approveNieCt.hash, Number(_timestampApprove),  'Setujui')
+        recordHashFb(namaObat, factoryInstance, approveNieCt.hash, Number(_timestampApprove),  'Setujui')
         handleEventNieApproved("Approved", namaObat, _instanceAddr, _instanceName, _nieNumber, _timestampApprove, approveNieCt.hash)
       });
 
@@ -3036,8 +3055,8 @@ function NieApprove() {
       }
       
       contracts.nieManager.on('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
-        updateObatFb(namaObat, factoryInstance, "", "", rejectCt.hash, Number(_timestampRejected), false)
-        recordHashFb(namaObat, factoryInstance, rejectCt.hash, Number(_timestampRejected), false)
+        updateObatFb(namaObat, factoryInstance, "", "", rejectCt.hash, Number(_timestampRejected), "Tolak")
+        recordHashFb(namaObat, factoryInstance, rejectCt.hash, Number(_timestampRejected), "Tolak")
         handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, rejectCt.hash)
       });
 
@@ -3046,11 +3065,11 @@ function NieApprove() {
     }
   }
 
-  const updateObatFb = async (namaObat, factoryInstance, nieNumber, nieIpfs, nieHash, timestamp, status) => {
+  const updateObatFb = async (namaObat, factoryInstance, nieNumber, nieIpfs, nieHash, timestamp, msg) => {
     try {
       const docRef = doc(db, 'obat_data', factoryInstance)
 
-      if(status){
+      if(msg === 'Setujui'){
         await updateDoc(docRef, {
           [`${namaObat}.historyNie.approvedHash`]: nieHash,
           [`${namaObat}.historyNie.approvedTimestamp`]: timestamp,
@@ -3059,10 +3078,22 @@ function NieApprove() {
           [`${namaObat}.historyNie.ipfsCid`]: nieIpfs,
           [`${namaObat}.status`]: 1
         }); 
-      } else {
+      } else if(msg === 'Perpanjangan'){
+        await updateDoc(docRef, {
+          [`${namaObat}.historyNie.approvedExtendedHash`]: nieHash,
+          [`${namaObat}.historyNie.approvedExtendedTimestamp`]: timestamp,
+          [`${namaObat}.historyNie.bpomInstance`]: userdata.instanceName,
+          [`${namaObat}.historyNie.ipfsCid`]: nieIpfs,
+          [`${namaObat}.status`]: 5
+        }); 
+      } 
+      
+      else {
         await updateDoc(docRef, {
           [`${namaObat}.historyNie.rejectedHash`]: nieHash, 
           [`${namaObat}.historyNie.rejectedTimestamp`]: timestamp, 
+          [`${namaObat}.historyNie.bpomInstance`]: userdata.instanceName,
+          [`${namaObat}.status`]: 2
         });  
 
       }
@@ -3072,12 +3103,12 @@ function NieApprove() {
     }
   };
 
-  const recordHashFb = async(namaProduk, factoryInstance, txHash, timestamp, status) => {
+  const recordHashFb = async(namaProduk, factoryInstance, txHash, timestamp, msg) => {
     try {
       const collectionName = `obat_${namaProduk}_${factoryInstance}`
       const docRef = doc(db, 'transaction_hash', collectionName);
 
-      if (status === true) {
+      if (msg === 'Setujui') {
         await setDoc(docRef, {
           [`produksi`]: {
             'approve_nie': {
@@ -3086,7 +3117,17 @@ function NieApprove() {
             }
           },
         }, { merge: true }); 
-      } else {
+      } else if (msg === 'Perpanjangan') {
+        await setDoc(docRef, {
+          [`produksi`]: {
+            'approve_extend_nie': {
+              hash: txHash,
+              timestamp: timestamp,
+            }
+          },
+        }, { merge: true }); 
+      } 
+      else {
         await setDoc(docRef, {
           [`produksi`]: {
             'reject_nie': {

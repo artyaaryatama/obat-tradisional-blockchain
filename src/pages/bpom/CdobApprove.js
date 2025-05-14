@@ -1254,6 +1254,22 @@ function CdobApprove() {
                       <p>{detailCdob.bpomAddr}</p> 
                     </li>
                   </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>IPFS CDOB</p> 
+                    </li>
+                    <li className="input">
+                      <a
+                        href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Liat data CDOB di IPFS
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
+                    </li>
+                  </ul>
                 </div>
 
                 <div className='col doku'>
@@ -2179,6 +2195,8 @@ function CdobApprove() {
 
     const date = new Date();
     const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
+    const expireDate = new Date(date.getTime() + 2 * 60 * 1000);
+    const formattedDateExp = new Intl.DateTimeFormat('id-ID', options).format(expireDate)
     
     MySwal.update({
       title: "Mengunggah semua data CDOB IPFS...",
@@ -2197,8 +2215,9 @@ function CdobApprove() {
           tipePermohonan: detailCdob.tipePermohonan,
           certNumber: cdobNumber,
           timestampRequest: detailCdob.timestampRequest, 
-          timestampExpired: detailCdob.timestampExpired,
-          timestampExtendRequest: formattedDate,
+          timestampExpired: formattedDateExp,
+          timestampExtendRequest: detailCdob.timestampExtendRequest,
+          timestampExtendApprove: formattedDate,
           timestampApprove: detailCdob.timestampApprove,
           senderInstance: detailCdob.pbfName,
           senderAddress: detailCdob.pbfAddr,
@@ -2217,6 +2236,9 @@ function CdobApprove() {
           certNumber: cdobNumber,
           timestampRequest: detailCdob.timestampRequest, 
           timestampApprove: formattedDate,
+          timestampExpired: formattedDateExp,
+          timestampExtendRequest: '',
+          timestampExtendApprove: '',
           senderInstance: detailCdob.pbfName,
           senderAddress: detailCdob.pbfAddr,
           senderNIB: detailCdob.pbfNIB,
@@ -2269,7 +2291,6 @@ function CdobApprove() {
     try {
       const approveExtendCt = await contracts.certificateManager.approveExtendCdob(
         certTd,
-        cdobNumber,
         cdobIpfs
       )
       
@@ -2281,10 +2302,10 @@ function CdobApprove() {
         });
       }
       
-      contracts.certificateManager.on('CertApprovedExtendRequest',  (bpomAddr, _cdobNumber, timestampExtendApprove) => {
-        updateExtendCdobFb(pbfName, tpMap[tp], approveExtendCt.hash, Number(timestampExtendApprove), cdobIpfs)
-        recordExtendHashFb(pbfName, tpMap[tp], approveExtendCt.hash, Number(timestampExtendApprove))
-        handleEventCdob("Diperpanjang",bpomAddr,  '', '', '', timestampExtendApprove, approveExtendCt.hash, _cdobNumber);
+      contracts.certificateManager.on('CertApprovedExtendRequest',  (bpomAddr, timestampExtendApprove) => {
+        updateCdobFb(pbfName, tpMap[tp], approveExtendCt.hash, Number(timestampExtendApprove), '', cdobIpfs, 'Perpanjangan')
+        recordHashFb(pbfName, tpMap[tp], approveExtendCt.hash, Number(timestampExtendApprove), 'Perpanjangan')
+        handleEventCdob("Diperpanjang",bpomAddr,  '', '', '', timestampExtendApprove, approveExtendCt.hash, cdobNumber);
       });
     } catch (error) {
       errAlert(error, "Can't Approve CDOB")
@@ -2312,8 +2333,8 @@ function CdobApprove() {
       }
       
       contracts.certificateManager.on('CertApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
-        updateCdobFb(pbfName, tpMap[tp], approveCt.hash, Number(timestampApprove), cdobNumber, cdobIpfs, true)
-        recordHashFb(pbfName, tpMap[tp], approveCt.hash, Number(timestampApprove), true)
+        updateCdobFb(pbfName, tpMap[tp], approveCt.hash, Number(timestampApprove), cdobNumber, cdobIpfs, 'Setujui')
+        recordHashFb(pbfName, tpMap[tp], approveCt.hash, Number(timestampApprove), 'Setujui')
         handleEventCdob("Disetujui", bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove, approveCt.hash, '');
       });
     } catch (error) {
@@ -2336,8 +2357,8 @@ function CdobApprove() {
       }
       
       contracts.certificateManager.on("CertRejected", (_instanceName, _instanceAddr, _tipePermohonan, timestampRejected, _rejectMsg) => {
-        updateCdobFb(pbfName, tipePermohonan, rejectCt.hash, Number(timestampRejected), "", "" , false)
-        recordHashFb(pbfName, tipePermohonan, rejectCt.hash, Number(timestampRejected), false)
+        updateCdobFb(pbfName, tipePermohonan, rejectCt.hash, Number(timestampRejected), "", "" , "Tolak")
+        recordHashFb(pbfName, tipePermohonan, rejectCt.hash, Number(timestampRejected), "Tolak")
         handleEventCdob( "Tidak Disetujui", _instanceAddr, _instanceName, _tipePermohonan, _rejectMsg, timestampRejected, rejectCt.hash, '');
       });
     } catch (error) {
@@ -2345,54 +2366,7 @@ function CdobApprove() {
     }
   }
 
-  const updateExtendCdobFb = async (pbfName, tp, cdobHash, timestamp, cdobIpfs) => {
-    const tpMap = {
-      0n: 'Obat Lain',
-      1n: 'Cold Chain Product'
-    };
-
-    const tipeP = tpMap[tp]
-    try {
-      const docRef = doc(db, 'cdob_list', pbfName);
-
-      await updateDoc(docRef, { 
-        [`${tipeP}.approvedExtendedHash`]: cdobHash,
-        [`${tipeP}.approvedExtendedTimestamp`]: timestamp, 
-        [`${tipeP}.status`]: 3, 
-        [`${tipeP}.ipfsCid`]: cdobIpfs
-      }); 
-    
-    } catch (err) {
-      errAlert(err);
-    }
-  };
-
-  const recordExtendHashFb = async(pbfName, tp, txHash, timestamp) => {
-    const tpMap = {
-      0n: 'Obat Lain',
-      1n: 'Cold Chain Product'
-    };
-
-    const tipeP = tpMap[tp]
-
-    try {
-      const collectionName = `pengajuan_cdob_${pbfName}`
-      const docRef = doc(db, 'transaction_hash', collectionName);
-  
-      await setDoc(docRef, {
-        [`${tipeP}`]: {
-          'extend_approve': {
-            hash: txHash,
-            timestamp: timestamp,
-          }
-        },
-      }, { merge: true }); 
-    } catch (err) {
-      errAlert(err);
-    }
-  }
-
-  const updateCdobFb = async (pbfName, tipePermohonan, cdobHash, timestamp, cdobNumber, cdobIpfs, status) => {
+  const updateCdobFb = async (pbfName, tipePermohonan, cdobHash, timestamp, cdobNumber, cdobIpfs, msg) => {
     const tpMap = {
       0n: 'Obat Lain',
       1n: 'Cold Chain Product'
@@ -2403,7 +2377,7 @@ function CdobApprove() {
     try {
       const pbfDocRef = doc(db, 'cdob_list', pbfName);
 
-      if(status){
+      if(msg === 'Setujui'){
         await updateDoc(pbfDocRef, {
         [`${tipeP}.approvedHash`]: cdobHash,
         [`${tipeP}.approvedTimestamp`]: timestamp,
@@ -2411,11 +2385,22 @@ function CdobApprove() {
         [`${tipeP}.ipfsCid`]: cdobIpfs,
         [`${tipeP}.bpomInstance`]: userdata.instanceName,
         [`${tipeP}.status`]: 1,
+      }); 
+      } else if (msg === 'Perpanjangan'){
+        await updateDoc(pbfDocRef, { 
+          [`${tipeP}.approvedExtendedHash`]: cdobHash,
+          [`${tipeP}.approvedExtendedTimestamp`]: timestamp, 
+          [`${tipeP}.bpomInstance`]: userdata.instanceName,
+          [`${tipeP}.status`]: 5, 
+          [`${tipeP}.ipfsCid`]: cdobIpfs
         }); 
-      } else {
+      }
+      else {
         await updateDoc(pbfDocRef, {
           [`${tipeP}.rejectedHash`]: cdobHash,
-        [`${tipeP}.rejectedTimestamp`]: timestamp,
+          [`${tipeP}.status`]: 2, 
+          [`${tipeP}.rejectedTimestamp`]: timestamp,
+          [`${tipeP}.bpomInstance`]: userdata.instanceName,
         });  
 
       }
@@ -2425,7 +2410,7 @@ function CdobApprove() {
     }
   };
 
-  const recordHashFb = async(pbfName, tp, txHash, timestamp, status) => {
+  const recordHashFb = async(pbfName, tp, txHash, timestamp, msg) => {
     const tpMap = {
       0n: 'Obat Lain',
       1n: 'Cold Chain Product'
@@ -2434,7 +2419,7 @@ function CdobApprove() {
       const collectionName = `pengajuan_cdob_${pbfName}`
       const docRef = doc(db, 'transaction_hash', collectionName);
     
-      if(status === true){
+      if(msg === 'Setujui'){
         await setDoc(docRef, {
           [`${tpMap[tp]}`]: {
             'approve': {
@@ -2443,7 +2428,17 @@ function CdobApprove() {
             }
           },
         }, { merge: true }); 
-      } else {
+      } else if(msg === 'Perpanjangan'){
+          await setDoc(docRef, {
+            [`${tpMap[tp]}`]: {
+              'extend_approve': {
+                hash: txHash,
+                timestamp: timestamp,
+              }
+            },
+          }, { merge: true }); 
+      }
+       else {
         await setDoc(docRef, {
           [`${tpMap[tp]}`]: {
             'reject': {

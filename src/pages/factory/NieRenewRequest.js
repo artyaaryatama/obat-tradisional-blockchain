@@ -314,7 +314,7 @@ function NieRenewRequest() {
       await updateDoc(docRef, {
         [`${namaProduk}.historyNie.renewRequestHash`]: obatHash,
         [`${namaProduk}.historyNie.renewRequestTimestamp`]: timestamp,
-        [`${namaProduk}.status`]: 0
+        [`${namaProduk}.status`]: 3 
       }, { merge: true }); 
   
     } catch (err) {

@@ -365,12 +365,13 @@ function CreateObat() {
 
       await setDoc(docRef, {
         [`${namaProduk}`]: {
-        jenisSediaan: `${kemasanPrim}`,
-        tipeObat: `${tipeP}`,
-        historyNie: {
-          createObatHash: obatHash,
-          createObatTimestamp: timestamp,
-        },}
+          jenisSediaan: `${kemasanPrim}`,
+          tipeObat: `${tipeP}`,
+          historyNie: {
+            createObatHash: obatHash,
+            createObatTimestamp: timestamp,
+          },
+      }
       }, { merge: true }); 
   
     } catch (err) {

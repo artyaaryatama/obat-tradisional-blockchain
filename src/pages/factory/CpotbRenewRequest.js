@@ -388,7 +388,7 @@ function CpotbRenewRequest() {
         [`${jenisSediaan}`]: {
           renewRequestHash: requestCpotbCtHash,
           renewRequestTimestamp: timestamp,
-          status: 0
+          status: 3
         },
       }, { merge: true }); 
     } catch (err) {

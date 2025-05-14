@@ -1244,7 +1244,7 @@ function ManageCpotb() {
 
     console.log(cpotbId, expTimestamp, jenisSediaan);
     try {
-      const extendCertificateCt = await contracts.certificateManager.extendCpotb(cpotbId, cpotbNumber, expTimestamp)
+      const extendCertificateCt = await contracts.certificateManager.extendCpotb(cpotbId, expTimestamp)
       console.log(extendCertificateCt);
 
       if (extendCertificateCt) {
@@ -1254,10 +1254,10 @@ function ManageCpotb() {
         });
       }
 
-      contracts.certificateManager.on('CertExtendRequest',  (factoryAddr, _certNumber,  _timestamp) => {
+      contracts.certificateManager.on('CertExtendRequest',  (factoryAddr,  _timestamp) => {
         updateCpotbFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaan);
         recordHashFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaan)
-        handleEventCpotb(factoryAddr, _timestamp, extendCertificateCt.hash, _certNumber)
+        handleEventCpotb(factoryAddr, _timestamp, extendCertificateCt.hash, cpotbNumber)
       });
     } catch (error) {
       errAlert(error)
@@ -1269,9 +1269,9 @@ function ManageCpotb() {
       const docRef = doc(db, 'cpotb_list', userdata.instanceName);
 
       await updateDoc(docRef, {
-        [`${jenisSediaan}.extendHash`]: cpotbHash,
-        [`${jenisSediaan}.extendTimestamp`]: timestamp, 
-        [`${jenisSediaan}.status`]: 2 
+        [`${jenisSediaan}.extendRequestHash`]: cpotbHash,
+        [`${jenisSediaan}.extendRequestTimestamp`]: timestamp, 
+        [`${jenisSediaan}.status`]: 4
       }); 
   
     } catch (err) {

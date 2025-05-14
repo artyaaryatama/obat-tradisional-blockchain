@@ -1446,9 +1446,9 @@ function ManageCdob() {
       const docRef = doc(db, 'cdob_list', userdata.instanceName);
 
       await updateDoc(docRef, {
-        [`${tipeP}.extendHash`]: cdobHash,
-        [`${tipeP}.extendTimestamp`]: timestamp, 
-        [`${tipeP}.status`]: 2 
+        [`${tipeP}.extendRequestHash`]: cdobHash,
+        [`${tipeP}.extendRequestTimestamp`]: timestamp, 
+        [`${tipeP}.status`]: 4
       }); 
   
     } catch (err) {

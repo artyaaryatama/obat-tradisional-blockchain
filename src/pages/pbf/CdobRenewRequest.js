@@ -380,7 +380,7 @@ function CdobRenewRequest() {
         [`${tipeP}`]: {
           renewRequestHash: requestCdobCtHash,
           renewRequestTimestamp: timestamp,
-          status: 0
+          status: 3
         },
       }, { merge: true }); 
     } catch (err) {

@@ -2096,10 +2096,12 @@ function ManageNieFactory() {
 
       await setDoc(docRef, {
         [`${namaObat}`]: {
-        historyNie: {
-          extendRequestNieHash: nieHash,
-          extendRequestNieTimestamp: timestamp,
-        },}
+          historyNie: {
+            extendRequestNieHash: nieHash,
+            extendRequestNieTimestamp: timestamp,
+          },
+          status: 4
+        }
       }, { merge: true }); 
   
     } catch (err) {

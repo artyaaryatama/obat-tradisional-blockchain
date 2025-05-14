@@ -25,7 +25,7 @@ contract CertificateManager is ReentrancyGuard {
 
   using EnumsLibrary for EnumsLibrary.Roles;
 
-  uint constant extTimestamp = (3*60) + 10;
+  uint constant extTimestamp = (2*60) + 10;
  
   struct CertificateRequest { 
     string certId;
@@ -73,13 +73,11 @@ contract CertificateManager is ReentrancyGuard {
   
   event CertExtendRequest(
     address senderAddr, 
-    string certNumber,
     uint timestamp
   );
 
   event CertApprovedExtendRequest(
     address bpomAddr,  
-    string certNumber,
     uint timestamp
   );
 
@@ -206,7 +204,6 @@ contract CertificateManager is ReentrancyGuard {
 
   function extendCpotb( 
     string memory cpotbId,
-    string memory certNumber,
     uint256 expTimestamp
   ) 
     public 
@@ -220,14 +217,12 @@ contract CertificateManager is ReentrancyGuard {
  
     emit CertExtendRequest(
       msg.sender,
-      certNumber, 
       block.timestamp
     );
   } 
 
   function approveExtendCpotb( 
     string memory cpotbId,
-    string memory certNumber,
     string memory ipfsCert
   ) 
     public 
@@ -241,8 +236,7 @@ contract CertificateManager is ReentrancyGuard {
  
     emit CertApprovedExtendRequest(
       msg.sender,
-      certNumber,
-      block.timestamp
+      block.timestamp 
     );
   } 
  
@@ -388,11 +382,10 @@ contract CertificateManager is ReentrancyGuard {
 
   function extendCdob( 
     string memory cdobId,
-    string memory certNumber,
     uint256 expTimestamp
   ) 
     public 
-    onlyPBF 
+    onlyPBF  
     nonReentrant 
   {  
     cdobCertificate.extendCdob(
@@ -402,14 +395,12 @@ contract CertificateManager is ReentrancyGuard {
  
     emit CertExtendRequest(
       msg.sender,
-      certNumber,
       block.timestamp
     );
   } 
 
   function approveExtendCdob( 
     string memory cdobId,
-    string memory certNumber,
     string memory ipfsCert
   ) 
     public 
@@ -423,7 +414,6 @@ contract CertificateManager is ReentrancyGuard {
  
     emit CertApprovedExtendRequest(
       msg.sender,
-      certNumber,
       block.timestamp
     );
   } 

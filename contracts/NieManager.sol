@@ -11,7 +11,7 @@ contract NieManager {
     roleManager = RoleManager(roleManagerAddr);
   }
 
-  uint constant extTimestamp = (3*60) + 10;
+  uint constant extTimestamp = (2*60) + 10;
 
   struct NieDetail {
     string nieNumber; 
@@ -26,6 +26,7 @@ contract NieManager {
     string factoryInstance;
     string bpomInstance;      
     address bpomAddr;
+    string nieIpfs;
   }
 
   struct DokumenObat {
@@ -79,14 +80,12 @@ contract NieManager {
   );
 
   event NieExtendRequest(
-    address factoryAddr, 
-    string nieNumber,  
+    address factoryAddr,
     uint timestamp
   );
 
   event NieApprovedExtendRequest(
     address factoryAddr, 
-    string nieNumber,  
     uint timestamp
   );
 
@@ -117,7 +116,8 @@ contract NieManager {
       timestampNieExtendRequest: 0,
       factoryInstance: factoryInstance,
       bpomInstance: "",
-      bpomAddr: address(0)
+      bpomAddr: address(0),
+      nieIpfs: ""
     });
 
 
@@ -148,13 +148,14 @@ contract NieManager {
   function approveNie(
     string memory obatId,
     string memory nieNumber,
-    string memory bpomInstance
+    string memory bpomInstance,
+    string memory ipfsNie
   ) 
     public 
     onlyBPOM
   {
 
-    NieDetail storage nieData = nieDetailById[obatId];
+    NieDetail storage nieData = nieDetailById[obatId]; 
 
     nieData.nieNumber = nieNumber;
     nieData.nieStatus = EnumsLibrary.NieStatus.ApprovedNie; 
@@ -162,6 +163,7 @@ contract NieManager {
     nieData.bpomInstance = bpomInstance;
     nieData.bpomAddr = msg.sender;
     nieData.timestampNieExpired= block.timestamp + extTimestamp; 
+    nieData.nieIpfs = ipfsNie;
     
     emit NieApproved(
       bpomInstance,
@@ -238,15 +240,14 @@ contract NieManager {
 
     emit NieExtendRequest(
       msg.sender,  
-      nieDetailById[obatId].nieNumber, 
       block.timestamp
     );
   }
 
   function approveExtendRequest(
     string memory obatId,
-    string memory ipfsNie,
-    uint256 expiredTimestamp
+    uint256 expiredTimestamp,
+    string memory ipfsNie
   ) 
     public 
     onlyBPOM 
@@ -256,10 +257,10 @@ contract NieManager {
 
     nieData.nieStatus = EnumsLibrary.NieStatus.extendedNie; 
     nieData.timestampNieExtendRequest = block.timestamp + extTimestamp;  
+    nieData.nieIpfs = ipfsNie;
 
     emit NieApprovedExtendRequest(
       msg.sender,   
-      nieDetailById[obatId].nieNumber, 
       block.timestamp
     ); 
   } 
