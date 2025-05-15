@@ -80,7 +80,7 @@ register pbf_5 https://sepolia.etherscan.io/tx/0x9e42230c63d6949b658420d72cdd4f6
 - pengajuan NIE https://sepolia.etherscan.io/tx/0xec497e50b6475228b96c2e22ca1069d73ae2270127eabb1214418a1f2cd57346
 - REJECT NIE https://sepolia.etherscan.io/tx/0x46001eb5fd25459dedd42d471794353ac6991c3f2b8310d5a8dda5e17dc13814
 - renew request https://sepolia.etherscan.io/tx/0x975e50dc64a829ee0935321ab19fe751d530c90374993ca7682ea7e70b77c8ff
-- approve NIE  
+- approve NIE  https://sepolia.etherscan.io/tx/0xb199d86b4ebe12dd29364025e7163029558d94a159e142c6c28034605be0c134
 
 4. ImmunoCaps Herbal
 - produksi obat https://sepolia.etherscan.io/tx/0x89a87b9b4dde0e2934c0a4e780e00c3735e2995a3431ef4bcec739915ac3fda3
@@ -100,114 +100,116 @@ register pbf_5 https://sepolia.etherscan.io/tx/0x9e42230c63d6949b658420d72cdd4f6
 7.  Tapel Rempah Sehat
 - produksi obat  https://sepolia.etherscan.io/tx/0x241322bf3fddb9fbdbb17ec99ade53b7c21e9bb0d2b48f001c56e45c8e0ee9ff
 - pengajuan NIE  https://sepolia.etherscan.io/tx/0x2a6439dee898ae0d33313b68f7cad8d18283f831a72622fa330e8cd9f48882f8
-- approve NIE  
+- approve NIE  https://sepolia.etherscan.io/tx/0xb33996d0309eb439addd170b0a0401f9e941b76567144e3a19146a0e9f7d0619
 
 8.  DermaHerb Lotion
 - produksi obat  https://sepolia.etherscan.io/tx/0x70e17b43a7106dd800feea381b56a69099cb637e7a3c287015afda36102a910d
 - pengajuan NIE  https://sepolia.etherscan.io/tx/0x31e4cba326b9368d511e60e4a6e1d95fc40146fc6f44e9eb252cfff9669bdec3
-- approve NIE  
+- approve NIE  https://sepolia.etherscan.io/tx/0x72904f1cdb0e1f32b9e1f54b1f2606e2b67051563698cb062772450b3158966d
 
 9.  NeuroTab Herbal
 - produksi obat  https://sepolia.etherscan.io/tx/0xd3d3fb4ca6fb7ba503c20d6b92ea0e72abdad2963912bd7b7db4b76ed769890a
-- pengajuan NIE  
+- pengajuan NIE  https://sepolia.etherscan.io/tx/0x39f73c165016db8e107363def7876c36f396cd8910bb6db5126590d3dc29e00a
+- reject NIE https://sepolia.etherscan.io/tx/0x23755b66c380a5991695a494da5e5c314e41c99e99248e0cabb29f698e74a778
+- renew request nie
 - approve NIE  
 
 10.  CoolRub Herbal Solution
 - produksi obat  https://sepolia.etherscan.io/tx/0x5e37f497211638bee098b4113f8e89868c8cfc8fcba5272f8bffd4fcce80355d
-- pengajuan NIE  
-- approve NIE  
+- pengajuan NIE  https://sepolia.etherscan.io/tx/0x522c1ccb8ca5d3a3f2ce144db847cc5e34cac89b1e85515a6cdb6c98aeac6065
+- approve NIE  https://sepolia.etherscan.io/tx/0x26f32c8e566d0a3b3a28805cd4f0f5c194ff7cae209ea02ee1d3fd647040268f
 
 
 
 1.  BN-3920-ZWGB [Sirup Jahe Merah Plus]
 - produksi  https://sepolia.etherscan.io/tx/0x65df161e81725184e3037ca028b4884b543325ffab9f3c7ec069d992874f93e4
-- order pbf  
-- send order pbf  
-- complete order pbf  
-- order retail  
-- send order retail  
-- complete order retail  
+- order pbf  https://sepolia.etherscan.io/tx/0xd65206fd919b6902396ba376d387e342aa3219a0505e8938cac8ac995e1f7070
+- send order pbf  https://sepolia.etherscan.io/tx/0x651c945650641959357bb6f65e596b66944abd5d2b63266d1e405c005302cbe4
+- complete order pbf  https://sepolia.etherscan.io/tx/0x6b3e846820949200dceda957d2e8b86e5e6eff8fd9ccf7ec5af417a4870e70ff
+- order retail  https://sepolia.etherscan.io/tx/0x0d86853b2e3bc574a7a2c0a5a7fafa4409ab2bc16e6e12714ee2f50bda5398aa
+- send order retail  https://sepolia.etherscan.io/tx/0x7b08172c54eb1425d6fff8f62ef611843b99f6791c3e800af9f8cf52a981be41
+- complete order retail  https://sepolia.etherscan.io/tx/0xa74b628a9b4d62d5a61cce0545bee430334dd00a44993ad06d4fca742bca90a1
 
-2.  
-- produksi  
-- order pbf  
-- send order pbf  
-- complete order pbf  
-- order retail  
-- send order retail  
-- complete order retail  
+2. BN-6813-DQGF [ImmunoCaps Herbal]
+- produksi  https://sepolia.etherscan.io/tx/0x82d01bd903220f5a66f7729d85c9317a7339bd790da01576f266bc31b1610d8f
+- order pbf  https://sepolia.etherscan.io/tx/0x9427242cde65a4ae290c1e77bdebdad452348b76c984696eb2ea6b2e70587d07
+- send order pbf  https://sepolia.etherscan.io/tx/0x1ccfa8a3260756f3a0ba79746215e82c85187d01413b2bd74e2eeab3aa75e2e7
+- complete order pbf  https://sepolia.etherscan.io/tx/0xede1a13ce7d0b2391ca6dd691870b59d527c39fa56c52db99f6e80377125dcd3
+- order retail  https://sepolia.etherscan.io/tx/0xd599c4ec35e24a8fffbc31d33bc7df80551c1e6722bbf0b2b94e5c1cee247e22
+- send order retail  https://sepolia.etherscan.io/tx/0xdff256eca2232faf6ba5e006fb1e17ded9a0b6dea2c76ec620949b1b22ec48b6
+- complete order retail  https://sepolia.etherscan.io/tx/0x748bbb9cfb157f30eb539cd5581a9d6ea0dc5e541f01274003cef6cd46d5fff7
 
-3.  
-- produksi  
-- order pbf  
-- send order pbf  
-- complete order pbf  
-- order retail  
-- send order retail  
-- complete order retail  
+3. BN-3828-ZUXP [Sirup Jahe Merah Plus]
+- produksi  https://sepolia.etherscan.io/tx/0x82d01bd903220f5a66f7729d85c9317a7339bd790da01576f266bc31b1610d8f
+- order pbf  https://sepolia.etherscan.io/tx/0xebc00b7f48899649c214befc543b6301bee10429d6c0b906e1fab73d45e37df2
+- send order pbf https://sepolia.etherscan.io/tx/0xaaaf90a3ab1ed4f83779d8e699db335d75c8481d18edc99d27b98a7a97c62a04
+- complete order pbf  https://sepolia.etherscan.io/tx/0x8d86ef92ca4937c3f062d179c2186e2b2f2ee045f1a1ba5299ab0de2f806e440
+- order retail  https://sepolia.etherscan.io/tx/0xba06321c86ac94bd7a85f05618813a7851e9a186c2891f1712a4bcb0b3423c0f
+- send order retail  https://sepolia.etherscan.io/tx/0x9e7d14ccfb16288f23443b118a3a18996574f6b9c937382c31fe780277503645
+- complete order retail  https://sepolia.etherscan.io/tx/0x894c2d79becf86bcc3358c95576d2e246d3c081b14accc9598e34db0947b234c
 
-4.  
-- produksi  
-- order pbf  
-- send order pbf  
-- complete order pbf  
-- order retail  
-- send order retail  
-- complete order retail  
+4. BN-4014-FPLF [GastroFilm Herbal]
+- produksi  https://sepolia.etherscan.io/tx/0x3922a83b2af023a0ceed1fd22434a2392d2ba21378733d499a0675a79f4e915d
+- order pbf  https://sepolia.etherscan.io/tx/0xaab548e578a553f9eb67cc7719ce625243461a1245d99bfa64e10daf59443016
+- send order pbf  https://sepolia.etherscan.io/tx/0x5a28b4fd1f7feb51a42d2af87dab6f5258ced2aac8b261be45f269191fcc9702
+- complete order pbf  https://sepolia.etherscan.io/tx/0xf6cb1ed4bba9cca2a61fd1a59d7270898be7fca5b7c6d30310c9cc8bcae4b68e
+- order retail  https://sepolia.etherscan.io/tx/0xf4a84bc60707bb1dd8f739c82f825666331c5aeea0e083ceeb0596608336a52a
+- send order retail  https://sepolia.etherscan.io/tx/0xfab395fe136e0b5ffece0e0e20b2101b4fe926d14eaf3e5d97fc61cbfaa1b256
+- complete order retail  https://sepolia.etherscan.io/tx/0x3939583c4b48828cd5ee94385a79ff5b7b0bc7be3264b9e05875ae2d798f82de
 
-5.  
-- produksi  
-- order pbf  
-- send order pbf  
-- complete order pbf  
-- order retail  
-- send order retail  
-- complete order retail  
+5.  BN-9408-YLXD [DermaHerb Lotion]
+- produksi  https://sepolia.etherscan.io/tx/0xf9258462e0221b3c49d87b30954f09730eb098b468b0d1d69a3b364c179957f5
+- order pbf  https://sepolia.etherscan.io/tx/0xa8e6ef2c718a2302b8c6c6ac512261819311bb098b0810cc433bb86ad92e8d95
+- send order pbf  https://sepolia.etherscan.io/tx/0xc79cd79c4006853565d5cdf60f1ad0f7282566f54cd5c26f4726b0635a8f460c
+- complete order pbf  https://sepolia.etherscan.io/tx/0xaa0b68da38ddd30fee4981a0c3b18fe046556b4f05e42b3b47eafe233145cdf4
+- order retail  https://sepolia.etherscan.io/tx/0x9da738f78317414d00827bb898e2682ffb848ff94c541caee060d7ed0c0e331b
+- send order retail  https://sepolia.etherscan.io/tx/0x9a86ff8bd54fb24fc0f517a219f4db3783184eed0b73ca96e7376837196907ef
+- complete order retail  https://sepolia.etherscan.io/tx/0x52b1b7ab6b4a9657ee19a292b3fa0600bff94df4d2ee44f9dfa9a98fc04923d9
 
-6.  
-- produksi  
-- order pbf  
-- send order pbf  
-- complete order pbf  
-- order retail  
-- send order retail  
-- complete order retail  
+6.  BN-8199-KITA[Dermazol Ointment]
+- produksi  https://sepolia.etherscan.io/tx/0xc66e87ebb15744902e54d7b5d5a6f08e6b4f8a2dea64f2138fb707bb39959466
+- order pbf  https://sepolia.etherscan.io/tx/0xb91485116f112549e15a386baf590a3aebab4afe2545929abb3fbbd99d5195b3
+- send order pbf  https://sepolia.etherscan.io/tx/0x981fe79ac5fe186c304da1d2e06024cb59bd6826708dc94e9fc9dfeb998eaf0b
+- complete order pbf  https://sepolia.etherscan.io/tx/0x0dec9da94c81c81211af8cc3532b7894cb3ff50d095759e950a70808bf4f25f3
+- order retail  https://sepolia.etherscan.io/tx/0x374f760bb9c427cd4154321d395f6a345163f86221b6f84ca4f438c93292cf4b
+- send order retail  https://sepolia.etherscan.io/tx/0xa038883e4a8a26554c411d142705127d88b01855caf3f73a60017bd2dd8ecff4
+- complete order retail  https://sepolia.etherscan.io/tx/0x0922014d8e65500c0bfbd100ee1a5ee1db629d28b2ff7862263bfea0ae2ebaad
 
-7.  
-- produksi  
-- order pbf  
-- send order pbf  
-- complete order pbf  
-- order retail  
-- send order retail  
-- complete order retail  
+7.  BN-3989-SJGI [Tapel Rempah Sehat]
+- produksi  https://sepolia.etherscan.io/tx/0xc66e87ebb15744902e54d7b5d5a6f08e6b4f8a2dea64f2138fb707bb39959466
+- order pbf  https://sepolia.etherscan.io/tx/0x4689e5dcd693686e6d6ec658b184a6ae278142237dc6b97fbf31128a51c80516
+- send order pbf  https://sepolia.etherscan.io/tx/0x3f2bed4690563535b767d733642c531f39bf8178974bdd36add51ebd72dd1d4c
+- complete order pbf  https://sepolia.etherscan.io/tx/0x694f1cf31444b5a913c5e9b494998c4e80c23914b1a2e1dc6bfa46f44df12bcd
+- order retail  https://sepolia.etherscan.io/tx/0xcf0b02158eda016396c2c75ecf19b08986ee36fb4cb899bcf2b80b287cba5484
+- send order retail  https://sepolia.etherscan.io/tx/0x94e3715b127fa8c42b4a9660cabdc189d030fc4c1cf2e3048398245790571b59
+- complete order retail  https://sepolia.etherscan.io/tx/0x3ffd5f7e7e1b210465e31aab302040d940cd2a6a62a3be40f99fa1eb6cdbf7da
 
-8.  
-- produksi  
-- order pbf  
-- send order pbf  
-- complete order pbf  
-- order retail  
-- send order retail  
-- complete order retail  
+8.  BN-7749-JZBV [CoolRub Herbal Solution]
+- produksi  https://sepolia.etherscan.io/tx/0x12b2603e37e60cc4dc29e7d9c95bb27fe3109849b1ba88ecb8a02d99e7fd5467
+- order pbf  https://sepolia.etherscan.io/tx/0x5d88918ca5ccf5248bbd574fdfacf4afe369d817b73ed89e94c22bdbe099ae25
+- send order pbf  https://sepolia.etherscan.io/tx/0xffff461e8fec37d72f800060f5d625ef8042a782661091fe5aed0ec0a2237113
+- complete order pbf  https://sepolia.etherscan.io/tx/0xab6f2a2bfd7f4ede68db820e74493445799a6e4749e8e73dc9a73084b12f6b84
+- order retail  https://sepolia.etherscan.io/tx/0x5ce13729625327592dec8f7210e4dcf5361992bbc60a8509d72c9371020eca82
+- send order retail  https://sepolia.etherscan.io/tx/0x167b8725e42884ef82015f257ee37be2a24a5e7737c8f2e88a930d719e2cca31
+- complete order retail  https://sepolia.etherscan.io/tx/0x11998eb808f87c1ab5a19cc30a43024829ebe8f4b3c48d0a84e5686403144e0b
 
-9.  
-- produksi  
-- order pbf  
-- send order pbf  
-- complete order pbf  
-- order retail  
-- send order retail  
-- complete order retail  
+9.  BN-7617-WRUM [DermaHerb Lotion]
+- produksi  https://sepolia.etherscan.io/tx/0x54d083b7c863015fcb8c10dc734fb65cb4ec3bae92d2c7abd1965e915eccf402
+- order pbf  https://sepolia.etherscan.io/tx/0x694f1cf31444b5a913c5e9b494998c4e80c23914b1a2e1dc6bfa46f44df12bcd
+- send order pbf  https://sepolia.etherscan.io/tx/0x38a4a5e4dadb42c91cedf57eb5c5983ed532377438f84dcf871c56b5181858d8
+- complete order pbf  https://sepolia.etherscan.io/tx/0x06bbc933ae868736cd0dd3e4a2d8e5cb5f8ee7fc57fec067c1102dfc5a689bdf
+- order retail  https://sepolia.etherscan.io/tx/0x11998eb808f87c1ab5a19cc30a43024829ebe8f4b3c48d0a84e5686403144e0b
+- send order retail  https://sepolia.etherscan.io/tx/0x9576d6c9042840b2fd82ac3b54dbe440acc7d56444fc9317d48a5891da144ea9
+- complete order retail  https://sepolia.etherscan.io/tx/0x3c019207bffc1e57eb8eaa76301b4604e716faa84e51b272b49c3fe465ab90e9
 
-10.  
-- produksi  
-- order pbf  
-- send order pbf  
-- complete order pbf  
-- order retail  
-- send order retail  
-- complete order retail  
+10.  BN-9450-GALA [Dermazol Ointment]
+- produksi  https://sepolia.etherscan.io/tx/0x0c00a4b66d077e7917a33012d7ef5c069f469497b5d1720061c7ad74db459068
+- order pbf  https://sepolia.etherscan.io/tx/0x903ba2fbfc0805ee52b94ab794fd816308256381c74c063fe219a76ad23dc70f
+- send order pbf  https://sepolia.etherscan.io/tx/0xd48d3fe32709cae5721cbf80f7d7025bb650e212d4796d630648367490759157
+- complete order pbf  https://sepolia.etherscan.io/tx/0x4988ad05c785eea8cece14f583ab72290025d5d825a00887edea12d1e742bc00
+- order retail  https://sepolia.etherscan.io/tx/0xb3cfa03ff33f2cf287288e3b1f5ac7e588b13cf8da5b3ff41a92efcc876ac406
+- send order retail  https://sepolia.etherscan.io/tx/0xba94c27bd4f65503413b0d974d3050cb38c7e7d4a854842c18c7923d1fd7dc70
+- complete order retail  https://sepolia.etherscan.io/tx/0xada119db01cc2ca1581d4188cc6237b956b2086526ef159e801c929922c76e5e
 
 approve bpom cpotb 
 PT. Sehat Sentosa: Salep -> https://sepolia.etherscan.io/tx/0x492c109c7172e6f3aa4b7fb65729b5b3ddd2b31763e550f4adbb266e9e58165a
