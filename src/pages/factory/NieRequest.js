@@ -243,11 +243,15 @@ function NieRequest() {
 
       console.log(instanceName, namaProduk, obatHash, timestamp );
 
-      await updateDoc(docRef, {
-        [`${namaProduk}.historyNie.requestHash`]: obatHash,
-        [`${namaProduk}.historyNie.requestTimestamp`]: timestamp,
-        [`${namaProduk}.status`]: 0
-      })
+      await setDoc(docRef, {
+        [`${namaProduk}`]: {
+          historyNie: {
+            requestHash: obatHash,
+            requestTimestamp: timestamp,
+          },
+          status: 0
+        }
+      }, { merge: true }); 
   
     } catch (err) {
       console.error("Error writing cpotb data:", err);

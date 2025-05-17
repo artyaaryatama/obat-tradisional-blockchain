@@ -34,8 +34,8 @@ function ManageCdob() {
     2: "Tidak Disetujui",
     3: "Pengajuan Ulang",
     4: "Sertifikat Kadaluarsa",
-    5: "Pengajuan Resertifikasi",
-    6: "Resertifikasi"
+    5: "Pengajuan Perpanjangan CDOB",
+    6: "Perpanjangan CDOB"
   };
 
   const options = {
@@ -243,7 +243,7 @@ function ManageCdob() {
       const [surat_permohonan_cdob, bukti_pembayaran_pajak] = docsAdministrasi;
       const [surat_izin_cdob, denah_pbf, struktur_organisasi, daftar_personalia, daftar_peralatan, eksekutif_quality_management, surat_izin_apoteker, dokumen_self_assessment] = docsTeknis
       const [cdobId, cdobNumber, tipePermohonan] = cdobDetails
-      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, pbf, bpom, cdobIpfs] = certDetails
+      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, timestampExtendApprove, pbf, bpom, cdobIpfs] = certDetails
 
       console.log(cdobIpfs);
 
@@ -279,6 +279,7 @@ function ManageCdob() {
         timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
         timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
         timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
         bpomName : bpom[0] ? bpom[0] : "-",
         bpomInstance: bpom[1] ? bpom[1] : "-",
         bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
@@ -621,7 +622,14 @@ function ManageCdob() {
                       <p>Nomor CDOB</p>
                     </li>
                     <li className="input">
-                      <p>{detailCdob.cdobNumber}</p> 
+                      <a
+                        href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {detailCdob.cdobNumber}
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
                     </li>
                   </ul>
   
@@ -700,10 +708,18 @@ function ManageCdob() {
                   </ul>
                   <ul>
                     <li className="label">
-                      <p>Tanggal Perpanjangan CDOB</p> 
+                      <p>Tanggal Pengajuan Perpanjangan CDOB</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.timestampExtendRequest}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Penyetujuan Perpanjangan CDOB</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.timestampExtendApprove}</p> 
                     </li>
                   </ul>
                   <ul>
@@ -1078,10 +1094,9 @@ function ManageCdob() {
               <div className="row2">
   
                 <div className="col">
-                <ul className='status'>
+                  <ul className='status'>
                     <li className="label">
                       <p>Status Sertifikasi</p>
-                      <label htmlFor="statusCpotb"></label>
                     </li>
                     <li className="input">
                       <p className={detailCdob.status}>{detailCdob.status}</p>
@@ -1091,10 +1106,16 @@ function ManageCdob() {
                   <ul>
                     <li className="label">
                       <p>Nomor CDOB</p>
-                      <label htmlFor="nomorCpotb"></label>
                     </li>
                     <li className="input">
-                      <p>{detailCdob.cdobNumber}</p> 
+                      <a
+                        href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {detailCdob.cdobNumber}
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
                     </li>
                   </ul>
   
@@ -1158,6 +1179,33 @@ function ManageCdob() {
                     </li>
                     <li className="input">
                       <p>{detailCdob.timestampApprove}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>CDOB Berlaku Sampai</p> 
+                    </li>
+                    <li className="input">
+                      <p>{Math.floor(Date.now() / 1000) > Number(timestampExpired)
+                        ? `${detailCdob.timestampExpired} (Kadaluarsa)`
+                        : detailCdob.timestampExpired}
+                      </p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Pengajuan Perpanjangan CDOB</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.timestampExtendRequest}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Penyetujuan Perpanjangan CDOB</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.timestampExtendApprove}</p> 
                     </li>
                   </ul>
                   <ul>
@@ -1411,7 +1459,6 @@ function ManageCdob() {
     try {
       const extendCertificateCt = await contracts.certificateManager.extendCdob(
         cdobId, 
-        cdobNumber, 
         expTimestamp
       )
       console.log(extendCertificateCt);
@@ -1423,10 +1470,10 @@ function ManageCdob() {
         });
       }
 
-      contracts.certificateManager.on('CertExtendRequest',  (_pbfAddr, _cdobNumber, _timestamp) => {
+      contracts.certificateManager.on('CertExtendRequest',  (_pbfAddr, _timestamp) => {
         updateCdobFb(extendCertificateCt.hash, Number(_timestamp), tipePermohonan);
         recordHashFb(extendCertificateCt.hash, Number(_timestamp), tipePermohonan)
-        handleEventCdob(_pbfAddr, _timestamp, extendCertificateCt.hash, _cdobNumber)
+        handleEventCdob(_pbfAddr, _timestamp, extendCertificateCt.hash, cdobNumber)
       }); 
     } catch (error) {
       errAlert(error)

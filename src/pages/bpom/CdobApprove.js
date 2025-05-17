@@ -38,8 +38,8 @@ function CdobApprove() {
     2: "Tidak Disetujui",
     3: "Pengajuan Ulang",
     4: "Sertifikat Kadaluarsa",
-    5: "Pengajuan Resertifikasi",
-    6: "Resertifikasi"
+    5: "Pengajuan Perpanjangan CDOB",
+    6: "Perpanjangan CDOB"
   };
 
   const options = {
@@ -400,7 +400,7 @@ function CdobApprove() {
       const [surat_permohonan_cdob, bukti_pembayaran_pajak] = docsAdministrasi;
       const [surat_izin_cdob, denah_pbf, struktur_organisasi, daftar_personalia, daftar_peralatan, eksekutif_quality_management, surat_izin_apoteker, dokumen_self_assessment] = docsTeknis
       const [cdobId, cdobNumber, tipePermohonan] = cdobDetails
-      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, pbf, bpom, cdobIpfs] = certDetails
+      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, timestampExtendApprove, pbf, bpom, cdobIpfs] = certDetails
 
       const detailUserPbfCt = await contracts.roleManager.getUserData(pbf[2]);
       if (timestampRejected !== 0n) {
@@ -436,6 +436,7 @@ function CdobApprove() {
         timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
         timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
         timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
         bpomName : bpom[0] ? bpom[0] : "-",
         bpomInstance: bpom[1] ? bpom[1] : "-",
         bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
@@ -458,7 +459,9 @@ function CdobApprove() {
         }
       };
 
-      if(detailCdob.status === 'Disetujui' || detailCdob.status === 'Resertifikasi'  || detailCdob.status === 'Sertifikat Kadaluarsa'){
+      
+
+      if(detailCdob.status === 'Disetujui' || detailCdob.status === 'Perpanjangan CDOB'  || detailCdob.status === 'Sertifikat Kadaluarsa'){
         MySwal.fire({
           title: "Detail Sertifikat CDOB",
           html: (
@@ -479,10 +482,16 @@ function CdobApprove() {
                   <ul>
                     <li className="label">
                       <p>Nomor CDOB</p>
-                      <label htmlFor="nomorCDOB"></label>
                     </li>
                     <li className="input">
-                      <p>{detailCdob.cdobNumber}</p> 
+                      <a
+                        href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {detailCdob.cdobNumber}
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
                     </li>
                   </ul>
   
@@ -561,10 +570,18 @@ function CdobApprove() {
                   </ul>
                   <ul>
                     <li className="label">
-                      <p>Tanggal Perpanjangan CDOB</p> 
+                      <p>Tanggal Pengajuan Perpanjangan CDOB</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.timestampExtendRequest}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Penyetujuan Perpanjangan CDOB</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.timestampExtendApprove}</p> 
                     </li>
                   </ul>
                   <ul>
@@ -618,21 +635,6 @@ function CdobApprove() {
                     </li>
                     <li className="input">
                       <p>{detailCdob.bpomAddr}</p> 
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>IPFS CDOB</p> 
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Liat data CDOB di IPFS
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
                     </li>
                   </ul>
                 </div>
@@ -818,6 +820,14 @@ function CdobApprove() {
                     </li>
                     <li className="input">
                       <p className={detailCdob.status}>{detailCdob.status}</p>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Nomor CDOB</p>
+                    </li>
+                    <li className="input">
+                      <p>-</p>
                     </li>
                   </ul>
   
@@ -1093,7 +1103,7 @@ function CdobApprove() {
             htmlContainer: 'scrollable-modal'
           },
         })
-      } else if(detailCdob.status === 'Pengajuan Resertifikasi'){
+      } else if(detailCdob.status === 'Pengajuan Perpanjangan CDOB'){
         MySwal.fire({
           title: "Detail Pengajuan CDOB",
           html: (
@@ -1114,10 +1124,16 @@ function CdobApprove() {
                   <ul>
                     <li className="label">
                       <p>Nomor CDOB</p>
-                      <label htmlFor="nomorCDOB"></label>
                     </li>
                     <li className="input">
-                      <p>{detailCdob.cdobNumber}</p> 
+                      <a
+                        href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {detailCdob.cdobNumber}
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
                     </li>
                   </ul>
 
@@ -1195,10 +1211,18 @@ function CdobApprove() {
                   </ul>
                   <ul>
                     <li className="label">
-                      <p>Tanggal Perpanjangan CDOB</p> 
+                      <p>Tanggal Pengajuan Perpanjangan CDOB</p> 
                     </li>
                     <li className="input">
                       <p>{detailCdob.timestampExtendRequest}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Penyetujuan Perpanjangan CDOB</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.timestampExtendApprove}</p> 
                     </li>
                   </ul>
 
@@ -1255,21 +1279,6 @@ function CdobApprove() {
                     </li>
                   </ul>
 
-                  <ul>
-                    <li className="label">
-                      <p>IPFS CDOB</p> 
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Liat data CDOB di IPFS
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>
                 </div>
 
                 <div className='col doku'>
@@ -2388,8 +2397,8 @@ function CdobApprove() {
       }); 
       } else if (msg === 'Perpanjangan'){
         await updateDoc(pbfDocRef, { 
-          [`${tipeP}.approvedExtendedHash`]: cdobHash,
-          [`${tipeP}.approvedExtendedTimestamp`]: timestamp, 
+          [`${tipeP}.extendedApprovedHash`]: cdobHash,
+          [`${tipeP}.extendedApprovedTimestamp`]: timestamp, 
           [`${tipeP}.bpomInstance`]: userdata.instanceName,
           [`${tipeP}.status`]: 5, 
           [`${tipeP}.ipfsCid`]: cdobIpfs

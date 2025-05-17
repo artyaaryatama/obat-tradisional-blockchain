@@ -124,7 +124,7 @@ function CheckCertificateIpfs() {
           // nomor: rowsData.length + 1,
           fixedNumber: rowsData.length + 1,
           certNumber: permohonanData.cpotbNumber || "-",
-          jenisSertifikasi: permohonanData?.status === 1? "Sertifikasi Baru" : "Resertifikasi",
+          jenisSertifikasi: permohonanData?.status === 1? "Sertifikasi Baru" : "Perpanjangan",
           approvedTimestamp: permohonanData.approvedTimestamp || null,
           tipePermohonan: jenisSediaan,
           companyName: factoryName,

@@ -311,12 +311,15 @@ function NieRenewRequest() {
     try {
       const docRef = doc(db, 'obat_data', instanceName)
 
-      await updateDoc(docRef, {
-        [`${namaProduk}.historyNie.renewRequestHash`]: obatHash,
-        [`${namaProduk}.historyNie.renewRequestTimestamp`]: timestamp,
-        [`${namaProduk}.status`]: 3 
+      await setDoc(docRef, {
+        [`${namaProduk}`]: {
+          historyNie: {
+            renewRequestHash: obatHash,
+            renewRequestTimestamp: timestamp,
+          },
+          status: 3
+        }
       }, { merge: true }); 
-  
     } catch (err) {
       errAlert(err);
     }

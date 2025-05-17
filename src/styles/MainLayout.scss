@@ -227,12 +227,12 @@
               border-radius: 30px;
             }
 
-            &.Dalam, &.Diajukan, &.Kosong, &.Sertifikat.Kadaluarsa{
+            &.Dalam, &.Diajukan, &.Kosong, &.Sertifikat.Kadaluarsa, &.NIE.Kadaluarsa{
               background-color: $grey;
               color: $white;
             }
 
-            &.Tersedia, &.Pengajuan.Resertifikasi{
+            &.Tersedia, &.Pengajuan.Perpanjangan{
               background-color: $blue;
               color: $white;
             }
@@ -247,7 +247,7 @@
               color: $black;
             }
 
-            &.Disetujui, &.Selesai, &.Resertifikasi{
+            &.Disetujui, &.Selesai, &.Perpanjangan, &.Perpanjangan.NIE{
               background-color: $green;
               color: $white;
             }

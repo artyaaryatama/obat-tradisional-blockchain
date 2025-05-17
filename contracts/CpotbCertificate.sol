@@ -204,7 +204,7 @@ contract CpotbCertificate is BaseCertificate {
     string memory ipfsCert
   ) public {
 
-    updateBpomExtendCertificateDetails(
+    updateBpomApproveExtendCertificateDetails(
       certId,
       ipfsCert
     );

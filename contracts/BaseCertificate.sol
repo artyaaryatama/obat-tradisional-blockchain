@@ -23,6 +23,7 @@ contract BaseCertificate {
     uint timestampRenewRequest; 
     uint timestampExpired; 
     uint timestampExtendRequest; 
+    uint timestampExtendApprove; 
     UserCert sender;  
     UserCert bpom; 
     string ipfsCert;
@@ -62,6 +63,7 @@ contract BaseCertificate {
       timestampRenewRequest: 0,
       timestampExpired: 0,
       timestampExtendRequest: 0,
+      timestampExtendApprove: 0,
       sender: senderData,
       bpom: bpomData,
       ipfsCert: ""
@@ -96,6 +98,19 @@ contract BaseCertificate {
     CertificateDetails storage certData = certDetailById[certId];
     certData.timestampApprove = block.timestamp;
     certData.timestampExpired = block.timestamp + extTimestamp; 
+    certData.status = EnumsLibrary.StatusCertificate.Extended; 
+    certData.ipfsCert = ipfsCert; 
+  } 
+
+  function updateBpomApproveExtendCertificateDetails(
+    string memory certId, 
+    string memory ipfsCert
+  ) 
+    public 
+  { 
+    CertificateDetails storage certData = certDetailById[certId];
+    certData.timestampExtendApprove = block.timestamp;
+    certData.timestampExpired = block.timestamp + extTimestamp;  
     certData.status = EnumsLibrary.StatusCertificate.Extended; 
     certData.ipfsCert = ipfsCert; 
   } 

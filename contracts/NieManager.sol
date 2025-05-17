@@ -23,6 +23,7 @@ contract NieManager {
     uint256 timestampNieRenewRequest;  
     uint256 timestampNieExpired;  
     uint256 timestampNieExtendRequest;  
+    uint256 timestampNieExtendApprove;  
     string factoryInstance;
     string bpomInstance;      
     address bpomAddr;
@@ -114,6 +115,7 @@ contract NieManager {
       timestampNieRenewRequest: 0,
       timestampNieExpired: 0,
       timestampNieExtendRequest: 0,
+      timestampNieExtendApprove: 0,
       factoryInstance: factoryInstance,
       bpomInstance: "",
       bpomAddr: address(0),
@@ -236,7 +238,7 @@ contract NieManager {
     NieDetail storage nieData = nieDetailById[obatId];
 
     nieData.nieStatus = EnumsLibrary.NieStatus.ExtendRequestNie; 
-    nieData.timestampNieExtendRequest = block.timestamp + extTimestamp; 
+    nieData.timestampNieExtendRequest = block.timestamp; 
 
     emit NieExtendRequest(
       msg.sender,  
@@ -246,17 +248,16 @@ contract NieManager {
 
   function approveExtendRequest(
     string memory obatId,
-    uint256 expiredTimestamp,
-    string memory ipfsNie
+    string memory ipfsNie 
   ) 
     public 
     onlyBPOM 
   {
-    require(block.timestamp > expiredTimestamp, "NIE masih berlaku");
     NieDetail storage nieData = nieDetailById[obatId];
 
     nieData.nieStatus = EnumsLibrary.NieStatus.extendedNie; 
-    nieData.timestampNieExtendRequest = block.timestamp + extTimestamp;  
+    nieData.timestampNieExtendApprove = block.timestamp;  
+    nieData.timestampNieExpired = block.timestamp + extTimestamp;  
     nieData.nieIpfs = ipfsNie;
 
     emit NieApprovedExtendRequest(

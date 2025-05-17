@@ -57,8 +57,8 @@ function ManageCpotb() {
     2: "Tidak Disetujui",
     3: "Pengajuan Ulang",
     4: "Sertifikat Kadaluarsa",
-    5: "Pengajuan Resertifikasi",
-    6: "Resertifikasi"
+    5: "Pengajuan Perpanjangan CPOTB",
+    6: "Perpanjangan CPOTB"
   };
 
   const options = {
@@ -267,7 +267,7 @@ function ManageCpotb() {
       const [suratPermohonan, buktiPembayaranNegaraBukanPajak, suratKomitmen] = docsAdministrasi;
       const [denahBangunan, sistemMutu] = docsTeknis
       const [cpotbId, cpotbNumber, jenisSediaan, factoryType] = cpotbDetails;
-      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, factory, bpom, cpotbIpfs] = certDetails;
+      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, timestampExtendApprove, factory, bpom, cpotbIpfs] = certDetails;
 
       const rejectMsg = await contracts.certificateManager.getRejectMsgCpotb(id);
       console.log(timestampRenewRequest);
@@ -307,6 +307,7 @@ function ManageCpotb() {
         timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
         timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
         timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
         bpomName : bpom[0] ? bpom[0] : "-",
         bpomInstance: bpom[1] ? bpom[1] : "-",
         bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
@@ -576,7 +577,14 @@ function ManageCpotb() {
                       <p>Nomor CPOTB</p>
                     </li>
                     <li className="input">
-                      <p>{detailCpotb.cpotbNumber}</p> 
+                      <a
+                        href={`http://localhost:3000/public/certificate/${detailCpotb.cpotbIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {detailCpotb.cpotbNumber}
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
                     </li>
                   </ul>
   
@@ -655,10 +663,18 @@ function ManageCpotb() {
                   </ul>
                   <ul>
                     <li className="label">
-                      <p>Tanggal Perpanjangan CPOTB</p> 
+                      <p>Tanggal Pengajuan Perpanjangan CPOTB</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.timestampExtendRequest}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Penyetujuan Perpanjangan CPOTB</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.timestampExtendApprove}</p> 
                     </li>
                   </ul>
                   <ul>
@@ -720,25 +736,6 @@ function ManageCpotb() {
                       <p>{detailCpotb.bpomAddr}</p> 
                     </li>
                   </ul>
-  
-                  {
-                    detailCpotb.cpotbIpfs === "-" ? <div></div> : 
-                      <ul>
-                        <li className="label">
-                          <p>IPFS CPOTB</p> 
-                        </li>
-                        <li className="input">
-                          <a
-                            href={`http://localhost:3000/public/certificate/${detailCpotb.cpotbIpfs}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            Liat data CPOTB di IPFS
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                          </a>
-                        </li>
-                      </ul>
-                  }
                   
                 </div>
 
@@ -979,7 +976,7 @@ function ManageCpotb() {
                       <p>Nomor CPOTB</p>
                     </li>
                     <li className="input">
-                      <p>{detailCpotb.cpotbNumber}</p> 
+                      <p>{detailCpotb.cpotbNumber}</p>
                     </li>
                   </ul>
   
@@ -1045,25 +1042,45 @@ function ManageCpotb() {
                       <p>{detailCpotb.timestampApprove}</p> 
                     </li>
                   </ul>
-                  <ul>
-                    <li className="label">
-                      <p>CPOTB Berlaku Sampai</p> 
-                    </li>
-                    <li className="input">
-                      <p>{Math.floor(Date.now() / 1000) > Number(timestampExpired)
-                        ? `${detailCpotb.timestampExpired} (Kadaluarsa)`
-                        : detailCpotb.timestampExpired}
-                      </p> 
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Perpanjangan CPOTB</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCpotb.timestampExtendRequest}</p> 
-                    </li>
-                  </ul>
+                  {timestampExpired=== 0
+                    ? 
+                    <ul>
+                      <li className="label">
+                        <p>CPOTB Berlaku Sampai</p> 
+                      </li>
+                      <li className="input">
+                        <p>{Math.floor(Date.now() / 1000) > Number(timestampExpired)
+                          ? `${detailCpotb.timestampExpired} (Kadaluarsa)`
+                          : detailCpotb.timestampExpired}
+                        </p>
+                      </li>
+                    </ul> 
+                    : null
+                  }
+                  {timestampExpired=== 0
+                    ? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Perpanjangan CPOTB</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.timestampExtendRequest}</p> 
+                      </li>
+                    </ul>
+                    : null
+                  }
+                  {timestampExpired=== 0
+                    ? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Penyetujuan Perpanjangan CPOTB</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.timestampExtendApprove}</p> 
+                      </li>
+                    </ul>
+                    : null
+                  }
                   <ul>
                     <li className="label">
                       <p>Nama Instansi Pabrik</p>
@@ -1123,25 +1140,6 @@ function ManageCpotb() {
                       <p>{detailCpotb.bpomAddr}</p> 
                     </li>
                   </ul>
-  
-                  {
-                    detailCpotb.cpotbIpfs === "-" ? <div></div> : 
-                      <ul>
-                        <li className="label">
-                          <p>IPFS CPOTB</p> 
-                        </li>
-                        <li className="input">
-                          <a
-                            href={`http://localhost:3000/public/certificate/${detailCpotb.cpotbIpfs}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            Liat data CPOTB di IPFS
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                          </a>
-                        </li>
-                      </ul>
-                  }
                   
                 </div>
 

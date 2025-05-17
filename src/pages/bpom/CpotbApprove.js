@@ -60,8 +60,8 @@ function CpotbApprove() {
     2: "Tidak Disetujui",
     3: "Pengajuan Ulang",
     4: "Sertifikat Kadaluarsa",
-    5: "Pengajuan Resertifikasi",
-    6: "Resertifikasi"
+    5: "Pengajuan Perpanjangan CPOTB",
+    6: "Perpanjangan CPOTB"
   };
 
   const options = {
@@ -430,7 +430,7 @@ function CpotbApprove() {
       const [denahBangunan, sistemMutu] = docsTeknis
       const [cpotbId, cpotbNumber, jenisSediaan, factoryType] = cpotbDetails;
       
-      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, sender, bpom, cpotbIpfs] = certDetails;
+      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, timestampExtendApprove, sender, bpom, cpotbIpfs] = certDetails;
       
       console.log(certDetails);
       const detailUserFactoryCt = await contracts.roleManager.getUserData(sender[2]);
@@ -474,6 +474,7 @@ function CpotbApprove() {
         timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
         timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
         timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
         bpomUserName : bpom[0] ? bpom[0] : "-",
         bpomInstance: bpom[1] ? bpom[1] : "-",
         bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
@@ -492,13 +493,15 @@ function CpotbApprove() {
         }
       };
 
+      console.log(detailCpotb)
+
       const eligbleFactory = checkEligible(factoryType, parseInt(jenisSediaan));
       console.log(eligbleFactory);
 
       const rejectMsg = await contracts.certificateManager.getRejectMsgCpotb(id);
       console.log(detailCpotb.status);
 
-      if(detailCpotb.status === 'Disetujui' || detailCpotb.status === 'Resertifikasi'  || detailCpotb.status === 'Sertifikat Kadaluarsa'){
+      if(detailCpotb.status === 'Disetujui' || detailCpotb.status === 'Perpanjangan CPOTB'  || detailCpotb.status === 'Sertifikat Kadaluarsa'){
         MySwal.fire({
           title: "Detail Sertifikat CPOTB",
           html: (
@@ -519,7 +522,14 @@ function CpotbApprove() {
                       <p>Nomor CPOTB</p>
                     </li>
                     <li className="input">
-                      <p>{detailCpotb.cpotbNumber}</p> 
+                      <a
+                        href={`http://localhost:3000/public/certificate/${detailCpotb.cpotbIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {detailCpotb.cpotbNumber}
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
                     </li>
                   </ul>
   
@@ -598,10 +608,18 @@ function CpotbApprove() {
                   </ul>
                   <ul>
                     <li className="label">
-                      <p>Tanggal Perpanjangan CPOTB</p> 
+                      <p>Tanggal Pengajuan Perpanjangan CPOTB</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.timestampExtendRequest}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Penyetujuan Perpanjangan CPOTB</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.timestampExtendApprove}</p> 
                     </li>
                   </ul>
                   <ul>
@@ -640,21 +658,6 @@ function CpotbApprove() {
                     </li>
                   </ul>
 
-                  <ul>
-                    <li className="label">
-                      <p>IPFS CPOTB</p> 
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:3000/public/certificate/${detailCpotb.cpotbIpfs}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Liat data CPOTB di IPFS
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>
                 </div>
                 <div className='col doku'>
                   <h5>Dokumen Administrasi</h5>
@@ -774,10 +777,7 @@ function CpotbApprove() {
                       <p>Nomor CPOTB</p>
                     </li>
                     <li className="input">
-                      <p>{
-                          detailCpotb.cpotbNumber === '-'? 
-                          'Tidak Tersedia' : detailCpotb.cpotbNumber 
-                        }</p> 
+                      <p>{detailCpotb.cpotbNumber}</p> 
                     </li>
                   </ul>
 
@@ -963,7 +963,7 @@ function CpotbApprove() {
           showConfirmButton: false,
         })
 
-      } else if(detailCpotb.status === 'Pengajuan Resertifikasi'){
+      } else if(detailCpotb.status === 'Pengajuan Perpanjangan CPOTB'){
         MySwal.fire({
           title: "Detail Pengajuan CPOTB",
           html: (
@@ -984,10 +984,16 @@ function CpotbApprove() {
                   <ul>
                     <li className="label">
                       <p>Nomor CPOTB</p>
-                      <label htmlFor="nomorCpotb"></label>
                     </li>
                     <li className="input">
-                      <p>{detailCpotb.cpotbNumber}</p> 
+                      <a
+                        href={`http://localhost:3000/public/certificate/${detailCpotb.cpotbIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {detailCpotb.cpotbNumber}
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
                     </li>
                   </ul>
   
@@ -1065,10 +1071,18 @@ function CpotbApprove() {
                   </ul>
                   <ul>
                     <li className="label">
-                      <p>Tanggal Perpanjangan CPOTB</p> 
+                      <p>Tanggal Pengajuan Perpanjangan CPOTB</p> 
                     </li>
                     <li className="input">
                       <p>{detailCpotb.timestampExtendRequest}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Penyetujuan Perpanjangan CPOTB</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCpotb.timestampExtendApprove}</p> 
                     </li>
                   </ul>
 
@@ -1133,21 +1147,6 @@ function CpotbApprove() {
                     </li>
                   </ul>
 
-                  <ul>
-                    <li className="label">
-                      <p>IPFS CPOTB</p> 
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:3000/public/certificate/${detailCpotb.cpotbIpfs}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Liat data CPOTB di IPFS
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>
                 </div>
 
                 <div className='col doku'>
@@ -1400,10 +1399,9 @@ function CpotbApprove() {
                   <ul>
                     <li className="label">
                       <p>Nomor CPOTB</p>
-                      <label htmlFor="nomorCpotb"></label>
                     </li>
                     <li className="input">
-                      <p>{detailCpotb.cpotbNumber}</p> 
+                      <p>{detailCpotb.cpotbNumber}</p>
                     </li>
                   </ul>
   
@@ -2237,8 +2235,8 @@ function CpotbApprove() {
         }); 
       } else if(msg === 'Perpanjangan'){
         await updateDoc(docRef, { 
-          [`${jenisSediaan}.approvedExtendedHash`]: cpotbHash,
-          [`${jenisSediaan}.approvedExtendedTimestamp`]: timestamp, 
+          [`${jenisSediaan}.extendedApprovedHash`]: cpotbHash,
+          [`${jenisSediaan}.extendedApprovedTimestamp`]: timestamp, 
           [`${jenisSediaan}.bpomInstance`]: userdata.instanceName, 
           [`${jenisSediaan}.status`]: 5, 
           [`${jenisSediaan}.ipfsCid`]: cpotbIpfs
