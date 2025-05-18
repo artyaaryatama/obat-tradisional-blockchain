@@ -146,7 +146,8 @@ function CreateObat() {
             return {
               cpotbId: item[0],
               cpotbHash: item[5],
-              jenisSediaan: jenisSediaanMap[item[3]]
+              jenisSediaan: jenisSediaanMap[item[3]],
+              isValid: Math.floor(Date.now() / 1000) > Number(item[6]) ? false : true
             };
           });
 
@@ -311,6 +312,8 @@ function CreateObat() {
     } else if (!kemasanPrimData || !kemasanPrimData.cpotbHash) {
       errAlert({reason: "Tidak dapat memproduksi obat tradisional"}, `${userdata.instanceName} tidak memiliki sertifikasi CPOTB "${kemasanPrim}"`);
 
+    } else if (kemasanPrimData.isValid === false) {
+      errAlert({reason: "Tidak dapat memproduksi obat tradisional"}, `Sertifikasi CPOTB "${kemasanPrim}" sudah tidak berlaku. Harap lakukan perpanjangan sertifikat terlebih dahulu untuk dapat memproduksi obat ini.`);
     } else {
       const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
       

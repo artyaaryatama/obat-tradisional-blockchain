@@ -317,7 +317,7 @@ function AddQuantityObat() {
 
     const [merk, namaObat, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-    const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstancee, bpomInstance, bpomAddr] = detailNieCt[0];
+    const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest, timestampNieExtendApprove, factoryInstancee, bpomInstance, bpomAddr] = detailNieCt[0];
     console.log(cpotbHash);
     
     const detailObat = {
@@ -327,11 +327,14 @@ function AddQuantityObat() {
       klaim: klaim,
       kemasan: kemasan,
       komposisi: komposisi,
-      produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
-      nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
-      nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
-      nieRejectDate:  timestampNieRejected ? new Date(Number(timestampNieRejected) * 1000).toLocaleDateString('id-ID', options): "-",
-      nieRenewRequestDate:  timestampNieRenewRequest ? new Date(Number(timestampNieRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+      timestampProduction: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
+      timestampNieRequest: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
+      timestampNieApprove:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+      timestampNieReject:  timestampNieRejected ? new Date(Number(timestampNieRejected) * 1000).toLocaleDateString('id-ID', options): "-",
+      timestampNieRenewRequest:  timestampNieRenewRequest ? new Date(Number(timestampNieRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+      timestampNieExpired: parseInt(timestampNieExpired) !== 0 ? new Date(Number(timestampNieExpired) * 1000).toLocaleDateString('id-ID', options): "-",
+      timestampNieExtendRequest: parseInt(timestampNieExtendRequest) !== 0 ? new Date(Number(timestampNieExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+      timestampNieExtendApprove: parseInt(timestampNieExtendApprove) !== 0 ? new Date(Number(timestampNieExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
       nieNumber: nieNumber ? nieNumber : "-",
       factoryAddr: factoryAddr,
       factoryInstanceName: factoryInstance,
@@ -353,9 +356,13 @@ function AddQuantityObat() {
       String.fromCharCode(65 + Math.floor(Math.random() * 26))
     ).join(''); 
 
+    console.log(2);
+    console.log(2);
+
     const userFactoryCt = await contracts.roleManager.getUserData(dataObat.factoryAddr);
     const userBpomCt = await contracts.roleManager.getUserData(dataObat.bpomAddr);
 
+    console.log(userBpomCt);
     console.log(userFactoryCt);
 
     for (let i = 0; i < quantity; i++) {
@@ -376,8 +383,11 @@ function AddQuantityObat() {
           tipeObat: dataObat.tipeObat,
           nieNumber: dataObat.nieNumber,
           obatStatus: "NIE Approved",
-          nieRequestDate: dataObat.nieRequestDate,
-          nieApprovalDate: dataObat.nieApprovalDate,
+          nieRequestDate: dataObat.timestampNieRequest,
+          nieApprovalDate: dataObat.timestampNieApprove,
+          nieExpiredDate: dataObat.timestampNieExpired,
+          nieExtendRequest: dataObat.timestampNieExtendRequest,
+          nieExtendApprove: dataObat.timestampNieExtendApprove,
           bpomAddr: dataObat.bpomAddr,
           bpomInstanceName: dataObat.bpomInstanceName,
           nibFactory: userFactoryCt[6],
@@ -466,10 +476,15 @@ function AddQuantityObat() {
         },
       }).then((result) => {
         if(result.isConfirmed){
-          MySwal.update({
+          MySwal.fire({
             title: "Mempersiapkan transaksi...",
-            text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
-          });
+            text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳",
+            icon: 'info',
+            showCancelButton: false,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          })
+           
           addQuantity(dataObat, batchNameObat, quantityObat, newIpfsHashes)
         }
       })
