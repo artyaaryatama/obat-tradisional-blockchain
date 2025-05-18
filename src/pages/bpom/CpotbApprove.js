@@ -2212,7 +2212,7 @@ function CpotbApprove() {
 
       contracts.certificateManager.on('CertApprovedExtendRequest',  (bpomAddr, _timestampApprove) => {
         updateCpotbFb(factoryName, jenisSediaan, approveExtendCt.hash, Number(_timestampApprove), '', cpotbIpfs, 'Perpanjangan');
-        recordExtendHashFb(factoryName, jenisSediaan, approveExtendCt.hash, Number(_timestampApprove), 'Perpanjangan')
+        recordHashFb(jenisSediaan, approveExtendCt.hash, Number(_timestampApprove), factoryName, 'Perpanjangan')
         handleEventCpotb("Diperpanjang", bpomAddr, '', '', '', _timestampApprove, approveExtendCt.hash, cpotbNumber);
       });
     } catch (error) {
@@ -2291,18 +2291,6 @@ function CpotbApprove() {
           },
         }, { merge: true }); 
       }
-    } catch (err) {
-      errAlert(err);
-    }
-  }
-
-
-  const recordExtendHashFb = async(factoryName, jenisSediaan, txHash, timestamp) => {
-    try {
-      const collectionName = `pengajuan_cpotb_${factoryName}`
-      const docRef = doc(db, 'transaction_hash', collectionName);
-  
-
     } catch (err) {
       errAlert(err);
     }

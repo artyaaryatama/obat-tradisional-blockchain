@@ -129,7 +129,7 @@ function ManageNieFactory() {
               if (Math.floor(Date.now() / 1000) > Number(item[5])) {
                 nieStatus = statusMap[5];  
               } else {
-                nieStatus = statusMap[7]; 
+                nieStatus = statusMap[item[3]]; 
               }
             } else {
               nieStatus = statusMap[item[3]];
@@ -259,7 +259,7 @@ function ManageNieFactory() {
         if (Math.floor(Date.now() / 1000) > Number(timestampNieExpired)) {
           statusNie = statusMap[5];  
         } else {
-          statusNie = statusMap[7]; 
+          statusNie = statusMap[nieStatus]; 
         }
       } else {
         statusNie = statusMap[nieStatus];
@@ -362,33 +362,6 @@ function ManageNieFactory() {
                     </li>
                     <li className="input">
                       <p>{detailObat.timestampNieApprove}</p> 
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>NIE Berlaku Sampai</p> 
-                    </li>
-                    <li className="input">
-                      <p>{Math.floor(Date.now() / 1000) > Number(timestampNieExpired)
-                        ? `${detailObat.timestampNieExpired} (Kadaluarsa)`
-                        : detailObat.timestampNieExpired}
-                      </p> 
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Pengajuan Perpanjangan NIE</p> 
-                    </li>
-                    <li className="input"> 
-                      <p>{detailObat.timestampNieExtendRequest}</p> 
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Penyetujuan Perpanjangan NIE</p> 
-                    </li>
-                    <li className="input"> 
-                      <p>{detailObat.timestampNieExtendApprove}</p> 
                     </li>
                   </ul>
 
@@ -1799,14 +1772,17 @@ function ManageNieFactory() {
                         <p>Nomor NIE</p>
                       </li>
                       <li className="input">
-                        <a
-                          href={`http://localhost:3000/public/certificate/${detailObat.nieIpfs}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {detailObat.nieNumber}
-                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                        </a>
+                        {timestampNieApprove
+                        ? <a
+                            href={`http://localhost:3000/public/certificate/${detailObat.nieIpfs}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {detailObat.nieNumber}
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                          : <p>{detailObat.nieNumber}</p>
+                        }
                       </li>
                     </ul>
 
@@ -1870,33 +1846,44 @@ function ManageNieFactory() {
                         <p>{detailObat.timestampNieApprove}</p> 
                       </li>
                     </ul>
-                    <ul>
-                      <li className="label">
-                        <p>NIE Berlaku Sampai</p> 
-                      </li>
-                      <li className="input">
-                        <p>{Math.floor(Date.now() / 1000) > Number(timestampNieExpired)
-                          ? `${detailObat.timestampNieExpired} (Kadaluarsa)`
-                          : detailObat.timestampNieExpired}
-                        </p> 
-                      </li>
-                    </ul>
-                    <ul>
-                      <li className="label">
-                        <p>Tanggal Pengajuan Perpanjangan NIE</p> 
-                      </li>
-                      <li className="input"> 
-                        <p>{detailObat.timestampNieExtendRequest}</p> 
-                      </li>
-                    </ul>
-                    <ul>
-                      <li className="label">
-                        <p>Tanggal Penyetujuan Perpanjangan NIE</p> 
-                      </li>
-                      <li className="input"> 
-                        <p>{detailObat.timestampNieExtendApprove}</p> 
-                      </li>
-                    </ul>
+                    {timestampNieApprove? 
+                      <ul>
+                        <li className="label">
+                          <p>NIE Berlaku Sampai</p> 
+                        </li>
+                        <li className="input">
+                          <p>{Math.floor(Date.now() / 1000) > Number(timestampNieExpired)
+                            ? `${detailObat.timestampNieExpired} (Kadaluarsa)`
+                            : detailObat.timestampNieExpired}
+                          </p> 
+                        </li>
+                      </ul>
+                    :null}
+
+                    {timestampNieApprove? 
+                      <ul>
+                        <li className="label">
+                          <p>Tanggal Pengajuan Perpanjangan NIE</p> 
+                        </li>
+                        <li className="input"> 
+                          <p>{detailObat.timestampNieExtendRequest}</p> 
+                        </li>
+                      </ul>
+                      :null
+                    }
+
+                    {timestampNieApprove? 
+                      <ul>
+                        <li className="label">
+                          <p>Tanggal Penyetujuan Perpanjangan NIE</p> 
+                        </li>
+                        <li className="input"> 
+                          <p>{detailObat.timestampNieExtendApprove}</p> 
+                        </li>
+                      </ul>
+
+                      :null
+                    }
                     <ul>
                       <li className="label">
                         <p>Nama Instansi Pabrik</p>

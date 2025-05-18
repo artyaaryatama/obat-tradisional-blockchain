@@ -126,7 +126,7 @@ function NieApprove() {
               if (Math.floor(Date.now() / 1000) > Number(item[5])) {
                 nieStatus = statusMap[5];  
               } else {
-                nieStatus = statusMap[7]; 
+                nieStatus = statusMap[item[3]]; 
               }
             } else {
               nieStatus = statusMap[item[3]];
@@ -422,7 +422,7 @@ function NieApprove() {
         if (Math.floor(Date.now() / 1000) > Number(timestampNieExpired)) {
           statusNie = statusMap[5];  
         } else {
-          statusNie = statusMap[7]; 
+          statusNie = statusMap[nieStatus]; 
         }
       } else {
         statusNie = statusMap[nieStatus];
@@ -2081,14 +2081,19 @@ function NieApprove() {
                         <p>Nomor NIE</p>
                       </li>
                       <li className="input">
-                        <a
-                          href={`http://localhost:3000/public/certificate/${detailObat.nieIpfs}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {detailObat.nieNumber}
-                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                        </a>
+                        {
+                          timestampNieApprove?
+                            <a
+                              href={`http://localhost:3000/public/certificate/${detailObat.nieIpfs}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {detailObat.nieNumber}
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          : 
+                          <p>{detailObat.nieNumber}</p> 
+                        }
                       </li>
                     </ul>
 

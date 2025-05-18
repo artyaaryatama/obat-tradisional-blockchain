@@ -976,7 +976,19 @@ function ManageCpotb() {
                       <p>Nomor CPOTB</p>
                     </li>
                     <li className="input">
-                      <p>{detailCpotb.cpotbNumber}</p>
+                      {timestampApprove? 
+                      <a
+                        href={`http://localhost:3000/public/certificate/${detailCpotb.cpotbIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {detailCpotb.cpotbNumber}
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
+
+                      :<p>{detailCpotb.cpotbNumber}</p>
+                      }
+                      
                     </li>
                   </ul>
   
@@ -1042,7 +1054,7 @@ function ManageCpotb() {
                       <p>{detailCpotb.timestampApprove}</p> 
                     </li>
                   </ul>
-                  {timestampExpired=== 0
+                  {timestampApprove
                     ? 
                     <ul>
                       <li className="label">
@@ -1057,7 +1069,7 @@ function ManageCpotb() {
                     </ul> 
                     : null
                   }
-                  {timestampExpired=== 0
+                  {timestampApprove
                     ? 
                     <ul>
                       <li className="label">
@@ -1069,7 +1081,7 @@ function ManageCpotb() {
                     </ul>
                     : null
                   }
-                  {timestampExpired=== 0
+                  {timestampApprove
                     ? 
                     <ul>
                       <li className="label">

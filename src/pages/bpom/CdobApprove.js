@@ -1588,6 +1588,25 @@ function CdobApprove() {
                       <p className={detailCdob.status}>{detailCdob.status}</p>
                     </li>
                   </ul>
+
+                  <ul>
+                    <li className="label">
+                      <p>Nomor CDOB</p>
+                    </li>
+                    <li className="input">
+                      {timestampApprove? 
+                        <a
+                          href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {detailCdob.cdobNumber}
+                          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      : <p>{detailCdob.cdobNumber}</p>
+                      }
+                    </li>
+                  </ul>
   
                   <ul>
                     <li className="label">
@@ -1618,19 +1637,8 @@ function CdobApprove() {
                           <p>{detailCdob.timestampRejected}</p> 
                         </li>
                       </ul> 
-                      : <div></div>
+                      : null
                     }
-                  {timestampRenewRequest? 
-                    <ul>
-                      <li className="label">
-                        <p>Tanggal Pengajuan Ulang</p> 
-                      </li>
-                      <li className="input">
-                        <p>{detailCdob.timestampRenewRequest}</p> 
-                      </li>
-                    </ul> 
-                    : <div></div>
-                  }
                   {rejectMsg? 
                     <ul className='rejectMsg klaim'>
                       <li className="label">
@@ -1640,7 +1648,64 @@ function CdobApprove() {
                         <p>{rejectMsg}</p> 
                       </li>
                     </ul> 
-                    : <div></div>
+                    : null 
+                  } 
+                  {timestampRenewRequest? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampRenewRequest}</p> 
+                      </li>
+                    </ul> 
+                    : null
+                  }
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Disertifikasi</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.timestampApprove}</p> 
+                    </li>
+                  </ul>
+                  {timestampApprove? 
+                    <ul>
+                      <li className="label">
+                        <p>CDOB Berlaku Sampai</p> 
+                      </li>
+                      <li className="input">
+                        <p>{Math.floor(Date.now() / 1000) > Number(timestampExpired)
+                          ? `${detailCdob.timestampExpired} (Kadaluarsa)`
+                          : detailCdob.timestampExpired}
+                        </p> 
+                      </li>
+                    </ul>
+                  
+                : null}
+                  {timestampApprove? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Perpanjangan CDOB</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampExtendRequest}</p> 
+                      </li>
+                    </ul>
+
+                    : null
+                  }
+                  {timestampApprove? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Penyetujuan Perpanjangan CDOB</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampExtendApprove}</p> 
+                      </li>
+                    </ul>
+
+                    : null
                   }
                     <ul>
                     <li className="label">

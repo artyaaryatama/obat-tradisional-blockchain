@@ -232,12 +232,17 @@
               color: $white;
             }
 
+            &.Disetujui, &.Selesai, &.Perpanjangan, &.Perpanjangan.NIE{
+              background-color: $green;
+              color: $white;
+            }
+
             &.Tersedia, &.Pengajuan.Perpanjangan{
               background-color: $blue;
               color: $white;
             }
             
-            &.Dikirim, &.Dalam.Proses.Pengajuan, &.Pengajuan.NIE, &.Pengajuan{
+            &.Dikirim, &.Dalam.Proses.Pengajuan, &.Pengajuan.NIE{
               background-color: $yellow;
               color: $black;
             }
@@ -247,10 +252,6 @@
               color: $black;
             }
 
-            &.Disetujui, &.Selesai, &.Perpanjangan, &.Perpanjangan.NIE{
-              background-color: $green;
-              color: $white;
-            }
             
             &.Penolakan,  &.Tidak.Disetujui{
               background-color: $red;

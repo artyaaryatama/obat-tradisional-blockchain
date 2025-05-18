@@ -773,25 +773,6 @@ function ManageCdob() {
                       <p>{detailCdob.bpomAddr}</p> 
                     </li>
                   </ul>
-  
-                  {
-                    detailCdob.cdobIpfs === "-" ? <div></div> : 
-                      <ul>
-                        <li className="label">
-                          <p>IPFS CDOB</p> 
-                        </li>
-                        <li className="input">
-                          <a
-                            href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
-                            target="_blank"cdobIpfs
-                            rel="noopener noreferrer"
-                          >
-                            Liat data CDOB di IPFS
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                          </a>
-                        </li>
-                      </ul>
-                  }
                   
                 </div>
 
@@ -1108,14 +1089,18 @@ function ManageCdob() {
                       <p>Nomor CDOB</p>
                     </li>
                     <li className="input">
-                      <a
-                        href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {detailCdob.cdobNumber}
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
+                      {timestampApprove?
+                        <a
+                          href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {detailCdob.cdobNumber}
+                          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      
+                        : <p>{detailCdob.cdobNumber}</p>
+                      }
                     </li>
                   </ul>
   
@@ -1181,33 +1166,44 @@ function ManageCdob() {
                       <p>{detailCdob.timestampApprove}</p> 
                     </li>
                   </ul>
-                  <ul>
-                    <li className="label">
-                      <p>CDOB Berlaku Sampai</p> 
-                    </li>
-                    <li className="input">
-                      <p>{Math.floor(Date.now() / 1000) > Number(timestampExpired)
-                        ? `${detailCdob.timestampExpired} (Kadaluarsa)`
-                        : detailCdob.timestampExpired}
-                      </p> 
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Pengajuan Perpanjangan CDOB</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCdob.timestampExtendRequest}</p> 
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>Tanggal Penyetujuan Perpanjangan CDOB</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCdob.timestampExtendApprove}</p> 
-                    </li>
-                  </ul>
+                  {timestampApprove? 
+                    <ul>
+                      <li className="label">
+                        <p>CDOB Berlaku Sampai</p> 
+                      </li>
+                      <li className="input">
+                        <p>{Math.floor(Date.now() / 1000) > Number(timestampExpired)
+                          ? `${detailCdob.timestampExpired} (Kadaluarsa)`
+                          : detailCdob.timestampExpired}
+                        </p> 
+                      </li>
+                    </ul>
+                  
+                : null}
+                  {timestampApprove? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Perpanjangan CDOB</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampExtendRequest}</p> 
+                      </li>
+                    </ul>
+
+                    : null
+                  }
+                  {timestampApprove? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Penyetujuan Perpanjangan CDOB</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampExtendApprove}</p> 
+                      </li>
+                    </ul>
+
+                    : null
+                  }
                   <ul>
                     <li className="label">
                       <p>Nama Instansi PBF</p>
@@ -1261,24 +1257,6 @@ function ManageCdob() {
                       <p>{detailCdob.bpomAddr}</p> 
                     </li>
                   </ul>
-                  {cdobIpfs? 
-                    <ul>
-                    <li className="label">
-                      <p>IPFS CDOB</p> 
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Liat data CDOB di IPFS
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>  : 
-                  <div></div>
-                    }
                 </div>
                 <div className='col doku'>
                   <h5>Dokumen Administrasi</h5>
@@ -1517,7 +1495,7 @@ function ManageCdob() {
       const docRef = doc(db, 'transaction_hash', collectionName);
   
       await setDoc(docRef, {
-        [`${tp}`]: {
+        [`${tipeP}`]: {
           'extend_request': {
             hash: txHash,
             timestamp: timestamp,
