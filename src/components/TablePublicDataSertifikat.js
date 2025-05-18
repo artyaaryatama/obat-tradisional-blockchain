@@ -1,32 +1,15 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import { DataGrid } from '@mui/x-data-grid';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 
-export default function DataGridDemo({ rowsData }) {
-  const rowsWithNomor = rowsData.map((row, index) => ({
-    ...row,
-    nomor: index + 1,
-  }));
-
+export default function CertificateTable({ rowsData }) {
   const columns = [
-    // {
-    //   field: 'fixedNumber',
-    //   headerName: 'No.',
-    //   width: 70,
-    //   sortable: false,
-    //   flex: 0,
-    //   renderCell: (params) => {
-    //     const sortedIds = params.api.getSortedRowIds();
-    //     const index = sortedIds.indexOf(params.id);
-    //     return index + 1;
-    //   },
-    // },
+    { field: 'nomor', headerName: 'No.', width: 70, sortable: true },
     {
       field: 'certNumber',
       headerName: 'No. Sertifikat',
       width: 230,
-      flex: 0,
       renderCell: (params) => (
         <a
           href={`http://localhost:3000/public/certificate/${params.row.ipfsCid}`}
@@ -38,79 +21,37 @@ export default function DataGridDemo({ rowsData }) {
         </a>
       ),
     },
-    {
-      field: 'jenisSertifikasi',
-      headerName: 'Jenis Sertifikasi',
-      width: 210,
-      flex: 0,
-    },
+    { field: 'jenisSertifikasi', headerName: 'Jenis Sertifikasi', width: 180 },
     {
       field: 'approvedTimestamp',
       headerName: 'Tanggal Diterbitkan',
-      width: 170,
-      flex: 0,
+      width: 160,
       renderCell: (params) => {
         const raw = Number(params.value);
         if (!raw) return '-';
-      
-        const date = new Date(raw * 1000);
-        return date.toLocaleDateString("id-ID", {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
+        return new Date(raw * 1000).toLocaleDateString('id-ID', {
+          year: 'numeric', month: 'long', day: 'numeric',
         });
-      }
-      
-      
+      },
     },
-    {
-      field: 'companyName',
-      headerName: 'Perusahaan',
-      width: 210,
-      flex: 0,
-    },
+    { field: 'companyName', headerName: 'Perusahaan', width: 200 },
     {
       field: 'companyAddress',
       headerName: 'Alamat',
-      width: 320,
-      flex: 0,
+      width: 300,
       renderCell: (params) => (
-        <div
-          style={{
-            whiteSpace: 'normal',
-            wordBreak: 'break-word',
-            lineHeight: '1.4',
-            width: '100%',
-            
-          }}
-        >
+        <div style={{ whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: 1.4 }}>
           {params.value}
         </div>
       ),
     },
-    {
-      field: 'tipePermohonan',
-      headerName: 'Tipe Permohonan',
-      width: 160,
-      flex: 0,
-    },
-    {
-      field: 'companyNib',
-      headerName: 'NIB',
-      width: 160,
-      flex: 0,
-    },
-    {
-      field: 'bpomInstance',
-      headerName: 'BPOM',
-      width: 150,
-      flex: 0,
-    },
+    { field: 'tipePermohonan', headerName: 'Tipe Permohonan', width: 150 },
+    { field: 'companyNib', headerName: 'NIB', width: 150 },
+    { field: 'bpomInstance', headerName: 'BPOM', width: 150 },
     {
       field: 'approvedHash',
-      headerName: 'Cek transaksi',
+      headerName: 'Cek Transaksi',
       width: 150,
-      flex: 0,
       renderCell: (params) => (
         <a
           href={`https://sepolia.etherscan.io/tx/${params.value}`}
@@ -118,41 +59,53 @@ export default function DataGridDemo({ rowsData }) {
           rel="noopener noreferrer"
           style={{ color: '#1d61d6', textDecoration: 'underline' }}
         >
-          Cek di Etherscan
+          Etherscan
         </a>
       ),
     },
   ];
-  console.log(columns);
+
+  const rows = rowsData.map((row, idx) => ({
+    id: idx + 1,
+    nomor: idx + 1,
+    certNumber: row.certNumber,
+    jenisSertifikasi: row.jenisSertifikasi,
+    approvedTimestamp: row.approvedTimestamp || 0,
+    companyName: row.companyName,
+    companyAddress: row.companyAddress,
+    tipePermohonan: row.tipePermohonan,
+    companyNib: row.companyNib,
+    bpomInstance: row.bpomInstance,
+    approvedHash: row.approvedHash,
+    ipfsCid: row.ipfsCid,
+  }));
+
+  const paginationModel = { page: 0, pageSize: 5 };
 
   return (
-    <Paper elevation={0} sx={{ border: '1px solid #f2f3f5', borderRadius: 2, p: 2 }}>
-      <Box sx={{ minHeight: 480, width: '100%', overflowX: 'auto' }}>
+    <Paper sx={{ width: '100%' }}>
+      <Box sx={{ width: '100%' }}>
         <DataGrid
-          rows={rowsWithNomor}
+          autoHeight
+          rows={rows}
           columns={columns}
-          getRowId={(row) => `${row.nomor}-${row.noSertifikat}`}
-          getRowHeight={() => 'auto'}
-          initialState={{
-            pagination: {
-              paginationModel: { pageSize: 10, page: 0 },
-            },
-          }}
-          pageSizeOptions={[5, 10, 25]}
+          initialState={{ pagination: { paginationModel } }}
+          pageSizeOptions={[5, 10, 25, 50]}
+          pagination
           disableRowSelectionOnClick
           sx={{
-            minWidth: '1200px',
+            width: '100%',
             fontFamily: 'Instrument Sans, sans-serif',
             fontSize: '13px',
             '& .MuiDataGrid-columnHeaders': {
               backgroundColor: '#f2f3f59e',
               fontWeight: 'bold',
-              borderBottom: '1px solid #ddd', 
+              borderBottom: '1px solid #ddd',
               textTransform: 'none',
             },
             '& .MuiDataGrid-columnHeaderTitle': {
               fontWeight: 'bold',
-              whiteSpace: 'nowrap', 
+              whiteSpace: 'nowrap',
             },
             '& .MuiDataGrid-cell': {
               whiteSpace: 'normal !important',
@@ -177,4 +130,3 @@ export default function DataGridDemo({ rowsData }) {
     </Paper>
   );
 }
-

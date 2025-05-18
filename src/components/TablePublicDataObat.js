@@ -4,24 +4,25 @@ import Paper from '@mui/material/Paper';
 import { DataGrid } from '@mui/x-data-grid';
 
 export default function DataGridDemo({ rowsData }) {
-  const rowsWithNomor = rowsData.map((row, index) => ({
-    ...row,
-    nomor: index + 1,
-  }));
+  // Tambahkan kolom nomor statis (No.) yang tidak ikut tersortir
+  const rowsWithNomor = React.useMemo(
+    () => rowsData.map((row, idx) => ({
+      ...row,
+      nomor: idx + 1,
+      id: idx + 1, // DataGrid butuh field id
+    })),
+    [rowsData]
+  );
 
+  // Definisi kolom sesuai data CDOB
   const columns = [
-    // {
-    //   field: 'fixedNumber',
-    //   headerName: 'No.',
-    //   width: 70,
-    //   sortable: false,
-    //   flex: 0,
-    //   renderCell: (params) => {
-    //     const sortedIds = params.api.getSortedRowIds();
-    //     const index = sortedIds.indexOf(params.id);
-    //     return index + 1;
-    //   },
-    // },
+    {
+      field: 'nomor',
+      headerName: 'No.',
+      width: 70,
+      sortable: false,
+      flex: 0,
+    },
     {
       field: 'nieNumber',
       headerName: 'No. Izin Edar',
@@ -52,14 +53,13 @@ export default function DataGridDemo({ rowsData }) {
       renderCell: (params) => {
         const raw = Number(params.value);
         if (!raw) return '-';
-      
         const date = new Date(raw * 1000);
-        return date.toLocaleDateString("id-ID", {
+        return date.toLocaleDateString('id-ID', {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
         });
-      }
+      },
     },
     {
       field: 'companyName',
@@ -73,15 +73,7 @@ export default function DataGridDemo({ rowsData }) {
       width: 320,
       flex: 0,
       renderCell: (params) => (
-        <div
-          style={{
-            whiteSpace: 'normal',
-            wordBreak: 'break-word',
-            lineHeight: '1.4',
-            width: '100%',
-            
-          }}
-        >
+        <div style={{ whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: 1.4 }}>
           {params.value}
         </div>
       ),
@@ -115,36 +107,34 @@ export default function DataGridDemo({ rowsData }) {
       ),
     },
   ];
-  console.log(columns);
+
+  // Pagination model default
+  const paginationModel = { page: 0, pageSize: 10 };
 
   return (
-    <Paper elevation={0} sx={{ border: '1px solid #f2f3f5', borderRadius: 2, p: 2 }}>
-      <Box sx={{ minHeight: 480, width: '100%', overflowX: 'auto' }}>
+    <Paper elevation={0} sx={{ border: '1px solid #f2f3f5', borderRadius: 2, p: 2, width: '100%' }}>
+      <Box sx={{ width: '100%', overflowX: 'auto' }}>
         <DataGrid
           rows={rowsWithNomor}
           columns={columns}
-          getRowId={(row) => `${row.nomor}-${row.noSertifikat}`}
-          getRowHeight={() => 'auto'}
-          initialState={{
-            pagination: {
-              paginationModel: { pageSize: 10, page: 0 },
-            },
-          }}
-          pageSizeOptions={[5, 10, 25]}
+          initialState={{ pagination: { paginationModel } }}
+          pageSizeOptions={[10, 25, 50]}
+          pagination
           disableRowSelectionOnClick
+          getRowHeight={() => 'auto'}
           sx={{
-            minWidth: '1200px',
+            width: '100%',
             fontFamily: 'Instrument Sans, sans-serif',
             fontSize: '13px',
             '& .MuiDataGrid-columnHeaders': {
               backgroundColor: '#f2f3f59e',
               fontWeight: 'bold',
-              borderBottom: '1px solid #ddd', 
+              borderBottom: '1px solid #ddd',
               textTransform: 'none',
             },
             '& .MuiDataGrid-columnHeaderTitle': {
               fontWeight: 'bold',
-              whiteSpace: 'nowrap', 
+              whiteSpace: 'nowrap',
             },
             '& .MuiDataGrid-cell': {
               whiteSpace: 'normal !important',
@@ -169,4 +159,3 @@ export default function DataGridDemo({ rowsData }) {
     </Paper>
   );
 }
-
