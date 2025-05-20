@@ -10,8 +10,8 @@ contract NieManager {
   constructor(address roleManagerAddr) {
     roleManager = RoleManager(roleManagerAddr);
   }
-
-  uint constant extTimestamp = (2*60) + 10;
+    uint constant extTimestamp = (2*60) + 10;
+  // uint constant extTimestamp = (5*60) + 10;
 
   struct NieDetail {
     string nieNumber; 
@@ -47,6 +47,16 @@ contract NieManager {
     string sistemPenomoranBets;
     string desainKemasan;
     string dataPendukungKeamanan;
+  } 
+
+  struct ReSertifikasi{
+    string masterFormula;
+    string desainKemasanTerbaru;
+    string skPersetujuan;
+    string desainKemasanDisetujui;
+    string dokumenSemuaJenisVariasi;
+    string suratBermaterai;
+    string hasilUjiStabilitas;
   } 
 
   mapping (string => NieDetail) public nieDetailById;

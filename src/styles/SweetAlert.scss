@@ -149,6 +149,16 @@
         }
       }
     }
+
+  }
+  .row4{
+    flex-direction: column;
+    width: 100%;
+
+    .col .doku{
+      width: initial;
+      margin-bottom: 10px;
+    }
   }
 
   .row1{

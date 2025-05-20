@@ -407,7 +407,7 @@ function CreateObat() {
 
   const handleAutoFill4 = () => {
     const autoFillValues = {
-      namaProduk: "[TEST] Rajangan Daun Sirih Wangi",
+      namaProduk: "[TEST] Pil Daun Sirih Wangi",
       merk: "AlamHijau",
       klaim: [
         "Membantu menjaga kesehatan area kewanitaan",
@@ -439,7 +439,7 @@ function CreateObat() {
   
   const handleAutoFill5 = () => {
     const autoFillValues = {
-      namaProduk: "[TEST] Rajangan Sari Pegagan",
+      namaProduk: "[TEST] Obat Sari Pegagan",
       merk: "HerbaSari",
       klaim: [
         "Membantu meningkatkan daya ingat dan konsentrasi",
@@ -471,7 +471,7 @@ function CreateObat() {
   
   const handleAutoFill6 = () => {
     const autoFillValues = {
-      namaProduk: "[TEST] Rajangan Rempah Pencernaan",
+      namaProduk: "[TEST] Evaversen Rempah Pencernaan",
       merk: "RasaSehat",
       klaim: [
         "Membantu melancarkan pencernaan",

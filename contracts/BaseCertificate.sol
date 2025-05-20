@@ -6,8 +6,9 @@ import "./EnumsLibrary.sol";
 contract BaseCertificate {
 
   using EnumsLibrary for EnumsLibrary.StatusCertificate;
-
+  
   uint constant extTimestamp = (2*60) + 10;
+  // uint constant extTimestamp = (5*60) + 10;
 
   struct UserCert {
     string userName;

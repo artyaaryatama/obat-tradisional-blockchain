@@ -36,6 +36,15 @@ contract CpotbCertificate is BaseCertificate {
     string sistemMutu;
   }
 
+  struct DokumenReSertifikasi{
+    string suratPermohonan;
+    string buktiPembayaranNegaraBukanPajak;
+    string denahBangunan;
+    string sistemMutu;
+    string cpotbIpfs;
+    string dokumenCapa;
+  }
+
   struct ApprovedCert {
     string ipfsCert;
     uint8 tipePermohonan; 
@@ -46,6 +55,7 @@ contract CpotbCertificate is BaseCertificate {
   mapping (string => CpotbData) public cpotbDataById;
   mapping (string => DokumenAdministrasi) public dokuAdminById;
   mapping (string => DokumenTeknis) public dokuTeknisById;
+  mapping (string => DokumenReSertifikasi) public dokuReSertifikasiById;
 
   function requestCpotb(
     string memory certId,
@@ -182,7 +192,8 @@ contract CpotbCertificate is BaseCertificate {
 
   function extendCpotb(
     string memory certId,
-    uint256 expTimestamp
+    uint256 expTimestamp,
+    DokumenReSertifikasi memory newDoku
   ) public {
 
     updateExtendRenewDetails(
@@ -191,6 +202,8 @@ contract CpotbCertificate is BaseCertificate {
     );  
 
     uint length = allCpotbData.length;
+
+    dokuReSertifikasiById[certId] = newDoku; 
 
     for (uint i = 0; i < length; i++) {
       if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
@@ -266,13 +279,15 @@ contract CpotbCertificate is BaseCertificate {
   function getCpotbDetails(string memory certId) public view returns (
     CpotbData memory,
     DokumenAdministrasi memory, 
-    DokumenTeknis memory 
+    DokumenTeknis memory,
+    DokumenReSertifikasi memory
   ) {
     
   return (
     cpotbDataById[certId], 
     dokuAdminById[certId], 
-    dokuTeknisById[certId])
+    dokuTeknisById[certId],
+    dokuReSertifikasiById[certId])
     ;     
   } 
 

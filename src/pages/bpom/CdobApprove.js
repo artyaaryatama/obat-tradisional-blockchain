@@ -1130,6 +1130,7 @@ function CdobApprove() {
                         href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
                         target="_blank"
                         rel="noopener noreferrer"
+                        readOnly
                       >
                         {detailCdob.cdobNumber}
                         <i class="fa-solid fa-arrow-up-right-from-square"></i>

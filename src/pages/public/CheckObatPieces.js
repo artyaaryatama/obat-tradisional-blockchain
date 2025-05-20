@@ -222,6 +222,8 @@ function CheckObatPieces() {
       const alamat = company?.userLocation || "-";
       const nib = company?.userNib || "-";
 
+      console.log(docData)
+
       Object.entries(docData).forEach(([namaProduk, obatData]) => {
         if (obatData?.status !== 1) return; 
         console.log(namaProduk)
@@ -231,11 +233,11 @@ function CheckObatPieces() {
           id: rowsData.length + 1,
           // nomor: rowsData.length + 1,
           fixedNumber: rowsData.length + 1,
-          approvedTimestamp: obatData.historyNie.approveTimestamp || null,
+          approvedTimestamp: obatData.historyNie.approvedTimestamp || null,
+          approvedHash: obatData.historyNie.approvedHash || "-",
           nieNumber: obatData.historyNie.nieNumber || "-",
           namaProduk:namaProduk,
           companyName: companyName,
-          approvedHash: obatData.historyNie.approveHash || "-",
           ipfsCid: obatData.historyNie.ipfsCid || "-",
           bpomInstance: obatData.historyNie.bpomInstance || "-",
           companyAddress: alamat,

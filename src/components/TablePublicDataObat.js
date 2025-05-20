@@ -1,7 +1,7 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import { DataGrid } from '@mui/x-data-grid';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 
 export default function DataGridDemo({ rowsData }) {
   // Tambahkan kolom nomor statis (No.) yang tidak ikut tersortir
@@ -16,13 +16,6 @@ export default function DataGridDemo({ rowsData }) {
 
   // Definisi kolom sesuai data CDOB
   const columns = [
-    {
-      field: 'nomor',
-      headerName: 'No.',
-      width: 70,
-      sortable: false,
-      flex: 0,
-    },
     {
       field: 'nieNumber',
       headerName: 'No. Izin Edar',
@@ -112,16 +105,15 @@ export default function DataGridDemo({ rowsData }) {
   const paginationModel = { page: 0, pageSize: 10 };
 
   return (
-    <Paper elevation={0} sx={{ border: '1px solid #f2f3f5', borderRadius: 2, p: 2, width: '100%' }}>
-      <Box sx={{ width: '100%', overflowX: 'auto' }}>
+    <Paper sx={{ width: '100%' }}>
+      <Box sx={{ width: '100%'}}>
         <DataGrid
           rows={rowsWithNomor}
           columns={columns}
           initialState={{ pagination: { paginationModel } }}
-          pageSizeOptions={[10, 25, 50]}
+          pageSizeOptions={[5, 10, 25, 50]}
           pagination
           disableRowSelectionOnClick
-          getRowHeight={() => 'auto'}
           sx={{
             width: '100%',
             fontFamily: 'Instrument Sans, sans-serif',
@@ -153,7 +145,7 @@ export default function DataGridDemo({ rowsData }) {
             '& .MuiDataGrid-row:nth-of-type(odd)': {
               backgroundColor: '#ffffff',
             },
-          }}
+          }}    
         />
       </Box>
     </Paper>

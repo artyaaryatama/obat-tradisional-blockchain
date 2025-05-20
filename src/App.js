@@ -6,10 +6,12 @@ import ManageCpotb from './pages/factory/ManageCpotb';
 import ManageCdob from './pages/pbf/ManageCdob';
 import CpotbRequest from './pages/factory/CpotbRequest';
 import CpotbRenewRequest from './pages/factory/CpotbRenewRequest';
+import CpotbExtendRequest from './pages/factory/CpotbExtendRequest';
 import CdobRequest from './pages/pbf/CdobRequest';
 import NieRequest from './pages/factory/NieRequest';
 import NieRenewRequest from './pages/factory/NieRenewRequest';
 import CdobRenewRequest from './pages/pbf/CdobRenewRequest';
+import CdobExtendRequest from './pages/pbf/CdobExtendRequest';
 import CpotbApprove from './pages/bpom/CpotbApprove';
 import CdobApprove from './pages/bpom/CdobApprove';
 import NieApprove from './pages/bpom/NieApprove';
@@ -79,6 +81,16 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <CpotbRenewRequest />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/extend-request-cpotb" 
+            element={
+              <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
+                <CpotbExtendRequest />
               </ProtectedRoute>
             } 
           />
@@ -169,6 +181,15 @@ function App() {
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
                 <CdobRequest />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/extend-request-cdob" 
+            element={
+              <ProtectedRoute allowedRoles={['1']}>
+                <Navbar />
+                <CdobExtendRequest />
               </ProtectedRoute>
             } 
           />

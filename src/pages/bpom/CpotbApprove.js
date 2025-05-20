@@ -425,7 +425,7 @@ function CpotbApprove() {
       const detailCpotbCt = await contracts.certificateManager.getCpotbDetails(id);
       let typeFactory;
       
-      const [certDetails, cpotbDetails, docsAdministrasi, docsTeknis] = detailCpotbCt; 
+      const [certDetails, cpotbDetails, docsAdministrasi, docsTeknis, docsReSertifikasi] = detailCpotbCt; 
       const [suratPermohonan, buktiPembayaranNegaraBukanPajak, suratKomitmen] = docsAdministrasi;
       const [denahBangunan, sistemMutu] = docsTeknis
       const [cpotbId, cpotbNumber, jenisSediaan, factoryType] = cpotbDetails;
@@ -460,38 +460,111 @@ function CpotbApprove() {
       console.log(status)
       console.log(statusCert)
 
-      const detailCpotb = {
-        cpotbId: cpotbId,
-        cpotbNumber: cpotbNumber ? cpotbNumber : "-",
-        factoryUserName: sender[0],
-        factoryAddr: sender[2],
-        factoryInstanceName: sender[1],
-        jenisSediaan: jenisSediaanMap[jenisSediaan], 
-        status: statusCert, 
-        timestampRequest: new Date(Number(timestampRequest) * 1000).toLocaleDateString('id-ID', options),
-        timestampApprove: Number(timestampApprove) > 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
-        timestampRenewRequest: parseInt(timestampRenewRequest) !== 0 ? new Date(Number(timestampRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
-        timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
-        timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
-        timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
-        timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
-        bpomUserName : bpom[0] ? bpom[0] : "-",
-        bpomInstance: bpom[1] ? bpom[1] : "-",
-        bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
-        cpotbIpfs: cpotbIpfs ? cpotbIpfs : "-",
-        factoryType: typeFactory,
-        factoryNIB: detailUserFactoryCt[6],
-        factoryNPWP: detailUserFactoryCt[7],
-        dokumenAdministrasi: {
-          suratPermohonan: suratPermohonan,
-          buktiPembayaranNegaraBukanPajak: buktiPembayaranNegaraBukanPajak,
-          suratKomitmen: suratKomitmen
-        },
-        dokumenTeknis: {
-          denahBangunan: denahBangunan,
-          sistemMutu: sistemMutu,
+      let detailCpotb
+      if(docsReSertifikasi[0] !== '') {
+        detailCpotb = {
+          cpotbId: cpotbId,
+          cpotbNumber: cpotbNumber ? cpotbNumber : "-",
+          factoryUserName: sender[0],
+          factoryAddr: sender[2],
+          factoryInstanceName: sender[1],
+          jenisSediaan: jenisSediaanMap[jenisSediaan], 
+          status: statusCert, 
+          timestampRequest: new Date(Number(timestampRequest) * 1000).toLocaleDateString('id-ID', options),
+          timestampApprove: Number(timestampApprove) !== 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+          timestampRenewRequest: parseInt(timestampRenewRequest) !== 0 ? new Date(Number(timestampRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+          timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
+          timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
+          timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+          timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+          bpomName : bpom[0] ? bpom[0] : "-",
+          bpomInstance: bpom[1] ? bpom[1] : "-",
+          bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
+          cpotbIpfs: cpotbIpfs ? cpotbIpfs : "-",
+          factoryType: typeFactory,
+          factoryNIB: detailUserFactoryCt[6],
+          factoryNPWP: detailUserFactoryCt[7],
+          dokumenAdministrasi: {
+            suratPermohonan: docsReSertifikasi[0],
+            buktiPembayaranNegaraBukanPajak: docsReSertifikasi[1],
+            suratKomitmen: suratKomitmen
+          },
+          dokumenTeknis: {
+            denahBangunan: docsReSertifikasi[2],
+            sistemMutu: docsReSertifikasi[3]
+          },
+          dokumenReSertifikasi: {
+            oldCpotbIpfs: docsReSertifikasi[4],
+            dokumenCapa: docsReSertifikasi[5]
+          }
         }
-      };
+      } else {
+        detailCpotb = {
+          cpotbId: cpotbId,
+          cpotbNumber: cpotbNumber ? cpotbNumber : "-",
+          factoryUserName: sender[0],
+          factoryAddr: sender[2],
+          factoryInstanceName: sender[1],
+          jenisSediaan: jenisSediaanMap[jenisSediaan], 
+          status: statusCert, 
+          timestampRequest: new Date(Number(timestampRequest) * 1000).toLocaleDateString('id-ID', options),
+          timestampApprove: Number(timestampApprove) !== 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+          timestampRenewRequest: parseInt(timestampRenewRequest) !== 0 ? new Date(Number(timestampRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+          timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
+          timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
+          timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+          timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+          bpomName : bpom[0] ? bpom[0] : "-",
+          bpomInstance: bpom[1] ? bpom[1] : "-",
+          bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
+          cpotbIpfs: cpotbIpfs ? cpotbIpfs : "-",
+          factoryType: typeFactory,
+          factoryNIB: detailUserFactoryCt[6],
+          factoryNPWP: detailUserFactoryCt[7],
+          dokumenAdministrasi: {
+            suratPermohonan: suratPermohonan,
+            buktiPembayaranNegaraBukanPajak: buktiPembayaranNegaraBukanPajak,
+            suratKomitmen: suratKomitmen
+          },
+          dokumenTeknis: {
+            denahBangunan: denahBangunan,
+            sistemMutu: sistemMutu,
+          }
+        }
+      }
+
+      // const detailCpotb = {
+      //   cpotbId: cpotbId,
+      //   cpotbNumber: cpotbNumber ? cpotbNumber : "-",
+      //   factoryUserName: sender[0],
+      //   factoryAddr: sender[2],
+      //   factoryInstanceName: sender[1],
+      //   jenisSediaan: jenisSediaanMap[jenisSediaan], 
+      //   status: statusCert, 
+      //   timestampRequest: new Date(Number(timestampRequest) * 1000).toLocaleDateString('id-ID', options),
+      //   timestampApprove: Number(timestampApprove) > 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+      //   timestampRenewRequest: parseInt(timestampRenewRequest) !== 0 ? new Date(Number(timestampRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+      //   timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
+      //   timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
+      //   timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+      //   timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+      //   bpomUserName : bpom[0] ? bpom[0] : "-",
+      //   bpomInstance: bpom[1] ? bpom[1] : "-",
+      //   bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
+      //   cpotbIpfs: cpotbIpfs ? cpotbIpfs : "-",
+      //   factoryType: typeFactory,
+      //   factoryNIB: detailUserFactoryCt[6],
+      //   factoryNPWP: detailUserFactoryCt[7],
+      //   dokumenAdministrasi: {
+      //     suratPermohonan: suratPermohonan,
+      //     buktiPembayaranNegaraBukanPajak: buktiPembayaranNegaraBukanPajak,
+      //     suratKomitmen: suratKomitmen
+      //   },
+      //   dokumenTeknis: {
+      //     denahBangunan: denahBangunan,
+      //     sistemMutu: sistemMutu,
+      //   }
+      // };
 
       console.log(detailCpotb)
 
@@ -659,85 +732,186 @@ function CpotbApprove() {
                   </ul>
 
                 </div>
-                <div className='col doku'>
-                  <h5>Dokumen Administrasi</h5>
-                  <ul>
-                    <li className="label">
-                      <p>Surat Permohonan CPOTB</p>
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratPermohonan}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Lihat Surat Permohonan CPOTB
-                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>Bukti Pembayaran Negara Bukan Pajak</p>
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.buktiPembayaranNegaraBukanPajak}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Lihat Bukti Pembayaran Negara Bukan Pajak
-                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>Surat Pernyataan Komitmen</p>
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratKomitmen}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Lihat Surat Pernyataan Komitmen
-                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>
-                  <h5>Dokumen Teknis</h5>
-                  <ul>
-                    <li className="label">
-                      <p>Denah Bangunan Pabrik</p>
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denahBangunan}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Lihat Denah Bangunan Pabrik
-                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>Dokumen Sistem Mutu CPOTB</p>
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denah_pbf}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Lihat Dokumen Sistem Mutu CPOTB
-                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+                  <div className='row4'>
+                    <div className='col doku'>
+                      <h5>Dokumen Administrasi</h5>
+                      <ul>
+                        <li className="label">
+                          <p>Surat Permohonan CPOTB</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratPermohonan}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Surat Permohonan CPOTB
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Bukti Pembayaran Negara Bukan Pajak</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.buktiPembayaranNegaraBukanPajak}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Bukti Pembayaran Negara Bukan Pajak
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Surat Pernyataan Komitmen</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratKomitmen}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Surat Pernyataan Komitmen
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <h5>Dokumen Teknis</h5>
+                      <ul>
+                        <li className="label">
+                          <p>Denah Bangunan Pabrik</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denahBangunan}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Denah Bangunan Pabrik
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Dokumen Sistem Mutu CPOTB</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.sistemMutu}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Dokumen Sistem Mutu CPOTB
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+
+                    {
+                      docsReSertifikasi[0] !== ''? 
+                      <div className='col doku'>
+                        <h5>Dokumen Re-Sertifikasi CPOTB</h5>
+                        <ul>
+                          <li className="label">
+                            <p>Surat Permohonan CPOTB</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratPermohonan}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat Surat Permohonan CPOTB
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                        <ul>
+                          <li className="label">
+                            <p>Bukti Pembayaran Negara Bukan Pajak</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.buktiPembayaranNegaraBukanPajak}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat Bukti Pembayaran Negara Bukan Pajak
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                        <ul>
+                          <li className="label">
+                            <p>Denah Bangunan Pabrik</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denahBangunan}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat Denah Bangunan Pabrik
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                        <ul>
+                          <li className="label">
+                            <p>Dokumen Sistem Mutu CPOTB</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.sistemMutu}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat Dokumen Sistem Mutu CPOTB
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                        <ul>
+                          <li className="label">
+                            <p>CPOTB IPFS Sebelumnya</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:3000/public/certificate/${detailCpotb.cpotbIpfs}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat CPOTB Sebelumnya
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                        <ul>
+                          <li className="label">
+                            <p>Dokumen CAPA (Corrective Action and Preventive Action)</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.sistemMutu}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat Dokumen CAPA
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                        : null
+                    }
+
+                  </div>
               </div>
             
             </div>
@@ -1149,85 +1323,186 @@ function CpotbApprove() {
 
                 </div>
 
-                <div className='col doku'>
-                  <h5>Dokumen Administrasi</h5>
-                  <ul>
-                    <li className="label">
-                      <p>Surat Permohonan CPOTB</p>
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratPermohonan}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Lihat Surat Permohonan CPOTB
-                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>Bukti Pembayaran Negara Bukan Pajak</p>
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.buktiPembayaranNegaraBukanPajak}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Lihat Bukti Pembayaran Negara Bukan Pajak
-                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>Surat Pernyataan Komitmen</p>
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratKomitmen}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Lihat Surat Pernyataan Komitmen
-                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>
-                  <h5>Dokumen Teknis</h5>
-                  <ul>
-                    <li className="label">
-                      <p>Denah Bangunan Pabrik</p>
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denahBangunan}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Lihat Denah Bangunan Pabrik
-                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>
-                  <ul>
-                    <li className="label">
-                      <p>Dokumen Sistem Mutu CPOTB</p>
-                    </li>
-                    <li className="input">
-                      <a
-                        href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denah_pbf}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Lihat Dokumen Sistem Mutu CPOTB
-                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+                  <div className='row4'>
+                    <div className='col doku'>
+                      <h5>Dokumen Administrasi</h5>
+                      <ul>
+                        <li className="label">
+                          <p>Surat Permohonan CPOTB</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratPermohonan}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Surat Permohonan CPOTB
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Bukti Pembayaran Negara Bukan Pajak</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.buktiPembayaranNegaraBukanPajak}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Bukti Pembayaran Negara Bukan Pajak
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Surat Pernyataan Komitmen</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratKomitmen}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Surat Pernyataan Komitmen
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <h5>Dokumen Teknis</h5>
+                      <ul>
+                        <li className="label">
+                          <p>Denah Bangunan Pabrik</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denahBangunan}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Denah Bangunan Pabrik
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Dokumen Sistem Mutu CPOTB</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.sistemMutu}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Dokumen Sistem Mutu CPOTB
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+
+                    {
+                      docsReSertifikasi[0] !== ''? 
+                      <div className='col doku'>
+                        <h5>Dokumen Re-Sertifikasi CPOTB</h5>
+                        <ul>
+                          <li className="label">
+                            <p>Surat Permohonan CPOTB</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratPermohonan}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat Surat Permohonan CPOTB
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                        <ul>
+                          <li className="label">
+                            <p>Bukti Pembayaran Negara Bukan Pajak</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.buktiPembayaranNegaraBukanPajak}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat Bukti Pembayaran Negara Bukan Pajak
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                        <ul>
+                          <li className="label">
+                            <p>Denah Bangunan Pabrik</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denahBangunan}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat Denah Bangunan Pabrik
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                        <ul>
+                          <li className="label">
+                            <p>Dokumen Sistem Mutu CPOTB</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.sistemMutu}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat Dokumen Sistem Mutu CPOTB
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                        <ul>
+                          <li className="label">
+                            <p>CPOTB IPFS Sebelumnya</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:3000/public/certificate/${detailCpotb.cpotbIpfs}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat CPOTB Sebelumnya
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                        <ul>
+                          <li className="label">
+                            <p>Dokumen CAPA (Corrective Action and Preventive Action)</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.sistemMutu}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat Dokumen CAPA
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                        : null
+                    }
+
+                  </div>
               </div>
             
             </div>

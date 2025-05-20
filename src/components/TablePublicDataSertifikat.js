@@ -5,7 +5,6 @@ import Box from '@mui/material/Box';
 
 export default function CertificateTable({ rowsData }) {
   const columns = [
-    { field: 'nomor', headerName: 'No.', width: 70, sortable: true },
     {
       field: 'certNumber',
       headerName: 'No. Sertifikat',
@@ -80,7 +79,7 @@ export default function CertificateTable({ rowsData }) {
     ipfsCid: row.ipfsCid,
   }));
 
-  const paginationModel = { page: 0, pageSize: 5 };
+  const paginationModel = { page: 0, pageSize: 10 };
 
   return (
     <Paper sx={{ width: '100%' }}>

@@ -30,6 +30,12 @@ contract CdobCertificate is BaseCertificate {
     string dokumenSelfAssesment; 
   }
 
+  struct DokumenReSertifikasi {
+    string suratPernyataanPimpinan; 
+    string dokumenInspeksiDiri;
+    string dokumenPerbaikan;
+  } 
+
   struct CertificateList {
     string certId;
     string certNumber; 
@@ -45,6 +51,7 @@ contract CdobCertificate is BaseCertificate {
   mapping (string => CdobData) public cdobDataById;
   mapping (string => DokumenAdministrasi) public dokuAdminById;
   mapping (string => DokumenTeknis) public dokuTeknisById;
+  mapping (string => DokumenReSertifikasi) public dokuReSertifikasiById;
 
   function requestCdob(
     string memory certId,
@@ -187,13 +194,16 @@ contract CdobCertificate is BaseCertificate {
   
   function extendCdob(
     string memory certId,
-    uint256 expTimestamp
+    uint256 expTimestamp,
+    DokumenReSertifikasi memory newDoku
   ) public {
 
     updateExtendRenewDetails(
       certId,
       expTimestamp
     );  
+ 
+    dokuReSertifikasiById[certId] = newDoku; 
 
     uint length = allCdobData.length;
 
@@ -272,12 +282,14 @@ contract CdobCertificate is BaseCertificate {
   function getCdobDetails(string memory certId) public view returns (
     CdobData memory,  
     DokumenAdministrasi memory, 
-    DokumenTeknis memory
+    DokumenTeknis memory,
+    DokumenReSertifikasi memory
   ) {
     return (
       cdobDataById[certId],
       dokuAdminById[certId], 
-      dokuTeknisById[certId]
+      dokuTeknisById[certId],
+      dokuReSertifikasiById[certId]
     );  
   }  
 

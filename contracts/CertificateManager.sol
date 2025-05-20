@@ -24,8 +24,6 @@ contract CertificateManager is ReentrancyGuard {
   }
 
   using EnumsLibrary for EnumsLibrary.Roles;
-
-  uint constant extTimestamp = (2*60) + 10;
  
   struct CertificateRequest { 
     string certId;
@@ -204,7 +202,8 @@ contract CertificateManager is ReentrancyGuard {
 
   function extendCpotb( 
     string memory cpotbId,
-    uint256 expTimestamp
+    uint256 expTimestamp, 
+    CpotbCertificate.DokumenReSertifikasi memory newDoku
   ) 
     public 
     onlyFactory 
@@ -212,7 +211,8 @@ contract CertificateManager is ReentrancyGuard {
   {  
     cpotbCertificate.extendCpotb(
       cpotbId,
-      expTimestamp
+      expTimestamp,
+      newDoku
     );  
  
     emit CertExtendRequest(
@@ -252,19 +252,22 @@ contract CertificateManager is ReentrancyGuard {
     CpotbCertificate.CertificateDetails memory,
     CpotbCertificate.CpotbData memory,
     CpotbCertificate.DokumenAdministrasi memory,
-    CpotbCertificate.DokumenTeknis memory
-  ) {
+    CpotbCertificate.DokumenTeknis memory,
+    CpotbCertificate.DokumenReSertifikasi memory 
+  ) { 
     (
       CpotbCertificate.CpotbData memory cpotb,
       CpotbCertificate.DokumenAdministrasi memory dokuAdmin,
-      CpotbCertificate.DokumenTeknis memory dokuTeknis
+      CpotbCertificate.DokumenTeknis memory dokuTeknis,
+      CpotbCertificate.DokumenReSertifikasi memory dokuReSertifikasi
     ) = cpotbCertificate.getCpotbDetails(certId);
  
     return (
       cpotbCertificate.getCertDetails(certId), 
       cpotb, 
       dokuAdmin, 
-      dokuTeknis
+      dokuTeknis,
+      dokuReSertifikasi
     );
   }
 
@@ -382,15 +385,17 @@ contract CertificateManager is ReentrancyGuard {
 
   function extendCdob( 
     string memory cdobId,
-    uint256 expTimestamp
+    uint256 expTimestamp,
+    CdobCertificate.DokumenReSertifikasi memory newDokus 
   ) 
     public 
-    onlyPBF  
+    onlyPBF   
     nonReentrant 
   {  
     cdobCertificate.extendCdob(
       cdobId,
-      expTimestamp
+      expTimestamp,
+      newDokus 
     );  
  
     emit CertExtendRequest(
@@ -430,20 +435,23 @@ contract CertificateManager is ReentrancyGuard {
     CdobCertificate.CertificateDetails memory,
     CdobCertificate.CdobData memory,
     CdobCertificate.DokumenAdministrasi memory,
-    CdobCertificate.DokumenTeknis memory
+    CdobCertificate.DokumenTeknis memory,
+    CdobCertificate.DokumenReSertifikasi memory 
   ) { 
 
     (
       CdobCertificate.CdobData memory cdob,
       CdobCertificate.DokumenAdministrasi memory dokuAdmin,
-      CdobCertificate.DokumenTeknis memory dokuTeknis
+      CdobCertificate.DokumenTeknis memory dokuTeknis,
+      CdobCertificate.DokumenReSertifikasi memory dokuReSertifikasi
     ) = cdobCertificate.getCdobDetails(certId);
 
     return (
       cdobCertificate.getCertDetails(certId), 
       cdob, 
       dokuAdmin, 
-      dokuTeknis
+      dokuTeknis,
+      dokuReSertifikasi
     );
   }
  
