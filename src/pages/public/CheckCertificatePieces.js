@@ -76,22 +76,30 @@ function CheckCertificateIpfs() {
       const alamat = company?.userLocation || "-";
       const nib = company?.userNib || "-";
 
-      Object.entries(docData).forEach(([tipePermohonan, permohonanData]) => {
-        if (permohonanData?.status !== 1) return; 
+      console.log(docData)
+
+      Object.entries(docData)
+      .filter(([_, d]) => [1,5].includes(d.status) && d.cdobNumber)
+      .forEach(([jenisSediaan, d], id) => {
+        const isNew = d.status === 1;
 
         rowsData.push({
-          id: rowsData.length + 1,
-          // nomor: rowsData.length + 1,
-          fixedNumber: rowsData.length + 1,
-          approvedTimestamp: permohonanData.approvedTimestamp || null,
-          certNumber: permohonanData.cdobNumber || "-",
-          tipePermohonan: tipePermohonan,
-          companyName: companyName,
-          approvedHash: permohonanData.approvedHash || "-",
-          ipfsCid: permohonanData.ipfsCid || "-",
-          bpomInstance: permohonanData.bpomInstance || "-",
-          companyAddress: alamat,
-          companyNib: nib,
+          id:               id + 1,
+          fixedNumber:      id + 1,
+          certNumber:       d.cdobNumber,
+          jenisSertifikasi: isNew ? "Sertifikasi Baru" : "Perpanjangan",
+          approvedTimestamp: isNew 
+            ? d.approvedTimestamp 
+            : d.extendedApprovedTimestamp || null,
+          approvedHash:      isNew 
+            ? d.approvedHash 
+            : d.extendedApprovedHash || null,
+          tipePermohonan:   jenisSediaan,
+          companyName:      companyName,
+          ipfsCid:          d.ipfsCid,
+          bpomInstance:     d.bpomInstance,
+          companyAddress:   alamat,
+          companyNib:       nib,
         });
       });
     }
@@ -107,35 +115,45 @@ function CheckCertificateIpfs() {
     for (const doc of snapshot.docs) {
       const factoryName = doc.id;
       const docData = doc.data();
+      console.log(doc.id);
+      console.log(docData);
 
       const companyDoc = await getDoc(docRef(db, "company_data", factoryName));
       const company = companyDoc.exists() ? companyDoc.data() : {};
       const alamat = company?.userLocation || "-";
       const nib = company?.userNib || "-";
-      const factoryType= company?.factoryType || '-';
 
-      Object.entries(docData).forEach(([jenisSediaan, permohonanData]) => {
-        if (permohonanData?.status !== 1) return; 
+      console.log(company);
+ 
+      Object.entries(docData)
+      .filter(([_, d]) => [1,5].includes(d.status) && d.cpotbNumber)
+      .forEach(([jenisSediaan, d], id) => {
+        const isNew = d.status === 1;
 
         rowsData.push({
-          id: rowsData.length + 1,
-          // nomor: rowsData.length + 1,
-          fixedNumber: rowsData.length + 1,
-          certNumber: permohonanData.cpotbNumber || "-",
-          approvedTimestamp: permohonanData.approvedTimestamp || null,
-          tipePermohonan: jenisSediaan,
-          companyName: factoryName,
-          approvedHash: permohonanData.approvedHash || "-",
-          ipfsCid: permohonanData.ipfsCid || "-",
-          bpomInstance: permohonanData.bpomInstance || "-",
-          companyAddress: alamat,
-          companyNib: nib,
+          id:               id + 1,
+          fixedNumber:      id + 1,
+          certNumber:       d.cpotbNumber,
+          jenisSertifikasi: isNew ? "Sertifikasi Baru" : "Perpanjangan",
+          approvedTimestamp: isNew 
+            ? d.approvedTimestamp 
+            : d.extendedApprovedTimestamp || null,
+          approvedHash:      isNew 
+            ? d.approvedHash 
+            : d.extendedApprovedHash || null,
+          tipePermohonan:   jenisSediaan,
+          companyName:      factoryName,
+          ipfsCid:          d.ipfsCid,
+          bpomInstance:     d.bpomInstance,
+          companyAddress:   alamat,
+          companyNib:       nib,
         });
       });
     }
 
     console.log("HASIL rowsData:", rowsData);
     setRowsData(rowsData);
+    console.log(rowsData);
   }
 
   const renderCpotbDetails = () => (

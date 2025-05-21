@@ -3,9 +3,10 @@ register pabrik_2 https://sepolia.etherscan.io/tx/0x897f2992595c846f7ef2ddfae9a1
 register bpom_2 https://sepolia.etherscan.io/tx/0x0cce50b4a39b513ad8b9e3f426859bc2320c5f2794c0296696c36c42610051a4
 register retailer_2
 register pbf_2 https://sepolia.etherscan.io/tx/0x155517f0c72e885d40b37c8fb18c09bd8b15c271672040d6abf6a3778bbd6f96 --> not used
-register pbf_3 https://sepolia.etherscan.io/tx/0x3a44cdac12370c82e634bcf4df006bb4ed2c6728aee6aececa87edbbb4c886bc --> not used
+register pbf_3 https://sepolia.etherscan.io/tx/0x3a44cdac12370c82e634bcf4df006bb4ed2c6728aee6aececa87edbbb4c886bc (BUDI SANTOSO) --> not used
 register pbf_4 https://sepolia.etherscan.io/tx/0x986aeeca276aad739fb466b0286d187adafec02e5e26c95680cf4f50a4603adc --> not used 
 register pbf_5 https://sepolia.etherscan.io/tx/0x9e42230c63d6949b658420d72cdd4f681a6bfbe4983dbb51af600351828c269c
+register pabrik_3 https://sepolia.etherscan.io/tx/0x08e269cb02ced1b0b1d98b9a8c5b72e2db3f6e9b2dcb239c2264a322dadee865 (TARI MAGARI)
 
 // Pengajuan dan Persetujuan CPOTB oleh pabrik_2
 1. Rajangan

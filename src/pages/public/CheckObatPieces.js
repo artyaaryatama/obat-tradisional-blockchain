@@ -222,20 +222,43 @@ function CheckObatPieces() {
       const alamat = company?.userLocation || "-";
       const nib = company?.userNib || "-";
 
-      Object.entries(docData).forEach(([namaProduk, obatData]) => {
-        if (obatData?.status !== 1) return; 
-        console.log(namaProduk)
-        console.log(obatData)
+      Object.entries(docData)
+      //   .filter(([key, obatData]) =>
+      //   key.startsWith('batch_') &&
+      //   [1, 5].includes(obatData.status)
+      // )
+      // .forEach(([namaProduk, obatData]) => {
+      //   const isNew = obatData.status === 1;
 
+      //   rowsData.push({
+      //     id:                 rowsData.length + 1,
+      //     status:             obatData.status,
+      //     jenisIzin:   isNew ? "NIE Baru" : "Perpanjangan",
+      //     approvedTimestamp:  obatData.historyNie?.approvedTimestamp ?? null,
+      //     nieNumber:          obatData.historyNie?.nieNumber ?? "-",
+      //     namaProduk,  // ES6 shorthand
+      //     companyName, // pastikan ini sudah di-define di scope luar
+      //     approvedHash:       obatData.historyNie?.approvedHash ?? "-",
+      //     ipfsCid:            obatData.historyNie?.ipfsCid ?? "-",
+      //     bpomInstance:       obatData.historyNie?.bpomInstance ?? "-",
+      //     companyAddress:     alamat, // pastikan `alamat` sudah ada di scope
+      //     companyNib:         nib     // pastikan `nib` sudah ada di scope
+      //   });
+      // });
+      .filter(([_, obatData]) => [1,5].includes(obatData.status))
+      
+      .forEach(([namaProduk, obatData]) => {
+        const isNew = obatData.status === 1;
         rowsData.push({
           id: rowsData.length + 1,
           // nomor: rowsData.length + 1,
+          jenisIzin:   isNew ? "NIE Baru" : "Perpanjangan",
           fixedNumber: rowsData.length + 1,
-          approvedTimestamp: obatData.historyNie.approveTimestamp || null,
+          approvedTimestamp: obatData.historyNie.approvedTimestamp || null,
           nieNumber: obatData.historyNie.nieNumber || "-",
           namaProduk:namaProduk,
           companyName: companyName,
-          approvedHash: obatData.historyNie.approveHash || "-",
+          approvedHash: obatData.historyNie.approvedHash || "-",
           ipfsCid: obatData.historyNie.ipfsCid || "-",
           bpomInstance: obatData.historyNie.bpomInstance || "-",
           companyAddress: alamat,

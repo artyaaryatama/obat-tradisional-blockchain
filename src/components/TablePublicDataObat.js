@@ -61,6 +61,7 @@ export default function DataGridDemo({ rowsData }) {
         });
       }
     },
+    { field: 'jenisIzin', headerName: 'Jenis Izin', width: 180 },
     {
       field: 'companyName',
       headerName: 'Perusahaan',
@@ -115,7 +116,6 @@ export default function DataGridDemo({ rowsData }) {
       ),
     },
   ];
-  console.log(columns);
 
   return (
     <Paper elevation={0} sx={{ border: '1px solid #f2f3f5', borderRadius: 2, p: 2 }}>
