@@ -226,8 +226,44 @@ contract CpotbCertificate is BaseCertificate {
 
     for (uint i = 0; i < length; i++) {
       if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
-        allCpotbData[i].status = EnumsLibrary.StatusCertificate.Extended; 
+        allCpotbData[i].status = EnumsLibrary.StatusCertificate.ExtendApprove; 
         allCpotbData[i].expiredTimestamp = block.timestamp + extTimestamp;
+      }  
+    }
+  }
+
+  function rejectExtendCpotb(
+    string memory certId, 
+    string memory rejectExtendMsg
+  ) public {
+
+    updateBpomRejectExtendCertificateDetails(
+      certId,
+      rejectExtendMsg
+    );
+
+    uint length = allCpotbData.length;
+
+    for (uint i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
+        allCpotbData[i].status = EnumsLibrary.StatusCertificate.ExtendReject; 
+      }  
+    }
+  }
+
+  function renewExtendCpotb(
+    string memory certId
+  ) public {
+
+    updateRenewExtendCertificateDetails(
+      certId
+    );
+
+    uint length = allCpotbData.length;
+
+    for (uint i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
+        allCpotbData[i].status = EnumsLibrary.StatusCertificate.ExtendRenew; 
       }  
     }
   }
@@ -291,7 +327,10 @@ contract CpotbCertificate is BaseCertificate {
     ;     
   } 
 
-  function getRejectsMsg(string memory certId) public view returns (string memory) {
+  function getRejectsMsg(string memory certId) public view returns (
+    string memory,
+    string memory
+  ) {
     return getRejectMsg(certId);  
   } 
 

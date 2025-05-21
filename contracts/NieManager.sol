@@ -24,6 +24,8 @@ contract NieManager {
     uint256 timestampNieExpired;  
     uint256 timestampNieExtendRequest;  
     uint256 timestampNieExtendApprove;  
+    uint timestampNieExtendReject; 
+    uint timestampNieExtendRenew; 
     string factoryInstance;
     string bpomInstance;      
     address bpomAddr;
@@ -61,6 +63,7 @@ contract NieManager {
 
   mapping (string => NieDetail) public nieDetailById;
   mapping (string => string) public rejectMsgById; 
+  mapping (string => string) public rejectMsgExtendById; 
   mapping (string => DokumenObat) public dokuObatById;
   mapping (string => DokumenPendukung) public dokuPendukungById;
 
@@ -100,6 +103,17 @@ contract NieManager {
     uint timestamp
   );
 
+  event NieRejectExtend(
+    address bpomAddr, 
+    string rejectMsg, 
+    uint tiemstamp
+  );
+
+  event NieRenewExtend(
+    address factoryAddr,
+    uint timestamp
+  );
+
   modifier onlyFactory() {
     require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.Factory), "Only Factory");
     _;
@@ -126,7 +140,9 @@ contract NieManager {
       timestampNieExpired: 0,
       timestampNieExtendRequest: 0,
       timestampNieExtendApprove: 0,
-      factoryInstance: factoryInstance,
+      timestampNieExtendReject: 0,
+      timestampNieExtendRenew: 0,
+      factoryInstance: factoryInstance, 
       bpomInstance: "",
       bpomAddr: address(0),
       nieIpfs: ""
@@ -256,6 +272,26 @@ contract NieManager {
     );
   }
 
+  function extendRejectNie(
+    string memory obatId,
+    string memory rejectMsgExtend
+  ) 
+    public 
+    onlyBPOM 
+  {
+    NieDetail storage nieData = nieDetailById[obatId];
+    rejectMsgExtendById[obatId] = rejectMsgExtend;
+ 
+    nieData.nieStatus = EnumsLibrary.NieStatus.ExtendRejectNIE;  
+    nieData.timestampNieExtendReject = block.timestamp; 
+
+    emit NieRejectExtend(
+      msg.sender,  
+      rejectMsgExtend,
+      block.timestamp
+    );
+  }
+
   function approveExtendRequest(
     string memory obatId,
     string memory ipfsNie 
@@ -265,7 +301,7 @@ contract NieManager {
   {
     NieDetail storage nieData = nieDetailById[obatId];
 
-    nieData.nieStatus = EnumsLibrary.NieStatus.extendedNie; 
+    nieData.nieStatus = EnumsLibrary.NieStatus.ExtendApproveNie; 
     nieData.timestampNieExtendApprove = block.timestamp;  
     nieData.timestampNieExpired = block.timestamp + extTimestamp;  
     nieData.nieIpfs = ipfsNie;
@@ -275,6 +311,23 @@ contract NieManager {
       block.timestamp
     ); 
   } 
+
+  function renewRejectNie(
+    string memory obatId
+  ) 
+    public 
+    onlyFactory 
+  {
+    NieDetail storage nieData = nieDetailById[obatId];
+ 
+    nieData.nieStatus = EnumsLibrary.NieStatus.ExtendRenewNie;  
+    nieData.timestampNieExtendReject = block.timestamp; 
+
+    emit NieRenewExtend(
+      msg.sender,  
+      block.timestamp
+    );
+  }
 
   function getNieDetail(string memory obatId) public view returns (
     NieDetail memory,

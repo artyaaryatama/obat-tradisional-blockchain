@@ -228,8 +228,44 @@ contract CdobCertificate is BaseCertificate {
 
     for (uint i = 0; i < length; i++) {
       if (keccak256(abi.encodePacked(allCdobData[i].certId)) == keccak256(abi.encodePacked(certId))) {
-        allCdobData[i].status = EnumsLibrary.StatusCertificate.Extended; 
+        allCdobData[i].status = EnumsLibrary.StatusCertificate.ExtendApprove; 
         allCdobData[i].expiredTimestamp = block.timestamp + extTimestamp;
+      }  
+    }
+  }
+
+  function rejectExtendCdob(
+    string memory certId, 
+    string memory rejectExtendMsg
+  ) public {
+
+    updateBpomRejectExtendCertificateDetails(
+      certId,
+      rejectExtendMsg
+    );
+
+    uint length = allCdobData.length;
+
+    for (uint i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCdobData[i].certId)) == keccak256(abi.encodePacked(certId))) {
+        allCdobData[i].status = EnumsLibrary.StatusCertificate.ExtendReject; 
+      }  
+    }
+  }
+
+  function renewExtendCdob(
+    string memory certId
+  ) public {
+
+    updateRenewExtendCertificateDetails(
+      certId
+    ); 
+
+    uint length = allCdobData.length;
+
+    for (uint i = 0; i < length; i++) {
+      if (keccak256(abi.encodePacked(allCdobData[i].certId)) == keccak256(abi.encodePacked(certId))) {
+        allCdobData[i].status = EnumsLibrary.StatusCertificate.ExtendRenew; 
       }  
     }
   }
@@ -293,7 +329,10 @@ contract CdobCertificate is BaseCertificate {
     );  
   }  
 
-  function getRejectsMsg(string memory certId) public view returns (string memory) {
+  function getRejectsMsg(string memory certId) public view returns (
+    string memory,
+    string memory
+  ) {
     return getRejectMsg(certId);  
   }  
 

@@ -69,13 +69,14 @@ contract CertificateManager is ReentrancyGuard {
     uint timestamp
   );
   
-  event CertExtendRequest(
+  event CertExtend(
     address senderAddr, 
     uint timestamp
   );
 
-  event CertApprovedExtendRequest(
+  event CertExtendReject(
     address bpomAddr,  
+    string rejectMsgExt,
     uint timestamp
   );
 
@@ -215,7 +216,7 @@ contract CertificateManager is ReentrancyGuard {
       newDoku
     );  
  
-    emit CertExtendRequest(
+    emit CertExtend(
       msg.sender,
       block.timestamp
     );
@@ -234,8 +235,45 @@ contract CertificateManager is ReentrancyGuard {
       ipfsCert
     );  
  
-    emit CertApprovedExtendRequest(
+    emit CertExtend(
       msg.sender,
+      block.timestamp 
+    );
+  } 
+
+  function rejectExtendCpotb( 
+    string memory cpotbId,
+    string memory ipfsCert
+  ) 
+    public 
+    onlyBPOM 
+    nonReentrant 
+  {  
+    cpotbCertificate.rejectExtendCpotb(
+      cpotbId,
+      ipfsCert
+    );  
+ 
+    emit CertExtendReject(
+      msg.sender,
+      ipfsCert,
+      block.timestamp 
+    );
+  } 
+
+  function renewExtendCpotb( 
+    string memory cpotbId
+  ) 
+    public 
+    onlyFactory 
+    nonReentrant 
+  {  
+    cpotbCertificate.renewExtendCpotb(
+      cpotbId
+    );  
+ 
+    emit CertExtend(
+      msg.sender, 
       block.timestamp 
     );
   } 
@@ -271,7 +309,10 @@ contract CertificateManager is ReentrancyGuard {
     );
   }
 
-  function getRejectMsgCpotb(string memory certId) public view returns (string memory) {
+  function getRejectMsgCpotb(string memory certId) public view returns (
+    string memory,
+    string memory
+  ) {
     return cpotbCertificate.getRejectMsg(certId);
   }
 
@@ -398,7 +439,7 @@ contract CertificateManager is ReentrancyGuard {
       newDokus 
     );  
  
-    emit CertExtendRequest(
+    emit CertExtend(
       msg.sender,
       block.timestamp
     );
@@ -417,9 +458,46 @@ contract CertificateManager is ReentrancyGuard {
       ipfsCert
     );  
  
-    emit CertApprovedExtendRequest(
+    emit CertExtend(
       msg.sender,
       block.timestamp
+    );
+  } 
+
+    function rejectExtendCdob( 
+    string memory cdobId,
+    string memory ipfsCert
+  ) 
+    public 
+    onlyBPOM 
+    nonReentrant 
+  {  
+    cdobCertificate.rejectExtendCdob(
+      cdobId,
+      ipfsCert
+    );  
+ 
+    emit CertExtendReject(
+      msg.sender,
+      ipfsCert,
+      block.timestamp 
+    );
+  } 
+
+  function renewExtendCdob( 
+    string memory cdobId
+  ) 
+    public 
+    onlyPBF 
+    nonReentrant 
+  {  
+    cdobCertificate.renewExtendCdob(
+      cdobId
+    );  
+ 
+    emit CertExtend(
+      msg.sender, 
+      block.timestamp 
     );
   } 
  
@@ -455,7 +533,10 @@ contract CertificateManager is ReentrancyGuard {
     );
   }
  
-  function getRejectMsgCdob(string memory certId) public view returns (string memory) {
+  function getRejectMsgCdob(string memory certId) public view returns (
+    string memory,
+    string memory
+  ) {
     return cdobCertificate.getRejectMsg(certId);
   }
  

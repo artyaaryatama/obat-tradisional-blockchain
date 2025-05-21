@@ -25,6 +25,8 @@ contract BaseCertificate {
     uint timestampExpired; 
     uint timestampExtendRequest; 
     uint timestampExtendApprove; 
+    uint timestampExtendReject; 
+    uint timestampExtendRenew; 
     UserCert sender;  
     UserCert bpom; 
     string ipfsCert;
@@ -32,6 +34,7 @@ contract BaseCertificate {
 
   mapping (string => CertificateDetails) public certDetailById;
   mapping (string => string) public rejectMsgById;
+  mapping (string => string) public rejectMsgExtendById;
 
   function createUserCertificate( 
     string memory userName,
@@ -65,6 +68,8 @@ contract BaseCertificate {
       timestampExpired: 0,
       timestampExtendRequest: 0,
       timestampExtendApprove: 0,
+      timestampExtendReject: 0,
+      timestampExtendRenew: 0,
       sender: senderData,
       bpom: bpomData,
       ipfsCert: ""
@@ -99,7 +104,7 @@ contract BaseCertificate {
     CertificateDetails storage certData = certDetailById[certId];
     certData.timestampApprove = block.timestamp;
     certData.timestampExpired = block.timestamp + extTimestamp; 
-    certData.status = EnumsLibrary.StatusCertificate.Extended; 
+    certData.status = EnumsLibrary.StatusCertificate.ExtendApprove; 
     certData.ipfsCert = ipfsCert; 
   } 
 
@@ -112,9 +117,31 @@ contract BaseCertificate {
     CertificateDetails storage certData = certDetailById[certId];
     certData.timestampExtendApprove = block.timestamp;
     certData.timestampExpired = block.timestamp + extTimestamp;  
-    certData.status = EnumsLibrary.StatusCertificate.Extended; 
+    certData.status = EnumsLibrary.StatusCertificate.ExtendApprove; 
     certData.ipfsCert = ipfsCert; 
   } 
+
+  function updateBpomRejectExtendCertificateDetails( 
+    string memory certId,
+    string memory rejectMsg
+  ) 
+    public
+  {
+    CertificateDetails storage certData = certDetailById[certId];
+    rejectMsgExtendById[certId] = rejectMsg;
+    certData.timestampExtendReject = block.timestamp;
+    certData.status = EnumsLibrary.StatusCertificate.ExtendReject;
+  }
+
+  function updateRenewExtendCertificateDetails( 
+    string memory certId
+  ) 
+    public
+  {
+    CertificateDetails storage certData = certDetailById[certId];
+    certData.timestampExtendRenew = block.timestamp;
+    certData.status = EnumsLibrary.StatusCertificate.ExtendRenew;
+  }
 
   function updateBpomRejectDetails( 
     string memory certId,
@@ -132,6 +159,7 @@ contract BaseCertificate {
     certData.timestampRejected = block.timestamp;
     certData.status = EnumsLibrary.StatusCertificate.Rejected;
   }
+
 
   function updateRenewDetails( 
     string memory certId 
@@ -160,8 +188,11 @@ contract BaseCertificate {
   function getCertDetail(string memory certId) public view returns (CertificateDetails memory) {
     return certDetailById[certId];
   }
-  function getRejectMsg(string memory certId) public view returns (string memory) {
-    return rejectMsgById[certId];
+  function getRejectMsg(string memory certId) public view returns (
+    string memory,
+    string memory
+  ) {
+    return (rejectMsgById[certId], rejectMsgExtendById[certId]);
   }
 
   function getSenderDetail(string memory certId) public view returns (UserCert memory) {
