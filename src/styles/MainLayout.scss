@@ -2,8 +2,6 @@
 @import 'mixin';
 
 .Layout-Menu{
-  // background-color: aqua;
-
   .title-menu{
     display: flex;
     flex-direction: column;
@@ -232,7 +230,7 @@
               color: $white;
             }
 
-            &.Disetujui, &.Selesai, &.Perpanjangan, &.Perpanjangan.NIE{
+            &.Disetujui, &.Selesai, &.Perpanjangan, &.Penyetujuan.Registrasi.Ulang.NIE{
               background-color: $green;
               color: $white;
             }
@@ -251,9 +249,8 @@
               background-color: #e39c33;
               color: $black;
             }
-
             
-            &.Penolakan,  &.Tidak.Disetujui{
+            &.Penolakan,  &.Tidak.Disetujui, &.Pengajuan.Perpanjangan.Ditolak, &.Pengajuan.Perpanjangan.CDOB.Ditolak, &.Pengajuan.Registrasi.Ulang.NIE.Ditolak{
               background-color: $red;
               color: $white;
             }
@@ -272,7 +269,6 @@
   .container-form{
     border-radius: 8px;
     margin: 40px 0;
-    // padding: 0 218px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -309,7 +305,6 @@
         margin-bottom: 20px;
         
         li.label{
-          // padding-top: 6px;
           width: 30%;
           text-align: left;
           font-weight: 600;
@@ -392,7 +387,6 @@
               }
             }
   
-            // background-color: rgb(108, 214, 214);
             .input-multiple{
               width: 100%;
   
@@ -461,10 +455,6 @@
         li{
           flex-direction: column;
           &.input{
-            // background-color: wheat;
-            // display: flex;
-            // width: 100%;
-
             a{
               font-size: 12px;
               font-style: italic;

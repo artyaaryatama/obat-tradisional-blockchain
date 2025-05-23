@@ -5,9 +5,17 @@ html, body {
   margin: 0;
   padding: 0;
   color: #1B1C1E;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .layout-page {
+  padding: 10px 110px;
+  height: 100%;
+}
+
+.layout-component {
   padding: 10px 110px;
 }
 
@@ -27,4 +35,5 @@ html, body {
   margin-top: 16px;
   font-size: 18px;
   color: #1B1C1E;
+  text-align: center;
 }/*# sourceMappingURL=Error.css.map */

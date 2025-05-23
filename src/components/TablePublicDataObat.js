@@ -4,17 +4,15 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 
 export default function DataGridDemo({ rowsData }) {
-  // Tambahkan kolom nomor statis (No.) yang tidak ikut tersortir
   const rowsWithNomor = React.useMemo(
     () => rowsData.map((row, idx) => ({
       ...row,
       nomor: idx + 1,
-      id: idx + 1, // DataGrid butuh field id
+      id: idx + 1, 
     })),
     [rowsData]
   );
 
-  // Definisi kolom sesuai data CDOB
   const columns = [
     {
       field: 'nieNumber',
@@ -101,7 +99,6 @@ export default function DataGridDemo({ rowsData }) {
     },
   ];
 
-  // Pagination model default
   const paginationModel = { page: 0, pageSize: 10 };
 
   return (

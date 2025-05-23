@@ -28,17 +28,17 @@ function Navbar() {
               <ul>
                 {userRole === '0' && (
                   <>
-                    <li className={currentPath === '/cpotb' || currentPath === '/request-cpotb' || currentPath === '/renew-request-cpotb' ? 'active' : ''}>
+                    <li className={currentPath === '/cpotb' || currentPath === '/request-cpotb' || currentPath === '/renew-request-cpotb' || currentPath === '/extend-request-cpotb'  || currentPath === '/extend-renew-request-cpotb' ? 'active' : ''}>
                       <Link to="/cpotb">CPOTB</Link>
                     </li>
-                    <li className={currentPath === '/obat-available-factory' || currentPath === '/request-nie' || currentPath === '/renew-request-nie'|| currentPath === '/create-obat' || currentPath === '/obat' || currentPath === '/manage-orders-factory' || currentPath === '/add-quantity-obat' ? 'active' : ''}>
+                    <li className={currentPath === '/obat-available-factory' || currentPath === '/request-nie' || currentPath === '/renew-request-nie'|| currentPath === '/create-obat' || currentPath === '/obat' || currentPath === '/manage-orders-factory' || currentPath === '/add-quantity-obat'  || currentPath === '/extend-request-nie'  || currentPath === '/extend-renew-request-nie' ? 'active' : ''}>
                       <Link to="/obat">OBAT TRADISIONAL</Link>
                     </li>
                   </>
                 )}
                 {userRole === '1' && (
                   <>
-                    <li className={currentPath === '/cdob' || currentPath === '/request-cdob' || currentPath === '/renew-request-cdob' ? 'active' : ''}>
+                    <li className={currentPath === '/cdob' || currentPath === '/request-cdob' || currentPath === '/renew-request-cdob'  || currentPath === '/renew-request-cdob'  || currentPath === '/extend-request-cdob' || currentPath === '/extend-renew-request-cdob' ? 'active' : ''}>
                       <Link to="/cdob">CDOB</Link>
                     </li>
                     <li className={currentPath === '/pbf-orders' || currentPath=== '/create-pbf-order' || currentPath === '/obat-available-pbf' ? 'active' : ''}>

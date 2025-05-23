@@ -7,6 +7,9 @@ import ManageCdob from './pages/pbf/ManageCdob';
 import CpotbRequest from './pages/factory/CpotbRequest';
 import CpotbRenewRequest from './pages/factory/CpotbRenewRequest';
 import CpotbExtendRequest from './pages/factory/CpotbExtendRequest';
+import CpotbExtendRenewRequest from './pages/factory/CpotbExtendRenewRequest';
+import NieExtendRequest from './pages/factory/NieExtendRequest';
+import NieExtendRenewRequest from './pages/factory/NieExtendRenewRequest';
 import CdobRequest from './pages/pbf/CdobRequest';
 import NieRequest from './pages/factory/NieRequest';
 import NieRenewRequest from './pages/factory/NieRenewRequest';
@@ -22,6 +25,7 @@ import AddQuantityObat from './pages/factory/AddQuantityObat';
 import ManageOrderFactoryPbf from './pages/factory/ManageOrderFactoryPbf';
 import ManageOrderPbf from './pages/pbf/ManageOrderPbf';
 import CreateOrderPbf from './pages/pbf/CreateOrderPbf';
+import CdobExtendRenewRequest from './pages/pbf/CdobExtendRenewRequest';
 import StockObatPbf from './pages/pbf/StockObatPbf';
 import ManageOrderPbfRetailer from './pages/pbf/ManageOrderPbfRetailer';
 import CreateOrderRetailer from './pages/retailer/CreateOrderRetailer';
@@ -91,6 +95,35 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <CpotbExtendRequest />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/extend-renew-request-cpotb" 
+            element={
+              <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
+                <CpotbExtendRenewRequest />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/extend-request-nie" 
+            element={
+              <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
+                <NieExtendRequest />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/extend-renew-request-nie" 
+            element={
+              <ProtectedRoute allowedRoles={['0']}>
+                <Navbar />
+                <NieExtendRenewRequest />
               </ProtectedRoute>
             } 
           />
@@ -190,6 +223,15 @@ function App() {
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
                 <CdobExtendRequest />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/extend-renew-request-cdob" 
+            element={
+              <ProtectedRoute allowedRoles={['1']}>
+                <Navbar />
+                <CdobExtendRenewRequest />
               </ProtectedRoute>
             } 
           />

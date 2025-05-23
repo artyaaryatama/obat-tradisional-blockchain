@@ -1,6 +1,6 @@
 {
   "ObatTradisional": {
-    "address": "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
+    "address": "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
     "abi": [
       {
         "inputs": [
@@ -583,7 +583,7 @@
     ]
   },
   "OrderManagement": {
-    "address": "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
+    "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
     "abi": [
       {
         "inputs": [
@@ -1327,7 +1327,7 @@
     ]
   },
   "RoleManager": {
-    "address": "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
+    "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
     "abi": [
       {
         "anonymous": false,
@@ -1583,7 +1583,7 @@
     ]
   },
   "CertificateManager": {
-    "address": "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
+    "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
     "abi": [
       {
         "inputs": [
@@ -1654,25 +1654,6 @@
           {
             "indexed": false,
             "internalType": "address",
-            "name": "bpomAddr",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "timestamp",
-            "type": "uint256"
-          }
-        ],
-        "name": "CertApprovedExtendRequest",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "internalType": "address",
             "name": "senderAddr",
             "type": "address"
           },
@@ -1683,7 +1664,32 @@
             "type": "uint256"
           }
         ],
-        "name": "CertExtendRequest",
+        "name": "CertExtend",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "bpomAddr",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "rejectMsgExt",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          }
+        ],
+        "name": "CertExtendReject",
         "type": "event"
       },
       {
@@ -2245,6 +2251,16 @@
                 "type": "uint256"
               },
               {
+                "internalType": "uint256",
+                "name": "timestampExtendReject",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "timestampExtendRenew",
+                "type": "uint256"
+              },
+              {
                 "components": [
                   {
                     "internalType": "string",
@@ -2519,6 +2535,16 @@
                 "type": "uint256"
               },
               {
+                "internalType": "uint256",
+                "name": "timestampExtendReject",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "timestampExtendRenew",
+                "type": "uint256"
+              },
+              {
                 "components": [
                   {
                     "internalType": "string",
@@ -2693,6 +2719,11 @@
             "internalType": "string",
             "name": "",
             "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
           }
         ],
         "stateMutability": "view",
@@ -2708,6 +2739,11 @@
         ],
         "name": "getRejectMsgCpotb",
         "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          },
           {
             "internalType": "string",
             "name": "",
@@ -2779,6 +2815,42 @@
           }
         ],
         "name": "rejectCpotb",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "cdobId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "rejectExtendMsg",
+            "type": "string"
+          }
+        ],
+        "name": "rejectExtendCdob",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "cpotbId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "rejectExtendMsg",
+            "type": "string"
+          }
+        ],
+        "name": "rejectExtendCpotb",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -2952,6 +3024,91 @@
           }
         ],
         "name": "renewCpotb",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "cdobId",
+            "type": "string"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "suratPernyataanPimpinan",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "dokumenInspeksiDiri",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "dokumenPerbaikan",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct CdobCertificate.DokumenReSertifikasi",
+            "name": "newDoku",
+            "type": "tuple"
+          }
+        ],
+        "name": "renewExtendCdob",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "cpotbId",
+            "type": "string"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "suratPermohonan",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "buktiPembayaranNegaraBukanPajak",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "denahBangunan",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "sistemMutu",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "cpotbIpfs",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "dokumenCapa",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct CpotbCertificate.DokumenReSertifikasi",
+            "name": "newDoku",
+            "type": "tuple"
+          }
+        ],
+        "name": "renewExtendCpotb",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -3160,7 +3317,7 @@
     ]
   },
   "NieManager": {
-    "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
+    "address": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
     "abi": [
       {
         "inputs": [
@@ -3247,6 +3404,31 @@
         "inputs": [
           {
             "indexed": false,
+            "internalType": "address",
+            "name": "bpomAddr",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "rejectMsg",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "tiemstamp",
+            "type": "uint256"
+          }
+        ],
+        "name": "NieRejectExtend",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
             "internalType": "string",
             "name": "bpomInstance",
             "type": "string"
@@ -3271,6 +3453,25 @@
           }
         ],
         "name": "NieRejected",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "factoryAddr",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          }
+        ],
+        "name": "NieRenewExtend",
         "type": "event"
       },
       {
@@ -3484,6 +3685,108 @@
         "inputs": [
           {
             "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "name": "dokuRegisUlangById",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "formulaProdukMetrik",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "skPersetujuanVariasi",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "desainKemasanTerakhir",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "suratPernyataanPeredaran",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "desainKemasanBerwarna",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "obatId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "rejectMsgExtend",
+            "type": "string"
+          }
+        ],
+        "name": "extendRejectNie",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "obatId",
+            "type": "string"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "formulaProdukMetrik",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "skPersetujuanVariasi",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "desainKemasanTerakhir",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "suratPernyataanPeredaran",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "desainKemasanBerwarna",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct NieManager.DokumenRegisUlang",
+            "name": "newDoku",
+            "type": "tuple"
+          }
+        ],
+        "name": "extendRenewRequestNie",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
             "name": "obatId",
             "type": "string"
           },
@@ -3491,6 +3794,38 @@
             "internalType": "uint256",
             "name": "expiredTimestamp",
             "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "formulaProdukMetrik",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "skPersetujuanVariasi",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "desainKemasanTerakhir",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "suratPernyataanPeredaran",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "desainKemasanBerwarna",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct NieManager.DokumenRegisUlang",
+            "name": "newDoku",
+            "type": "tuple"
           }
         ],
         "name": "extendRequestNie",
@@ -3558,6 +3893,16 @@
               {
                 "internalType": "uint256",
                 "name": "timestampNieExtendApprove",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "timestampNieExtendReject",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "timestampNieExtendRenew",
                 "type": "uint256"
               },
               {
@@ -3663,6 +4008,38 @@
             "internalType": "struct NieManager.DokumenPendukung",
             "name": "",
             "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "formulaProdukMetrik",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "skPersetujuanVariasi",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "desainKemasanTerakhir",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "suratPernyataanPeredaran",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "desainKemasanBerwarna",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct NieManager.DokumenRegisUlang",
+            "name": "",
+            "type": "tuple"
           }
         ],
         "stateMutability": "view",
@@ -3707,6 +4084,11 @@
         ],
         "name": "getRejectMsgNie",
         "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          },
           {
             "internalType": "string",
             "name": "",
@@ -3777,6 +4159,16 @@
             "type": "uint256"
           },
           {
+            "internalType": "uint256",
+            "name": "timestampNieExtendReject",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampNieExtendRenew",
+            "type": "uint256"
+          },
+          {
             "internalType": "string",
             "name": "factoryInstance",
             "type": "string"
@@ -3809,6 +4201,25 @@
           }
         ],
         "name": "rejectMsgById",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "name": "rejectMsgExtendById",
         "outputs": [
           {
             "internalType": "string",
@@ -4042,7 +4453,7 @@
     ]
   },
   "ObatShared": {
-    "address": "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+    "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
     "abi": [
       {
         "inputs": [
@@ -4829,7 +5240,7 @@
     ]
   },
   "CdobCertificate": {
-    "address": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
+    "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
     "abi": [
       {
         "inputs": [
@@ -5013,6 +5424,16 @@
           {
             "internalType": "uint256",
             "name": "timestampExtendApprove",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampExtendReject",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampExtendRenew",
             "type": "uint256"
           },
           {
@@ -5599,6 +6020,16 @@
                 "type": "uint256"
               },
               {
+                "internalType": "uint256",
+                "name": "timestampExtendReject",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "timestampExtendRenew",
+                "type": "uint256"
+              },
+              {
                 "components": [
                   {
                     "internalType": "string",
@@ -5709,6 +6140,16 @@
                 "type": "uint256"
               },
               {
+                "internalType": "uint256",
+                "name": "timestampExtendReject",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "timestampExtendRenew",
+                "type": "uint256"
+              },
+              {
                 "components": [
                   {
                     "internalType": "string",
@@ -5780,6 +6221,11 @@
             "internalType": "string",
             "name": "",
             "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
           }
         ],
         "stateMutability": "view",
@@ -5795,6 +6241,11 @@
         ],
         "name": "getRejectsMsg",
         "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          },
           {
             "internalType": "string",
             "name": "",
@@ -5877,6 +6328,24 @@
         "inputs": [
           {
             "internalType": "string",
+            "name": "certId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "rejectExtendMsg",
+            "type": "string"
+          }
+        ],
+        "name": "rejectExtendCdob",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
             "name": "",
             "type": "string"
           }
@@ -5890,6 +6359,60 @@
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "name": "rejectMsgExtendById",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "certId",
+            "type": "string"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "suratPernyataanPimpinan",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "dokumenInspeksiDiri",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "dokumenPerbaikan",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct CdobCertificate.DokumenReSertifikasi",
+            "name": "newDoku",
+            "type": "tuple"
+          }
+        ],
+        "name": "renewExtendCdob",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -6190,6 +6713,24 @@
             "type": "string"
           },
           {
+            "internalType": "string",
+            "name": "rejectMsg",
+            "type": "string"
+          }
+        ],
+        "name": "updateBpomRejectExtendCertificateDetails",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "certId",
+            "type": "string"
+          },
+          {
             "internalType": "uint256",
             "name": "expiredTimestamp",
             "type": "uint256"
@@ -6209,6 +6750,19 @@
           }
         ],
         "name": "updateRenewDetails",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "certId",
+            "type": "string"
+          }
+        ],
+        "name": "updateRenewExtendCertificateDetails",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"

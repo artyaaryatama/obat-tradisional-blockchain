@@ -26,7 +26,6 @@ function CdobApprove() {
   const [fadeClass, setFadeClass] = useState('fade-in');
   const [fadeOutLoader, setFadeOutLoader] = useState(false);
 
-
   const tipePermohonanMap = {
     0: "Obat Lain",
     1: "Cold Chain Product (CCP)"
@@ -39,7 +38,9 @@ function CdobApprove() {
     3: "Pengajuan Ulang",
     4: "Sertifikat Kadaluarsa",
     5: "Pengajuan Perpanjangan CDOB",
-    6: "Perpanjangan CDOB"
+    6: "Penyetujuan Perpanjangan CDOB",
+    7: "Pengajuan Perpanjangan CDOB Ditolak",
+    8: "Pengajuan Perpanjangan Ulang CDOB"
   };
 
   const options = {
@@ -391,22 +392,19 @@ function CdobApprove() {
   const getDetailCdob = async (id) => {
     
     console.log(id); 
-    let rejectMsg;
+    let detailCdob;
     
     try {
       const detailCdobCt = await contracts.certificateManager.getCdobDetails(id);
 
-      const [certDetails, cdobDetails, docsAdministrasi, docsTeknis] = detailCdobCt; 
+      const [certDetails, cdobDetails, docsAdministrasi, docsTeknis, docsReSertifikasi] = detailCdobCt; 
       const [surat_permohonan_cdob, bukti_pembayaran_pajak] = docsAdministrasi;
       const [surat_izin_cdob, denah_pbf, struktur_organisasi, daftar_personalia, daftar_peralatan, eksekutif_quality_management, surat_izin_apoteker, dokumen_self_assessment] = docsTeknis
       const [cdobId, cdobNumber, tipePermohonan] = cdobDetails
-      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, timestampExtendApprove, pbf, bpom, cdobIpfs] = certDetails
+      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, timestampExtendApprove, timestampExtendReject, timestampExtendRenew, pbf, bpom, cdobIpfs] = certDetails
 
-      const detailUserPbfCt = await contracts.roleManager.getUserData(pbf[2]);
-      if (timestampRejected !== 0n) {
-        const rejectMsgCt = await contracts.certificateManager.getRejectMsgCdob(id);
-        rejectMsg = rejectMsgCt; 
-      }  
+      const detailUserPbfCt = await contracts.roleManager.getUserData(pbf[2]); 
+      const rejectMsg = await contracts.certificateManager.getRejectMsgCdob(id);
 
       let statusCert;
       if (status=== 1n || status=== 6n) {
@@ -422,45 +420,94 @@ function CdobApprove() {
         statusCert = statusMap[status];
       }
 
-      const detailCdob = {
-        cdobId: cdobId,
-        cdobNumber: cdobNumber ? cdobNumber : "-",
-        pbfUserName: pbf[0],
-        pbfName: pbf[1],
-        pbfAddr: pbf[2],
-        tipePermohonan: tipePermohonanMap[tipePermohonan], 
-        status: statusCert, 
-        timestampRequest: new Date(Number(timestampRequest) * 1000).toLocaleDateString('id-ID', options),
-        timestampApprove: Number(timestampApprove) > 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
-        timestampRenewRequest: parseInt(timestampRenewRequest) !== 0 ? new Date(Number(timestampRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
-        timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
-        timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
-        timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
-        timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
-        bpomName : bpom[0] ? bpom[0] : "-",
-        bpomInstance: bpom[1] ? bpom[1] : "-",
-        bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
-        cdobIpfs: cdobIpfs ? cdobIpfs : "-",
-        pbfNIB: detailUserPbfCt[6],
-        pbfNPWP: detailUserPbfCt[7],
-        dokumenAdministrasi: {
-          surat_permohonan_cdob: surat_permohonan_cdob,
-          bukti_pembayaran_pajak: bukti_pembayaran_pajak
-        },
-        dokumenTeknis: {
-          surat_izin_cdob: surat_izin_cdob,
-          denah_pbf: denah_pbf,
-          struktur_organisasi: struktur_organisasi,
-          daftar_personalia: daftar_personalia,
-          daftar_peralatan: daftar_peralatan,
-          eksekutif_quality_management: eksekutif_quality_management,
-          surat_izin_apoteker: surat_izin_apoteker,
-          dokumen_self_assessment: dokumen_self_assessment
-        }
-      };
 
+      if(docsReSertifikasi[0] !== ''){
+        detailCdob = {
+         cdobId: cdobId,
+         cdobNumber: cdobNumber ? cdobNumber : "-",
+         pbfUserName: pbf[0],
+         pbfName: pbf[1],
+         pbfAddr: pbf[2],
+         tipePermohonan: tipePermohonanMap[tipePermohonan], 
+         status: statusCert, 
+         timestampRequest: new Date(Number(timestampRequest) * 1000).toLocaleDateString('id-ID', options),
+         timestampApprove: Number(timestampApprove) > 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampRenewRequest: parseInt(timestampRenewRequest) !== 0 ? new Date(Number(timestampRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampExtendReject: parseInt(timestampExtendReject) !== 0 ? new Date(Number(timestampExtendReject) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampExtendRenew: parseInt(timestampExtendRenew) !== 0 ? new Date(Number(timestampExtendRenew) * 1000).toLocaleDateString('id-ID', options): "-",
+         bpomName : bpom[0] ? bpom[0] : "-",
+         bpomInstance: bpom[1] ? bpom[1] : "-",
+         bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
+         cdobIpfs: cdobIpfs,
+         pbfNIB: detailUserPbfCt[6],
+         pbfNPWP: detailUserPbfCt[7],
+         dokumenAdministrasi: {
+           surat_permohonan_cdob: surat_permohonan_cdob,
+           bukti_pembayaran_pajak: bukti_pembayaran_pajak
+         },
+         dokumenTeknis: {
+           surat_izin_cdob: surat_izin_cdob,
+           denah_pbf: denah_pbf,
+           struktur_organisasi: struktur_organisasi,
+           daftar_personalia: daftar_personalia,
+           daftar_peralatan: daftar_peralatan,
+           eksekutif_quality_management: eksekutif_quality_management,
+           surat_izin_apoteker: surat_izin_apoteker,
+           dokumen_self_assessment: dokumen_self_assessment
+         }, 
+         docsResertifikasi: {
+          suratPernyataanPimpinan :docsReSertifikasi[0],
+          dokumenInspeksiDiri : docsReSertifikasi[1],
+          dokumenPerbaikan : docsReSertifikasi[2]
+         }
+       };
+
+      } else {
+        detailCdob = {
+         cdobId: cdobId,
+         cdobNumber: cdobNumber ? cdobNumber : "-",
+         pbfUserName: pbf[0],
+         pbfName: pbf[1],
+         pbfAddr: pbf[2],
+         tipePermohonan: tipePermohonanMap[tipePermohonan], 
+         status: statusCert, 
+         timestampRequest: new Date(Number(timestampRequest) * 1000).toLocaleDateString('id-ID', options),
+         timestampApprove: Number(timestampApprove) > 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampRenewRequest: parseInt(timestampRenewRequest) !== 0 ? new Date(Number(timestampRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampExtendReject: parseInt(timestampExtendReject) !== 0 ? new Date(Number(timestampExtendReject) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampExtendRenew: parseInt(timestampExtendRenew) !== 0 ? new Date(Number(timestampExtendRenew) * 1000).toLocaleDateString('id-ID', options): "-",
+         bpomName : bpom[0] ? bpom[0] : "-",
+         bpomInstance: bpom[1] ? bpom[1] : "-",
+         bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
+         cdobIpfs: cdobIpfs,
+         pbfNIB: detailUserPbfCt[6],
+         pbfNPWP: detailUserPbfCt[7],
+         dokumenAdministrasi: {
+           surat_permohonan_cdob: surat_permohonan_cdob,
+           bukti_pembayaran_pajak: bukti_pembayaran_pajak
+         },
+         dokumenTeknis: {
+           surat_izin_cdob: surat_izin_cdob,
+           denah_pbf: denah_pbf,
+           struktur_organisasi: struktur_organisasi,
+           daftar_personalia: daftar_personalia,
+           daftar_peralatan: daftar_peralatan,
+           eksekutif_quality_management: eksekutif_quality_management,
+           surat_izin_apoteker: surat_izin_apoteker,
+           dokumen_self_assessment: dokumen_self_assessment
+         }
+       };
+
+      }
       
-
       if(detailCdob.status === 'Disetujui' || detailCdob.status === 'Perpanjangan CDOB'  || detailCdob.status === 'Sertifikat Kadaluarsa'){
         MySwal.fire({
           title: "Detail Sertifikat CDOB",
@@ -576,6 +623,39 @@ function CdobApprove() {
                       <p>{detailCdob.timestampExtendRequest}</p> 
                     </li>
                   </ul>
+                  {rejectMsg[1]? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Penolakan Pengajuan Perpanjangan CDOB</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampExtendReject}</p> 
+                      </li>
+                    </ul>
+                    : null
+                  }
+                  {rejectMsg[1]? 
+                    <ul className='rejectMsg klaim'>
+                      <li className="label">
+                        <p>Alasan Penolakan Perpanjangan</p> 
+                        </li>
+                      <li className="input">
+                      <p>{rejectMsg[1]}</p> 
+                      </li>
+                    </ul> 
+                    : null
+                  }
+                  {rejectMsg[1]? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang Perpanjangan CDOB</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampExtendRenew}</p> 
+                      </li>
+                    </ul>
+                    : null
+                  }
                   <ul>
                     <li className="label">
                       <p>Tanggal Penyetujuan Perpanjangan CDOB</p> 
@@ -1103,7 +1183,7 @@ function CdobApprove() {
             htmlContainer: 'scrollable-modal'
           },
         })
-      } else if(detailCdob.status === 'Pengajuan Perpanjangan CDOB'){
+      } else if(detailCdob.status === 'Pengajuan Perpanjangan CDOB' || detailCdob.status === 'Pengajuan Perpanjangan Ulang CDOB'){
         MySwal.fire({
           title: "Detail Pengajuan CDOB",
           html: (
@@ -1218,6 +1298,39 @@ function CdobApprove() {
                       <p>{detailCdob.timestampExtendRequest}</p> 
                     </li>
                   </ul>
+                  {rejectMsg[1]? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Penolakan Pengajuan Perpanjangan CDOB</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampExtendReject}</p> 
+                      </li>
+                    </ul>
+                    : null
+                  }
+                  {rejectMsg[1]? 
+                    <ul className='rejectMsg klaim'>
+                      <li className="label">
+                        <p>Alasan Penolakan Perpanjangan</p> 
+                        </li>
+                      <li className="input">
+                      <p>{rejectMsg[1]}</p> 
+                      </li>
+                    </ul> 
+                    : null
+                  }
+                  {rejectMsg[1]? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang Perpanjangan CDOB</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampExtendRenew}</p> 
+                      </li>
+                    </ul>
+                    : null
+                  }
                   <ul>
                     <li className="label">
                       <p>Tanggal Penyetujuan Perpanjangan CDOB</p> 
@@ -1443,13 +1556,14 @@ function CdobApprove() {
           width: '1020',
           showCloseButton: true,
           showCancelButton: false,
-          showDenyButton: false,
+          showDenyButton: true,
           confirmButtonText: 'Setujui Perpanjangan',
+          denyButtonText: 'Tolak Perpanjangan',
         }).then((result) => {
 
           if(result.isConfirmed){
             MySwal.fire({
-              title: 'Konfirmasi Perpanjangan Sertifikat CDOB',
+              title: 'Konfirmasi Penyetujuan Pengajuan Perpanjangan Sertifikat CDOB',
               html: (
                 <div className="form-swal form">
                   <div className="row">
@@ -1570,7 +1684,177 @@ function CdobApprove() {
                 generateIpfs(detailCdob.cdobNumber, detailCdob, "Perpanjangan")
               }
             })
-          } 
+          } else if (result.isDenied){
+                        MySwal.fire({
+              title: 'Penolakan Pengajuan Perpanjangan Sertifikat CDOB',
+              html: (
+                <div className="form-swal form">
+                  <div className="row">
+                    <div className="col">
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="factoryInstanceName">Nama Instansi PBF</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="factoryInstanceName"
+                            value={detailCdob.pbfName}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul className='klaim'>
+                        <li className="label">
+                          <label htmlFor="factoryAddr">Alamat Akun PBF (Pengguna)</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="factoryAddr"
+                            value={detailCdob.pbfAddr}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="bpomInstance">Nama Instansi BPOM</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="bpomInstance"
+                            value={userdata.instanceName}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul className='klaim'>
+                        <li className="label">
+                          <label htmlFor="bpomAddr">Alamat Akun BPOM (Pengguna)</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="bpomAddr"
+                            value={userdata.address}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+                                            <ul>
+                        <li className="label">
+                          <label htmlFor="rejectReason">Alasan Reject</label>
+                        </li>
+                        <li className="input">
+                          <select id="rejectReason" required onChange={(e) => handleRejectReasonChange(e)}>
+                            <option value="">Pilih alasan</option>
+                            <option value="Surat pernyataan pimpinan dan direksi tidak sesuai">Surat pernyataan pimpinan dan direksi tidak sesuai</option>
+                            <option value="Dokumen inspeksi diri tidak sesuai">Dokumen inspeksi diri tidak sesuai</option>
+                            <option value="Dokumen riwayat perbaikan tidak sesuai">Dokumen riwayat perbaikan tidak sesuai</option>
+
+                            <option value="Other">Other (specify manually)</option>
+                          </select>
+                        </li>
+                      </ul>
+
+                      <ul id="customRejectMsgWrapper" style={{ display: 'none' }}>
+                        <li className="label">
+                          <label htmlFor="customRejectMsg">Specify Reason</label>
+                        </li>
+                        <li className="input">
+                          <textarea
+                            id="customRejectMsg"
+                            rows="3"
+                            placeholder="Masukkan alasan manual di sini"
+                          />
+                        </li>
+                      </ul>
+                    </div>
+              
+                    <div className="col">
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="CDOBNumber">Nomor CDOB</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="CDOBNumber"
+                            defaultValue={detailCdob.cdobNumber}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="jenisSediaan">Tipe Permohonan</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="jenisSediaan"
+                            value={detailCdob.tipePermohonan}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+
+
+                    </div>
+                  </div>
+                </div>
+              ),     
+              width: '660',       
+              icon: 'warning',
+              showCancelButton: false,
+              confirmButtonText: 'Konfirmasi',
+              confirmButtonColor: '#530AF7',
+              showDenyButton: true,
+              denyButtonColor: ' #A6A6A6',
+              denyButtonText: 'Batal',
+              allowOutsideClick: false,
+                            preConfirm: () => {
+              const rejectReason = document.getElementById('rejectReason').value;
+              const customRejectMsg = document.getElementById('customRejectMsg').value;
+
+              if (!rejectReason) {
+                Swal.showValidationMessage('Pilih alasan reject!');
+              } else if (rejectReason === 'Other' && !customRejectMsg.trim()) {
+                Swal.showValidationMessage('Masukkan alasan manual jika memilih "Lainnya"!');
+              }
+
+              return {
+                rejectReason: rejectReason === 'Other' ? customRejectMsg : rejectReason,
+              };
+            },
+              customClass: {
+                htmlContainer: 'scrollable-modal-small'
+              },
+              
+            }).then((result) => {
+              
+              if(result.isConfirmed){
+
+                MySwal.fire({
+                  title: "Menunggu koneksi Metamask...",
+                  text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+                  icon: 'info',
+                  showCancelButton: false,
+                  showConfirmButton: false,
+                  allowOutsideClick: false,
+                });
+                
+                rejectExtendCpotb(id, result.value.rejectReason, tipePermohonan, detailCdob.pbfName)
+
+              }
+            })
+          }
         })
       
       } else{
@@ -2417,6 +2701,32 @@ function CdobApprove() {
     }
   } 
   
+  const rejectExtendCpotb = async(cdobId, rejectMsg, tipePermohonan, pbfName) => {
+    console.log(rejectMsg, tipePermohonan);
+
+    try {
+      const rejectCt = await contracts.certificateManager.rejectExtendCdob( cdobId, rejectMsg );
+
+      if(rejectCt){
+        
+        MySwal.update({
+          title: "Memproses transaksi...",
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
+        });
+      }
+
+      console.log(rejectCt);
+      
+      contracts.certificateManager.on("CertExtendReject", (_instanceAddr, _rejectMsg, timestampRejected) => {
+        updateCdobFb(pbfName, tipePermohonan, rejectCt.hash, Number(timestampRejected), "", "" , "Tolak")
+        recordHashFb(pbfName, tipePermohonan, rejectCt.hash, Number(timestampRejected), "Tolak")
+        // handleEventCdob( "Tidak Disetujui", _instanceAddr, _instanceName, _tipePermohonan, _rejectMsg, timestampRejected, rejectCt.hash, '');
+      });
+    } catch (error) {
+      errAlert(error, `Gagal menolak pengajuan CDOB ${pbfName} dengan Tipe Permohonan ${tipePermohonan}`)
+    }
+  }
+
   const rejectCdob = async(cdobId, rejectMsg, tipePermohonan, pbfName) => {
     console.log(rejectMsg, tipePermohonan);
 

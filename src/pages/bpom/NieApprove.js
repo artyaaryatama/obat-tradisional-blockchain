@@ -30,8 +30,10 @@ function NieApprove() {
     3n: "Tidak Disetujui NIE",
     4n: "Pengajuan Ulang",
     5n: "NIE Kadaluarsa",
-    6n: "Pengajuan Perpanjangan NIE",
-    7n: "Perpanjangan NIE"
+    6n: "Pengajuan Registrasi Ulang NIE",
+    7n: "Penyetujuan Registrasi Ulang NIE",
+    8n: 'Pengajuan Registrasi Ulang NIE Ditolak',
+    9n: 'Pengajuan Ulang Registrasi Ulang NIE'
   };
 
   const tipeObatMap = {
@@ -1388,7 +1390,7 @@ function NieApprove() {
             htmlContainer: 'scrollable-modal'
           },
         })
-      }  else if (detailObat.nieStatus === 'Pengajuan Perpanjangan NIE'){
+      }  else if (detailObat.nieStatus === 'Pengajuan Registrasi Ulang NIE' || detailObat.nieStatus === 'Pengajuan Ulang Registrasi Ulang NIE'){
           rejectMsg = await contracts.nieManager.getRejectMsgNie(id);
           MySwal.fire({
             title: `Detail Obat ${detailObat.namaObat}`,
@@ -1861,8 +1863,9 @@ function NieApprove() {
             width: '1120',
             showCloseButton: true,
             showCancelButton: false,
-            showDenyButton: false,
-            confirmButtonText: 'Setujui Pengajuan',
+            showDenyButton: true,
+            confirmButtonText: 'Setujui Perpanjangan NIE',
+            denyButtonText: 'Tolak Perpanjangan NIE',
             customClass: {
               htmlContainer: 'scrollable-modal'
             },
@@ -2053,9 +2056,111 @@ function NieApprove() {
                   });
 
                   generateIpfs(id, detailObat.nieNumber, detailObat, cpotbHash, 'Perpanjangan')
-                }
+                } 
               })
             
+            } else if(result.isDenied){
+                MySwal.fire({
+                  title: "Konfirmasi Penolakan Perpanjangan Pengajuan NIE",
+                  html: (
+                    <div className='form-swal form'>
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="factoryAddr">Nama Instansi Pabrik</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="factoryAddr"
+                            value={detailObat.factoryInstanceName}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="factoryInstanceName">Nama Produk</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="factoryInstanceName"
+                            value={namaProduk}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="rejectReason">Alasan Penolakan</label>
+                        </li>
+                        <li className="input">
+                          <select id="rejectReason" required onChange={(e) => handleRejectReasonChange(e)}>
+                            <option value="">Pilih alasan</option>
+                            <option value="Dokumen Master Formula tidak sesuai">Dokumen Master Formula tidak sesuai</option>
+                            <option value="Desain Kemasan Terbaru tidak sesuai">Desain Kemasan Terbaru tidak sesuai</option>
+                            <option value="SK Persetujuan dan Variasi tidak sesuai">SK persetujuan serta semua jenis variasi tidak sesuai</option>
+                            <option value="Surat Pernyataan Peredaran Produk tidak sesuai">Surat pernyataan peredaran produk tidak sesuai</option>
+                            <option value="Desain Kemasan Berwarna Terbaru tidak sesuai">Desain kemasan berwarna yang terbaru tidak sesuai</option>
+                            <option value="Dokumen Hasil Uji Stabilitas tidak sesuai">Dokumen Hasil Uji Stabilitas tidak sesuai</option>
+                            <option value="Data Pendukung Keamanan tidak sesuai">Data Pendukung Keamanan tidak sesuai</option>
+                            <option value="Lainnya">Lainnya (Input Manual)</option>
+                          </select>
+                        </li>
+                      </ul>
+
+                      <ul id="customRejectMsgWrapper" style={{ display: 'none' }}>
+                        <li className="label">
+                          <label htmlFor="customRejectMsg">Alasan Penolakan</label>
+                        </li>
+                        <li className="input">
+                          <textarea
+                            id="customRejectMsg"
+                            rows="3"
+                            placeholder="Masukkan alasan manual di sini"
+                          />
+                        </li>
+                      </ul>
+                    </div>
+                  ),
+                  width: '638',
+                  showCancelButton: true,
+                  showCloseButton: true,
+                  confirmButtonText: 'Konfirmasi',
+                  confirmButtonColor: '#E33333',
+                  cancelButtonText: 'Batal',
+                  cancelButtonColor: '#A6A6A6',
+                  allowOutsideClick: false,
+                  preConfirm: () => {
+                    const rejectReason = document.getElementById('rejectReason').value;
+                    const customRejectMsg = document.getElementById('customRejectMsg').value;
+
+                    if (!rejectReason) {
+                      Swal.showValidationMessage('Pilih alasan reject!');
+                    } else if (rejectReason === 'Lainnya' && !customRejectMsg.trim()) {
+                      Swal.showValidationMessage('Masukkan alasan manual jika memilih "Lainnya"!');
+                    }
+
+                    return {
+                      rejectReason: rejectReason === 'Lainnya' ? customRejectMsg : rejectReason,
+                    };
+                  },
+                }).then((result) => {
+                  if(result.isConfirmed){
+                    console.log(result.value.rejectReason);
+
+                    MySwal.fire({
+                      title: "Menunggu koneksi Metamask...",
+                      text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+                      icon: 'info',
+                      showCancelButton: false,
+                      showConfirmButton: false,
+                      allowOutsideClick: false,
+                    });
+
+                    extendRejectNie(id, result.value.rejectReason, detailObat.namaObat, factoryInstance)
+                  }
+                })
             } 
           })
 
@@ -2516,13 +2621,6 @@ function NieApprove() {
             customClass: {
               htmlContainer: 'scrollable-modal'
             },
-            // didOpen: () => { 
-            //   const stepperOrder = document.getElementById('stepperOrder');
-            //   const root = ReactDOM.createRoot(stepperOrder);
-            //   root.render( 
-            //     <NieStatusStepper nieStatus={parseInt(nieStatus)} timestamps={timestamps} />
-            //   );
-            // }
           }).then((result) => {
             
             if(result.isConfirmed){
@@ -2949,7 +3047,7 @@ function NieApprove() {
       });
 
       if(msg === "Perpanjangan") {
-        extendNie(id, updatedNie, dataObat.namaObat, dataObat.factoryInstanceName, result.path);
+        extendApproveNie(id, updatedNie, dataObat.namaObat, dataObat.factoryInstanceName, result.path);
 
       } else{
         approveNie(id, updatedNie, dataObat.namaObat, dataObat.factoryInstanceName, result.path);
@@ -2958,13 +3056,13 @@ function NieApprove() {
     }
   }
 
-  const extendNie = async(id, nieNumber, namaObat, factoryInstance, nieIpfs) => {
+  const extendApproveNie = async(id, nieNumber, namaObat, factoryInstance, nieIpfs) => {
 
     console.log(id, nieNumber, userdata.instanceName);
     try {
-      const extendNieCt =  await contracts.nieManager.approveExtendRequest(id, nieIpfs)
+      const extendApproveNieCt =  await contracts.nieManager.approveExtendRequest(id, nieIpfs)
 
-      if(extendNieCt){
+      if(extendApproveNieCt){
         MySwal.update({
           title: "Memproses transaksi...",
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
@@ -2972,9 +3070,9 @@ function NieApprove() {
       }
       
       contracts.nieManager.on('NieApprovedExtendRequest',  (_instanceAddr, _timestampApprove) => {
-        updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, extendNieCt.hash, Number(_timestampApprove),  'Perpanjangan')
-        recordHashFb(namaObat, factoryInstance, extendNieCt.hash, Number(_timestampApprove),  'Perpanjangan')
-        handleEventNieApproved("Extend", namaObat, _instanceAddr, userdata.instanceName, nieNumber, _timestampApprove, extendNieCt.hash)
+        updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, extendApproveNieCt.hash, Number(_timestampApprove),  'Perpanjangan')
+        recordHashFb(namaObat, factoryInstance, extendApproveNieCt.hash, Number(_timestampApprove),  'Perpanjangan')
+        handleEventNieApproved("Extend", namaObat, _instanceAddr, userdata.instanceName, nieNumber, _timestampApprove, extendApproveNieCt.hash)
       });
 
     } catch (error) {
@@ -3024,6 +3122,30 @@ function NieApprove() {
         recordHashFb(namaObat, factoryInstance, rejectCt.hash, Number(_timestampRejected), "Tolak")
         handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, rejectCt.hash)
       });
+
+    } catch (error) {
+      errAlert(error, "Can't Reject NIE");
+    }
+  }
+
+  const extendRejectNie = async(id, rejectMsg, namaObat, factoryInstance) => {
+
+    try {
+      console.log(id, userdata.instanceName, rejectMsg);
+      const extendRejectNieCt = await contracts.nieManager.extendRejectNie(id, rejectMsg);
+
+      if(extendRejectNieCt){
+        MySwal.update({
+          title: "Memproses transaksi...",
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
+        });
+      }
+      
+      // contracts.nieManager.on('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
+      //   updateObatFb(namaObat, factoryInstance, "", "", extendRejectNieCt.hash, Number(_timestampRejected), "Tolak")
+      //   recordHashFb(namaObat, factoryInstance, extendRejectNieCt.hash, Number(_timestampRejected), "Tolak")
+      //   handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, extendRejectNieCt.hash)
+      // });
 
     } catch (error) {
       errAlert(error, "Can't Reject NIE");

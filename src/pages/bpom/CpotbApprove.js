@@ -61,7 +61,9 @@ function CpotbApprove() {
     3: "Pengajuan Ulang",
     4: "Sertifikat Kadaluarsa",
     5: "Pengajuan Perpanjangan CPOTB",
-    6: "Perpanjangan CPOTB"
+    6: "Perpanjangan CPOTB",
+    7: "Pengajuan Perpanjangan CPOTB Ditolak",
+    8: "Pengajuan Perpanjangan Ulang CPOTB"
   };
 
   const options = {
@@ -209,7 +211,7 @@ function CpotbApprove() {
                 <p>{detail}</p> 
               </li>
             </ul>
-            <ul>
+            {/* <ul>
               <li className="label">
                 <p>Nama Instansi BPOM</p> 
               </li>
@@ -224,7 +226,7 @@ function CpotbApprove() {
               <li className="input">
                 <p>{bpomAddr}</p> 
               </li>
-            </ul>
+            </ul> */}
             <ul>
               <li className="label">
                 <p>Tanggal Disetujui</p> 
@@ -284,7 +286,7 @@ function CpotbApprove() {
                 <p>{certNumber}</p> 
               </li>
             </ul>
-            <ul>
+            {/* <ul>
               <li className="label">
                 <p>Nama Instansi BPOM</p> 
               </li>
@@ -299,7 +301,7 @@ function CpotbApprove() {
               <li className="input">
                 <p>{userdata.address}</p> 
               </li>
-            </ul>
+            </ul> */}
             <ul>
               <li className="label">
                 <p>Tanggal Dierpanjang</p> 
@@ -344,7 +346,7 @@ function CpotbApprove() {
         title: "Pengajuan CPOTB Ditolak",
         html: (
           <div className='form-swal event'>
-            <ul>
+            {/* <ul>
               <li className="label">
                 <p>Nama Instansi BPOM</p> 
               </li>
@@ -359,7 +361,7 @@ function CpotbApprove() {
               <li className="input">
                 <p>{bpomAddr}</p> 
               </li>
-            </ul>
+            </ul> */}
             <ul>
               <li className="label">
                 <p>Tanggal Penolakan</p> 
@@ -430,9 +432,9 @@ function CpotbApprove() {
       const [denahBangunan, sistemMutu] = docsTeknis
       const [cpotbId, cpotbNumber, jenisSediaan, factoryType] = cpotbDetails;
       
-      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, timestampExtendApprove, sender, bpom, cpotbIpfs] = certDetails;
+      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, timestampExtendApprove, timestampExtendReject, timestampExtendRenew, sender, bpom, cpotbIpfs] = certDetails;
       
-      console.log(certDetails);
+      console.log(sender);
       const detailUserFactoryCt = await contracts.roleManager.getUserData(sender[2]);
 
       if (factoryType === "UMOT") {
@@ -514,6 +516,8 @@ function CpotbApprove() {
           timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
           timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
           timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+          timestampExtendReject: parseInt(timestampExtendReject) !== 0 ? new Date(Number(timestampExtendReject) * 1000).toLocaleDateString('id-ID', options): "-",
+          timestampExtendRenew: parseInt(timestampExtendRenew) !== 0 ? new Date(Number(timestampExtendRenew) * 1000).toLocaleDateString('id-ID', options): "-",
           bpomName : bpom[0] ? bpom[0] : "-",
           bpomInstance: bpom[1] ? bpom[1] : "-",
           bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
@@ -533,46 +537,13 @@ function CpotbApprove() {
         }
       }
 
-      // const detailCpotb = {
-      //   cpotbId: cpotbId,
-      //   cpotbNumber: cpotbNumber ? cpotbNumber : "-",
-      //   factoryUserName: sender[0],
-      //   factoryAddr: sender[2],
-      //   factoryInstanceName: sender[1],
-      //   jenisSediaan: jenisSediaanMap[jenisSediaan], 
-      //   status: statusCert, 
-      //   timestampRequest: new Date(Number(timestampRequest) * 1000).toLocaleDateString('id-ID', options),
-      //   timestampApprove: Number(timestampApprove) > 0 ? new Date(Number(timestampApprove) * 1000).toLocaleDateString('id-ID', options): "-",
-      //   timestampRenewRequest: parseInt(timestampRenewRequest) !== 0 ? new Date(Number(timestampRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
-      //   timestampRejected: parseInt(timestampRejected) !== 0 ? new Date(Number(timestampRejected) * 1000).toLocaleDateString('id-ID', options): "-",
-      //   timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
-      //   timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
-      //   timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
-      //   bpomUserName : bpom[0] ? bpom[0] : "-",
-      //   bpomInstance: bpom[1] ? bpom[1] : "-",
-      //   bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
-      //   cpotbIpfs: cpotbIpfs ? cpotbIpfs : "-",
-      //   factoryType: typeFactory,
-      //   factoryNIB: detailUserFactoryCt[6],
-      //   factoryNPWP: detailUserFactoryCt[7],
-      //   dokumenAdministrasi: {
-      //     suratPermohonan: suratPermohonan,
-      //     buktiPembayaranNegaraBukanPajak: buktiPembayaranNegaraBukanPajak,
-      //     suratKomitmen: suratKomitmen
-      //   },
-      //   dokumenTeknis: {
-      //     denahBangunan: denahBangunan,
-      //     sistemMutu: sistemMutu,
-      //   }
-      // };
-
       console.log(detailCpotb)
 
       const eligbleFactory = checkEligible(factoryType, parseInt(jenisSediaan));
       console.log(eligbleFactory);
 
       const rejectMsg = await contracts.certificateManager.getRejectMsgCpotb(id);
-      console.log(detailCpotb.status);
+      console.log(rejectMsg);
 
       if(detailCpotb.status === 'Disetujui' || detailCpotb.status === 'Perpanjangan CPOTB'  || detailCpotb.status === 'Sertifikat Kadaluarsa'){
         MySwal.fire({
@@ -637,13 +608,13 @@ function CpotbApprove() {
                     </ul> 
                     : <div></div>
                   }
-                  {rejectMsg? 
+                  {rejectMsg[0]? 
                     <ul className='rejectMsg klaim'>
                       <li className="label">
                         <p>Alasan Penolakan</p> 
                       </li>
                       <li className="input">
-                        <p>{rejectMsg}</p> 
+                        <p>{rejectMsg[0]}</p> 
                       </li>
                     </ul> 
                     : <div></div>
@@ -943,7 +914,7 @@ function CpotbApprove() {
                       <p>Alasan Penolakan</p> 
                     </li>
                     <li className="input">
-                      <p>{rejectMsg}</p> 
+                      <p>{rejectMsg[0]}</p> 
                     </li>
                   </ul>
                   <ul>
@@ -1137,7 +1108,7 @@ function CpotbApprove() {
           showConfirmButton: false,
         })
 
-      } else if(detailCpotb.status === 'Pengajuan Perpanjangan CPOTB'){
+      } else if(detailCpotb.status === 'Pengajuan Perpanjangan CPOTB' || detailCpotb.status=== 'Pengajuan Perpanjangan Ulang CPOTB'){
         MySwal.fire({
           title: "Detail Pengajuan CPOTB",
           html: (
@@ -1202,13 +1173,13 @@ function CpotbApprove() {
                     </ul> 
                     : <div></div>
                   }
-                  {rejectMsg? 
+                  {rejectMsg[0]? 
                     <ul className='rejectMsg klaim'>
                       <li className="label">
                         <p>Alasan Penolakan</p> 
                       </li>
                       <li className="input">
-                        <p>{rejectMsg}</p> 
+                        <p>{rejectMsg[0]}</p> 
                       </li>
                     </ul> 
                     : <div></div>
@@ -1251,6 +1222,39 @@ function CpotbApprove() {
                       <p>{detailCpotb.timestampExtendRequest}</p> 
                     </li>
                   </ul>
+                  {rejectMsg[1]? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Penolakan Pengajuan Perpanjangan CPOTB</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.timestampExtendReject}</p> 
+                      </li>
+                    </ul>
+                    : null
+                  }
+                  {rejectMsg[1]? 
+                    <ul className='rejectMsg klaim'>
+                      <li className="label">
+                        <p>Alasan Penolakan Perpanjangan</p> 
+                        </li>
+                      <li className="input">
+                      <p>{rejectMsg[1]}</p> 
+                      </li>
+                    </ul> 
+                    : null
+                  }
+                  {rejectMsg[1]? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang Perpanjangan CPOTB</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCpotb.timestampExtendRenew}</p> 
+                      </li>
+                    </ul>
+                    : null
+                  }
                   <ul>
                     <li className="label">
                       <p>Tanggal Penyetujuan Perpanjangan CPOTB</p> 
@@ -1510,13 +1514,14 @@ function CpotbApprove() {
           width: '1020',
           showCloseButton: true,
           showCancelButton: false,
-          showDenyButton: false,
+          showDenyButton: true,
           confirmButtonText: 'Setujui Perpanjangan',
+          denyButtonText: 'Tolak Perpanjangan',
         }).then((result) => {
   
           if(result.isConfirmed){
             MySwal.fire({
-              title: 'Konfirmasi Perpanjangan Sertifikat CPOTB',
+              title: 'Konfirmasi Penyetujuan Pengajuan Perpanjangan Sertifikat CPOTB',
               html: (
                 <div className="form-swal form">
                   <div className="row">
@@ -1650,6 +1655,160 @@ function CpotbApprove() {
                 generateIpfs(detailCpotb.cpotbNumber, detailCpotb, "Perpanjangan")
               }
             })
+          } else if (result.isDenied){
+
+            MySwal.fire({
+              title: 'Konfirmasi Penolakan Pengajuan Perpanjangan Sertifikat CPOTB',
+              html: (
+                <div className="form-swal form reject-form">
+                  <div className="row">
+                    <div className="col reject">
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="factoryInstanceName">Nama Instansi Pabrik</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="factoryInstanceName"
+                            value={detailCpotb.factoryInstanceName}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul className='klaim'>
+                        <li className="label">
+                          <label htmlFor="factoryAddr">Alamat Akun Pabrik (Pengguna)</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="factoryAddr"
+                            value={detailCpotb.factoryAddr}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="bpomInstance">Nama Instansi BPOM</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="bpomInstance"
+                            value={userdata.instanceName}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul className='klaim'>
+                        <li className="label">
+                          <label htmlFor="bpomAddr">Alamat Akun BPOM (Pengguna)</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="bpomAddr"
+                            value={userdata.address}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="rejectReason">Alasan Reject</label>
+                        </li>
+                        <li className="input">
+                          <select id="rejectReason" required onChange={(e) => handleRejectReasonChange(e)}>
+                            <option value="">Pilih alasan</option>
+
+                            <option value="Surat Permohonan CPOTB tidak sesuai">Surat Permohonan CPOTB tidak sesuai</option>
+                            <option value="Bukti Pembayaran Negara Bukan Pajak tidak sesuai">Bukti Pembayaran Negara Bukan Pajak tidak sesuai</option>
+                            <option value="Denah Bangunan Pabrik tidak sesuai">Denah Bangunan Pabrik tidak sesuai</option>
+                            <option value="Dokumen Sistem Mutu CPOTB tidak sesuai">Dokumen Sistem Mutu CPOTB tidak sesuai</option>
+                            <option value="Dokumen CAPA (Corrective Action and Preventive Action) tidak sesuai">Dokumen CAPA (Corrective Action and Preventive Action) tidak sesuai</option>
+                            <option value="Lainnya">Input Manual</option>
+                          </select>
+                        </li>
+                      </ul>
+
+                      <ul id="customRejectMsgWrapper" style={{ display: 'none' }}>
+                        <li className="label">
+                          <label htmlFor="customRejectMsg">Alasan Reject Detail</label>
+                        </li>
+                        <li className="input">
+                          <textarea
+                            id="customRejectMsg"
+                            rows="3"
+                            placeholder="Masukkan alasan manual di sini"
+                          />
+                        </li>
+                      </ul>
+                    </div>
+              
+                    <div className="col">
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="jenisSediaan">Jenis Sediaan</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="jenisSediaan"
+                            value={detailCpotb.jenisSediaan}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              ),     
+              width: '820',       
+              icon: 'warning',
+              showCancelButton: true,
+              showCloseButton: true,
+              confirmButtonText: 'Konfirmasi',
+              confirmButtonColor: '#E33333',
+              cancelButtonColor: '#A6A6A6',
+              allowOutsideClick: false,
+              cancelButtonText: 'Batal',
+              preConfirm: () => {
+                const rejectReason = document.getElementById('rejectReason').value;
+                const customRejectMsg = document.getElementById('customRejectMsg').value;
+
+                if (!rejectReason) {
+                  Swal.showValidationMessage('Pilih alasan reject!');
+                } else if (rejectReason === 'Lainnya' && !customRejectMsg.trim()) {
+                  Swal.showValidationMessage('Masukkan alasan manual jika memilih "Lainnya"!');
+                }
+
+                return {
+                  rejectReason: rejectReason === 'Lainnya' ? customRejectMsg : rejectReason,
+                };
+              },
+            }).then((result) => {
+              
+              if(result.isConfirmed){
+
+                MySwal.fire({
+                  title: "Menunggu koneksi Metamask...",
+                  text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+                  icon: 'info',
+                  showCancelButton: false,
+                  showConfirmButton: false,
+                  allowOutsideClick: false,
+                });
+
+                rejectExtendCpotb(id, result.value.rejectReason, jenisSediaan, detailCpotb.factoryInstanceName)
+              }
+            })
+
           } 
         })
 
@@ -1711,13 +1870,13 @@ function CpotbApprove() {
                     </ul> 
                     : <div></div>
                   }
-                  {rejectMsg? 
+                  {rejectMsg[0]? 
                     <ul className='rejectMsg klaim'>
                       <li className="label">
                         <p>Alasan Penolakan</p> 
                       </li>
                       <li className="input">
-                        <p>{rejectMsg}</p> 
+                        <p>{rejectMsg[0]}</p> 
                       </li>
                     </ul> 
                     : <div></div>
@@ -1913,8 +2072,35 @@ function CpotbApprove() {
               title: 'Konfirmasi Penyetujuan Pengajuan Sertifikat CPOTB',
               html: (
                 <div className="form-swal form">
-                  <div className="row">
+                  <div className="row5 pengajuan">
                     <div className="col">
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="cpotbNumber">Nomor CPOTB</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="cpotbNumber"
+                            defaultValue={cpotbNumber}
+                            
+                          />
+                        </li>
+                      </ul>
+              
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="jenisSediaan">Jenis Sediaan</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="jenisSediaan"
+                            value={detailCpotb.jenisSediaan}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
                       <ul>
                         <li className="label">
                           <label htmlFor="factoryInstanceName">Nama Instansi Pabrik</label>
@@ -1984,40 +2170,91 @@ function CpotbApprove() {
                         </li>
                       </ul>
                     </div>
-              
-                    <div className="col">
+
+                    <div className='col doku'>
+                      <h5>Dokumen Administrasi</h5>
                       <ul>
                         <li className="label">
-                          <label htmlFor="cpotbNumber">Nomor CPOTB</label>
+                          <p>Surat Permohonan CPOTB</p>
                         </li>
                         <li className="input">
-                          <input
-                            type="text"
-                            id="cpotbNumber"
-                            defaultValue={cpotbNumber}
-                            
-                          />
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratPermohonan}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Surat Permohonan CPOTB
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
                         </li>
                       </ul>
-              
                       <ul>
                         <li className="label">
-                          <label htmlFor="jenisSediaan">Jenis Sediaan</label>
+                          <p>Bukti Pembayaran Negara Bukan Pajak</p>
                         </li>
                         <li className="input">
-                          <input
-                            type="text"
-                            id="jenisSediaan"
-                            value={detailCpotb.jenisSediaan}
-                            readOnly
-                          />
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.buktiPembayaranNegaraBukanPajak}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Bukti Pembayaran Negara Bukan Pajak
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Surat Pernyataan Komitmen</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratKomitmen}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Surat Pernyataan Komitmen
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <hr></hr>
+                      <h5>Dokumen Teknis</h5>
+                      <ul>
+                        <li className="label">
+                          <p>Denah Bangunan Pabrik</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denahBangunan}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Denah Bangunan Pabrik
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Dokumen Sistem Mutu CPOTB</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denah_pbf}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Dokumen Sistem Mutu CPOTB
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
                         </li>
                       </ul>
                     </div>
                   </div>
                 </div>
               ),     
-              width: '660',       
+              width: '960',       
               icon: 'warning',
               showCancelButton: false,
               confirmButtonText: 'Konfirmasi',
@@ -2052,9 +2289,22 @@ function CpotbApprove() {
             MySwal.fire({
               title: 'Konfirmasi Penolakan Pengajuan Sertifikat CPOTB',
               html: (
-                <div className="form-swal form reject-form">
-                  <div className="row">
+                <div className="form-swal form row-reject-form">
+                  <div className="row5 pengajuan">
                     <div className="col reject">
+                      <ul>
+                        <li className="label">
+                          <label htmlFor="jenisSediaan">Jenis Sediaan</label>
+                        </li>
+                        <li className="input">
+                          <input
+                            type="text"
+                            id="jenisSediaan"
+                            value={detailCpotb.jenisSediaan}
+                            readOnly
+                          />
+                        </li>
+                      </ul>
                       <ul>
                         <li className="label">
                           <label htmlFor="factoryInstanceName">Nama Instansi Pabrik</label>
@@ -2148,26 +2398,90 @@ function CpotbApprove() {
                         </li>
                       </ul>
                     </div>
-              
-                    <div className="col">
+                    <div className='col doku'>
+                      <h5>Dokumen Administrasi</h5>
                       <ul>
                         <li className="label">
-                          <label htmlFor="jenisSediaan">Jenis Sediaan</label>
+                          <p>Surat Permohonan CPOTB</p>
                         </li>
                         <li className="input">
-                          <input
-                            type="text"
-                            id="jenisSediaan"
-                            value={detailCpotb.jenisSediaan}
-                            readOnly
-                          />
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratPermohonan}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Surat Permohonan CPOTB
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Bukti Pembayaran Negara Bukan Pajak</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.buktiPembayaranNegaraBukanPajak}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Bukti Pembayaran Negara Bukan Pajak
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Surat Pernyataan Komitmen</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratKomitmen}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Surat Pernyataan Komitmen
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <hr></hr>
+                      <h5>Dokumen Teknis</h5>
+                      <ul>
+                        <li className="label">
+                          <p>Denah Bangunan Pabrik</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denahBangunan}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Denah Bangunan Pabrik
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Dokumen Sistem Mutu CPOTB</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denah_pbf}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Dokumen Sistem Mutu CPOTB
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
                         </li>
                       </ul>
                     </div>
                   </div>
                 </div>
               ),     
-              width: '820',       
+              width: '960',       
               icon: 'warning',
               showCancelButton: true,
               showCloseButton: true,
@@ -2175,6 +2489,9 @@ function CpotbApprove() {
               confirmButtonColor: '#E33333',
               cancelButtonColor: '#A6A6A6',
               allowOutsideClick: false,
+              customClass: {
+                htmlContainer: 'scrollable-modal-small'
+              },
               cancelButtonText: 'Batal',
               preConfirm: () => {
                 const rejectReason = document.getElementById('rejectReason').value;
@@ -2438,6 +2755,29 @@ function CpotbApprove() {
       });
     } catch (error) {
       errAlert(error, "Can't Approve CPOTB")
+    }
+  }
+
+  const rejectExtendCpotb = async(id, rejectMsg, jenisSediaan, factoryInstanceName) => {
+    console.log(id);
+
+    try {
+      const rejectCt = await contracts.certificateManager.rejectExtendCpotb( id, rejectMsg);
+
+      if(rejectCt){
+        MySwal.update({
+          title: "Memproses transaksi...",
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
+        });
+      }
+      
+      contracts.certificateManager.on("CertExtendReject", (_instanceAddr, _rejectMsg, _timestampRejected) => {
+        handleEventCpotb( "Tidak Disetujui", _instanceAddr, userdata.instancName, jenisSediaan, _rejectMsg, _timestampRejected, rejectCt.hash, '');
+        recordHashFb(jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), factoryInstanceName, 'Tolak')
+        updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), "", "", 'Tolak');
+      });
+    } catch (error) {
+      errAlert(error, `Gagal menolak pengajuan CPOTB ${factoryInstanceName} dengan Jenis Sediaan ${jenisSediaan}`)
     }
   }
 

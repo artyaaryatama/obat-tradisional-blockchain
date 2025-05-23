@@ -35,7 +35,9 @@ function ManageCdob() {
     3: "Pengajuan Ulang",
     4: "Sertifikat Kadaluarsa",
     5: "Pengajuan Perpanjangan CDOB",
-    6: "Perpanjangan CDOB"
+    6: "Penyetujuan Perpanjangan CDOB",
+    7: "Pengajuan Perpanjangan CDOB Ditolak",
+    8: "Pengajuan Perpanjangan Ulang CDOB"
   };
 
   const options = {
@@ -233,7 +235,6 @@ function ManageCdob() {
   const getDetailCdob = async (id) => {
     
     console.log(id);
-    let rejectMsg;
 
     try {
       const detailCdobCt = await contracts.certificateManager.getCdobDetails(id);
@@ -243,14 +244,11 @@ function ManageCdob() {
       const [surat_permohonan_cdob, bukti_pembayaran_pajak] = docsAdministrasi;
       const [surat_izin_cdob, denah_pbf, struktur_organisasi, daftar_personalia, daftar_peralatan, eksekutif_quality_management, surat_izin_apoteker, dokumen_self_assessment] = docsTeknis
       const [cdobId, cdobNumber, tipePermohonan] = cdobDetails
-      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, timestampExtendApprove, pbf, bpom, cdobIpfs] = certDetails
+      const [status, timestampRequest, timestampApprove, timestampRejected, timestampRenewRequest, timestampExpired, timestampExtendRequest, timestampExtendApprove,timestampExtendReject, timestampExtendRenew, pbf, bpom, cdobIpfs] = certDetails
+;
 
-      console.log(cdobIpfs);
-
-      if (timestampRejected !== 0n) {
-        const rejectMsgCt = await contracts.certificateManager.getRejectMsgCdob(id);
-        rejectMsg = rejectMsgCt;  
-      } 
+      const rejectMsg = await contracts.certificateManager.getRejectMsgCdob(id);
+      console.log(2);
 
       let statusCert;
       if (status=== 1n || status=== 6n) {
@@ -283,6 +281,8 @@ function ManageCdob() {
          timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
          timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
          timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampExtendReject: parseInt(timestampExtendReject) !== 0 ? new Date(Number(timestampExtendReject) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampExtendRenew: parseInt(timestampExtendRenew) !== 0 ? new Date(Number(timestampExtendRenew) * 1000).toLocaleDateString('id-ID', options): "-",
          bpomName : bpom[0] ? bpom[0] : "-",
          bpomInstance: bpom[1] ? bpom[1] : "-",
          bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
@@ -326,6 +326,8 @@ function ManageCdob() {
          timestampExpired: parseInt(timestampExpired) !== 0 ? new Date(Number(timestampExpired) * 1000).toLocaleDateString('id-ID', options): "-",
          timestampExtendRequest: parseInt(timestampExtendRequest) !== 0 ? new Date(Number(timestampExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
          timestampExtendApprove: parseInt(timestampExtendApprove) !== 0 ? new Date(Number(timestampExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampExtendReject: parseInt(timestampExtendReject) !== 0 ? new Date(Number(timestampExtendReject) * 1000).toLocaleDateString('id-ID', options): "-",
+         timestampExtendRenew: parseInt(timestampExtendRenew) !== 0 ? new Date(Number(timestampExtendRenew) * 1000).toLocaleDateString('id-ID', options): "-",
          bpomName : bpom[0] ? bpom[0] : "-",
          bpomInstance: bpom[1] ? bpom[1] : "-",
          bpomAddr: bpom[2] === "0x0000000000000000000000000000000000000000" ? "-" : bpom[2],
@@ -1048,19 +1050,432 @@ function ManageCdob() {
           confirmButtonText: 'Perpanjangan Sertifkat'
         }).then((result) => {
           if(result.isConfirmed){
-            const cpotbData = {
+            const cdobData = {
               cdobId: id,
               cdobNumber: cdobNumber,
               cdobIpfs: cdobIpfs,
-              tipePermohonan: tipePermohonan.toString(),
-              extTimestamp: timestampExpired.toString()
+              extTimestamp: timestampExpired.toString(),
+              tipePermohonan: detailCdob.tipePermohonan
             }
-            sessionStorage.setItem("cdobDataExt", JSON.stringify(cpotbData))
+            sessionStorage.setItem("cdobDataExt", JSON.stringify(cdobData))
             navigate('/extend-request-cdob')
 
           }
         })
-      } else { 
+      } else if(detailCdob.status === 'Pengajuan Perpanjangan CDOB Ditolak') {
+        MySwal.fire({
+          title: "Detail Sertifikat CDOB",
+          html: (
+            <div className='form-swal order'>
+              <div className="row2">
+                <div className="col">
+                  <ul className='status'>
+                    <li className="label">
+                      <p>Status Sertifikasi</p>
+                    </li>
+                    <li className="input">
+                      <p className={detailCdob.status}>{detailCdob.status}</p>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Nomor CDOB</p>
+                    </li>
+                    <li className="input">
+                      <a
+                        href={`http://localhost:3000/public/certificate/${detailCdob.cdobIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {detailCdob.cdobNumber}
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Permohonan</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{detailCdob.tipePermohonan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailCdob.tipePermohonan}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Pengajuan</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.timestampRequest}</p> 
+                    </li>
+                  </ul>
+  
+                  {timestampRejected? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Penolakan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampRejected}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  {rejectMsg? 
+                    <ul className='rejectMsg klaim'>
+                      <li className="label">
+                        <p>Alasan Penolakan</p> 
+                      </li>
+                      <li className="input">
+                        <p>{rejectMsg}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  {timestampRenewRequest? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampRenewRequest}</p> 
+                      </li>
+                    </ul> 
+                    : <div></div>
+                  }
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Disertifikasi</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.timestampApprove}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>CDOB Berlaku Sampai</p> 
+                    </li>
+                    <li className="input">
+                      <p>{Math.floor(Date.now() / 1000) > Number(timestampExpired)
+                        ? `${detailCdob.timestampExpired} (Kadaluarsa)`
+                        : detailCdob.timestampExpired}
+                      </p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Pengajuan Perpanjangan CDOB</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.timestampExtendRequest}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Tanggal Penyetujuan Perpanjangan CDOB</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.timestampExtendApprove}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Nama Instansi PBF</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.pbfName}</p>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>NIB PBF</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.pbfNIB}</p>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>NPWP PBF</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.pbfNPWP}</p>
+                    </li>
+                  </ul>
+  
+                  <ul className='klaim'>
+                    <li className="label">
+                      <p>Alamat Akun PBF (Pengguna)</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.pbfName}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Nama Instansi BPOM</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.bpomInstance}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul className='klaim'>
+                    <li className="label">
+                      <p>Alamat Akun BPOM (Pengguna)</p> 
+                    </li>
+                    <li className="input">
+                      <p>{detailCdob.bpomAddr}</p> 
+                    </li>
+                  </ul>
+                  
+                </div>
+
+                <div className='.row4'>
+                  <div className='col doku'>
+                    <h5>Dokumen Administrasi</h5>
+                    <ul>
+                      <li className="label">
+                        <p>Surat Permohonan CDOB</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCdob.dokumenAdministrasi.surat_permohonan_cdob}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat surat permohonan CDOB
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Bukti Pembayaran Pajak</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCdob.dokumenAdministrasi.bukti_pembayaran_pajak}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat bukti pembayaran pajak
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                    <h5>Dokumen Teknis</h5>
+                    <ul>
+                      <li className="label">
+                        <p>Surat Izin CDOB</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCdob.dokumenTeknis.surat_izin_cdob}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat surat izin CDOB
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Denah PBF</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCdob.dokumenTeknis.denah_pbf}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat denah PBF
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Struktur Organisasi</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCdob.dokumenTeknis.struktur_organisasi}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat struktur organisasi
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Daftar Personalia</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCdob.dokumenTeknis.daftar_personalia}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat daftar personalia
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Daftar Peralatan</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCdob.dokumenTeknis.daftar_peralatan}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat daftar peralatan
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Eksekutif Quality Management</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCdob.dokumenTeknis.eksekutif_quality_management}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat eksekutif quality management
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Surat Izin Apoteker</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCdob.dokumenTeknis.surat_izin_apoteker}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat surat izin Apoteker
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Dokumen Self Assesment</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCdob.dokumenTeknis.dokumen_self_assessment}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat dokumen Self Assesment
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+
+
+                  {
+                    docsReSertifikasi[0] !== '' ?
+                      <div className='col doku'>
+                        <h5>Dokumen Re-sertifikasi</h5>
+                        <ul>
+                          <li className="label">
+                            <p>Surat Pernyataan Pimpinan</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:8080/ipfs/${detailCdob.docsResertifikasi.suratPernyataanPimpinan}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat Surat Pernyataan Pimpinan
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                        <ul>
+                          <li className="label">
+                            <p>Dokumen Inspeksi Diri</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:8080/ipfs/${detailCdob.docsResertifikasi.dokumenInspeksiDiri}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat Dokumen Inspeksi Diri
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                        <ul>
+                          <li className="label">
+                            <p> Riwayat tindakan perbaikan dan pencegahan berdasarkan hasil pengawasan CDOB dalam 4 (empat) tahun terakhir.</p>
+                          </li>
+                          <li className="input">
+                            <a
+                              href={`http://localhost:8080/ipfs/${detailCdob.docsResertifikasi.dokumenPerbaikan}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Lihat Dokumen Riwayat Perbaikan
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                    : null
+                  }
+                </div>
+
+                
+              </div>
+            
+            </div>
+          ),
+          width: '1020',
+          showCloseButton: true,
+          showCancelButton: false,
+          showConfirmButton: true,
+          confirmButtonText: 'Pengajuan Ulang Perpanjangan CDOB'
+        }).then((result) => {
+          if(result.isConfirmed){
+            const cdobData = {
+              cdobId: id,
+              cdobNumber: cdobNumber,
+              cdobIpfs: cdobIpfs,
+              extTimestamp: timestampExpired.toString(),
+              tipePermohonan: detailCdob.tipePermohonan,
+              rejectExtendMsg: rejectMsg[1]
+            }
+            sessionStorage.setItem("cdobDataExt", JSON.stringify(cdobData))
+            navigate('/extend-renew-request-cdob')
+
+          }
+        })
+      }  
+
+      else { 
         MySwal.fire({
           title: "Detail Sertifikat CDOB",
           html: (
@@ -1183,6 +1598,39 @@ function ManageCdob() {
                       </li>
                     </ul>
 
+                    : null
+                  }
+                  {rejectMsg[1]? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Penolakan Pengajuan Perpanjangan CDOB</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampExtendReject}</p> 
+                      </li>
+                    </ul>
+                    : null
+                  }
+                  {rejectMsg[1]? 
+                    <ul className='rejectMsg klaim'>
+                      <li className="label">
+                        <p>Alasan Penolakan Perpanjangan</p> 
+                        </li>
+                      <li className="input">
+                      <p>{rejectMsg[1]}</p> 
+                      </li>
+                    </ul> 
+                    : null
+                  }
+                  {rejectMsg[1]? 
+                    <ul>
+                      <li className="label">
+                        <p>Tanggal Pengajuan Ulang Perpanjangan CPOTB</p> 
+                      </li>
+                      <li className="input">
+                        <p>{detailCdob.timestampExtendRenew}</p> 
+                      </li>
+                    </ul>
                     : null
                   }
                   {timestampApprove? 
@@ -1406,8 +1854,6 @@ function ManageCdob() {
                       </li>
                     </ul>
                   </div>
-
-
                   {
                     docsReSertifikasi[0] !== '' ?
                       <div className='col doku'>
@@ -1477,82 +1923,6 @@ function ManageCdob() {
 
     } catch (e) {
       errAlert(e, "Can't retrieve data")
-    }
-  }
-
-  const extendCertificate = async(cdobId, expTimestamp, tipePermohonan, cdobNumber) =>{
-
-    console.log(cdobId, expTimestamp, tipePermohonan);
-    try {
-      const extendCertificateCt = await contracts.certificateManager.extendCdob(
-        cdobId, 
-        expTimestamp
-      )
-      console.log(extendCertificateCt);
-
-      if (extendCertificateCt) {
-        MySwal.update({
-          title: "Memproses transaksi...",
-          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
-        });
-      }
-
-      contracts.certificateManager.on('CertExtendRequest',  (_pbfAddr, _timestamp) => {
-        updateCdobFb(extendCertificateCt.hash, Number(_timestamp), tipePermohonan);
-        recordHashFb(extendCertificateCt.hash, Number(_timestamp), tipePermohonan)
-        handleEventCdob(_pbfAddr, _timestamp, extendCertificateCt.hash, cdobNumber)
-      }); 
-    } catch (error) {
-      errAlert(error)
-    }
-  }
-
-  const updateCdobFb = async (cdobHash, timestamp, tp) => {
-
-    const tpMap = {
-      0n: 'Obat Lain',
-      1n: 'Cold Chain Product'
-    };
-
-    const tipeP = tpMap[tp]
-
-    try {
-      const docRef = doc(db, 'cdob_list', userdata.instanceName);
-
-      await updateDoc(docRef, {
-        [`${tipeP}.extendRequestHash`]: cdobHash,
-        [`${tipeP}.extendRequestTimestamp`]: timestamp, 
-        [`${tipeP}.status`]: 4
-      }); 
-  
-    } catch (err) {
-      errAlert(err);
-    }
-  };
-
-  const recordHashFb = async(txHash, timestamp, tp) => {
-
-    const tpMap = {
-      0n: 'Obat Lain',
-      1n: 'Cold Chain Product'
-    };
-
-    const tipeP = tpMap[tp]
-
-    try {
-      const collectionName = `pengajuan_cdob_${userdata.instanceName}`
-      const docRef = doc(db, 'transaction_hash', collectionName);
-  
-      await setDoc(docRef, {
-        [`${tipeP}`]: {
-          'extend_request': {
-            hash: txHash,
-            timestamp: timestamp,
-          }
-        },
-      }, { merge: true }); 
-    } catch (err) {
-      errAlert(err);
     }
   }
 

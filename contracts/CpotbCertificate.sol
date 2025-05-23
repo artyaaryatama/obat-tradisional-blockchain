@@ -252,19 +252,21 @@ contract CpotbCertificate is BaseCertificate {
   }
 
   function renewExtendCpotb(
-    string memory certId
+    string memory certId,
+    DokumenReSertifikasi memory newDoku
   ) public {
 
     updateRenewExtendCertificateDetails(
       certId
     );
-
+    
     uint length = allCpotbData.length;
 
     for (uint i = 0; i < length; i++) {
       if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
         allCpotbData[i].status = EnumsLibrary.StatusCertificate.ExtendRenew; 
-      }  
+        dokuReSertifikasiById[allCpotbData[i].certId] = newDoku; 
+      }   
     }
   }
 

@@ -254,18 +254,20 @@ contract CdobCertificate is BaseCertificate {
   }
 
   function renewExtendCdob(
-    string memory certId
+    string memory certId,
+    DokumenReSertifikasi memory newDoku
   ) public {
 
     updateRenewExtendCertificateDetails(
       certId
     ); 
-
+ 
     uint length = allCdobData.length;
 
     for (uint i = 0; i < length; i++) {
       if (keccak256(abi.encodePacked(allCdobData[i].certId)) == keccak256(abi.encodePacked(certId))) {
         allCdobData[i].status = EnumsLibrary.StatusCertificate.ExtendRenew; 
+        dokuReSertifikasiById[allCdobData[i].certId] = newDoku;
       }  
     }
   }

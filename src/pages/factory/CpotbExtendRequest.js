@@ -31,34 +31,6 @@ function CpotbExtendRequest() {
   });
   const [updateFileIpfs, setUpdateFileIpfs] = useState([])
   const [loader, setLoader] = useState(false);
-  const jenisSediaanMap = {
-    0n: "Cairan Obat Dalam",
-    1n: "Rajangan",
-    2n: "Serbuk",
-    3n: "Serbuk Instan",
-    4n: "Efervesen",
-    5n: "Pil",
-    6n: "Kapsul",
-    7n: "Kapsul Lunak",
-    8n: "Tablet atau Kaplet",
-    9n: "Granul",
-    10n: "Pastiles",
-    11n: "Dodol atau Jenang",
-    12n: "Film Strip",
-    13n: "Cairan Obat Luar",
-    14n: "Losio",
-    15n: "Parem",
-    16n: "Salep",
-    17n: "Krim",
-    18n: "Gel",
-    19n: "Serbuk Obat Luar",
-    20n: "Tapel",
-    21n: "Pilis",
-    22n: "Plaster atau Koyok",
-    23n: "Supositoria",
-    24n: "Rajangan Obat Luar"
-  };
-  
   const today = new Date();
   const options = {
     year: 'numeric',
@@ -69,13 +41,7 @@ function CpotbExtendRequest() {
     timeZoneName: 'short'
   };
 
-  const labelMapping = {
-    ipfsDenahBangunan: "Denah Bangunan Pabrik",
-    ipfsSistemMutu: "Dokumen Sistem Mutu CPOTB",
-    ipfsBuktiPembayaranNegaraBukanPajak: 'Bukti Pembayaran Negara Bukan Pajak',
-    ipfsDokumenCapa: "Dokumen CAPA (Corrective Action and Preventive Action)",
-    ipfsSuratPermohonanCpotb: 'Surat Permohonan CPOTB',
-  };
+  const formattedDate = today.toLocaleDateString('id-ID', options);
 
   useEffect(() => {
     document.title = "Pengajuan Perpanjangan CPOTB"; 
@@ -182,25 +148,6 @@ function CpotbExtendRequest() {
     });
   }
 
-  const handleFileChange = (e, key) => {
-    const file = e.target.files[0];
-    if (!file || file.type !== "application/pdf") {
-      MySwal.fire({
-        title: 'Harap upload file PDF',
-        icon: 'error',
-        confirmButtonText: 'Coba Lagi'
-      });
-      return;
-    }
-
-    setDokumen(prev => ({
-      ...prev,
-      [key]: file
-    }));
-
-    setUpdateFileIpfs(prev => [...prev, key]);
-  };
-
   const uploadToIPFS = async (file) => {
     if (!file) return null;
     try {
@@ -217,24 +164,21 @@ function CpotbExtendRequest() {
     }
   };
   
-  // PATCH: Fungsi mapping sesuai kebutuhan extend/renew
   const reconstructedHashesExtend = (uploaded) => ({
-    ipfsSuratPermohonanCpotb:             uploaded["Surat Permohonan CPOTB"],
-    ipfsBuktiPembayaranNegaraBukanPajak:  uploaded["Bukti Pembayaran Negara Bukan Pajak"],
-    ipfsDenahBangunan:                    uploaded["Denah Bangunan Pabrik"],
-    ipfsSistemMutu:                       uploaded["Dokumen Sistem Mutu CPOTB"],
-    ipfsDokumenCapa:                       uploaded["Dokumen CAPA"],
-    // ipfsDokumenCapa tidak dikirim ke kontrak, bisa ke Firestore jika perlu
+    ipfsSuratPermohonanCpotb: uploaded["Surat Permohonan CPOTB"],
+    ipfsBuktiPembayaranNegaraBukanPajak: uploaded["Bukti Pembayaran Negara Bukan Pajak"],
+    ipfsDenahBangunan: uploaded["Denah Bangunan Pabrik"],
+    ipfsSistemMutu: uploaded["Dokumen Sistem Mutu CPOTB"],
+    ipfsDokumenCapa: uploaded["Dokumen CAPA"],
   });
 
-  // PATCH: Versi upload khusus untuk dokumen perpanjangan
   const uploadAllDocumentsExtend = async () => {
     const files = {
-      "Surat Permohonan CPOTB":             dokumen.ipfsSuratPermohonanCpotb,
+      "Surat Permohonan CPOTB": dokumen.ipfsSuratPermohonanCpotb,
       "Bukti Pembayaran Negara Bukan Pajak": dokumen.ipfsBuktiPembayaranNegaraBukanPajak,
-      "Denah Bangunan Pabrik":              dokumen.ipfsDenahBangunan,
-      "Dokumen Sistem Mutu CPOTB":          dokumen.ipfsSistemMutu,
-      "Dokumen CAPA":                       dokumen.ipfsDokumenCapa,
+      "Denah Bangunan Pabrik": dokumen.ipfsDenahBangunan,
+      "Dokumen Sistem Mutu CPOTB": dokumen.ipfsSistemMutu,
+      "Dokumen CAPA": dokumen.ipfsDokumenCapa,
     };
     let uploaded = {};
     const entries = Object.entries(files).filter(([_, f]) => f instanceof File);
@@ -259,7 +203,7 @@ function CpotbExtendRequest() {
       fetchBlob(dummyPdf2),
       fetchBlob(dummyPdf3),
     ]);
-    // Set File ke dokumen
+
     setDokumen({
       ipfsSuratPermohonanCpotb:             new File([b1], "surat_permohonan.pdf", { type: "application/pdf" }),
       ipfsBuktiPembayaranNegaraBukanPajak:  new File([b2], "bukti_pnbp.pdf", { type: "application/pdf" }),
@@ -269,10 +213,16 @@ function CpotbExtendRequest() {
       ipfsDokumenCapa:                      new File([b3], "dokumen_capa.pdf", { type: "application/pdf" }),
     });
 
-    MySwal.fire({ title: "Mengunggah dokumen ke IPFS…", icon: "info", showConfirmButton: false });
+    MySwal.fire({
+      title: "Mengunggah semua dokumen ke IPFS...",
+      text: "Harap tunggu. Jika proses ini memakan waktu terlalu lama, coba periksa koneksi IPFS. 🚀",
+      icon: 'info',
+      showCancelButton: false,
+      showConfirmButton: false,
+      allowOutsideClick: false,
+    });
     const uploaded = await uploadAllDocumentsExtend();
 
-    // --- PATCH SWEETALERT STYLE SAMA ---
     const { isConfirmed } = await MySwal.fire({
       title: `Konfirmasi Perpanjangan CPOTB`,
       html: `
@@ -318,8 +268,17 @@ function CpotbExtendRequest() {
       cancelButtonText: "Batal",
       allowOutsideClick: false,
     });
+
     if (!isConfirmed) { setLoader(false); return; }
-    MySwal.fire({ title: "Tunggu koneksi Metamask…", icon: "info", showConfirmButton: false });
+
+    MySwal.fire({
+      title: "Menunggu koneksi Metamask...",
+      text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+      icon: "info",
+      showConfirmButton: false,
+      allowOutsideClick: false
+    });
+
     const hashes = reconstructedHashesExtend(uploaded);
     await extendCertificate(hashes);
     setLoader(false);
@@ -412,7 +371,7 @@ function CpotbExtendRequest() {
     } else{
       MySwal.fire({
         title: "Gagal mengunggah dokumen ke IPFS!",
-        text: "Harap masukkan ulang semua dokumen yang ingin diubah.",
+        text: "Harap masukkan ulang semua dokumen.",
         icon: "error",
         confirmButtonText: "Coba Lagi",
         didOpen: () => {
@@ -425,12 +384,6 @@ function CpotbExtendRequest() {
   };
 
   const extendCertificate = async(hashDocs) =>{
-    console.log(
-      cpotbDataExt.idCpotb, 
-        cpotbDataExt.extTimestamp,
-        [hashDocs.ipfsSuratPermohonanCpotb, hashDocs.ipfsBuktiPembayaranNegaraBukanPajak, hashDocs.ipfsDenahBangunan, hashDocs.ipfsSistemMutu, cpotbDataExt.cpotbIpfs, hashDocs.ipfsDokumenCapa]
-
-    );
     try {
       const extendCertificateCt = await contracts.certificateManager.extendCpotb(
         cpotbDataExt.idCpotb, 
@@ -446,9 +399,9 @@ function CpotbExtendRequest() {
         });
       }
 
-      contracts.certificateManager.on('CertExtendRequest',  (factoryAddr,  _timestamp) => {
-        updateCpotbFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaanMap[cpotbDataExt.jenisSediaan]);
-        recordHashFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaanMap[cpotbDataExt.jenisSediaan])
+      contracts.certificateManager.on('CertExtend',  (factoryAddr,  _timestamp) => {
+        // updateCpotbFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaanMap[cpotbDataExt.jenisSediaan]);
+        // recordHashFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaanMap[cpotbDataExt.jenisSediaan])
         handleEventCpotbExtendRequested(factoryAddr, _timestamp, extendCertificateCt.hash, cpotbDataExt.cpotbNumber)
       });
     } catch (error) {
@@ -456,29 +409,34 @@ function CpotbExtendRequest() {
     }
   }
 
-  const updateCpotbFb = async (cpotbHash, timestamp, jenisSediaan) => {
-    try {
-      const docRef = doc(db, 'cpotb_list', userdata.instanceName);
+  const updateCpotbFb = async (nieHash, timestamp, namaObat) => {
 
-      await updateDoc(docRef, {
-        [`${jenisSediaan}.extendRequestHash`]: cpotbHash,
-        [`${jenisSediaan}.extendRequestTimestamp`]: timestamp, 
-        [`${jenisSediaan}.status`]: 4
-      }); 
+    try { 
+      const docRef = doc(db, 'obat_data', userdata.instanceName)
+
+      await setDoc(docRef, {
+        [`${namaObat}`]: {
+          historyNie: {
+            extendedRequestNieHash: nieHash,
+            extendedRequestNieTimestamp: timestamp,
+          },
+          status: 4
+        }
+      }, { merge: true }); 
   
     } catch (err) {
       errAlert(err);
     }
   };
 
-  const recordHashFb = async(txHash, timestamp, jenisSediaan) => {
+  const recordHashFb = async(txHash, timestamp, namaObat) => {
     try {
-      const collectionName = `pengajuan_cpotb_${userdata.instanceName}`
+      const collectionName = `obat_${namaObat}_${userdata.instanceName}`
       const docRef = doc(db, 'transaction_hash', collectionName);
   
       await setDoc(docRef, {
-        [`${jenisSediaan}`]: {
-          'extend_request': {
+        [`produksi`]: {
+          'extend_request_nie': {
             hash: txHash,
             timestamp: timestamp,
           }
@@ -489,9 +447,6 @@ function CpotbExtendRequest() {
     }
   }
 
-  // Tombol Auto Dummy + IPFS + Renew (patch, ini yang dipakai di tombol bawah)
-  // handleAutoFillAndRenew
-
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>
       <div className="title-menu">
@@ -499,6 +454,22 @@ function CpotbExtendRequest() {
       </div>
       <div className='container-form pengajuan-ulang'>
         <form onSubmit={handleSubmit}>
+          <ul>
+            <li className="label">
+              <label htmlFor="formatedDate">Tanggal Pengajuan</label>
+            </li>
+            <li className="input">
+              <p>{formattedDate}</p>
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <label htmlFor="instanceName">Diajukan oleh</label>
+            </li>
+            <li className="input">
+              <p>{userdata.instanceName}</p>
+            </li>
+          </ul>
           <ul>
             <li className="label"><label>Nomor CPOTB</label></li>
             <li className="input">
@@ -514,35 +485,124 @@ function CpotbExtendRequest() {
           </ul> 
           <ul>
             <li className="label"><label>Jenis Sediaan</label></li>
-            <li className="input"><p>{jenisSediaanMap[cpotbDataExt.jenisSediaan]}</p></li>
+            <li className="input"><p>{cpotbDataExt.jenisSediaan}</p></li>
           </ul> 
           <div className="doku">
-            <h5>Dokumen Perpanjangan</h5>
-            {['ipfsDenahBangunan', 'ipfsSistemMutu', 'ipfsBuktiPembayaranNegaraBukanPajak','ipfsDokumenCapa', 'ipfsSuratPermohonanCpotb'].map((key) => (
-              <ul key={key}>
-                <li className="label">
-                  <label>{labelMapping[key]}</label>
-                </li>
-                <li className="input">
-                  <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />
-                  {dokumen[key] && typeof dokumen[key] === "string" && (
-                    <a href={`http://localhost:8080/ipfs/${dokumen[key]}`} target="_blank" rel="noopener noreferrer">
-                      Lihat {key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}
-                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                    </a>
-                  )}
-                </li>
-              </ul>
-            ))}
-          </div>
+            <h5>Dokumen Administratif</h5>
+            <ul>
+              <li className="label">
+                <label htmlFor="suratPermohonan">
+                  Surat permohonan
+                </label>
+              </li>
+              <li className="input">
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  name="suratPermohonan"
+                  id="suratPermohonan"
+                  required
+                />
+              </li>
+            </ul>
 
-          <button type="submit" disabled={loader}>
-            {loader ? <img src={imgLoader} alt="loading..." /> : "Kirim Pengajuan Ulang CPOTB"}
-          </button>
+            <ul>
+            
+            <li className="label">
+              <label htmlFor="buktiPembayaranPNBP">
+                Bukti pembayaran penerimaan negara bukan pajak
+              </label>
+            </li>
+            <li className="input">
+              <input
+                type="file"
+                accept="application/pdf"
+                name="buktiPembayaranPNBP"
+                id="buktiPembayaranPNBP"
+                required
+              />
+            </li>
+          </ul>
+        </div>
 
-          <button type='button' onClick={handleAutoFillAndRenew} className='auto-filled' disabled={loader}>
-            Isi Semua Field dengan Dummy File
-          </button>
+        <div className="doku">
+          <h5>Dokumen Teknis</h5>
+          <ul>
+            <li className="label">
+              <label htmlFor="denahTataRuangBangunan">
+                Dokumen denah tata ruang bangunan sesuai dengan persyaratan CPOTB
+              </label>
+            </li>
+            <li className="input">
+              <input
+                type="file"
+                accept="application/pdf"
+                name="denahTataRuangBangunan"
+                id="denahTataRuangBangunan"
+                required
+              />
+            </li>
+          </ul>
+
+          <ul>
+            <li className="label">
+              <label htmlFor="dokumenSistemMutu">
+                Dokumen sistem mutu sesuai dengan persyaratan CPOTB
+              </label>
+            </li>
+            <li className="input">
+              <input
+                type="file"
+                accept="application/pdf"
+                name="dokumenSistemMutu"
+                id="dokumenSistemMutu"
+                required
+              />
+            </li>
+          </ul>
+
+          <ul>
+            <li className="label">
+              <label htmlFor="sertifikatCpotb">
+                Sertifikat CPOTB
+              </label>
+            </li>
+            <li className="input">
+              <input
+                type="file"
+                accept="application/pdf"
+                name="sertifikatCpotb"
+                id="sertifikatCpotb"
+                required
+              />
+            </li>
+          </ul>
+
+          <ul>
+            <li className="label">
+              <label htmlFor="perkembanganCapa">
+                Perkembangan Corrective Action and Preventive Action (CAPA) inspeksi terakhir
+              </label>
+            </li>
+            <li className="input">
+              <input
+                type="file"
+                accept="application/pdf"
+                name="perkembanganCapa"
+                id="perkembanganCapa"
+                required
+              />
+            </li>
+          </ul>
+        </div>
+
+        <button type="submit" disabled={loader}>
+          {loader ? <img src={imgLoader} alt="loading..." /> : "Kirim Pengajuan Ulang CPOTB"}
+        </button>
+
+        <button type='button' onClick={handleAutoFillAndRenew} className='auto-filled' disabled={loader}>
+          Isi Semua Field dengan Dummy File
+        </button>
         </form>
       </div>
     </div>

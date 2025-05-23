@@ -312,9 +312,12 @@ function CreateObat() {
     } else if (!kemasanPrimData || !kemasanPrimData.cpotbHash) {
       errAlert({reason: "Tidak dapat memproduksi obat tradisional"}, `${userdata.instanceName} tidak memiliki sertifikasi CPOTB "${kemasanPrim}"`);
 
-    } else if (kemasanPrimData.isValid === false) {
-      errAlert({reason: "Tidak dapat memproduksi obat tradisional"}, `Sertifikasi CPOTB "${kemasanPrim}" sudah tidak berlaku. Harap lakukan perpanjangan sertifikat terlebih dahulu untuk dapat memproduksi obat ini.`);
-    } else {
+    } 
+    // else if (kemasanPrimData.isValid === false) {
+    //   errAlert({reason: "Tidak dapat memproduksi obat tradisional"}, `Sertifikasi CPOTB "${kemasanPrim}" sudah tidak berlaku. Harap lakukan perpanjangan sertifikat terlebih dahulu untuk dapat memproduksi obat ini.`);
+    // } 
+    
+    else {
       const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
       
       const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
@@ -407,24 +410,24 @@ function CreateObat() {
 
   const handleAutoFill4 = () => {
     const autoFillValues = {
-      namaProduk: "[TEST] Pil Daun Sirih Wangi",
-      merk: "AlamHijau",
-      klaim: [
-        "Membantu menjaga kesehatan area kewanitaan",
-        "Mengurangi bau tidak sedap",
-        "Mengandung antiseptik alami"
-      ],
-      ketKemasanPrim: "50",
-      satuanKemasanPrim: "gram",
-      kemasanSeku: "Pouch",
-      ketKemasanSeku: "1",
-      komposisi: [
-        "Piper betle",
-        "Syzygium aromaticum",
-        "Cymbopogon citratus",
-        "Foeniculum vulgare",
-        "Curcuma domestica"
-      ]
+    namaProduk: "Teh Herbal Daun Ungu",
+    merk: "NaturaTea",
+    klaim: [
+      "Membantu menurunkan tekanan darah",
+      "Menjaga kesehatan ginjal",
+      "Mengandung antioksidan alami"
+    ],
+    ketKemasanPrim: "40",
+    satuanKemasanPrim: "gram",
+    kemasanSeku: "Box",
+    ketKemasanSeku: "1",
+    komposisi: [
+      "Graptophyllum pictum",
+      "Orthosiphon stamineus",
+      "Imperata cylindrica",
+      "Hibiscus sabdariffa",
+      "Cinnamomum cassia"
+    ]
     };
   
     setNamaProduk(autoFillValues.namaProduk);
@@ -439,24 +442,24 @@ function CreateObat() {
   
   const handleAutoFill5 = () => {
     const autoFillValues = {
-      namaProduk: "[TEST] Obat Sari Pegagan",
-      merk: "HerbaSari",
-      klaim: [
-        "Membantu meningkatkan daya ingat dan konsentrasi",
-        "Menjaga sirkulasi darah",
-        "Mengurangi kelelahan"
-      ],
-      ketKemasanPrim: "100",
-      satuanKemasanPrim: "gram",
-      kemasanSeku: "Ziplock",
-      ketKemasanSeku: "1",
-      komposisi: [
-        "Centella asiatica",
-        "Andrographis paniculata",
-        "Zingiber officinale",
-        "Moringa oleifera",
-        "Camellia sinensis"
-      ]
+    namaProduk: "Jamu Kunyit Asam",
+    merk: "TradisiNusantara",
+    klaim: [
+      "Membantu menyegarkan tubuh",
+      "Mengurangi nyeri haid",
+      "Menjaga kesehatan kulit"
+    ],
+    ketKemasanPrim: "250",
+    satuanKemasanPrim: "ml",
+    kemasanSeku: "Botol",
+    ketKemasanSeku: "1",
+    komposisi: [
+      "Curcuma longa",
+      "Tamarindus indica",
+      "Zingiber officinale",
+      "Cane sugar",
+      "Sodium benzoate"
+    ]
     };
 
     setNamaProduk(autoFillValues.namaProduk);
@@ -471,24 +474,23 @@ function CreateObat() {
   
   const handleAutoFill6 = () => {
     const autoFillValues = {
-      namaProduk: "[TEST] Evaversen Rempah Pencernaan",
-      merk: "RasaSehat",
+      namaProduk: "Minyak Balur Anak Sehat",
+      merk: "BalurKids",
       klaim: [
-        "Membantu melancarkan pencernaan",
-        "Meredakan perut kembung dan mual",
-        "Menghangatkan tubuh dari dalam"
+        "Meredakan masuk angin pada anak",
+        "Membantu menghangatkan tubuh",
+        "Aman untuk kulit sensitif"
       ],
-      ketKemasanPrim: "75",
-      satuanKemasanPrim: "gram",
-      kemasanSeku: "Kaleng",
+      ketKemasanPrim: "30",
+      satuanKemasanPrim: "ml",
+      kemasanSeku: "Botol roll-on",
       ketKemasanSeku: "1",
       komposisi: [
-        "Zingiber officinale",
-        "Curcuma longa",
-        "Foeniculum vulgare",
-        "Cinnamomum burmannii",
-        "Amomum compactum",
-        "Mentha arvensis"
+        "Cocos nucifera oil",
+        "Zingiber officinale extract",
+        "Eucalyptus oil",
+        "Cinnamomum cassia oil",
+        "Lavandula angustifolia oil"
       ]
     };
   
@@ -760,11 +762,6 @@ function CreateObat() {
                 }
                 
               </div>
-
-                {/* {komposisi.map((comp, index) => (
-                    <div key={index}>
-                    </div>
-                ))} */}
             </li>
           </ul>
 

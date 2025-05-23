@@ -5,9 +5,17 @@ html, body {
   margin: 0;
   padding: 0;
   color: #1B1C1E;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .layout-page {
+  padding: 10px 110px;
+  height: 100%;
+}
+
+.layout-component {
   padding: 10px 110px;
 }
 
@@ -49,8 +57,14 @@ html, body {
 .App .container .form-container form .empty {
   display: none;
 }
-.App .container .form-container form > * {
-  margin-top: 10px;
+.App .container .form-container form > input, .App .container .form-container form > select, .App .container .form-container form > textarea {
+  margin-bottom: 10px;
+}
+.App .container .form-container form div.nibNpwp {
+  margin: 10px 0;
+}
+.App .container .form-container form div.nibNpwp input.nib {
+  margin-bottom: 10px;
 }
 .App .container .form-container form input {
   background-color: #fff;
@@ -80,12 +94,10 @@ html, body {
 .App .container .form-container form input:-moz-read-only {
   background-color: rgba(242, 243, 245, 0.6196078431);
   color: #737373;
-  border: none;
 }
 .App .container .form-container form input:read-only {
   background-color: rgba(242, 243, 245, 0.6196078431);
   color: #737373;
-  border: none;
 }
 .App .container .form-container form input:disabled {
   background-color: #eae7e7;
@@ -121,12 +133,10 @@ html, body {
 .App .container .form-container form textarea:-moz-read-only {
   background-color: rgba(242, 243, 245, 0.6196078431);
   color: #737373;
-  border: none;
 }
 .App .container .form-container form textarea:read-only {
   background-color: rgba(242, 243, 245, 0.6196078431);
   color: #737373;
-  border: none;
 }
 .App .container .form-container form textarea:disabled {
   background-color: #eae7e7;
@@ -141,11 +151,14 @@ html, body {
   font-size: 14px;
   border-radius: 4px;
   color: #1B1C1E;
-  margin: 10px 0 0 0;
+  margin: 0;
 }
 .App .container .form-container form select:focus {
   outline: none !important;
   box-shadow: none !important;
+}
+.App .container .form-container form select.usaha {
+  margin-top: 10px;
 }
 .App .container .form-container form button {
   background-color: #1B1C1E;
@@ -154,6 +167,7 @@ html, body {
   padding: 8px 12px;
   border: none;
   border-radius: 4px;
+  margin-top: 10px;
 }
 .App .container .form-container form button:hover {
   background-color: black;
@@ -220,12 +234,55 @@ html, body {
 #LoginPage.App .container .img-container {
   display: flex;
   align-items: center;
+  flex-direction: column;
   justify-content: center;
   margin-right: 20px;
   width: 56%;
 }
 #LoginPage.App .container .img-container img {
-  width: 360px;
+  width: 310px;
+}
+#LoginPage.App .container .img-container .attribute {
+  margin-top: 10px;
+}
+#LoginPage.App .container .img-container .attribute span {
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+#LoginPage.App .container .img-container .attribute span a {
+  text-decoration: none;
+  color: #530AF7;
+}
+#LoginPage.App .container .img-container .nav-group {
+  margin-top: 12px;
+  padding: 6px;
+  background-color: rgba(242, 243, 245, 0.6196078431);
+  border-radius: 10px;
+}
+#LoginPage.App .container .img-container .nav-group ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+#LoginPage.App .container .img-container .nav-group ul li button {
+  padding: 10px 24px;
+  color: #530AF7;
+  font-size: 12px;
+  width: -moz-max-content;
+  width: max-content;
+  border: none;
+  border-radius: 8px;
+  background-color: transparent;
+}
+#LoginPage.App .container .img-container .nav-group ul li button:hover {
+  cursor: pointer;
+  background-color: #530AF7;
+  color: white;
+  transition: ease 300ms;
+}
+#LoginPage.App .container .img-container .nav-group ul li button i {
+  margin-right: 10px;
 }
 #LoginPage.App .container .form-container {
   background-color: rgba(242, 243, 245, 0.6196078431);

@@ -35,6 +35,7 @@ function CdobExtendRequest() {
     ipfsDokumenPerbaikan: "Dokumen Perbaikan",
   };
 
+  const today = new Date();
   const options = {
     year: 'numeric',
     month: 'long',
@@ -43,6 +44,7 @@ function CdobExtendRequest() {
     minute: '2-digit',
     timeZoneName: 'short'
   };
+    const formattedDate = today.toLocaleDateString('id-ID', options);
 
   useEffect(() => {
     document.title = "Pengajuan Perpanjangan CDOB"; 
@@ -131,23 +133,6 @@ function CdobExtendRequest() {
     });
   }
 
-  const handleFileChange = (e, key) => {
-    const file = e.target.files[0];
-    if (!file || file.type !== "application/pdf") {
-      MySwal.fire({
-        title: 'Harap upload file PDF',
-        icon: 'error',
-        confirmButtonText: 'Coba Lagi'
-      });
-      return;
-    }
-    setDokumen(prev => ({
-      ...prev,
-      [key]: file
-    }));
-    setUpdateFileIpfs(prev => [...prev, key]);
-  };
-
   const uploadToIPFS = async (file) => {
     if (!file) return null;
     try {
@@ -164,7 +149,6 @@ function CdobExtendRequest() {
     }
   };
 
-  // Fungsi mapping khusus CDOB
   const reconstructedHashesExtend = (uploaded) => ({
     suratPernyataanPimpinan: uploaded["Surat Pernyataan Pimpinan"],
     dokumenInspeksiDiri: uploaded["Dokumen Inspeksi Diri"],
@@ -187,6 +171,7 @@ function CdobExtendRequest() {
     }));
     return uploaded;
   };
+
 
   const handleAutoFillAndRenew = async () => {
     setLoader(true);
@@ -254,12 +239,22 @@ function CdobExtendRequest() {
       cancelButtonText: "Batal",
       allowOutsideClick: false,
     });
+
     if (!isConfirmed) { setLoader(false); return; }
-    MySwal.fire({ title: "Tunggu koneksi Metamask…", icon: "info", showConfirmButton: false });
+
+    MySwal.fire({
+      title: "Menunggu koneksi Metamask...",
+      text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
+      icon: "info",
+      showConfirmButton: false,
+      allowOutsideClick: false
+    });
+
     const hashes = reconstructedHashesExtend(uploaded);
     await extendCertificate(hashes);
     setLoader(false);
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -273,6 +268,7 @@ function CdobExtendRequest() {
           if (hash) {
             uploadedHashes[key] = hash;
           }
+          console.log(hash);
         } catch (error) {
           MySwal.fire({
             title: "Gagal mengunggah dokumen pengajuan ulang CDOB!",
@@ -299,12 +295,12 @@ function CdobExtendRequest() {
     if (Object.keys(uploadedHashes).length !== 0) {
       MySwal.fire({
         title: 'Dokumen Pengajuan Ulang CDOB',
-        html: `
+        html:(
           <div class="form-swal">
             <div class="row row--obat table-like">
               <div class="col">
                 <div class="doku">
-                  ${Object.entries(uploadedHashes).map(([key, hash]) => `
+                  ${Object.entries(uploadedHashes).map(([key, hash]) => 
                     <ul>
                       <li class="label label-2">
                         <p>${labelMapping[key]}</p>
@@ -319,12 +315,12 @@ function CdobExtendRequest() {
                         </a>
                       </li>
                     </ul>
-                  `).join("")}
+                  ).join("")}
                 </div>
               </div>
             </div>
           </div>
-        `,
+        ),
         width: '900',
         showCancelButton: true,
         confirmButtonText: 'Konfirmasi Pengajuan CDOB',
@@ -359,13 +355,11 @@ function CdobExtendRequest() {
     }
   };
 
-  // Fungsi extend ke kontrak (dan Firebase)
   const extendCertificate = async (hashDocs) => {
-    const { idCdob, extTimestamp, tipePermohonan, cdobNumber } = cdobDataExt;
     try {
       const extendCertificateCt = await contracts.certificateManager.extendCdob(
-        idCdob,
-        extTimestamp,
+        cdobDataExt.cdobId,
+        cdobDataExt.extTimestamp,
         [hashDocs.suratPernyataanPimpinan, hashDocs.dokumenInspeksiDiri, hashDocs.dokumenPerbaikan]
       );
       if (extendCertificateCt) {
@@ -374,56 +368,57 @@ function CdobExtendRequest() {
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
+      console.log(extendCertificateCt);
       contracts.certificateManager.on('CertExtendRequest', (_pbfAddr, _timestamp) => {
-        updateCdobFb(extendCertificateCt.hash, Number(_timestamp), tipePermohonan);
-        recordHashFb(extendCertificateCt.hash, Number(_timestamp), tipePermohonan);
-        handleEventCdob(_pbfAddr, _timestamp, extendCertificateCt.hash, cdobNumber);
+        // updateCdobFb(extendCertificateCt.hash, Number(_timestamp), tipePermohonan);
+        // recordHashFb(extendCertificateCt.hash, Number(_timestamp), tipePermohonan);
+        // handleEventCdob(_pbfAddr, _timestamp, extendCertificateCt.hash, cdobNumber);
       });
     } catch (error) {
       errAlert(error);
     }
   };
 
-  // Update Firestore untuk CDOB
-  const updateCdobFb = async (cdobHash, timestamp, tp) => {
-    const tpMap = {
-      0n: 'Obat Lain',
-      1n: 'Cold Chain Product'
-    };
-    const tipeP = tpMap[tp] || tp;
-    try {
-      const docRef = doc(db, 'cdob_list', userdata.instanceName);
-      await updateDoc(docRef, {
-        [`${tipeP}.extendRequestHash`]: cdobHash,
-        [`${tipeP}.extendRequestTimestamp`]: timestamp,
-        [`${tipeP}.status`]: 4
-      });
-    } catch (err) {
-      errAlert(err);
-    }
-  };
+  // // Update Firestore untuk CDOB
+  // const updateCdobFb = async (cdobHash, timestamp, tp) => {
+  //   const tpMap = {
+  //     0n: 'Obat Lain',
+  //     1n: 'Cold Chain Product'
+  //   };
+  //   const tipeP = tpMap[tp] || tp;
+  //   try {
+  //     const docRef = doc(db, 'cdob_list', userdata.instanceName);
+  //     await updateDoc(docRef, {
+  //       [`${tipeP}.extendRequestHash`]: cdobHash,
+  //       [`${tipeP}.extendRequestTimestamp`]: timestamp,
+  //       [`${tipeP}.status`]: 4
+  //     });
+  //   } catch (err) {
+  //     errAlert(err);
+  //   }
+  // };
 
-  const recordHashFb = async (txHash, timestamp, tp) => {
-    const tpMap = {
-      0n: 'Obat Lain',
-      1n: 'Cold Chain Product'
-    };
-    const tipeP = tpMap[tp] || tp;
-    try {
-      const collectionName = `pengajuan_cdob_${userdata.instanceName}`;
-      const docRef = doc(db, 'transaction_hash', collectionName);
-      await setDoc(docRef, {
-        [`${tipeP}`]: {
-          'extend_request': {
-            hash: txHash,
-            timestamp: timestamp,
-          }
-        },
-      }, { merge: true });
-    } catch (err) {
-      errAlert(err);
-    }
-  };
+  // const recordHashFb = async (txHash, timestamp, tp) => {
+  //   const tpMap = {
+  //     0n: 'Obat Lain',
+  //     1n: 'Cold Chain Product'
+  //   };
+  //   const tipeP = tpMap[tp] || tp;
+  //   try {
+  //     const collectionName = `pengajuan_cdob_${userdata.instanceName}`;
+  //     const docRef = doc(db, 'transaction_hash', collectionName);
+  //     await setDoc(docRef, {
+  //       [`${tipeP}`]: {
+  //         'extend_request': {
+  //           hash: txHash,
+  //           timestamp: timestamp,
+  //         }
+  //       },
+  //     }, { merge: true });
+  //   } catch (err) {
+  //     errAlert(err);
+  //   }
+  // };
 
   return (
     <div id="CdobPage" className='Layout-Menu layout-page'>
@@ -432,6 +427,22 @@ function CdobExtendRequest() {
       </div>
       <div className='container-form pengajuan-ulang'>
         <form onSubmit={handleSubmit}>
+          <ul>
+            <li className="label">
+              <label htmlFor="formatedDate">Tanggal Pengajuan</label>
+            </li>
+            <li className="input">
+              <p>{formattedDate}</p>
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <label htmlFor="instanceName">Diajukan oleh</label>
+            </li>
+            <li className="input">
+              <p>{userdata.instanceName}</p>
+            </li>
+          </ul>
           <ul>
             <li className="label"><label>Nomor CDOB</label></li>
             <li className="input">
@@ -444,33 +455,68 @@ function CdobExtendRequest() {
                 <i className="fa-solid fa-arrow-up-right-from-square"></i>
               </a>
             </li>
-          </ul>
+          </ul> 
           <ul>
             <li className="label"><label>Tipe Permohonan</label></li>
             <li className="input"><p>{cdobDataExt.tipePermohonan}</p></li>
-          </ul>
+          </ul> 
+
           <div className="doku">
-            <h5>Dokumen Perpanjangan</h5>
-            {Object.keys(labelMapping).map((key) => (
-              <ul key={key}>
-                <li className="label">
-                  <label>{labelMapping[key]}</label>
-                </li>
-                <li className="input">
-                  <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />
-                  {dokumen[key] && typeof dokumen[key] === "string" && (
-                    <a href={`http://localhost:8080/ipfs/${dokumen[key]}`} target="_blank" rel="noopener noreferrer">
-                      Lihat {labelMapping[key]}
-                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                    </a>
-                  )}
-                </li>
-              </ul>
-            ))}
+            <h5>Dokumen Perpanjangan CDOB</h5>
+            <ul>
+              <li className="label">
+                <label htmlFor="suratPernyataanTindakPidanaObat">
+                  Surat pernyataan bahwa pimpinan puncak dan direksi tidak pernah terlibat tindak pidana di bidang obat
+                </label>
+              </li>
+              <li className="input">
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  name="suratPernyataanTindakPidanaObat"
+                  id="suratPernyataanTindakPidanaObat"
+                  required
+                />
+              </li>
+            </ul>
+
+            <ul>
+              <li className="label">
+                <label htmlFor="dokumenInspeksiDiri">
+                  Dokumen inspeksi diri
+                </label>
+              </li>
+              <li className="input">
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  name="dokumenInspeksiDiri"
+                  id="dokumenInspeksiDiri"
+                  required
+                />
+              </li>
+            </ul>
+
+            <ul>
+              <li className="label">
+                <label htmlFor="riwayatPerbaikanCDOB">
+                  Riwayat tindakan perbaikan dan pencegahan berdasarkan hasil pengawasan CDOB dalam 4 (empat) tahun terakhir
+                </label>
+              </li>
+              <li className="input">
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  name="riwayatPerbaikanCDOB"
+                  id="riwayatPerbaikanCDOB"
+                  required
+                />
+              </li>
+            </ul>
           </div>
 
-          <button type="submit" disabled={loader}>
-            {loader ? <img src={imgLoader} alt="loading..." /> : "Kirim Pengajuan Ulang CDOB"}
+          <button type='submit'>
+            Kirim Pengajuan Perpanjangan CDOB
           </button>
 
           <button type='button' onClick={handleAutoFillAndRenew} className='auto-filled' disabled={loader}>
@@ -480,6 +526,61 @@ function CdobExtendRequest() {
       </div>
     </div>
   );
+  // return (
+  //   <div id="CdobPage" className='Layout-Menu layout-page'>
+  //     <div className="title-menu">
+  //       <h1>Pengajuan Perpanjangan Sertifikat CDOB</h1>
+  //     </div>
+  //     <div className='container-form pengajuan-ulang'>
+  //       <form onSubmit={handleSubmit}>
+  //         <ul>
+  //           <li className="label"><label>Nomor CDOB</label></li>
+  //           <li className="input">
+  //             <a
+  //               href={`http://localhost:3000/public/certificate/${cdobDataExt.cdobIpfs}`}
+  //               target="_blank"
+  //               rel="noopener noreferrer"
+  //             >
+  //               {cdobDataExt.cdobNumber}
+  //               <i className="fa-solid fa-arrow-up-right-from-square"></i>
+  //             </a>
+  //           </li>
+  //         </ul>
+  //         <ul>
+  //           <li className="label"><label>Tipe Permohonan</label></li>
+  //           <li className="input"><p>{cdobDataExt.tipePermohonan}</p></li>
+  //         </ul>
+  //         <div className="doku">
+  //           <h5>Dokumen Perpanjangan</h5>
+  //           {Object.keys(labelMapping).map((key) => (
+  //             <ul key={key}>
+  //               <li className="label">
+  //                 <label>{labelMapping[key]}</label>
+  //               </li>
+  //               <li className="input">
+  //                 <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, key)} />
+  //                 {dokumen[key] && typeof dokumen[key] === "string" && (
+  //                   <a href={`http://localhost:8080/ipfs/${dokumen[key]}`} target="_blank" rel="noopener noreferrer">
+  //                     Lihat {labelMapping[key]}
+  //                     <i className="fa-solid fa-arrow-up-right-from-square"></i>
+  //                   </a>
+  //                 )}
+  //               </li>
+  //             </ul>
+  //           ))}
+  //         </div>
+
+  //         <button type="submit" disabled={loader}>
+  //           {loader ? <img src={imgLoader} alt="loading..." /> : "Kirim Pengajuan Ulang CDOB"}
+  //         </button>
+
+  //         <button type='button' onClick={handleAutoFillAndRenew} className='auto-filled' disabled={loader}>
+  //           Isi Semua Field dengan Dummy File
+  //         </button>
+  //       </form>
+  //     </div>
+  //   </div>
+  // );
 }
 
 function errAlert(err, customMsg) {

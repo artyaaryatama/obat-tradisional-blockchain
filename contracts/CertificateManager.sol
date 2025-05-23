@@ -243,7 +243,7 @@ contract CertificateManager is ReentrancyGuard {
 
   function rejectExtendCpotb( 
     string memory cpotbId,
-    string memory ipfsCert
+    string memory rejectExtendMsg
   ) 
     public 
     onlyBPOM 
@@ -251,28 +251,30 @@ contract CertificateManager is ReentrancyGuard {
   {  
     cpotbCertificate.rejectExtendCpotb(
       cpotbId,
-      ipfsCert
+      rejectExtendMsg
     );  
  
     emit CertExtendReject(
       msg.sender,
-      ipfsCert,
+      rejectExtendMsg,
       block.timestamp 
     );
   } 
 
   function renewExtendCpotb( 
-    string memory cpotbId
+    string memory cpotbId,
+    CpotbCertificate.DokumenReSertifikasi memory newDoku
   ) 
     public 
     onlyFactory 
     nonReentrant 
   {  
     cpotbCertificate.renewExtendCpotb(
-      cpotbId
+      cpotbId,
+      newDoku 
     );  
  
-    emit CertExtend(
+    emit CertExtend( 
       msg.sender, 
       block.timestamp 
     );
@@ -466,7 +468,7 @@ contract CertificateManager is ReentrancyGuard {
 
     function rejectExtendCdob( 
     string memory cdobId,
-    string memory ipfsCert
+    string memory rejectExtendMsg
   ) 
     public 
     onlyBPOM 
@@ -474,27 +476,29 @@ contract CertificateManager is ReentrancyGuard {
   {  
     cdobCertificate.rejectExtendCdob(
       cdobId,
-      ipfsCert
+      rejectExtendMsg
     );  
  
     emit CertExtendReject(
       msg.sender,
-      ipfsCert,
+      rejectExtendMsg,
       block.timestamp 
     );
   } 
 
   function renewExtendCdob( 
-    string memory cdobId
+    string memory cdobId,
+    CdobCertificate.DokumenReSertifikasi memory newDoku
   ) 
     public 
     onlyPBF 
     nonReentrant 
   {  
     cdobCertificate.renewExtendCdob(
-      cdobId
+      cdobId,
+      newDoku 
     );  
- 
+
     emit CertExtend(
       msg.sender, 
       block.timestamp 

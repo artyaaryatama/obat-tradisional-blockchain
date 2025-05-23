@@ -30,8 +30,10 @@ function ManageNieFactory() {
     3n: "Tidak Disetujui NIE",
     4n: "Pengajuan Ulang",
     5n: "NIE Kadaluarsa",
-    6n: "Pengajuan Perpanjangan NIE",
-    7n: "Perpanjangan NIE"
+    6n: "Pengajuan Registrasi Ulang NIE",
+    7n: "Penyetujuan Registrasi Ulang NIE",
+    8: 'Pengajuan Registrasi Ulang NIE Ditolak',
+    9: 'Pengajuan Ulang Registrasi Ulang NIE'
   };
 
   const tipeObatMap = {
@@ -247,7 +249,7 @@ function ManageNieFactory() {
       let rejectMsg;
 
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
-      const [nieDetails, dokumenObat, dokumenSpesifikasi] = detailNieCt;
+      const [nieDetails, dokumenObat, dokumenSpesifikasi, DokumenRegisUlang] = detailNieCt;
       const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest,timestampNieExtendApprove, factoryInstancee, bpomInstance, bpomAddr, nieIpfs] = nieDetails;
       const [masterFormula, suratKuasa, suratPernyataan, komposisiProduk, caraPembuatanProduk, spesifikasiKemasan, hasilUjiStabilitas] = dokumenObat;
       const [sertifikatAnalisaBahanBaku, sertifikatAnalisaProdukJadi, spesifikasiProdukJadi, sistemPenomoranBets, desainKemasan, dataPendukungKeamanan] = dokumenSpesifikasi;
@@ -1562,196 +1564,444 @@ function ManageNieFactory() {
             },
           }).then((result) => {
             if(result.isConfirmed){
-
-              MySwal.fire({
-                title: "Konfirmasi Pengaj uan Perpanjangan NIE",
-                html: (
-                  <div className='form-swal form'>
-                    <div className="row row--obat">
-                      <div className="col col3">
-                        <ul>
-                          <li className="label">
-                            <label htmlFor="factoryAddr">Nama Instansi Pabrik</label>
-                          </li>
-                          <li className="input">
-                            
-                            <input
-                              type="text"
-                              id="factoryAddr"
-                              value={detailObat.factoryInstanceName}
-                              readOnly
-                            />
-                          </li>
-                        </ul>
-
-                        <ul>
-                          <li className="label">
-                            <label htmlFor="factoryAddr">Pabrik CPOTB</label>
-                          </li>
-                          <li className="input">
-                            <span className='linked-i'>
-                              <a
-                                href={`http://localhost:3000/public/certificate/${cpotbHash}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                Detail CPOTB
-                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                              </a>
-                            </span>
-                          </li>
-                        </ul>
-
-                        <ul className='klaim'>
-                          <li className="label">
-                            <label htmlFor="factoryAddr">Alamat Akun Pabrik (Pengguna)</label>
-                          </li>
-                          <li className="input">
-                            <input
-                              type="text"
-                              id="factoryAddr"
-                              value={detailObat.factoryAddr}
-                              readOnly
-                            />
-                          </li>
-                        </ul>
-                        <ul className='klaim'>
-                          <li className="label">
-                            <label htmlFor="klaim">Klaim Obat</label>
-                          </li>
-                          <li className="input">
-                            <ul className="numbered">
-                              {detailObat.klaim.map((item, index) => (
-                                <li className='klaim' key={index}>
-                                  <p>
-                                  {item}
-                                  </p>
-                                </li>
-                              ))}
-                            </ul>
-                          </li>
-                        </ul>
-
-                        <ul className='klaim'>
-                          <li className="label">
-                            <label htmlFor="komposisi">Komposisi Obat</label>
-                          </li>
-                          <li className="input">
-                            <ul className="numbered">
-                              {detailObat.komposisi.map((item, index) => (
-                                <li className='klaim' key={index}>
-                                  <p>
-                                  {item}
-                                  </p>
-                                </li>
-                              ))}
-                            </ul>
-                          </li>
-                        </ul>
-                      </div>
-                      <div className="col col3">
-                        <ul>
-                          <li className="label">
-                            <label htmlFor="factoryInstanceName">NIE</label>
-                          </li>
-                          <li className="input">
-                            <input
-                              type="text"
-                              id="nieNumber"
-                              defaultValue={detailObat.nieNumber}
-                              readOnly
-                            />
-                          </li>
-                        </ul>
-
-                        <ul>
-                          <li className="label">
-                            <label htmlFor="factoryInstanceName">Nama Produk</label>
-                          </li>
-                          <li className="input">
-                            <input
-                              type="text"
-                              id="factoryInstanceName"
-                              value={namaProduk}
-                              readOnly
-                            />
-                          </li>
-                        </ul>
-                
-                        <ul>
-                          <li className="label">
-                            <label htmlFor="tipeProduk">Tipe Obat</label>
-                          </li>
-                          <li className="input">
-                            <input
-                              type="text"
-                              id="tipeProduk"
-                              value={detailObat.tipeObat}
-                              readOnly
-                            />
-                          </li>
-                        </ul>
-
-                        <ul>
-                          <li className="label">
-                            <label htmlFor="jenisObat">Jenis Obat</label>
-                          </li>
-                          <li className="input">
-                            <input
-                              type="text"
-                              id="jenisObat"
-                              value={detailObat.jenisObat}
-                              readOnly
-                            />
-                          </li>
-                        </ul>
-                
-                        <ul>
-                          <li className="label">
-                            <label htmlFor="factoryInstanceName">Kemasan</label>
-                          </li>
-                          <li className="input">
-                            <input
-                              type="text"
-                              id="factoryInstanceName"
-                              value={kemasan}
-                              readOnly
-                            />
-                          </li>
-                        </ul>
-
-                      </div>
-                    </div>
-                  </div>
-                ),
-                width: '880',
-                showCancelButton: true,
-                confirmButtonText: 'Konfirmasi',
-                cancelButtonText: 'Batal',
-                cancelButtonColor: '#A6A6A6',
-                allowOutsideClick: false,
-                customClass: {
-                  htmlContainer: 'scrollable-modal-small'
-                },
-              }).then((result) => {
-                if(result.isConfirmed){
-
-                  MySwal.fire({
-                    title: "Menunggu koneksi Metamask...",
-                    text: "Jika proses ini memakan waktu terlalu lama, coba periksa koneksi Metamask Anda. 🚀",
-                    icon: 'info',
-                    showCancelButton: false,
-                    showConfirmButton: false,
-                    allowOutsideClick: false,
-                  });
-
-                  extendNie(id, timestampNieExpired, detailObat.namaObat, nieNumber)
+                const obatData = {
+                  obatId: id,
+                  nieNumber: nieNumber,
+                  namaObat: detailObat.namaObat,
+                  nieIpfs: detailObat.nieIpfs,
+                  expTimestamp: timestampNieApprove.toString()
                 }
-              })
+                sessionStorage.setItem("obatDataExt", JSON.stringify(obatData))
+                navigate('/extend-request-nie')
             }
           })
 
-      } else{
+      } else if(detailObat.nieStatus === 'Pengajuan Registrasi Ulang NIE Ditolak'){
+
+        rejectMsg = await contracts.nieManager.getRejectMsgNie(id);
+
+        MySwal.fire({
+          title: `Detail Obat ${detailObat.namaObat}`,
+          html: (
+            <div className='form-swal'>
+              <div className="row row--row">
+                
+              <div className="col col1">
+    
+                <ul className='status'>
+                  <li className="label">
+                    <p>Status Izin Edar</p>
+                  </li>
+                  <li className="input">
+                    <p className={detailObat.nieStatus}>{detailObat.nieStatus}</p>
+                  </li>
+                </ul>
+
+                <ul className='rejectMsg klaim'>
+                  <li className="label">
+                    <p>Alasan Penolakan</p> 
+                  </li>
+                  <li className="input">
+                    <p>{rejectMsg}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Tanggal Produksi</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.timestampProduction}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Tanggal Pengajuan NIE</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.timestampNieRequest}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Tanggal Penolakan NIE</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.timestampNieReject}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Nama Instansi Pabrik</p>
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.factoryInstanceName}
+                      <span className='linked'>
+                        <a
+                          href={`http://localhost:3000/public/certificate/${cpotbHash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          (Detail CPOTB
+                          <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                        </a>
+                      </span>
+                    </p>
+                  </li>
+                </ul>
+
+                <ul className='klaim'>
+                  <li className="label">
+                    <p>Alamat Akun Pabrik (Pengguna)</p> 
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.factoryAddr}</p> 
+                  </li>
+                </ul>
+
+                <ul>
+                  <li className="label">
+                    <p>Nama Instansi BPOM</p> 
+                  </li>
+                  <li className="input">
+                    <p>{detailObat.bpomInstanceNames}
+                    </p> 
+                  </li>
+                </ul>
+
+                <ul className='klaim'>
+                  <li className="label">
+                    <p>Alamat Akun BPOM (Pengguna)</p> 
+                  </li>
+                  <li className="input">
+                    <p>{bpomAddr}</p> 
+                  </li>
+                </ul>
+
+              </div>
+                <div className="col col2">
+                  <ul>
+                    <li className="label">
+                      <p>Nama Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.namaObat}</p> 
+                    </li>
+                  </ul>
+                  <ul>
+                    <li className="label">
+                      <p>Merk Obat</p>
+                    </li>
+                    <li className="input">
+                      <p>{detailObat.merk}</p> 
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Jenis Obat</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p><p>{
+                      detailObat.jenisObat === "OHT" ? "Obat Herbal Terstandar" : detailObat.jenisObat}</p> </p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={detailObat.jenisObat}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Tipe Obat</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{detailObat.tipeObat}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan= {detailObat.tipeObat}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul>
+                    <li className="label">
+                      <p>Kemasan Obat</p>
+                    </li>
+                    <li className="input colJenisSediaan">
+                      <p>{detailObat.kemasan}</p> 
+                      <JenisSediaanTooltip
+                        jenisSediaan={kemasanKeterangan[1]}
+                      />
+                    </li>
+                  </ul>
+  
+                  <ul className='klaim'>
+                    <li className="label">
+                      <p>Klaim Obat</p>
+                    </li>
+                    <li className="input">
+                      <ul className='numbered'>
+                        {detailObat.klaim.map((item, index) => (
+                          <li key={index}><p>{item}</p></li>
+                        ))}
+                      </ul>
+                    </li>
+                  </ul>
+  
+                  <ul className='klaim'>
+                    <li className="label">
+                      <p>Komposisi Obat</p>
+                    </li>
+                    <li className="input">
+                      <ul className='numbered'>
+                        {detailObat.komposisi.map((item, index) => (
+                          <li key={index}><p>{item}</p></li>
+                        ))}
+                      </ul>
+                    </li>
+                  </ul>
+  
+                </div>
+                {/* <div className="container-stepper">
+                  <div id="stepperOrder"></div>
+                </div> */}
+              </div>
+
+              <div className="row row--row">
+                <div className='col doku'>
+                  <h5>Dokumen Pengajuan NIE</h5>
+                  <div className="doku-row">
+                    <div className="doku-1">
+                      <ul>
+                        <li className="label">
+                          <p>Dokumen Master Formula</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailObat.dokumenNie.masterFormula}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Dokumen Master Formula
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Surat Kuasa</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailObat.dokumenNie.suratKuasa}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Surat Kuasa
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Surat Pernyataan</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailObat.dokumenNie.suratPernyataan}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Surat Pernyataan
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Dokumen Komposisi Produk</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailObat.dokumenNie.komposisiProduk}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Dokumen Komposisi Produk
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Dokumen Cara Pembuatan Produk</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailObat.dokumenNie.caraPembuatanProduk}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Dokumen Cara Pembuatan Produk
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Dokumen Spesifikasi Produk Jadi</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailObat.dokumenNie.spesifikasiProdukJadi}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Dokumen Spesifikasi Produk Jadi
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Dokumen Sistem Penomoran Bets</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailObat.dokumenNie.sistemPenomoranBets}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Dokumen Sistem Penomoran Bets
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="doku-1">
+                      <ul>
+                        <li className="label">
+                          <p>Sertifikat Analisa Bahan Baku</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailObat.dokumenNie.sertifikatAnalisaBahanBaku}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Sertifikat Analisa Bahan Baku
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Sertifikat Analisa Produk Jadi</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailObat.dokumenNie.sertifikatAnalisaProdukJadi}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Sertifikat Analisa Produk Jadi
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Dokumen Spesifikasi Kemasan</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailObat.dokumenNie.spesifikasiKemasan}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Dokumen Spesifikasi Kemasan
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Dokumen Hasil Uji Stabilitas</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailObat.dokumenNie.hasilUjiStabilitas}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Dokumen Hasil Uji Stabilitas
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Desain Kemasan</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailObat.dokumenNie.desainKemasan}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Desain Kemasan
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li className="label">
+                          <p>Data Pendukung Keamanan</p>
+                        </li>
+                        <li className="input">
+                          <a
+                            href={`http://localhost:8080/ipfs/${detailObat.dokumenNie.dataPendukungKeamanan}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Lihat Data Pendukung Keamanan
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            
+            </div>
+          ),
+          width: '1120',
+          showCloseButton: true,
+          showConfirmButton: true,
+          confirmButtonText: "Ajukan Ulang Perpanjangan NIE",
+          showCancelButton: false,
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
+        }).then((result) => {
+          if(result.isConfirmed){
+            const obatData = {
+              obatId: id,
+              namaObat: namaProduk,
+              rejectMsg: rejectMsg[1],
+            }
+            sessionStorage.setItem('obatData', JSON.stringify(obatData)) 
+            navigate('/extend-renew-request-nie')
+          }
+        })
+
+      } 
+      else{
           rejectMsg = await contracts.nieManager.getRejectMsgNie(id);
           MySwal.fire({
             title: `Detail Obat ${detailObat.namaObat}`,
@@ -2245,67 +2495,6 @@ function ManageNieFactory() {
 
     } catch (e) {
       errAlert(e, "Can't retrieve data")
-    }
-  }
-
-  const extendNie = async(obatId, expTimestamp, namaObat, nieNumber) =>{
- 
-    try {
-      const extendNieCt = await contracts.nieManager.extendRequestNie(obatId, expTimestamp)
-      console.log(extendNieCt);
-
-      if (extendNieCt) {
-        MySwal.update({
-          title: "Memproses transaksi...",
-          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
-        });
-      }
-
-      contracts.nieManager.on('NieExtendRequest',  (factoryAddr,  _timestamp) => {
-        updateCpotbFb(extendNieCt.hash, Number(_timestamp), namaObat);
-        recordHashFb(extendNieCt.hash, Number(_timestamp), namaObat)
-        handleEventNie(factoryAddr, _timestamp, extendNieCt.hash, nieNumber, namaObat)
-      });
-    } catch (error) {
-      errAlert(error)
-    }
-  }
-
-  const updateCpotbFb = async (nieHash, timestamp, namaObat) => {
-
-    try { 
-      const docRef = doc(db, 'obat_data', userdata.instanceName)
-
-      await setDoc(docRef, {
-        [`${namaObat}`]: {
-          historyNie: {
-            extendedRequestNieHash: nieHash,
-            extendedRequestNieTimestamp: timestamp,
-          },
-          status: 4
-        }
-      }, { merge: true }); 
-  
-    } catch (err) {
-      errAlert(err);
-    }
-  };
-
-  const recordHashFb = async(txHash, timestamp, namaObat) => {
-    try {
-      const collectionName = `obat_${namaObat}_${userdata.instanceName}`
-      const docRef = doc(db, 'transaction_hash', collectionName);
-  
-      await setDoc(docRef, {
-        [`produksi`]: {
-          'extend_request_nie': {
-            hash: txHash,
-            timestamp: timestamp,
-          }
-        },
-      }, { merge: true }); 
-    } catch (err) {
-      errAlert(err);
     }
   }
 

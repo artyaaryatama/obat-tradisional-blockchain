@@ -59,12 +59,8 @@
     width: 100%;
 
     ul {
-      // justify-content: flex-end;
 
       li{
-        // &.label{
-        //   width: auto;
-        // }
 
         &.input{
           background-color: $blue;
@@ -103,9 +99,6 @@
       .row--obat ul li.input, .row--obat ul li.label-sm{
         width: 100%;
       }
-      .row--obat ul.status li.input{
-        // width: auto;
-      }
     }
   }
 
@@ -132,7 +125,6 @@
         }
 
         ul{
-          // border-bottom: solid 1px #ddd;
           flex-direction: column;
 
           li.label{
@@ -151,13 +143,78 @@
     }
 
   }
-  .row4{
-    flex-direction: column;
+  .row5.pengajuan{
+    display: flex;
+    justify-content: space-between;
     width: 100%;
+    gap: 10px;
 
-    .col .doku{
-      width: initial;
-      margin-bottom: 10px;
+    &.column{
+      flex-direction: column;
+      width: 68%;
+
+      .col.doku{
+        width: initial;
+        background-color: $grey-light;
+        padding: 10px;
+        border-radius: 4px;
+
+        ul{
+          padding-left: 4px;
+        }
+
+        h5{
+          font-size: 18px;
+          color: $black;
+          text-align: justify;
+          margin-bottom: 10px;
+        }
+        
+        .doku-row{
+          display: flex;
+          flex-direction: row;
+          gap: 10px;
+          
+        }
+      }
+    }
+
+    .col{
+      width: 100%;
+    }
+
+    .col.doku{
+      width: 50%;
+      background-color: transparent;
+      padding: 0 10px;
+
+      h5{
+        font-size: 18px;
+        color: $black;
+        text-align: justify;
+        margin-bottom: 10px;
+      }
+
+      hr{
+        height: 1px;
+        background: $grey;
+        border: none;
+      }
+
+      ul {
+        display: flex;
+        flex-direction: column;
+        padding-left: 4px;
+
+        li{
+          width: 100%;
+
+          p{
+            padding-left: 3px;
+          }
+
+        }
+      }
     }
   }
 
@@ -239,7 +296,6 @@
         }
       }
       ul{
-        // border-bottom: solid 1px #ddd;
         li.label{
           width: 36%;
         }
@@ -264,8 +320,6 @@
     }
 
     .col{
-      // commented style for col
-      // width: 49%;
       width: 100%;
 
       &.doku{
@@ -284,16 +338,11 @@
           flex-direction: row;
           gap: 10px;
           
-          // h5{
-          //   font-size: 16px;
-          //   display: block;
-          // }
         }
 
         .doku-1{
           flex: 1;
           ul {
-            // border-bottom: solid 1px #ddd;
       
             li.label {
             width: 48%;
@@ -303,8 +352,6 @@
       }
 
       ul{
-        // align-items: flex-start;
-        // display: inline-table;
         padding-bottom: 4px;
         flex-direction: row;
 
@@ -312,42 +359,10 @@
           align-items: flex-start;
         }
 
-        // background color status modal
         &.status{
           .input{
             p{
-              // background-color: $grey-light;
-              // padding: 4px 8px;
               color: $black;
-              // font-size: 12px;
-              // font-weight: 600;
-              // padding: 8px 12px;
-              // border-radius: 6px;
-
-              // &.Dalam, &.Diajukan, &.Empty{
-              //   background-color: $grey;
-              //   color: $white;
-              // }
-              
-              // &.Dikirim{
-              //   background-color: $yellow;
-              //   color: $black;
-              // }
-  
-              // &.Disetujui, &.Selesai{
-              //   background-color: $green;
-              //   color: $white;
-              // }
-              
-              // &.Penolakan,  &.Tidak.Disetujui{
-              //   background-color: $red;
-              //   color: $white;
-              // }
-              
-              // &.Available, &.Requested.NIE, &.Pengajuan{
-              //   background-color: $blue;
-              //   color: $white;
-              // }
             }
           }
         }
@@ -367,22 +382,6 @@
 
         }
 
-        // &.status{
-        //   height: 44px;
-        //   align-items: center;
-
-        //   li.input p{
-        //     padding: 10px 12px;
-        //     border-radius: 6px;
-        //     font-weight: bold;
-            
-        //     &.Pending{
-        //       background-color: $yellow;
-        //       color: $black;
-        //     }
-        //   }
-        // }
-
         &.numbered1{
           flex-direction: column;
           align-items: flex-start;
@@ -397,12 +396,7 @@
         }
 
         &.numbered{
-          // flex-direction: column;
           display: inline-table!important;
-          // width: auto;
-          // padding: 6px 10px;
-          // list-style: none;
-          // padding-left: -12px;
           
           li.klaim{
             padding: 6px 4px;
@@ -448,7 +442,6 @@
 
         ul{
           display: flex;
-          // flex-direction: column;
 
           &.rejectMsg{
             .input{
@@ -457,7 +450,6 @@
               background-color:rgba(182, 25, 25, 0.1411764706);
               padding: 8px;
               border-radius: 8px;
-              // margin-left: 14px;
               margin-left: -20px;
 
               p{
@@ -467,7 +459,6 @@
           }
 
           li.label{
-            // width: 100%;
             width: 52%;
           }
     
@@ -482,7 +473,6 @@
 
           &.status{
             li.input{
-              // width: auto;
               padding-top: 2px;
             }
           }
@@ -493,7 +483,6 @@
         width: 60%;
         ul{
           display: flex;
-          // flex-direction: column;
 
           &.klaim{
             align-items: flex-start;
@@ -582,7 +571,6 @@
       &.label{
         font-weight: 600;
         text-align: left;
-        // width: 32%;
         margin-right: 6px;
         width: 26%;
         
@@ -603,7 +591,6 @@
       &.input{
         text-align: left;
         font-size: 12px;
-        // padding-top: 4px;
 
         a{
           color: $black;
@@ -632,7 +619,6 @@
 
         input{
           @include inputForm($black);
-          // width: 100%;
           padding: 6px 10px;
           font-size: 13px;   
           
@@ -693,7 +679,7 @@ div:where(.swal2-container) div:where(.swal2-actions){
   justify-content: space-between;
   padding: 0 20px;
 }
-// main modal style
+
 div:where(.swal2-container) div:where(.swal2-popup) {
   border-radius: 10px;
   font-family: "Instrument Sans", sans-serif;
@@ -743,7 +729,6 @@ div:where(.swal2-container) .swal2-html-container {
 .scrollable-modal-small {
   height: 280px !important;
 }
-
 
 div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm) {
   font-family: "Instrument Sans", sans-serif;

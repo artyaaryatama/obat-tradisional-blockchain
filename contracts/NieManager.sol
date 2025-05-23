@@ -51,14 +51,12 @@ contract NieManager {
     string dataPendukungKeamanan;
   } 
 
-  struct ReSertifikasi{
-    string masterFormula;
-    string desainKemasanTerbaru;
-    string skPersetujuan;
-    string desainKemasanDisetujui;
-    string dokumenSemuaJenisVariasi;
-    string suratBermaterai;
-    string hasilUjiStabilitas;
+  struct DokumenRegisUlang{
+    string formulaProdukMetrik;
+    string skPersetujuanVariasi;
+    string desainKemasanTerakhir;
+    string suratPernyataanPeredaran;
+    string desainKemasanBerwarna;
   } 
 
   mapping (string => NieDetail) public nieDetailById;
@@ -66,6 +64,7 @@ contract NieManager {
   mapping (string => string) public rejectMsgExtendById; 
   mapping (string => DokumenObat) public dokuObatById;
   mapping (string => DokumenPendukung) public dokuPendukungById;
+  mapping (string => DokumenRegisUlang) public dokuRegisUlangById;
 
   event NieRequested(
     string factoryInstance,
@@ -255,7 +254,8 @@ contract NieManager {
 
   function extendRequestNie(
     string memory obatId,
-    uint256 expiredTimestamp
+    uint256 expiredTimestamp,
+    DokumenRegisUlang memory newDoku 
   ) 
     public 
     onlyFactory 
@@ -265,6 +265,8 @@ contract NieManager {
 
     nieData.nieStatus = EnumsLibrary.NieStatus.ExtendRequestNie; 
     nieData.timestampNieExtendRequest = block.timestamp; 
+
+    dokuRegisUlangById[obatId] = newDoku; 
 
     emit NieExtendRequest(
       msg.sender,  
@@ -312,8 +314,9 @@ contract NieManager {
     ); 
   } 
 
-  function renewRejectNie(
-    string memory obatId
+  function extendRenewRequestNie(
+    string memory obatId,
+    DokumenRegisUlang memory newDoku
   ) 
     public 
     onlyFactory 
@@ -322,6 +325,8 @@ contract NieManager {
  
     nieData.nieStatus = EnumsLibrary.NieStatus.ExtendRenewNie;  
     nieData.timestampNieExtendReject = block.timestamp; 
+
+    dokuRegisUlangById[obatId] = newDoku;
 
     emit NieRenewExtend(
       msg.sender,  
@@ -332,12 +337,14 @@ contract NieManager {
   function getNieDetail(string memory obatId) public view returns (
     NieDetail memory,
     DokumenObat memory,
-    DokumenPendukung memory
+    DokumenPendukung memory,
+    DokumenRegisUlang memory
   ){
     return (
       nieDetailById[obatId], 
       dokuObatById[obatId], 
-      dokuPendukungById[obatId]
+      dokuPendukungById[obatId],
+      dokuRegisUlangById[obatId]
     );
   }
 
@@ -353,8 +360,8 @@ contract NieManager {
     );  
   }
 
-  function getRejectMsgNie(string memory obatId) public view returns (string memory) {
-    return rejectMsgById[obatId];
+  function getRejectMsgNie(string memory obatId) public view returns (string memory, string memory) {
+    return (rejectMsgById[obatId], rejectMsgExtendById[obatId]);
   }
 
 }
