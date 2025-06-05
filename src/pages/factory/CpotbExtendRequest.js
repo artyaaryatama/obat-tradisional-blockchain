@@ -43,6 +43,34 @@ function CpotbExtendRequest() {
 
   const formattedDate = today.toLocaleDateString('id-ID', options);
 
+  const jenisSediaanMap = {
+    0n: "Cairan Obat Dalam",
+    1n: "Rajangan",
+    2n: "Serbuk",
+    3n: "Serbuk Instan",
+    4n: "Efervesen",
+    5n: "Pil",
+    6n: "Kapsul",
+    7n: "Kapsul Lunak",
+    8n: "Tablet atau Kaplet",
+    9n: "Granul",
+    10n: "Pastiles",
+    11n: "Dodol atau Jenang",
+    12n: "Film Strip",
+    13n: "Cairan Obat Luar",
+    14n: "Losio",
+    15n: "Parem",
+    16n: "Salep",
+    17n: "Krim",
+    18n: "Gel",
+    19n: "Serbuk Obat Luar",
+    20n: "Tapel",
+    21n: "Pilis",
+    22n: "Plaster atau Koyok",
+    23n: "Supositoria",
+    24n: "Rajangan Obat Luar"
+  };
+
   useEffect(() => {
     document.title = "Pengajuan Perpanjangan CPOTB"; 
   }, []);
@@ -143,7 +171,7 @@ function CpotbExtendRequest() {
     }
     }).then((result) => {
       if (result.isConfirmed) {
-        window.location.reload();
+        navigate('/cpotb');
       }
     });
   }
@@ -205,12 +233,12 @@ function CpotbExtendRequest() {
     ]);
 
     setDokumen({
-      ipfsSuratPermohonanCpotb:             new File([b1], "surat_permohonan.pdf", { type: "application/pdf" }),
+      ipfsSuratPermohonanCpotb: new File([b1], "surat_permohonan.pdf", { type: "application/pdf" }),
       ipfsBuktiPembayaranNegaraBukanPajak:  new File([b2], "bukti_pnbp.pdf", { type: "application/pdf" }),
-      ipfsDenahBangunan:                    new File([b2], "denah_bangunan.pdf", { type: "application/pdf" }),
-      ipfsSistemMutu:                       new File([b3], "sistem_mutu.pdf", { type: "application/pdf" }),
-      ipfsCpotb:                            cpotbDataExt.cpotbIpfs,
-      ipfsDokumenCapa:                      new File([b3], "dokumen_capa.pdf", { type: "application/pdf" }),
+      ipfsDenahBangunan: new File([b2], "denah_bangunan.pdf", { type: "application/pdf" }),
+      ipfsSistemMutu: new File([b3], "sistem_mutu.pdf", { type: "application/pdf" }),
+      ipfsCpotb: cpotbDataExt.cpotbIpfs,
+      ipfsDokumenCapa: new File([b3], "dokumen_capa.pdf", { type: "application/pdf" }),
     });
 
     MySwal.fire({
@@ -400,8 +428,8 @@ function CpotbExtendRequest() {
       }
 
       contracts.certificateManager.on('CertExtend',  (factoryAddr,  _timestamp) => {
-        // updateCpotbFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaanMap[cpotbDataExt.jenisSediaan]);
-        // recordHashFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaanMap[cpotbDataExt.jenisSediaan])
+        updateCpotbFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaanMap[cpotbDataExt.jenisSediaan]);
+        recordHashFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaanMap[cpotbDataExt.jenisSediaan])
         handleEventCpotbExtendRequested(factoryAddr, _timestamp, extendCertificateCt.hash, cpotbDataExt.cpotbNumber)
       });
     } catch (error) {
@@ -409,39 +437,35 @@ function CpotbExtendRequest() {
     }
   }
 
-  const updateCpotbFb = async (nieHash, timestamp, namaObat) => {
+  const updateCpotbFb = async (cpotbHash, timestamp, jenisSediaan) => {
 
     try { 
-      const docRef = doc(db, 'obat_data', userdata.instanceName)
+      const docRef = doc(db, 'cpotb_list', userdata.instanceName)
 
-      await setDoc(docRef, {
-        [`${namaObat}`]: {
-          historyNie: {
-            extendedRequestNieHash: nieHash,
-            extendedRequestNieTimestamp: timestamp,
-          },
-          status: 4
-        }
-      }, { merge: true }); 
-  
+      await updateDoc(docRef, { 
+        [`${jenisSediaan}.extendedRequestedHash`]: cpotbHash,
+        [`${jenisSediaan}.extendedRequestedTimestamp`]: timestamp, 
+        [`${jenisSediaan}.bpomInstance`]: userdata.instanceName, 
+        [`${jenisSediaan}.status`]: 4, 
+      });
     } catch (err) {
       errAlert(err);
     }
   };
 
-  const recordHashFb = async(txHash, timestamp, namaObat) => {
+  const recordHashFb = async(cpotbHash, timestamp, jenisSediaan) => {
     try {
-      const collectionName = `obat_${namaObat}_${userdata.instanceName}`
+      const collectionName = `pengajuan_cpotb_${userdata.instanceName}`
       const docRef = doc(db, 'transaction_hash', collectionName);
-  
+
       await setDoc(docRef, {
-        [`produksi`]: {
-          'extend_request_nie': {
-            hash: txHash,
+        [`${jenisSediaan}`]: {
+          'extend_request': {
+            hash: cpotbHash,
             timestamp: timestamp,
           }
         },
-      }, { merge: true }); 
+      }, { merge: true });
     } catch (err) {
       errAlert(err);
     }

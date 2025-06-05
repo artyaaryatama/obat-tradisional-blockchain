@@ -1,6 +1,6 @@
 {
   "ObatTradisional": {
-    "address": "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
+    "address": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
     "abi": [
       {
         "inputs": [
@@ -3317,7 +3317,7 @@
     ]
   },
   "NieManager": {
-    "address": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
+    "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
     "abi": [
       {
         "inputs": [
@@ -3537,7 +3537,7 @@
             "type": "string"
           }
         ],
-        "name": "approveExtendRequest",
+        "name": "approveExtendRequestNie",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -3718,24 +3718,6 @@
           }
         ],
         "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "obatId",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "rejectMsgExtend",
-            "type": "string"
-          }
-        ],
-        "name": "extendRejectNie",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -4190,6 +4172,24 @@
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "obatId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "rejectMsgExtend",
+            "type": "string"
+          }
+        ],
+        "name": "rejectExtendRequestNie",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {

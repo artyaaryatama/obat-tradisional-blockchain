@@ -3060,7 +3060,7 @@ function NieApprove() {
 
     console.log(id, nieNumber, userdata.instanceName);
     try {
-      const extendApproveNieCt =  await contracts.nieManager.approveExtendRequest(id, nieIpfs)
+      const extendApproveNieCt =  await contracts.nieManager.approveExtendRequestNie(id, nieIpfs)
 
       if(extendApproveNieCt){
         MySwal.update({
@@ -3132,7 +3132,7 @@ function NieApprove() {
 
     try {
       console.log(id, userdata.instanceName, rejectMsg);
-      const extendRejectNieCt = await contracts.nieManager.extendRejectNie(id, rejectMsg);
+      const extendRejectNieCt = await contracts.nieManager.rejectExtendRequestNie(id, rejectMsg);
 
       if(extendRejectNieCt){
         MySwal.update({

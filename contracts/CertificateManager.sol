@@ -466,7 +466,7 @@ contract CertificateManager is ReentrancyGuard {
     );
   } 
 
-    function rejectExtendCdob( 
+  function rejectExtendCdob( 
     string memory cdobId,
     string memory rejectExtendMsg
   ) 

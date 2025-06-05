@@ -181,78 +181,6 @@ function ManageCpotb() {
     }
   }, [loading]);
 
-  const handleEventCpotb = (factoryAddr, timestamp, txHash, certNumber) => {
-
-    const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
-
-    MySwal.fire({
-      title: "Permintaan perpanjangan CPOTB terkirim",
-      html: (
-        <div className='form-swal event'>
-          <ul className='klaim'>
-            <li className="label">
-              <p>Nomor CPOTB</p> 
-            </li>
-            <li className="input">
-              <p>{certNumber}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <p>Nama Instansi Pabrik</p> 
-            </li>
-            <li className="input">
-              <p>{userdata.instanceName}</p> 
-            </li>
-          </ul>
-          <ul className='klaim'>
-            <li className="label">
-              <p>Alamat Akun Pabrik (Pengguna)</p> 
-            </li>
-            <li className="input">
-              <p>{factoryAddr}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <p>Tanggal Dikirim Perpanjangan</p> 
-            </li>
-            <li className="input">
-              <p>{formattedTimestamp}</p> 
-            </li>
-          </ul>
-          <ul className="txHash">
-            <li className="label">
-              <p>Hash Transaksi</p>
-            </li>
-            <li className="input">
-              <a
-                href={`https://sepolia.etherscan.io/tx/${txHash}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Lihat transaksi di Etherscan
-              </a>
-            </li>
-          </ul>
-        </div>
-      ),
-      icon: 'success',
-      width: '560',
-      showCancelButton: false,
-      confirmButtonText: 'Oke',
-      allowOutsideClick: true,
-      didOpen: () => {
-        const actions = Swal.getActions();
-        actions.style.justifyContent = "center";
-    }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.reload();
-      }
-    });
-  }
-
   const getDetailCpotb = async (id) => {
     
     console.log(id);
@@ -383,8 +311,8 @@ function ManageCpotb() {
         MySwal.fire({
           title: "Detail Sertifikat CPOTB",
           html: (
-            <div className='form-swal order'>
-              <div className="row2">
+            <div className='form-swal detail-modal'>
+              <div className="row6">
   
                 <div className="col">
                   <ul className='status'>
@@ -509,85 +437,88 @@ function ManageCpotb() {
                   </ul>
                 </div>
 
-                <div className='col doku'>
-                <h5>Dokumen Administrasi</h5>
-                <ul>
-                  <li className="label">
-                    <p>Surat Permohonan CPOTB</p>
-                  </li>
-                  <li className="input">
-                    <a
-                      href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratPermohonan}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Lihat Surat Permohonan CPOTB
-                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                    </a>
-                  </li>
-                </ul>
-                <ul>
-                  <li className="label">
-                    <p>Bukti Pembayaran Negara Bukan Pajak</p>
-                  </li>
-                  <li className="input">
-                    <a
-                      href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.buktiPembayaranNegaraBukanPajak}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Lihat Bukti Pembayaran Negara Bukan Pajak
-                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                    </a>
-                  </li>
-                </ul>
-                <ul>
-                  <li className="label">
-                    <p>Surat Pernyataan Komitmen</p>
-                  </li>
-                  <li className="input">
-                    <a
-                      href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratKomitmen}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Lihat Surat Pernyataan Komitmen
-                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                    </a>
-                  </li>
-                </ul>
-                <h5>Dokumen Teknis</h5>
-                <ul>
-                  <li className="label">
-                    <p>Denah Bangunan Pabrik</p>
-                  </li>
-                  <li className="input">
-                    <a
-                      href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denahBangunan}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Lihat Denah Bangunan Pabrik
-                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                    </a>
-                  </li>
-                </ul>
-                <ul>
-                  <li className="label">
-                    <p>Dokumen Sistem Mutu CPOTB</p>
-                  </li>
-                  <li className="input">
-                    <a
-                      href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.sistemMutu}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Lihat Dokumen Sistem Mutu CPOTB
-                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                    </a>
-                  </li>
-                </ul>
-              </div>
+                  <div className="row4">
+
+                    <div className='col doku'>
+                    <h5>Dokumen Administrasi</h5>
+                    <ul>
+                      <li className="label">
+                        <p>Surat Permohonan CPOTB</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratPermohonan}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat Surat Permohonan CPOTB
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Bukti Pembayaran Negara Bukan Pajak</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.buktiPembayaranNegaraBukanPajak}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat Bukti Pembayaran Negara Bukan Pajak
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Surat Pernyataan Komitmen</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCpotb.dokumenAdministrasi.suratKomitmen}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat Surat Pernyataan Komitmen
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                    <h5>Dokumen Teknis</h5>
+                    <ul>
+                      <li className="label">
+                        <p>Denah Bangunan Pabrik</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.denahBangunan}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat Denah Bangunan Pabrik
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="label">
+                        <p>Dokumen Sistem Mutu CPOTB</p>
+                      </li>
+                      <li className="input">
+                        <a
+                          href={`http://localhost:8080/ipfs/${detailCpotb.dokumenTeknis.sistemMutu}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Lihat Dokumen Sistem Mutu CPOTB
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                  </div>
               </div>
             
             </div>
@@ -596,6 +527,9 @@ function ManageCpotb() {
           showCloseButton: true,
           showCancelButton: false,
           confirmButtonText: 'Pengajuan Ulang CPOTB',
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
         }).then((result) => {
           if (result.isConfirmed) {
             const cpotbData = {
@@ -610,8 +544,8 @@ function ManageCpotb() {
         MySwal.fire({
           title: "Detail Sertifikat CPOTB",
           html: (
-            <div className='form-swal order'>
-              <div className="row2">
+            <div className='form-swal detail-modal'>
+              <div className="row6">
                 <div className="col">
                   <ul className='status'>
                     <li className="label">
@@ -977,7 +911,10 @@ function ManageCpotb() {
           showCloseButton: true,
           showCancelButton: false,
           showConfirmButton: true,
-          confirmButtonText: 'Perpanjangan Sertifkat'
+          confirmButtonText: 'Perpanjangan Sertifkat',
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
         }).then((result) => {
           if(result.isConfirmed){
             const cpotbData = {
@@ -995,8 +932,8 @@ function ManageCpotb() {
         MySwal.fire({
           title: "Detail Sertifikat CPOTB",
           html: (
-            <div className='form-swal order'>
-              <div className="row2">
+            <div className='form-swal detail-modal'>
+              <div className="row6">
                 <div className="col">
                   <ul className='status'>
                     <li className="label">
@@ -1174,7 +1111,7 @@ function ManageCpotb() {
                   
                 </div>
 
-                  <div className='row5 pengajuan column'>
+                  <div className='row4'>
                     <div className='col doku'>
                       <h5>Dokumen Administrasi</h5>
                       <ul>
@@ -1362,7 +1299,10 @@ function ManageCpotb() {
           showCloseButton: true,
           showCancelButton: false,
           showConfirmButton: true,
-          confirmButtonText: 'Perpanjangan Ulang CPOTB'
+          confirmButtonText: 'Perpanjangan Ulang CPOTB',
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
         }).then((result) => {
           if(result.isConfirmed){
             const cpotbData = {
@@ -1381,8 +1321,8 @@ function ManageCpotb() {
         MySwal.fire({
           title: "Detail Sertifikat CPOTB",
           html: (
-            <div className='form-swal order'>
-              <div className="row2">
+            <div className='form-swal detail-modal'>
+              <div className="row6">
                 <div className="col">
                   <ul className='status'>
                     <li className="label">
@@ -1593,7 +1533,7 @@ function ManageCpotb() {
                   
                 </div>
 
-                  <div className='row5 pengajuan column'>
+                  <div className='row4'>
                     <div className='col doku'>
                       <h5>Dokumen Administrasi</h5>
                       <ul>
@@ -1781,7 +1721,10 @@ function ManageCpotb() {
           showCloseButton: true,
           showCancelButton: false,
           showConfirmButton: true,
-          confirmButtonText: 'Pengajuan Ulang Perpanjangan CPOTB'
+          confirmButtonText: 'Pengajuan Ulang Perpanjangan CPOTB',
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
         }).then((result) => {
           if(result.isConfirmed){
             const cpotbData = {
@@ -1799,8 +1742,8 @@ function ManageCpotb() {
         MySwal.fire({
           title: "Detail Sertifikat CPOTB",
           html: (
-            <div className='form-swal order'>
-              <div className="row2">
+            <div className='form-swal detail-modal'>
+              <div className="row6">
                 <div className="col">
                   <ul className='status'>
                     <li className="label">
@@ -2028,7 +1971,7 @@ function ManageCpotb() {
                   
                 </div>
      
-                  <div className='row5 pengajuan column'>
+                  <div className='row4'>
                     <div className='col doku'>
                       <h5>Dokumen Administrasi</h5>
                       <ul>
@@ -2215,7 +2158,10 @@ function ManageCpotb() {
           width: '1080',
           showCloseButton: true,
           showCancelButton: false,
-          showConfirmButton: false
+          showConfirmButton: false,
+          customClass: {
+            htmlContainer: 'scrollable-modal'
+          },
         })
       }
 

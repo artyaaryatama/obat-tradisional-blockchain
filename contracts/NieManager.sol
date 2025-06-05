@@ -274,7 +274,7 @@ contract NieManager {
     );
   }
 
-  function extendRejectNie(
+  function rejectExtendRequestNie(
     string memory obatId,
     string memory rejectMsgExtend
   ) 
@@ -294,7 +294,7 @@ contract NieManager {
     );
   }
 
-  function approveExtendRequest(
+  function approveExtendRequestNie(
     string memory obatId,
     string memory ipfsNie 
   ) 
