@@ -1,8 +1,129 @@
-@import './main.scss';
-@import 'mixin';
+@use './main.scss' as *;
+@use 'mixin' as *;
+
+
+div:where(.swal2-container) div:where(.swal2-actions){
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+div:where(.swal2-container) div:where(.swal2-popup) {
+  border-radius: 10px;
+  font-family: "Instrument Sans", sans-serif;
+  padding: 14px 0;
+}
+
+div:where(.swal2-icon){
+  margin: 20px auto;
+}
+
+div:where(.swal2-container) input:where(.swal2-input), div:where(.swal2-container) input:where(.swal2-file), div:where(.swal2-container) textarea:where(.swal2-textarea), div:where(.swal2-container) select:where(.swal2-select), div:where(.swal2-container) div:where(.swal2-radio), div:where(.swal2-container) label:where(.swal2-checkbox) {
+  margin: 12px 2em;
+}
+
+div:where(.swal2-container) .swal2-input {
+  @include inputForm($grey, $white);
+  border: solid 1px $grey;
+}
+
+div:where(.swal2-icon).swal2-success {
+  border-color: #a5dc86;
+  color: #a5dc86;
+}
+
+div:where(.swal2-icon).swal2-info {
+  border-color: rgb(156.7033492823, 224.2822966507, 246.2966507177);
+  color: #3fc3ee;
+}
+
+div:where(.swal2-container) h2:where(.swal2-title) {
+  padding: 20px 16px 4px;
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 24px;
+  color: $black;
+}
+
+div:where(.swal2-container) .swal2-html-container {
+  font-family: "Instrument Sans", sans-serif;
+  margin: 0;
+  padding: 10px 20px;
+  color: $grey;
+}
+
+.scrollable-modal {
+  height: 480px !important;
+}
+
+.scrollable-modal-small {
+  height: 280px !important;
+}
+
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm) {
+  font-family: "Instrument Sans", sans-serif !important;
+  @include btnAlert($white, $purple, 4px);
+}
+
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel) {
+  font-family: "Instrument Sans", sans-serif;
+  @include btnAlert($white, $red, 4px);
+}
+
+div:where(.swal2-container) div:where(.swal2-actions) {
+  margin: 10px 0 0;
+}
+
+h5{
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 24px;
+  margin: 0;
+}
+
+p{
+  font-family: "Instrument Sans", sans-serif;
+  margin: 0;
+  font-size: 16px;
+  color: $grey;
+}
+
+ul.noList{
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  
+  li{
+    margin-bottom: 4px;
+  }
+}
+
+ul.numbered {
+  list-style-type: decimal; 
+  list-style-position: outside; 
+  padding: 0;
+  margin: 0;
+  padding-left: 12px; 
+  color: $black;
+  text-align: start;
+
+  li {
+    
+    p {
+      display: inline; 
+      margin-left: 0; 
+    }
+  }
+}
+
+button.addQuantity{
+  @include btnIcon($white, $blue);
+
+  i{
+    margin-right: 8px;
+  }
+}
 
 .form-swal{
-
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -726,125 +847,5 @@
     ul li.input{
       width: 68%;
     }
-  }
-}
-
-div:where(.swal2-container) div:where(.swal2-actions){
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: space-between;
-  padding: 0 20px;
-}
-
-div:where(.swal2-container) div:where(.swal2-popup) {
-  border-radius: 10px;
-  font-family: "Instrument Sans", sans-serif;
-  padding: 14px 0;
-}
-
-div:where(.swal2-icon){
-  margin: 20px auto;
-}
-div:where(.swal2-container) input:where(.swal2-input), div:where(.swal2-container) input:where(.swal2-file), div:where(.swal2-container) textarea:where(.swal2-textarea), div:where(.swal2-container) select:where(.swal2-select), div:where(.swal2-container) div:where(.swal2-radio), div:where(.swal2-container) label:where(.swal2-checkbox) {
-  margin: 12px 2em;
-}
-
-div:where(.swal2-container) .swal2-input {
-  @include inputForm($grey, $white);
-  border: solid 1px $grey;
-}
-
-div:where(.swal2-icon).swal2-success {
-  border-color: #a5dc86;
-  color: #a5dc86;
-}
-
-div:where(.swal2-icon).swal2-info {
-  border-color: rgb(156.7033492823, 224.2822966507, 246.2966507177);
-  color: #3fc3ee;
-}
-
-div:where(.swal2-container) h2:where(.swal2-title) {
-  padding: 20px 16px 4px;
-  font-family: "Instrument Sans", sans-serif;
-  font-size: 24px;
-  color: $black;
-}
-
-div:where(.swal2-container) .swal2-html-container {
-  font-family: "Instrument Sans", sans-serif;
-  margin: 0;
-  padding: 10px 20px;
-  color: $grey;
-}
-
-.scrollable-modal {
-  height: 480px !important;
-}
-
-.scrollable-modal-small {
-  height: 280px !important;
-}
-
-div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm) {
-  font-family: "Instrument Sans", sans-serif;
-  @include btnAlert($white, $purple, 4px);
-}
-
-div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel) {
-  font-family: "Instrument Sans", sans-serif;
-  @include btnAlert($white, $red, 4px);
-}
-
-div:where(.swal2-container) div:where(.swal2-actions) {
-  margin: 10px 0 0;
-}
-
-h5{
-  font-family: "Instrument Sans", sans-serif;
-  font-size: 24px;
-  margin: 0;
-}
-
-p{
-  font-family: "Instrument Sans", sans-serif;
-  margin: 0;
-  font-size: 16px;
-  color: $grey;
-}
-
-ul.noList{
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  
-  li{
-    margin-bottom: 4px;
-  }
-}
-
-ul.numbered {
-  list-style-type: decimal; 
-  list-style-position: outside; 
-  padding: 0;
-  margin: 0;
-  padding-left: 12px; 
-  color: $black;
-  text-align: start;
-
-  li {
-    
-    p {
-      display: inline; 
-      margin-left: 0; 
-    }
-  }
-}
-
-button.addQuantity{
-  @include btnIcon($white, $blue);
-
-  i{
-    margin-right: 8px;
   }
 }

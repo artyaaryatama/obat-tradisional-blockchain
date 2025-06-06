@@ -1,4 +1,5 @@
-@import './main.scss';
+@use './main.scss' as *;
+@use 'mixin' as *;
 
 nav{
   display: flex;
