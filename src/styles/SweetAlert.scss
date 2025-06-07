@@ -9,7 +9,7 @@ div:where(.swal2-container) div:where(.swal2-actions){
   padding: 0 20px;
 }
 
-div:where(.swal2-container) div:where(.swal2-popup) {
+.my-swal-popup {
   border-radius: 10px;
   font-family: "Instrument Sans", sans-serif;
   padding: 14px 0;

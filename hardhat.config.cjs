@@ -1,3 +1,4 @@
+require('dotenv').config();
 require('@nomicfoundation/hardhat-ethers');
 require("@nomicfoundation/hardhat-toolbox");
 require("@nomicfoundation/hardhat-verify");
@@ -24,14 +25,14 @@ module.exports = {
       chainId: 31337, 
     },
     sepolia: {
-      url: `https://sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`, 
+      url: `https://sepolia.infura.io/v3/${process.env.VITE_INFURA_API_KEY}`, 
       // accounts: [
-      //   `0x${import.meta.env.VITE_MY_PRIVATE_KEY}`
+      //   `0x${process.env.VITE_MY_PRIVATE_KEY}`
       // ],
     }
   },
   etherscan: {
-    apiKey: import.meta.env.VITE_ETHERSCAN_API_KEY,
+    apiKey: process.env.VITE_ETHERSCAN_API_KEY,
   },
 };
 

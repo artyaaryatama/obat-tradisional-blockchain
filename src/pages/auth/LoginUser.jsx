@@ -5,10 +5,10 @@ import contractData from '../../auto-artifacts/deployments.json';
 import imgLogin from '../../assets/images/login.png';
 import imgLoader from '../../assets/images/loader.svg';
 
-import './../../styles/Auth.scss';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import './../../styles/SweetAlert.scss';
+import './../../styles/Auth.scss';
+import "./../../styles/SweetAlert.scss";
 
 const MySwal = withReactContent(Swal);
 
@@ -119,6 +119,9 @@ function LoginPage() {
           showCancelButton: false,
           showConfirmButton: false,
           allowOutsideClick: false,
+          customClass: {
+            popup: 'my-swal-popup'
+          }
         })
         .then(() => {
           if (userdata.role === "1") {
