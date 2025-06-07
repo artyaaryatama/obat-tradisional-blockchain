@@ -52,7 +52,7 @@ function LoginPage() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });

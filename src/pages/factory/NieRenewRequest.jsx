@@ -111,7 +111,7 @@ function NieRenewRequest() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -296,7 +296,7 @@ function NieRenewRequest() {
         });
       }
       
-      contracts.nieManager.on("NieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
+      contracts.nieManager.once("NieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
         createObatFb(userdata.instanceName, obatData.namaObat, renewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
         recordHashFb(obatData.namaObat, renewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
         handleEventNieRenewRequest( _factoryInstance, _factoryAddr,_timestampRenewRequestNie, renewRequestNieCt.hash)
@@ -405,7 +405,7 @@ function NieRenewRequest() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Lihat dokumen ↗ (${hash})
+                        {hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                       </li>
                     </ul>

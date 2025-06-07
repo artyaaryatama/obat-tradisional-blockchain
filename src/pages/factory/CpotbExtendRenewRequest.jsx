@@ -51,7 +51,7 @@ function CpotbExtendRenewRequest() {
     })();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         window.location.reload();
       });
     }
@@ -173,7 +173,7 @@ function CpotbExtendRenewRequest() {
       );
       console.log(tx)
       MySwal.update({ title: "Memproses transaksi…", text: "Harap tunggu…" });
-      contracts.certificateManager.on('CertExtendRequest', (factoryAddr, ts) => {
+      contracts.certificateManager.once('CertExtendRequest', (factoryAddr, ts) => {
         const timestamp = Number(ts);
         // updateCpotbFb(tx.hash, timestamp);
         // recordHashFb(tx.hash, timestamp);

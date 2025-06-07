@@ -56,7 +56,7 @@ function RegisterPage() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -336,7 +336,7 @@ function RegisterPage() {
         
       }
 
-      contract.on("UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
+      contract.once("UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
         handleEventUserRegister(_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp, registCt.hash);
       });
       

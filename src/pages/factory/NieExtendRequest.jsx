@@ -101,7 +101,7 @@ function NieExtendRequest() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -282,7 +282,7 @@ function NieExtendRequest() {
       
       console.log(renewRequestNieCt);
 
-      // contracts.nieManager.on("NieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
+      // contracts.nieManager.once("NieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
       //   createObatFb(userdata.instanceName, obatData.namaObat, renewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
       //   recordHashFb(obatData.namaObat, renewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
       //   handleEventNieRenewRequest( _factoryInstance, _factoryAddr,_timestampRenewRequestNie, renewRequestNieCt.hash)
@@ -410,7 +410,7 @@ function NieExtendRequest() {
                               <li class="label label-2"><p>${docName}</p></li>
                               <li class="input input-2">
                                 <a href="http://localhost:8080/ipfs/${hash}" target="_blank">
-                                  Lihat dokumen ↗ (${hash})
+                                  ${hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                 </a>
                               </li>
                             </ul>
@@ -501,7 +501,7 @@ function NieExtendRequest() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Lihat dokumen ↗ (${hash})
+                        {hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                       </li>
                     </ul>

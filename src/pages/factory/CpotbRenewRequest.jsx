@@ -98,7 +98,7 @@ function CpotbRenewRequest() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -313,7 +313,7 @@ function CpotbRenewRequest() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Lihat dokumen ↗ (${hash})
+                        {hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                       </li>
                     </ul>
@@ -383,7 +383,7 @@ function CpotbRenewRequest() {
         });
       }
       
-      contracts.certificateManager.on("CertRenewRequest", (_isntanceName, _instanceAddr, _timestampRenew) => {
+      contracts.certificateManager.once("CertRenewRequest", (_isntanceName, _instanceAddr, _timestampRenew) => {
         writeCpotbFb( userdata.instanceName, jenisSediaanMap[parseInt(cpotbData.jenisSediaan)], renewRequestCpotbCt.hash, Number(_timestampRenew) );
         recordHashFb(jenisSediaanMap[parseInt(cpotbData.jenisSediaan)], renewRequestCpotbCt.hash, Number(_timestampRenew) );
         handleEventCpotbRenewRequested(_isntanceName, _instanceAddr, _timestampRenew, renewRequestCpotbCt.hash);

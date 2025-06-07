@@ -96,7 +96,7 @@ function NieApprove() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -3069,7 +3069,7 @@ function NieApprove() {
         });
       }
       
-      contracts.nieManager.on('NieApprovedExtendRequest',  (_instanceAddr, _timestampApprove) => {
+      contracts.nieManager.once('NieApprovedExtendRequest',  (_instanceAddr, _timestampApprove) => {
         updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, extendApproveNieCt.hash, Number(_timestampApprove),  'Perpanjangan')
         recordHashFb(namaObat, factoryInstance, extendApproveNieCt.hash, Number(_timestampApprove),  'Perpanjangan')
         handleEventNieApproved("Extend", namaObat, _instanceAddr, userdata.instanceName, nieNumber, _timestampApprove, extendApproveNieCt.hash)
@@ -3093,7 +3093,7 @@ function NieApprove() {
         });
       }
       
-      contracts.nieManager.on('NieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
+      contracts.nieManager.once('NieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
         updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, approveNieCt.hash, Number(_timestampApprove),  'Setujui')
         recordHashFb(namaObat, factoryInstance, approveNieCt.hash, Number(_timestampApprove),  'Setujui')
         handleEventNieApproved("Approved", namaObat, _instanceAddr, _instanceName, _nieNumber, _timestampApprove, approveNieCt.hash)
@@ -3117,7 +3117,7 @@ function NieApprove() {
         });
       }
       
-      contracts.nieManager.on('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
+      contracts.nieManager.once('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
         updateObatFb(namaObat, factoryInstance, "", "", rejectCt.hash, Number(_timestampRejected), "Tolak")
         recordHashFb(namaObat, factoryInstance, rejectCt.hash, Number(_timestampRejected), "Tolak")
         handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, rejectCt.hash)
@@ -3141,7 +3141,7 @@ function NieApprove() {
         });
       }
       
-      // contracts.nieManager.on('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
+      // contracts.nieManager.once('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
       //   updateObatFb(namaObat, factoryInstance, "", "", extendRejectNieCt.hash, Number(_timestampRejected), "Tolak")
       //   recordHashFb(namaObat, factoryInstance, extendRejectNieCt.hash, Number(_timestampRejected), "Tolak")
       //   handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, extendRejectNieCt.hash)

@@ -93,7 +93,7 @@ function CpotbExtendRequest() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -280,7 +280,8 @@ function CpotbExtendRequest() {
                               <li class="label label-2"><p>${docName}</p></li>
                               <li class="input input-2">
                                 <a href="http://localhost:8080/ipfs/${hash}" target="_blank">
-                                  Lihat dokumen ↗ (${hash})
+                                  ${hash}
+                                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                 </a>
                               </li>
                             </ul>
@@ -366,7 +367,7 @@ function CpotbExtendRequest() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Lihat dokumen ↗ ({hash})
+                        {hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                       </li>
                     </ul>
@@ -427,7 +428,7 @@ function CpotbExtendRequest() {
         });
       }
 
-      contracts.certificateManager.on('CertExtend',  (factoryAddr,  _timestamp) => {
+      contracts.certificateManager.once('CertExtend',  (factoryAddr,  _timestamp) => {
         updateCpotbFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaanMap[cpotbDataExt.jenisSediaan]);
         recordHashFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaanMap[cpotbDataExt.jenisSediaan])
         handleEventCpotbExtendRequested(factoryAddr, _timestamp, extendCertificateCt.hash, cpotbDataExt.cpotbNumber)

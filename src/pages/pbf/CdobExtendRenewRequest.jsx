@@ -73,7 +73,7 @@ function CdobExtendRenewRequest() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -356,7 +356,7 @@ function CdobExtendRenewRequest() {
       
       console.log(renewExtendCdobCt);
 
-      contracts.certificateManager.on("CertExtend", ( _factoryAddr, _timestampExtendRenew) => {
+      contracts.certificateManager.once("CertExtend", ( _factoryAddr, _timestampExtendRenew) => {
         updateCdobFb(renewExtendCdobCt.hash, Number(_timestampExtendRenew) )
         recordHashFb(renewExtendCdobCt.hash, Number(_timestampExtendRenew) )
         handleEventCdobRenewRequest(_timestampExtendRenew, renewExtendCdobCt.hash)

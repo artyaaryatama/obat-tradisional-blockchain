@@ -113,7 +113,7 @@ function CpotbApprove() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -2961,7 +2961,7 @@ function CpotbApprove() {
         });
       }
 
-      contracts.certificateManager.on('CertApproved',  (bpomInstance, bpomAddr, jenisSediaan, cpotbNumber, _timestampApprove) => {
+      contracts.certificateManager.once('CertApproved',  (bpomInstance, bpomAddr, jenisSediaan, cpotbNumber, _timestampApprove) => {
         updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], approveCt.hash, Number(_timestampApprove), cpotbNumber, cpotbIpfs, 'Setujui' );
         recordHashFb(jenisSediaanMap[jenisSediaan], approveCt.hash, Number(_timestampApprove), factoryInstanceName, 'Setujui')
         handleEventCpotb("Disetujui", jenisSediaanMap[jenisSediaan], cpotbNumber, _timestampApprove, approveCt.hash);
@@ -2984,7 +2984,7 @@ function CpotbApprove() {
         });
       }
       
-      contracts.certificateManager.on("CertExtendReject", (_instanceAddr, _rejectMsg, _timestampRejected) => {
+      contracts.certificateManager.once("CertExtendReject", (_instanceAddr, _rejectMsg, _timestampRejected) => {
         handleEventCpotb( "Tolak Perpanjangan", jenisSediaan, _rejectMsg, _timestampRejected, rejectCt.hash, certNumber);
         recordHashFb(jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), factoryInstanceName, 'Tolak Perpanjangan')
         updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), "", "", 'Tolak Perpanjangan');
@@ -3007,7 +3007,7 @@ function CpotbApprove() {
         });
       }
       
-      contracts.certificateManager.on("CertRejected", (_instanceName, _instanceAddr, _jenisSediaan, _timestampRejected, _rejectMsg) => {
+      contracts.certificateManager.once("CertRejected", (_instanceName, _instanceAddr, _jenisSediaan, _timestampRejected, _rejectMsg) => {
         handleEventCpotb( "Tidak Disetujui", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, _timestampRejected, rejectCt.hash, '');
         recordHashFb(jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), factoryInstanceName, 'Tolak')
         updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), "", "", 'Tolak');
@@ -3038,7 +3038,7 @@ function CpotbApprove() {
         });
       }
 
-      contracts.certificateManager.on('CertExtend',  (bpomAddr, _timestampApprove) => {
+      contracts.certificateManager.once('CertExtend',  (bpomAddr, _timestampApprove) => {
         updateCpotbFb(factoryName, jenisSediaan, approveExtendCt.hash, Number(_timestampApprove), '', cpotbIpfs, 'Perpanjangan');
         recordHashFb(jenisSediaan, approveExtendCt.hash, Number(_timestampApprove), factoryName, 'Perpanjangan')
         handleEventCpotb("Perpanjangan", bpomAddr, cpotbNumber, _timestampApprove, approveExtendCt.hash);

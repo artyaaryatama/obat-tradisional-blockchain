@@ -86,7 +86,7 @@ function CreateOrderRetailer() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -554,7 +554,7 @@ function CreateOrderRetailer() {
         });
       }
       
-      contracts.orderManagement.on("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.orderManagement.once("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
         updateBatchHistoryHash(factoryInstance, namaProduk, createOrderCt.hash, batchName, Number(_timestampOrder))
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, createOrderCt.hash);
       });

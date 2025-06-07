@@ -81,7 +81,7 @@ function NieExtendRenewRequest() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -218,7 +218,7 @@ function NieExtendRenewRequest() {
         });
       }
       
-      contracts.nieManager.on("NieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
+      contracts.nieManager.once("NieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
         createObatFb(userdata.instanceName, obatData.namaObat, extendRenewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
         recordHashFb(obatData.namaObat, extendRenewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
         handleEventNieRenewRequest( _factoryInstance, _factoryAddr,_timestampRenewRequestNie, extendRenewRequestNieCt.hash)

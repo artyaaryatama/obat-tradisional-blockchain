@@ -94,7 +94,7 @@ function CdobApprove() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -3335,7 +3335,7 @@ function CdobApprove() {
         });
       }
       
-      contracts.certificateManager.on('CertExtend',  (bpomAddr, timestampExtendApprove) => {
+      contracts.certificateManager.once('CertExtend',  (bpomAddr, timestampExtendApprove) => {
         updateCdobFb(pbfName, tpMap[tp], approveExtendCt.hash, Number(timestampExtendApprove), '', cdobIpfs, 'Perpanjangan')
         recordHashFb(pbfName, tpMap[tp], approveExtendCt.hash, Number(timestampExtendApprove), 'Perpanjangan')
         handleEventCdob("Diperpanjang", tpMap[tp], cdobNumber, timestampExtendApprove, approveExtendCt.hash);
@@ -3370,7 +3370,7 @@ function CdobApprove() {
         });
       }
       
-      contracts.certificateManager.on('CertApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
+      contracts.certificateManager.once('CertApproved',  (bpomInstance, bpomAddr, tipePermohonan, cdobNumber, timestampApprove) => {
         updateCdobFb(pbfName, tpMap[tp], approveCt.hash, Number(timestampApprove), cdobNumber, cdobIpfs, 'Setujui')
         recordHashFb(pbfName, tpMap[tp], approveCt.hash, Number(timestampApprove), 'Setujui')
         handleEventCdob("Disetujui", tpMap[tp], cdobNumber, timestampApprove, approveCt.hash, '');
@@ -3396,7 +3396,7 @@ function CdobApprove() {
 
       console.log(rejectCt);
       
-      contracts.certificateManager.on("CertExtendReject", (_instanceAddr, _rejectMsg, timestampRejected) => {
+      contracts.certificateManager.once("CertExtendReject", (_instanceAddr, _rejectMsg, timestampRejected) => {
         updateCdobFb(pbfName, tpMap[tipePermohonan], rejectCt.hash, Number(timestampRejected), "", "" , "Tolak Perpanjangan")
         recordHashFb(pbfName, tpMap[tipePermohonan], rejectCt.hash, Number(timestampRejected), "Tolak Perpanjangan")
         handleEventCdob( "Tolak Perpanjangan", tpMap[tipePermohonan], _rejectMsg, timestampRejected, rejectCt.hash, cdobNumber);
@@ -3420,7 +3420,7 @@ function CdobApprove() {
         });
       }
       
-      contracts.certificateManager.on("CertRejected", (_instanceName, _instanceAddr, _tipePermohonan, timestampRejected, _rejectMsg) => {
+      contracts.certificateManager.once("CertRejected", (_instanceName, _instanceAddr, _tipePermohonan, timestampRejected, _rejectMsg) => {
         updateCdobFb(pbfName, tpMap[tipePermohonan], rejectCt.hash, Number(timestampRejected), "", "" , "Tolak")
         recordHashFb(pbfName, tpMap[tipePermohonan], rejectCt.hash, Number(timestampRejected), "Tolak")
         handleEventCdob( "Tidak Disetujui",  tpMap[tipePermohonan], _rejectMsg, timestampRejected, rejectCt.hash, '');

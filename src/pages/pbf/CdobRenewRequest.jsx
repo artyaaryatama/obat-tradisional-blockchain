@@ -290,7 +290,7 @@ function CdobRenewRequest() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Lihat dokumen ↗ ({hash})
+                        {hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                       </li>
                     </ul>
@@ -356,7 +356,7 @@ function CdobRenewRequest() {
         });
       }
       
-      contracts.certificateManager.on("CertRenewRequest", (_userInstance, _userAddr, _timestampRenew) => {
+      contracts.certificateManager.once("CertRenewRequest", (_userInstance, _userAddr, _timestampRenew) => {
         writeCdobFb( renewRequestCdobCt.hash, Number(_timestampRenew) );
         recordHashFb(renewRequestCdobCt.hash, Number(_timestampRenew) );
         handleEventCdobRenewRequested(_timestampRenew, renewRequestCdobCt.hash);

@@ -121,7 +121,7 @@ function CreateObat() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -344,7 +344,7 @@ function CreateObat() {
           });
         }
   
-        contracts.obatTradisional.on("ObatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, _timestamp) => {
+        contracts.obatTradisional.once("ObatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, _timestamp) => {
           createObatFb(userdata.instanceName, namaProduk, createObatCt.hash, kemasanPrim, tipeObat, Number(_timestamp))
           recordHashFb(namaProduk, createObatCt.hash, Number(_timestamp))
           handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);

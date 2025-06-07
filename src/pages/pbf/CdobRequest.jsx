@@ -85,7 +85,7 @@ function CdobRequest() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -278,7 +278,7 @@ function CdobRequest() {
                                   <li class="input input-2">
                                   ${hash !== "Gagal Upload" 
                                     ? `<a href="http://localhost:8080/ipfs/${hash}" target="_blank">
-                                     Lihat dokumen ↗ (${hash})
+                                     ${hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                     </a>` 
   
   
@@ -433,7 +433,7 @@ function CdobRequest() {
         });
       }
       
-      contract.on("CertRequested", (_instanceName, _userAddr, _tipePermohonan, _timestampRequest) => {
+      contract.once("CertRequested", (_instanceName, _userAddr, _tipePermohonan, _timestampRequest) => {
         writeCdobFb(userdata.instanceName, tipePermohonan, requestCdobCt.hash, Number(_timestampRequest))
         recordHashFb(tipePermohonan, requestCdobCt.hash, Number(_timestampRequest))
         handleEventCdobRequested(_instanceName, _userAddr, _tipePermohonan, _timestampRequest, requestCdobCt.hash);

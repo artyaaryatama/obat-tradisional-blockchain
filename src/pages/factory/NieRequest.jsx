@@ -91,7 +91,7 @@ function NieRequest() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -226,7 +226,7 @@ function NieRequest() {
         });
       }
       
-      contracts.nieManager.on("NieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
+      contracts.nieManager.once("NieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
         updateObatFb(userdata.instanceName, obatData.namaObat, requestNieCt.hash, Number(_timestampRequestNie))
         recordHashFb(obatData.namaObat, requestNieCt.hash, Number(_timestampRequestNie))
         handleEventNieRequsted(obatData.namaObat, _factoryAddr, _factoryInstance,_timestampRequestNie, requestNieCt.hash)
@@ -364,7 +364,7 @@ function NieRequest() {
                                 <li class="input input-2">
                                 ${hash !== "Gagal Upload" 
                                   ? `<a href="http://localhost:8080/ipfs/${hash}" target="_blank">
-                                   Lihat dokumen ↗ (${hash})
+                                   ${hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                   </a>` 
 
 

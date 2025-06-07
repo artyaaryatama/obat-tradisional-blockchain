@@ -73,7 +73,7 @@ function CdobExtendRequest() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
+      window.ethereum.once("accountsChanged", () => {
         connectWallet();
         window.location.reload();
       });
@@ -262,7 +262,7 @@ function CdobExtendRequest() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Lihat dokumen ↗ ({docName})
+                        {hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                       </li>
                     </ul>
@@ -348,7 +348,7 @@ function CdobExtendRequest() {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          Lihat dokumen ↗ (${hash})
+                          {hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </a>
                       </li>
                     </ul>
@@ -406,7 +406,7 @@ function CdobExtendRequest() {
         });
       }
       console.log(extendCertificateCt);
-      contracts.certificateManager.on("CertExtend", ( _pbfAddr, _timestampExtendRenew) => {
+      contracts.certificateManager.once("CertExtend", ( _pbfAddr, _timestampExtendRenew) => {
         console.log(0)
         updateCdobFb(renewRequestNieCt.hash, Number(_timestampExtendRenew) )
         recordHashFb(renewRequestNieCt.hash, Number(_timestampExtendRenew) )
