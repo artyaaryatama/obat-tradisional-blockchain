@@ -567,7 +567,7 @@ function ManageCpotb() {
                         rel="noopener noreferrer"
                       >
                         {detailCpotb.cpotbNumber}
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                     </li>
                   </ul>
@@ -955,7 +955,7 @@ function ManageCpotb() {
                         rel="noopener noreferrer"
                       >
                         {detailCpotb.cpotbNumber}
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                     </li>
                   </ul>
@@ -1344,7 +1344,7 @@ function ManageCpotb() {
                         rel="noopener noreferrer"
                       >
                         {detailCpotb.cpotbNumber}
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                     </li>
                   </ul>
@@ -1766,7 +1766,7 @@ function ManageCpotb() {
                         rel="noopener noreferrer"
                       >
                         {detailCpotb.cpotbNumber}
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
 
                       :<p>{detailCpotb.cpotbNumber}</p>

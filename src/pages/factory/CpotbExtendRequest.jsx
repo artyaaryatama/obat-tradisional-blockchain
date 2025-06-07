@@ -262,7 +262,7 @@ function CpotbExtendRequest() {
                           <li class="input input-2"><p>${userdata.instanceName}</p></li>
                       </ul>
                       <ul>
-                          <li class="label label-2"><p>Nomor CPOTB</p></li>
+                          <li class="label label-2"><p>Sertifikat CPOTB</p></li>
                           <li class="input input-2">
                           <a
                             href={'http://localhost:3000/public/certificate/${cpotbDataExt.cpotbIpfs}'}
@@ -587,18 +587,20 @@ function CpotbExtendRequest() {
 
           <ul>
             <li className="label">
-              <label htmlFor="sertifikatCpotb">
+              <label >
                 Sertifikat CPOTB
               </label>
             </li>
             <li className="input">
-              <input
-                type="file"
-                accept="application/pdf"
-                name="sertifikatCpotb"
-                id="sertifikatCpotb"
-                required
-              />
+              
+              <a
+                href={`http://localhost:3000/public/certificate/${cpotbDataExt.cpotbIpfs}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {cpotbDataExt.cpotbNumber}
+                <i className="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
             </li>
           </ul>
 

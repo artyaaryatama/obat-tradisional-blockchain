@@ -426,7 +426,10 @@ function StockObatRetailer() {
           <div className="data-list">
             <div className="fade-container">
               <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
-                <Loader />
+                <div className="image">
+                  <Loader />
+
+                </div>
               </div>
 
               <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>

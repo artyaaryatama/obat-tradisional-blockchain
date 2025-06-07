@@ -17,10 +17,9 @@ function CdobRenewRequest() {
   const [contracts, setContracts] = useState({});
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
-  const idCdob = JSON.parse(sessionStorage.getItem('idCdob'))
-  const [tipePermohonan, setTipePermohonan] = useState('')
+  const cdobDataExt = JSON.parse(sessionStorage.getItem('cdobData'))
   const [dokumen, setDokumen] = useState({
-    ipfsSuratPermohonanCdob: null,
+    ipfsSuratPermohonanCdob: null, 
     ipfsBuktiPembayaran: null,
     ipfsSuratIzinCdob: null,
     ipfsDenahBangunanPbf: null,
@@ -31,13 +30,11 @@ function CdobRenewRequest() {
     ipfsSuratIzinApoteker: null,
     ipfsDokumenSelfAssesment: null
   });
-  // buat tampung ipfs baru
   const [updateFileIpfs, setUpdateFileIpfs] = useState([])
   const [loader, setLoader] = useState(false);
-  const [rejectMsg, setRejectMsg] = useState("");
-  const tipePermohonanMap = {
-    0: "ObatLain",
-    1: "CCP"
+  const tpMap = {
+    0: "Obat Lain",
+    1: "Cold Chain Product"
   };
   
   const today = new Date();
@@ -88,21 +85,11 @@ function CdobRenewRequest() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (!contracts.certificateManager) return;
-      
-      const idCdob = JSON.parse(sessionStorage.getItem('idCdob'));
-      if (!idCdob) return;
+      if (!contracts.certificateManager) return;      
 
-      const detailCdobCt = await contracts.certificateManager.getCdobDetails(idCdob);
-      const rejectMsgCt = await contracts.certificateManager.getRejectMsgCdob(idCdob);
-
-      const [cdobId, cdobNumber, tipePermohonan] = detailCdobCt[1]
+      const detailCdobCt = await contracts.certificateManager.getCdobDetails(cdobDataExt.idCdob);
       const [suratPermohonan, buktiPembayaran] = detailCdobCt[2];
       const [suratIzinCdob, denah, strukturOrganisasi, daftarPersonalia, daftarPeralatan, eksekutifQualityManagement, suratIzinApoteker, dokumenSelfAsses] = detailCdobCt[3];
-
-
-      setTipePermohonan(tipePermohonan)
-      setRejectMsg(rejectMsgCt);
       setDokumen({
         ipfsSuratPermohonanCdob: suratPermohonan,
         ipfsBuktiPembayaran: buktiPembayaran,
@@ -116,24 +103,33 @@ function CdobRenewRequest() {
         ipfsDokumenSelfAssesment: dokumenSelfAsses
       });
 
+      console.log(suratIzinCdob, denah, strukturOrganisasi, daftarPersonalia, daftarPeralatan, eksekutifQualityManagement, suratIzinApoteker, dokumenSelfAsses);
     };
     loadData();
   }, [contracts]);
 
-  const handleEventCdobRenewRequested = (pabrikInstance, pabrikAddr, timestamp, txHash) => {
+  const handleEventCdobRenewRequested = (timestamp, txHash) => {
 
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
-  
+
     MySwal.fire({
-      title: "Sukses mengajukan ulang CDOB",
+      title: "Sukses Mengajukan Ulang CDOB",
       html: (
         <div className='form-swal event'>
+          <ul>
+            <li className="label">
+              <p>Tipe Permohonan</p> 
+            </li>
+            <li className="input">
+            <p>{tpMap[cdobDataExt.tipePermohonan]}</p> 
+            </li>
+          </ul>
           <ul>
             <li className="label">
               <p>Nama Instansi PBF</p> 
             </li>
             <li className="input">
-              <p>{pabrikInstance}</p> 
+              <p>{userdata.instanceName}</p> 
             </li>
           </ul>
           <ul className='klaim'>
@@ -141,7 +137,7 @@ function CdobRenewRequest() {
               <p>Alamat Akun PBF (Pengguna)</p> 
             </li>
             <li className="input">
-              <p>{pabrikAddr}</p> 
+              <p>{userdata.address}</p> 
             </li>
           </ul>
           <ul>
@@ -179,6 +175,7 @@ function CdobRenewRequest() {
       }
     }).then((result) => {
       if (result.isConfirmed) {
+        sessionStorage.removeItem('cdobData')
         navigate('/cdob')
       }
     });
@@ -278,6 +275,10 @@ function CdobRenewRequest() {
             <div className="row row--obat table-like">
               <div class="col">
                 <div class="doku">
+                  <ul>
+                    <li className="label"><label>Alasan Penolakan CDOB</label></li>
+                    <li className="input reject"><p>{cdobDataExt.rejectMsg}</p></li>
+                  </ul>
                   {Object.entries(uploadedHashes).map(([key, hash]) => (
                     <ul key={key}>
                       <li class="label label-2">
@@ -289,7 +290,7 @@ function CdobRenewRequest() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Lihat dokumen ↗ (${hash})
+                        Lihat dokumen ↗ ({hash})
                       </a>
                       </li>
                     </ul>
@@ -336,9 +337,11 @@ function CdobRenewRequest() {
   };
 
   const renewRequestCdob = async (hashDocs) => {
+    const tipeP = tpMap[cdobDataExt.tipePermohonan]
+    console.log(tipeP);
     try {
       const renewRequestCdobCt = await contracts.certificateManager.renewCdob(
-        [idCdob, userdata.name, userdata.instanceName, userdata.address], 
+        [cdobDataExt.idCdob, userdata.name, userdata.instanceName, userdata.address], 
         [hashDocs.ipfsSuratPermohonanCdob, hashDocs.ipfsBuktiPembayaran],
         [hashDocs.ipfsSuratIzinCdob, hashDocs.ipfsDenahBangunanPbf, hashDocs.ipfsStrukturOrganisasi, hashDocs.ipfsDaftarPersonalia, hashDocs.ipfsDaftarPeralatan, hashDocs.ipfsEksekutifQualityManagement, hashDocs.ipfsSuratIzinApoteker, hashDocs.ipfsDokumenSelfAssesment]
       );
@@ -353,10 +356,10 @@ function CdobRenewRequest() {
         });
       }
       
-      contracts.certificateManager.on("CertRenewRequest", (_instance, _userAddr, _timestampRenew) => {
-        writeCdobFb( userdata.instanceName, tipePermohonan, renewRequestCdobCt.hash, Number(_timestampRenew) );
-        recordHashFb(tipePermohonan, renewRequestCdobCt.hash, Number(_timestampRenew) );
-        handleEventCdobRenewRequested(_instance, _userAddr, _timestampRenew, renewRequestCdobCt.hash);
+      contracts.certificateManager.on("CertRenewRequest", (_userInstance, _userAddr, _timestampRenew) => {
+        writeCdobFb( renewRequestCdobCt.hash, Number(_timestampRenew) );
+        recordHashFb(renewRequestCdobCt.hash, Number(_timestampRenew) );
+        handleEventCdobRenewRequested(_timestampRenew, renewRequestCdobCt.hash);
       });
   
     } catch (err) {
@@ -364,17 +367,12 @@ function CdobRenewRequest() {
     }
   }
 
-  const writeCdobFb = async (instanceName, tipePermohonan, requestCdobCtHash, timestamp) => {
+  const writeCdobFb = async ( requestCdobCtHash, timestamp) => {
 
-    const tp = {
-      0n: 'Obat Lain',
-      1n: 'Cold Chain Product'
-    };
-
-    const tipeP = tp[tipePermohonan]
+    const tipeP = tpMap[cdobDataExt.tipePermohonan]
 
     try {
-      const docRef = doc(db, 'cdob_list', instanceName);
+      const docRef = doc(db, 'cdob_list', userdata.instanceName);
 
       await setDoc(docRef, {
         [`${tipeP}`]: {
@@ -388,14 +386,10 @@ function CdobRenewRequest() {
     }
   };
 
-  const recordHashFb = async(tp, txHash, timestamp) => {
+  const recordHashFb = async(txHash, timestamp) => {
 
-    const tpMap = {
-      0n: 'Obat Lain',
-      1n: 'Cold Chain Product'
-    };
-
-    const tipeP = tpMap[tp]
+    const tipeP = tpMap[cdobDataExt.tipePermohonan]
+    console.log(tipeP);
 
     try {
       const collectionName = `pengajuan_cdob_${userdata.instanceName}`
@@ -427,7 +421,7 @@ function CdobRenewRequest() {
           </ul>
           <ul>
             <li className="label"><label>Alasan Penolakan CDOB</label></li>
-            <li className="input reject"><p>{rejectMsg}</p></li>
+            <li className="input reject"><p>{cdobDataExt.rejectMsg}</p></li>
           </ul>
 
           <div className="doku">

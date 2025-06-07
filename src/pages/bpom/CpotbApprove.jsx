@@ -1877,9 +1877,6 @@ function CpotbApprove() {
                         </li>
                       </ul>
                     </div>
-              
-                      
-
                     <div className='col doku'>
                       <h5>Dokumen Re-Sertifikasi CPOTB</h5>
                         <ul>
@@ -2967,7 +2964,7 @@ function CpotbApprove() {
       contracts.certificateManager.on('CertApproved',  (bpomInstance, bpomAddr, jenisSediaan, cpotbNumber, _timestampApprove) => {
         updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], approveCt.hash, Number(_timestampApprove), cpotbNumber, cpotbIpfs, 'Setujui' );
         recordHashFb(jenisSediaanMap[jenisSediaan], approveCt.hash, Number(_timestampApprove), factoryInstanceName, 'Setujui')
-        handleEventCpotb("Disetujui", bpomAddr, bpomInstance, jenisSediaan, cpotbNumber, _timestampApprove, approveCt.hash, '');
+        handleEventCpotb("Disetujui", jenisSediaanMap[jenisSediaan], cpotbNumber, _timestampApprove, approveCt.hash);
       });
     } catch (error) {
       errAlert(error, "Can't Approve CPOTB")
@@ -3077,8 +3074,7 @@ function CpotbApprove() {
           [`${jenisSediaan}.extendedRejectedHash`]: cpotbHash,
           [`${jenisSediaan}.extendedRejectedTimestamp`]: timestamp, 
           [`${jenisSediaan}.bpomInstance`]: userdata.instanceName, 
-          [`${jenisSediaan}.status`]: 6, 
-          [`${jenisSediaan}.ipfsCid`]: cpotbIpfs
+          [`${jenisSediaan}.status`]: 6
         });
       } 
       else {
@@ -3161,7 +3157,10 @@ function CpotbApprove() {
           <div className="data-list">
             <div className="fade-container">
               <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
-                <Loader />
+                <div className="image">
+                  <Loader />
+
+                </div>
               </div>
 
               <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>

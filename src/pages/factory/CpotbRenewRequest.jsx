@@ -132,7 +132,7 @@ function CpotbRenewRequest() {
     loadData();
   }, [contracts]);
 
-  const handleEventCpotbRenewRequested = (pabrikInstance, pabrikAddr, timestamp, txHash) => {
+  const handleEventCpotbRenewRequested = (timestamp, txHash) => {
 
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
   
@@ -142,10 +142,26 @@ function CpotbRenewRequest() {
         <div className='form-swal event'>
           <ul>
             <li className="label">
+              <p>Nomor CPOTB</p> 
+            </li>
+            <li className="input">
+              <p>{cpotbData.cpotbNumber}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Jenis Sediaan</p> 
+            </li>
+            <li className="input">
+              <p>{cpotbData.jenisSediaan}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
               <p>Nama Instansi Pabrik</p> 
             </li>
             <li className="input">
-              <p>{pabrikInstance}</p> 
+              <p>{userdata.instanceName}</p> 
             </li>
           </ul>
           <ul className='klaim'>
@@ -153,7 +169,7 @@ function CpotbRenewRequest() {
               <p>Alamat Akun Pabrik (Pengguna)</p> 
             </li>
             <li className="input">
-              <p>{pabrikAddr}</p> 
+              <p>{userdata.address}</p> 
             </li>
           </ul>
           <ul>

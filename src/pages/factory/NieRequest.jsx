@@ -438,7 +438,7 @@ function NieRequest() {
       "Data Pendukung Keamanan": dataPendukungKeamanan
     };
     
-    const uploadedHashes = {};
+    let uploadedHashes = {};
 
     const fileEntries = Object.entries(files).filter(([_, file]) => file);
 

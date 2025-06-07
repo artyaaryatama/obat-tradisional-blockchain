@@ -299,7 +299,7 @@ function CdobRequest() {
           cancelButtonText: "Batal",
           allowOutsideClick: false,
           customClass: {
-            htmlContainer: 'scrollable-modal'
+            htmlContainer: 'scrollable-modal-small'
           },
         }).then((result) => {
             if (result.isConfirmed) {
