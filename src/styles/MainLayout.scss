@@ -1,5 +1,6 @@
-@import './main.scss';
-@import 'mixin';
+@use './main.scss' as *;
+@use 'mixin' as *;
+@use 'sass:color';
 
 .Layout-Menu{
   .title-menu{
@@ -354,7 +355,7 @@
               @include inputForm($black);
               &:hover{
                 cursor: pointer;
-                background-color: darken(#f2f3f59e, 14%);
+                background-color: color.adjust(#f2f3f59e, $lightness:-14%);
               }
             }
             
