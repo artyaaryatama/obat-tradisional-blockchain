@@ -318,6 +318,11 @@ function RegisterPage() {
     })
 
     try {
+
+      contract.once("UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
+        handleEventUserRegister(_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp, registCt.hash);
+      });
+
       const nameUpperCase = name.toUpperCase()
       let registCt;
       if(factoryType){
@@ -335,10 +340,6 @@ function RegisterPage() {
         });
         
       }
-
-      contract.once("UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
-        handleEventUserRegister(_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp, registCt.hash);
-      });
       
     } catch (err) {
       setLoader(false)

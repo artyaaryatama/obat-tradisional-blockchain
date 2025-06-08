@@ -3060,6 +3060,13 @@ function NieApprove() {
 
     console.log(id, nieNumber, userdata.instanceName);
     try {
+
+      contracts.nieManager.once('NieApprovedExtendRequest',  (_instanceAddr, _timestampApprove) => {
+        updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, extendApproveNieCt.hash, Number(_timestampApprove),  'Perpanjangan')
+        recordHashFb(namaObat, factoryInstance, extendApproveNieCt.hash, Number(_timestampApprove),  'Perpanjangan')
+        handleEventNieApproved("Extend", namaObat, _instanceAddr, userdata.instanceName, nieNumber, _timestampApprove, extendApproveNieCt.hash)
+      });
+
       const extendApproveNieCt =  await contracts.nieManager.approveExtendRequestNie(id, nieIpfs)
 
       if(extendApproveNieCt){
@@ -3069,11 +3076,6 @@ function NieApprove() {
         });
       }
       
-      contracts.nieManager.once('NieApprovedExtendRequest',  (_instanceAddr, _timestampApprove) => {
-        updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, extendApproveNieCt.hash, Number(_timestampApprove),  'Perpanjangan')
-        recordHashFb(namaObat, factoryInstance, extendApproveNieCt.hash, Number(_timestampApprove),  'Perpanjangan')
-        handleEventNieApproved("Extend", namaObat, _instanceAddr, userdata.instanceName, nieNumber, _timestampApprove, extendApproveNieCt.hash)
-      });
 
     } catch (error) {
       errAlert(error, "Gagal menyetujui perepanjagan pengajuan NIE");
@@ -3084,6 +3086,13 @@ function NieApprove() {
 
     console.log(id, nieNumber, userdata.instanceName);
     try {
+      
+      contracts.nieManager.once('NieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
+        updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, approveNieCt.hash, Number(_timestampApprove),  'Setujui')
+        recordHashFb(namaObat, factoryInstance, approveNieCt.hash, Number(_timestampApprove),  'Setujui')
+        handleEventNieApproved("Approved", namaObat, _instanceAddr, _instanceName, _nieNumber, _timestampApprove, approveNieCt.hash)
+      });
+
       const approveNieCt =  await contracts.nieManager.approveNie(id, nieNumber, userdata.instanceName, nieIpfs)
 
       if(approveNieCt){
@@ -3092,12 +3101,6 @@ function NieApprove() {
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-      
-      contracts.nieManager.once('NieApproved',  (_instanceName, _instanceAddr, _nieNumber, _timestampApprove) => {
-        updateObatFb(namaObat, factoryInstance, nieNumber, nieIpfs, approveNieCt.hash, Number(_timestampApprove),  'Setujui')
-        recordHashFb(namaObat, factoryInstance, approveNieCt.hash, Number(_timestampApprove),  'Setujui')
-        handleEventNieApproved("Approved", namaObat, _instanceAddr, _instanceName, _nieNumber, _timestampApprove, approveNieCt.hash)
-      });
 
     } catch (error) {
       errAlert(error, "Gagal menyetujui pengajuan NIE");
@@ -3107,6 +3110,13 @@ function NieApprove() {
   const rejectNie = async(id, rejectMsg, namaObat, factoryInstance) => {
 
     try {
+
+      contracts.nieManager.once('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
+        updateObatFb(namaObat, factoryInstance, "", "", rejectCt.hash, Number(_timestampRejected), "Tolak")
+        recordHashFb(namaObat, factoryInstance, rejectCt.hash, Number(_timestampRejected), "Tolak")
+        handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, rejectCt.hash)
+      });
+
       console.log(id, userdata.instanceName, rejectMsg);
       const rejectCt = await contracts.nieManager.rejectNie(id, userdata.instanceName, rejectMsg);
 
@@ -3117,11 +3127,6 @@ function NieApprove() {
         });
       }
       
-      contracts.nieManager.once('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
-        updateObatFb(namaObat, factoryInstance, "", "", rejectCt.hash, Number(_timestampRejected), "Tolak")
-        recordHashFb(namaObat, factoryInstance, rejectCt.hash, Number(_timestampRejected), "Tolak")
-        handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, rejectCt.hash)
-      });
 
     } catch (error) {
       errAlert(error, "Can't Reject NIE");
@@ -3131,6 +3136,13 @@ function NieApprove() {
   const extendRejectNie = async(id, rejectMsg, namaObat, factoryInstance) => {
 
     try {
+      
+      // contracts.nieManager.once('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
+      //   updateObatFb(namaObat, factoryInstance, "", "", extendRejectNieCt.hash, Number(_timestampRejected), "Tolak")
+      //   recordHashFb(namaObat, factoryInstance, extendRejectNieCt.hash, Number(_timestampRejected), "Tolak")
+      //   handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, extendRejectNieCt.hash)
+      // });
+
       console.log(id, userdata.instanceName, rejectMsg);
       const extendRejectNieCt = await contracts.nieManager.rejectExtendRequestNie(id, rejectMsg);
 
@@ -3141,11 +3153,6 @@ function NieApprove() {
         });
       }
       
-      // contracts.nieManager.once('NieRejected',  (_instanceName, _instanceAddr, _rejectMsg, _timestampRejected) => {
-      //   updateObatFb(namaObat, factoryInstance, "", "", extendRejectNieCt.hash, Number(_timestampRejected), "Tolak")
-      //   recordHashFb(namaObat, factoryInstance, extendRejectNieCt.hash, Number(_timestampRejected), "Tolak")
-      //   handleEventNieApproved("Rejected", namaObat, _instanceAddr, _instanceName, _rejectMsg, _timestampRejected, extendRejectNieCt.hash)
-      // });
 
     } catch (error) {
       errAlert(error, "Can't Reject NIE");

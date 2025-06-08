@@ -2947,6 +2947,12 @@ function CpotbApprove() {
 
     try {
       
+      contracts.certificateManager.once('CertApproved',  (bpomInstance, bpomAddr, jenisSediaan, cpotbNumber, _timestampApprove) => {
+        updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], approveCt.hash, Number(_timestampApprove), cpotbNumber, cpotbIpfs, 'Setujui' );
+        recordHashFb(jenisSediaanMap[jenisSediaan], approveCt.hash, Number(_timestampApprove), factoryInstanceName, 'Setujui')
+        handleEventCpotb("Disetujui", jenisSediaanMap[jenisSediaan], cpotbNumber, _timestampApprove, approveCt.hash);
+      });
+      
       const approveCt = await contracts.certificateManager.approveCpotb(
         [certNumber, certTd, userdata.name, userdata.instanceName, userdata.address], 
         cpotbIpfs,
@@ -2960,12 +2966,6 @@ function CpotbApprove() {
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-
-      contracts.certificateManager.once('CertApproved',  (bpomInstance, bpomAddr, jenisSediaan, cpotbNumber, _timestampApprove) => {
-        updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], approveCt.hash, Number(_timestampApprove), cpotbNumber, cpotbIpfs, 'Setujui' );
-        recordHashFb(jenisSediaanMap[jenisSediaan], approveCt.hash, Number(_timestampApprove), factoryInstanceName, 'Setujui')
-        handleEventCpotb("Disetujui", jenisSediaanMap[jenisSediaan], cpotbNumber, _timestampApprove, approveCt.hash);
-      });
     } catch (error) {
       errAlert(error, "Can't Approve CPOTB")
     }
@@ -2975,6 +2975,13 @@ function CpotbApprove() {
     console.log(id);
 
     try {
+      
+      contracts.certificateManager.once("CertExtendReject", (_instanceAddr, _rejectMsg, _timestampRejected) => {
+        handleEventCpotb( "Tolak Perpanjangan", jenisSediaan, _rejectMsg, _timestampRejected, rejectCt.hash, certNumber);
+        recordHashFb(jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), factoryInstanceName, 'Tolak Perpanjangan')
+        updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), "", "", 'Tolak Perpanjangan');
+      });
+
       const rejectCt = await contracts.certificateManager.rejectExtendCpotb( id, rejectMsg);
 
       if(rejectCt){
@@ -2983,12 +2990,6 @@ function CpotbApprove() {
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-      
-      contracts.certificateManager.once("CertExtendReject", (_instanceAddr, _rejectMsg, _timestampRejected) => {
-        handleEventCpotb( "Tolak Perpanjangan", jenisSediaan, _rejectMsg, _timestampRejected, rejectCt.hash, certNumber);
-        recordHashFb(jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), factoryInstanceName, 'Tolak Perpanjangan')
-        updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), "", "", 'Tolak Perpanjangan');
-      });
     } catch (error) {
       errAlert(error, `Gagal menolak pengajuan CPOTB ${factoryInstanceName} dengan Jenis Sediaan ${jenisSediaanMap[jenisSediaan]}`)
     }
@@ -2998,6 +2999,13 @@ function CpotbApprove() {
     console.log(id);
 
     try {
+      
+      contracts.certificateManager.once("CertRejected", (_instanceName, _instanceAddr, _jenisSediaan, _timestampRejected, _rejectMsg) => {
+        handleEventCpotb( "Tidak Disetujui", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, _timestampRejected, rejectCt.hash, '');
+        recordHashFb(jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), factoryInstanceName, 'Tolak')
+        updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), "", "", 'Tolak');
+      });
+
       const rejectCt = await contracts.certificateManager.rejectCpotb( id, rejectMsg, userdata.name, userdata.instanceName, jenisSediaan);
 
       if(rejectCt){
@@ -3007,11 +3015,6 @@ function CpotbApprove() {
         });
       }
       
-      contracts.certificateManager.once("CertRejected", (_instanceName, _instanceAddr, _jenisSediaan, _timestampRejected, _rejectMsg) => {
-        handleEventCpotb( "Tidak Disetujui", _instanceAddr, _instanceName, _jenisSediaan, _rejectMsg, _timestampRejected, rejectCt.hash, '');
-        recordHashFb(jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), factoryInstanceName, 'Tolak')
-        updateCpotbFb( factoryInstanceName, jenisSediaanMap[jenisSediaan], rejectCt.hash, Number(_timestampRejected), "", "", 'Tolak');
-      });
     } catch (error) {
       errAlert(error, `Gagal menolak pengajuan CPOTB ${factoryInstanceName} dengan Jenis Sediaan ${jenisSediaan}`)
     }
@@ -3022,6 +3025,12 @@ function CpotbApprove() {
     console.log(certTd, cpotbIpfs);
 
     try {
+
+      contracts.certificateManager.once('CertExtend',  (bpomAddr, _timestampApprove) => {
+        updateCpotbFb(factoryName, jenisSediaan, approveExtendCt.hash, Number(_timestampApprove), '', cpotbIpfs, 'Perpanjangan');
+        recordHashFb(jenisSediaan, approveExtendCt.hash, Number(_timestampApprove), factoryName, 'Perpanjangan')
+        handleEventCpotb("Perpanjangan", bpomAddr, cpotbNumber, _timestampApprove, approveExtendCt.hash);
+      });
       
       const approveExtendCt = await contracts.certificateManager.approveExtendCpotb(
         certTd, 
@@ -3037,12 +3046,6 @@ function CpotbApprove() {
           text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
         });
       }
-
-      contracts.certificateManager.once('CertExtend',  (bpomAddr, _timestampApprove) => {
-        updateCpotbFb(factoryName, jenisSediaan, approveExtendCt.hash, Number(_timestampApprove), '', cpotbIpfs, 'Perpanjangan');
-        recordHashFb(jenisSediaan, approveExtendCt.hash, Number(_timestampApprove), factoryName, 'Perpanjangan')
-        handleEventCpotb("Perpanjangan", bpomAddr, cpotbNumber, _timestampApprove, approveExtendCt.hash);
-      });
     } catch (error) {
       errAlert(error, `Gagal menyetujui pengajuan CPOTB ${factoryName} dengan Jenis Sediaan ${jenisSediaanMap[jenisSediaan]}`)
     }
