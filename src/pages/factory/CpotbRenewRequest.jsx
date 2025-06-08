@@ -29,33 +29,6 @@ function CpotbRenewRequest() {
   const [updateFileIpfs, setUpdateFileIpfs] = useState([])
   const [loader, setLoader] = useState(false);
   const [rejectMsg, setRejectMsg] = useState("");
-  const jenisSediaanMap = {
-    0n: "Cairan Obat Dalam",
-    1n: "Rajangan",
-    2n: "Serbuk",
-    3n: "Serbuk Instan",
-    4n: "Efervesen",
-    5n: "Pil",
-    6n: "Kapsul",
-    7n: "Kapsul Lunak",
-    8n: "Tablet atau Kaplet",
-    9n: "Granul",
-    10n: "Pastiles",
-    11n: "Dodol atau Jenang",
-    12n: "Film Strip",
-    13n: "Cairan Obat Luar",
-    14n: "Losio",
-    15n: "Parem",
-    16n: "Salep",
-    17n: "Krim",
-    18n: "Gel",
-    19n: "Serbuk Obat Luar",
-    20n: "Tapel",
-    21n: "Pilis",
-    22n: "Plaster atau Koyok",
-    23n: "Supositoria",
-    24n: "Rajangan Obat Luar"
-  };
   
   const today = new Date();
   const options = {
@@ -142,14 +115,6 @@ function CpotbRenewRequest() {
         <div className='form-swal event'>
           <ul>
             <li className="label">
-              <p>Nomor CPOTB</p> 
-            </li>
-            <li className="input">
-              <p>{cpotbData.cpotbNumber}</p> 
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
               <p>Jenis Sediaan</p> 
             </li>
             <li className="input">
@@ -207,6 +172,7 @@ function CpotbRenewRequest() {
       }
     }).then((result) => {
       if (result.isConfirmed) {
+        sessionStorage.removeItem('cpotbData')
         navigate('/cpotb')
       }
     });
@@ -300,20 +266,28 @@ function CpotbRenewRequest() {
         html: (
           <div className='form-swal'>
             <div className="row row--obat table-like">
-              <div class="col">
-                <div class="doku">
+              <div className="col">
+                <div className="doku">
+                  <ul>
+                    <li className="label">
+                      <p>Alasan Penolakan</p> 
+                    </li>
+                    <li className="input">
+                      <p>{cpotbData.rejectMsg}</p> 
+                    </li>
+                  </ul>
                   {Object.entries(uploadedHashes).map(([key, hash]) => (
                     <ul key={key}>
-                      <li class="label label-2">
+                      <li className="label label-2">
                         <p>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</p>
                       </li>
-                      <li class="input input-2">
+                      <li className="input input-2">
                       <a
                         href={`http://localhost:8080/ipfs/${hash}`}  
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        {hash} <i className="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                       </li>
                     </ul>
@@ -362,11 +336,11 @@ function CpotbRenewRequest() {
   };
 
   const renewRequestCpotb = async (hashDocs) => {
+    console.log(        
+      [cpotbData, userdata.name, userdata.instanceName, userdata.address],
+      [hashDocs.ipfsSuratPermohonanCpotb, hashDocs.ipfsBuktiPembayaranNegaraBukanPajak, hashDocs.ipfsSuratKomitmen],
+      [hashDocs.ipfsDenahBangunan, hashDocs.ipfsSistemMutu]);
     try {
-      console.log(        
-        [cpotbData.idCpotb, userdata.name, userdata.instanceName, userdata.address],
-        [hashDocs.ipfsSuratPermohonanCpotb, hashDocs.ipfsBuktiPembayaranNegaraBukanPajak, hashDocs.ipfsSuratKomitmen],
-        [hashDocs.ipfsDenahBangunan, hashDocs.ipfsSistemMutu]);
       const renewRequestCpotbCt = await contracts.certificateManager.renewCpotb(
         [cpotbData.idCpotb, userdata.name, userdata.instanceName, userdata.address],
         [hashDocs.ipfsSuratPermohonanCpotb, hashDocs.ipfsBuktiPembayaranNegaraBukanPajak, hashDocs.ipfsSuratKomitmen],
@@ -384,9 +358,9 @@ function CpotbRenewRequest() {
       }
       
       contracts.certificateManager.once("CertRenewRequest", (_isntanceName, _instanceAddr, _timestampRenew) => {
-        writeCpotbFb( userdata.instanceName, jenisSediaanMap[parseInt(cpotbData.jenisSediaan)], renewRequestCpotbCt.hash, Number(_timestampRenew) );
-        recordHashFb(jenisSediaanMap[parseInt(cpotbData.jenisSediaan)], renewRequestCpotbCt.hash, Number(_timestampRenew) );
-        handleEventCpotbRenewRequested(_isntanceName, _instanceAddr, _timestampRenew, renewRequestCpotbCt.hash);
+        writeCpotbFb( _isntanceName, cpotbData.jenisSediaan, renewRequestCpotbCt.hash, Number(_timestampRenew) );
+        recordHashFb(cpotbData.jenisSediaan, renewRequestCpotbCt.hash, Number(_timestampRenew) );
+        handleEventCpotbRenewRequested( _timestampRenew, renewRequestCpotbCt.hash);
       });
   
     } catch (err) {

@@ -22,7 +22,7 @@ function NieExtendRequest() {
   const [contracts, setContracts] = useState({});
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata'))
-  const obatData = JSON.parse(sessionStorage.getItem('obatDataExt'))
+  const obatData = JSON.parse(sessionStorage.getItem('obatData'))
   const [dokumenNie, setDokumenNie] = useState({
     ipfsFormulaProdukMetrik: null,
     ipfsSkPersetujuanVariasi: null,
@@ -383,43 +383,48 @@ function NieExtendRequest() {
 
     const { isConfirmed } = await MySwal.fire({
       title: `Konfirmasi Perpanjangan CPOTB`,
-      html: `
-          <div class="form-swal">
-              <div class="row row--obat table-like">
-                  <div class="col doku">
-                      <ul>
-                          <li class="label label-2"><p>Nama Pabrik</p></li>
-                          <li class="input input-2"><p>${userdata.instanceName}</p></li>
-                      </ul>
-                      <ul>
-                          <li class="label label-2"><p>Nomor CPOTB</p></li>
-                          <li class="input input-2">
-                          <a
-                            href={'http://localhost:3000/public/certificate/${obatData.nieIpfs}'}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            ${obatData.nieNumber}
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                          </a>
-                          </li>
-                      </ul>
-                      <div class="doku">
-                          ${Object.entries(uploaded).map(([docName, hash]) => `
-                            <ul>
-                              <li class="label label-2"><p>${docName}</p></li>
-                              <li class="input input-2">
-                                <a href="http://localhost:8080/ipfs/${hash}" target="_blank">
-                                  ${hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                                </a>
-                              </li>
-                            </ul>
-                          `).join("")}
-                      </div>
-                  </div>
+      html: (
+          <div className='form-swal'>
+            <div className="row row--obat table-like">
+              <div className="col doku">
+                
+                <ul>
+                  <li className="label label-2"><p>Nama PBF</p></li>
+                  <li className="input input-2"><p>{userdata.instanceName}</p></li>
+                </ul>
+                <ul>
+                  <li className="label label-2"><p>Nomor NIE</p></li>
+                  <li className="input input-2">
+                    <a
+                      href={`http://localhost:3000/public/certificate/${obatData.nieIpfs}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {obatData.nieNumber}
+                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                  </li>
+                </ul>
+                  {Object.entries(uploaded).map(([docName, hash]) => (
+                    <ul key={docName}>
+                      <li className="label label-2">
+                        <p>{docName.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</p>
+                      </li>
+                      <li className="input input-2">
+                      <a
+                        href={`http://localhost:8080/ipfs/${hash}`}  
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {hash} <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
+                      </li>
+                    </ul>
+                  ))}
               </div>
+            </div>
           </div>
-      `,
+        ),
       width: '900',
       showCancelButton: true,
       confirmButtonText: 'Konfirmasi',

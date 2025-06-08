@@ -224,7 +224,7 @@ const JenisSediaanTooltip = ({ jenisSediaan }) => {
     >
       <span style={{ cursor: 'pointer', textDecoration: 'underline' }}>
         <i 
-          class="fa-solid fa-circle-info"
+          className="fa-solid fa-circle-info"
           style={{ color: '#868a90', marginLeft: '10px', fontSize: '18px' }}
         ></i>
       </span>

@@ -18,7 +18,7 @@ function CpotbExtendRenewRequest() {
   const [contracts, setContracts] = useState({});
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
-  const cpotbDataExt = JSON.parse(sessionStorage.getItem('cpotbDataExt'));
+  const cpotbDataExt = JSON.parse(sessionStorage.getItem('cpotbData'));
 
   const [dokumen, setDokumen] = useState({
     ipfsSuratPermohonanCpotb: null,
@@ -75,6 +75,87 @@ function CpotbExtendRenewRequest() {
     loadDetails();
   }, [contracts]);
 
+  const handleEventCpotbRenewRequested = (timestamp, txHash) => {
+
+    const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
+  
+    MySwal.fire({
+      title: "Sukses mengajukan ulang perpanjangan CPOTB",
+      html: (
+        <div className='form-swal event'>
+          <ul>
+            <li className="label">
+              <p>Nomor CPOTB</p> 
+            </li>
+            <li className="input">
+              <p>{cpotbData.cpotbNumber}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Jenis Sediaan</p> 
+            </li>
+            <li className="input">
+              <p>{cpotbData.jenisSediaan}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Nama Instansi Pabrik</p> 
+            </li>
+            <li className="input">
+              <p>{userdata.instanceName}</p> 
+            </li>
+          </ul>
+          <ul className='klaim'>
+            <li className="label">
+              <p>Alamat Akun Pabrik (Pengguna)</p> 
+            </li>
+            <li className="input">
+              <p>{userdata.address}</p> 
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <p>Tanggal Pengajuan Ulang</p> 
+            </li>
+            <li className="input">
+              <p>{formattedTimestamp}</p> 
+            </li>
+          </ul>
+          <ul className="txHash">
+            <li className="label">
+              <p>Hash Transaksi</p>
+            </li>
+            <li className="input">
+              <a
+                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Lihat transaksi di Etherscan
+              </a>
+            </li>
+          </ul>
+        </div>
+      ),
+      icon: 'success',
+      width: '560',
+      showCancelButton: false,
+      confirmButtonText: 'Oke',
+      allowOutsideClick: true,
+      didOpen: () => {
+        const actions = Swal.getActions();
+        actions.style.justifyContent = "center";
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        sessionStorage.removeItem('cpotbData')
+        navigate('/cpotb')
+      }
+    });
+  }
+
   const handleFileChange = (e, key) => {
     const file = e.target.files[0];
     if (!file || file.type !== "application/pdf") {
@@ -123,18 +204,63 @@ function CpotbExtendRenewRequest() {
       ['Dokumen CAPA', finalDocs.ipfsDokumenCapa],
     ].map(([label, hash]) => `
       <ul>
-        <li class="label label-2"><p>${label}</p></li>
-        <li class="input input-2">
+        <li className="label label-2"><p>${label}</p></li>
+        <li className="input input-2">
           <a href="http://localhost:8080/ipfs/${hash}" target="_blank" rel="noopener noreferrer">
-            Lihat ${label} <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            Lihat ${label} <i className="fa-solid fa-arrow-up-right-from-square"></i></a>
         </li>
       </ul>
     `).join('');
 
     const { isConfirmed } = await MySwal.fire({
-      title: 'Konfirmasi Perpanjangan CPOTB',
-      html: `<div class="form-swal"><div class="row row--obat table-like"><div class="col doku">${htmlList}</div></div></div>`,
-      width: '900', showCancelButton: true, confirmButtonText: 'Konfirmasi', cancelButtonText: 'Batal', allowOutsideClick: false
+        title: 'Dokumen Pengajuan Ulang Perpanjangan CPOTB',
+        html: (
+          <div className='form-swal'>
+            <div className="row row--obat table-like">
+              <div className="col">
+                <div className="doku">
+                  <ul>
+                    <li className="label">
+                      <p>Nomor CPOTB</p> 
+                    </li>
+                    <li className="input">
+                      <a
+                        href={`http://localhost:3000/public/certificate/${cpotbDataExt.cpotbIpfs}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {cpotbDataExt.cpotbNumber}
+                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
+                    </li>
+                  </ul>
+                  {Object.entries(uploaded).map(([key, hash]) => (
+                    <ul key={key}>
+                      <li className="label label-2">
+                        <p>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</p>
+                      </li>
+                      <li className="input input-2">
+                      <a
+                        href={`http://localhost:8080/ipfs/${hash}`}  
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {hash} <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
+                      </li>
+                    </ul>
+                  ))}
+  
+                </div>
+              </div>
+            </div>
+          </div>
+        ),
+        width: '900',
+        showCancelButton: true,
+        confirmButtonText: 'Konfirmasi Pengajuan Ulang Perpanjangan CPOTB',
+        cancelButtonText: 'Batal',
+        allowOutsideClick: false,
     });
 
     if (!isConfirmed) { setLoader(false); return; }
@@ -159,7 +285,10 @@ function CpotbExtendRenewRequest() {
       ipfsCpotb,
       ipfsDokumenCapa
     } = hashDocs;
+
     try {
+
+
       const tx = await contracts.certificateManager.renewExtendCpotb(
         cpotbDataExt.idCpotb,
         [
@@ -172,18 +301,63 @@ function CpotbExtendRenewRequest() {
         ]
       );
       console.log(tx)
-      MySwal.update({ title: "Memproses transaksi…", text: "Harap tunggu…" });
-      contracts.certificateManager.once('CertExtendRequest', (factoryAddr, ts) => {
-        const timestamp = Number(ts);
-        // updateCpotbFb(tx.hash, timestamp);
-        // recordHashFb(tx.hash, timestamp);
-        // handleEventCpotbExtendRequested(factoryAddr, ts, tx.hash);
+      if(tx){
+        
+        MySwal.update({
+          title: "Memproses transaksi...",
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
+        });
+      }
+
+      contracts.certificateManager.on('CertExtend', (factoryAddr, ts) => {
+        handleEventCpotbRenewRequested(ts, tx.hash);
+        console.log(3);
+        console.log(tx.hash)
+        writeCpotbFb(tx.hash, timestamp);
+        console.log(34);
+        recordHashFb(tx.hash, timestamp);
+        console.log(343);
       });
     } catch (err) {
       MySwal.fire({ title: err.message || 'Error', icon: 'error' });
     }
   };
 
+  const writeCpotbFb = async ( requestCpotbCtHash, timestamp) => {
+    try {
+      const docRef = doc(db, 'cpotb_list', userdata.instanceName);
+
+      console.log(cpotbDataExt.jenisSediaan);
+  
+      await setDoc(docRef, {
+        [`${cpotbDataExt.jenisSediaan}`]: {
+          renewRequestHash: requestCpotbCtHash,
+          renewRequestTimestamp: timestamp,
+          status: 7
+        },
+      }, { merge: true }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  };
+
+  const recordHashFb = async(txHash, timestamp) => {
+    try {
+      const collectionName = `pengajuan_cpotb_${userdata.instanceName}`
+      const docRef = doc(db, 'transaction_hash', collectionName);
+  
+      await setDoc(docRef, {
+        [`${cpotbDataExt.jenisSediaan}`]: {
+          'renew_request': {
+            hash: txHash,
+            timestamp: timestamp,
+          }
+        },
+      }, { merge: true }); 
+    } catch (err) {
+      errAlert(err);
+    }
+  }
 
   return (
     <div id="CpotbPage" className='Layout-Menu layout-page'>
@@ -225,7 +399,7 @@ function CpotbExtendRenewRequest() {
           </ul> 
           <ul>
             <li className="label"><label>Alasan Penolakan Pengajuan</label></li>
-            <li className="input"><p>{cpotbDataExt.rejectMsgExt}</p></li>
+            <li className="input"><p>{cpotbDataExt.rejectMsg}</p></li>
           </ul> 
 
           <div className="doku">
@@ -234,12 +408,12 @@ function CpotbExtendRenewRequest() {
               <li className="input">
                 <input type="file" accept="application/pdf" 
                 onChange={e => handleFileChange(e, 'ipfsSuratPermohonanCpotb')} />
-                {dokumen.ipfsSuratPermohonanCpotb && <a href={`http://localhost:8080/ipfs/${dokumen.ipfsSuratPermohonanCpotoh}`} target="_blank" rel="noopener noreferrer">Lihat Surat permohonan <i class="fa-solid fa-arrow-up-right-from-square"></i></a>}
+                {dokumen.ipfsSuratPermohonanCpotb && <a href={`http://localhost:8080/ipfs/${dokumen.ipfsSuratPermohonanCpotoh}`} target="_blank" rel="noopener noreferrer">Lihat Surat permohonan <i className="fa-solid fa-arrow-up-right-from-square"></i></a>}
               </li></ul>
             <ul><li className="label"><label>Bukti pembayaran penerimaan negara bukan pajak</label></li>
               <li className="input">
                 <input type="file" accept="application/pdf" onChange={e => handleFileChange(e, 'ipfsBuktiPembayaranNegaraBukanPajak')} />
-                {dokumen.ipfsBuktiPembayaranNegaraBukanPajak && <a href={`http://localhost:8080/ipfs/${dokumen.ipfsBuktiPembayaranNegaraBukanPajak}`} target="_blank" rel="noopener noreferrer">Lihat Bukti pembayaran PNBP <i class="fa-solid fa-arrow-up-right-from-square"></i></a>}
+                {dokumen.ipfsBuktiPembayaranNegaraBukanPajak && <a href={`http://localhost:8080/ipfs/${dokumen.ipfsBuktiPembayaranNegaraBukanPajak}`} target="_blank" rel="noopener noreferrer">Lihat Bukti pembayaran PNBP <i className="fa-solid fa-arrow-up-right-from-square"></i></a>}
               </li></ul>
           </div>
 
@@ -248,17 +422,17 @@ function CpotbExtendRenewRequest() {
             <ul><li className="label"><label>Dokumen denah tata ruang bangunan sesuai dengan persyaratan CPOTB</label></li>
               <li className="input">
                 <input type="file" accept="application/pdf" onChange={e => handleFileChange(e, 'ipfsDenahBangunan')} />
-                {dokumen.ipfsDenahBangunan && <a href={`http://localhost:8080/ipfs/${dokumen.ipfsDenahBangunan}`} target="_blank" rel="noopener noreferrer">Lihat Denah tata ruang bangunan <i class="fa-solid fa-arrow-up-right-from-square"></i></a>}
+                {dokumen.ipfsDenahBangunan && <a href={`http://localhost:8080/ipfs/${dokumen.ipfsDenahBangunan}`} target="_blank" rel="noopener noreferrer">Lihat Denah tata ruang bangunan <i className="fa-solid fa-arrow-up-right-from-square"></i></a>}
               </li></ul>
             <ul><li className="label"><label>Dokumen sistem mutu sesuai dengan persyaratan CPOTB</label></li>
               <li className="input">
                 <input type="file" accept="application/pdf" onChange={e => handleFileChange(e, 'ipfsSistemMutu')} />
-                {dokumen.ipfsSistemMutu && <a href={`http://localhost:8080/ipfs/${dokumen.ipfsSistemMutu}`} target="_blank" rel="noopener noreferrer">Lihat Dokumen sistem mutu <i class="fa-solid fa-arrow-up-right-from-square"></i></a>}
+                {dokumen.ipfsSistemMutu && <a href={`http://localhost:8080/ipfs/${dokumen.ipfsSistemMutu}`} target="_blank" rel="noopener noreferrer">Lihat Dokumen sistem mutu <i className="fa-solid fa-arrow-up-right-from-square"></i></a>}
               </li></ul>
-            <ul><li className="label"><label>Dokumen Corrective Action and Preventive Action (CAPA)</label></li>
+            <ul><li className="label"><label>Dokumen CAPA (Corrective Action and Preventive Action)</label></li>
               <li className="input">
                 <input type="file" accept="application/pdf" onChange={e => handleFileChange(e, 'ipfsDokumenCapa')} />
-                {dokumen.ipfsDokumenCapa && <a href={`http://localhost:8080/ipfs/${dokumen.ipfsDokumenCapa}`} target="_blank" rel="noopener noreferrer">Lihat Dokumen CAPA <i class="fa-solid fa-arrow-up-right-from-square"></i></a>}
+                {dokumen.ipfsDokumenCapa && <a href={`http://localhost:8080/ipfs/${dokumen.ipfsDokumenCapa}`} target="_blank" rel="noopener noreferrer">Lihat Dokumen CAPA <i className="fa-solid fa-arrow-up-right-from-square"></i></a>}
               </li></ul>
           </div>
 

@@ -232,7 +232,7 @@ function CdobExtendRequest() {
       html: (
           <div className='form-swal'>
             <div className="row row--obat table-like">
-              <div class="col doku">
+              <div className="col doku">
                 
                 <ul>
                   <li className="label label-2"><p>Nama PBF</p></li>
@@ -253,16 +253,16 @@ function CdobExtendRequest() {
                 </ul>
                   {Object.entries(uploaded).map(([docName, hash]) => (
                     <ul key={docName}>
-                      <li class="label label-2">
+                      <li className="label label-2">
                         <p>{docName.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</p>
                       </li>
-                      <li class="input input-2">
+                      <li className="input input-2">
                       <a
                         href={`http://localhost:8080/ipfs/${hash}`}  
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        {hash} <i className="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                       </li>
                     </ul>
@@ -348,7 +348,7 @@ function CdobExtendRequest() {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          {hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                          {hash} <i className="fa-solid fa-arrow-up-right-from-square"></i>
                         </a>
                       </li>
                     </ul>

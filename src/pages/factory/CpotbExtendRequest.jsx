@@ -20,7 +20,7 @@ function CpotbExtendRequest() {
   const [contracts, setContracts] = useState({});
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
-  const cpotbDataExt = JSON.parse(sessionStorage.getItem('cpotbDataExt'))
+  const cpotbDataExt = JSON.parse(sessionStorage.getItem('cpotbData'))
   const [dokumen, setDokumen] = useState({
     ipfsSuratPermohonanCpotb: null,
     ipfsBuktiPembayaranNegaraBukanPajak: null,
@@ -118,6 +118,14 @@ function CpotbExtendRequest() {
             </li>
             <li className="input">
               <p>{certNumber}</p> 
+            </li>
+          </ul>
+          <ul className='klaim'>
+            <li className="label">
+              <p>Jenis Sediaan</p> 
+            </li>
+            <li className="input">
+              <p>{cpotbDataExt.jenisSediaan}</p> 
             </li>
           </ul>
           <ul>
@@ -253,44 +261,48 @@ function CpotbExtendRequest() {
 
     const { isConfirmed } = await MySwal.fire({
       title: `Konfirmasi Perpanjangan CPOTB`,
-      html: `
-          <div class="form-swal">
-              <div class="row row--obat table-like">
-                  <div class="col doku">
-                      <ul>
-                          <li class="label label-2"><p>Nama Pabrik</p></li>
-                          <li class="input input-2"><p>${userdata.instanceName}</p></li>
-                      </ul>
-                      <ul>
-                          <li class="label label-2"><p>Sertifikat CPOTB</p></li>
-                          <li class="input input-2">
-                          <a
-                            href={'http://localhost:3000/public/certificate/${cpotbDataExt.cpotbIpfs}'}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            ${cpotbDataExt.cpotbNumber}
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                          </a>
-                          </li>
-                      </ul>
-                      <div class="doku">
-                          ${Object.entries(uploaded).map(([docName, hash]) => `
-                            <ul>
-                              <li class="label label-2"><p>${docName}</p></li>
-                              <li class="input input-2">
-                                <a href="http://localhost:8080/ipfs/${hash}" target="_blank">
-                                  ${hash}
-                                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                                </a>
-                              </li>
-                            </ul>
-                          `).join("")}
-                      </div>
-                  </div>
+      html: (
+          <div className='form-swal'>
+            <div className="row row--obat table-like">
+              <div className="col doku">
+                
+                <ul>
+                  <li className="label label-2"><p>Nama Pabrik</p></li>
+                  <li className="input input-2"><p>{userdata.instanceName}</p></li>
+                </ul>
+                <ul>
+                  <li className="label label-2"><p>Nomor CDOB</p></li>
+                  <li className="input input-2">
+                    <a
+                      href={`http://localhost:3000/public/certificate/${cpotbDataExt.cpotbIpfs}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {cpotbDataExt.cpotbNumber}
+                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                  </li>
+                </ul>
+                  {Object.entries(uploaded).map(([docName, hash]) => (
+                    <ul key={docName}>
+                      <li className="label label-2">
+                        <p>{docName}</p>
+                      </li>
+                      <li className="input input-2">
+                      <a
+                        href={`http://localhost:8080/ipfs/${hash}`}  
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {hash} <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
+                      </li>
+                    </ul>
+                  ))}
               </div>
+            </div>
           </div>
-      `,
+        ),
       width: '900',
       showCancelButton: true,
       confirmButtonText: 'Konfirmasi',
@@ -367,7 +379,7 @@ function CpotbExtendRequest() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        {hash} <i className="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                       </li>
                     </ul>
@@ -429,8 +441,8 @@ function CpotbExtendRequest() {
       }
 
       contracts.certificateManager.once('CertExtend',  (factoryAddr,  _timestamp) => {
-        updateCpotbFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaanMap[cpotbDataExt.jenisSediaan]);
-        recordHashFb(extendCertificateCt.hash, Number(_timestamp), jenisSediaanMap[cpotbDataExt.jenisSediaan])
+        updateCpotbFb(extendCertificateCt.hash, Number(_timestamp), cpotbDataExt.jenisSediaan);
+        recordHashFb(extendCertificateCt.hash, Number(_timestamp), cpotbDataExt.jenisSediaan)
         handleEventCpotbExtendRequested(factoryAddr, _timestamp, extendCertificateCt.hash, cpotbDataExt.cpotbNumber)
       });
     } catch (error) {
