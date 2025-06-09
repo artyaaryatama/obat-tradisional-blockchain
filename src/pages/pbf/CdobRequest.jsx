@@ -468,6 +468,7 @@ function CdobRequest() {
       if (!companyData.exists()) {
         await setDoc(docRefUser, {
           userNib: userdata.nib,
+          role: 'PBF',
           userLocation: userdata.location,
           userAddr: userdata.address
         });

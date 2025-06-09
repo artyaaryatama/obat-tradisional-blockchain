@@ -246,13 +246,14 @@ function ManageNieFactory() {
     try {
       const detailObatCt = await contracts.obatTradisional.detailObat(id);
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
-      let rejectMsg;
+      const rejectMsg = await contracts.nieManager.getRejectMsgNie(id);
 
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
       const [nieDetails, dokumenObat, dokumenSpesifikasi, DokumenRegisUlang] = detailNieCt;
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest,timestampNieExtendApprove, factoryInstancee, bpomInstance, bpomAddr, nieIpfs] = nieDetails;
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest,timestampNieExtendApprove, timestampNieExtendRenew, factoryInstancee, bpomInstance, bpomAddr, nieIpfs] = nieDetails;
       const [masterFormula, suratKuasa, suratPernyataan, komposisiProduk, caraPembuatanProduk, spesifikasiKemasan, hasilUjiStabilitas] = dokumenObat;
       const [sertifikatAnalisaBahanBaku, sertifikatAnalisaProdukJadi, spesifikasiProdukJadi, sistemPenomoranBets, desainKemasan, dataPendukungKeamanan] = dokumenSpesifikasi;
+      const [formulaProdukMetrik, skPersetujuanVariasi, desainKemasanTerakhir, suratPernyataanPeredaran, desainKemasanBerwarna] = DokumenRegisUlang
 
       console.log(bpomInstance);
 
@@ -283,6 +284,7 @@ function ManageNieFactory() {
         timestampNieExpired: parseInt(timestampNieExpired) !== 0 ? new Date(Number(timestampNieExpired) * 1000).toLocaleDateString('id-ID', options): "-",
         timestampNieExtendRequest: parseInt(timestampNieExtendRequest) !== 0 ? new Date(Number(timestampNieExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
         timestampNieExtendApprove: parseInt(timestampNieExtendApprove) !== 0 ? new Date(Number(timestampNieExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+        timestampNieExtendRenew: parseInt(timestampNieExtendRenew) !== 0 ? new Date(Number(timestampNieExtendRenew) * 1000).toLocaleDateString('id-ID', options): "-",
         nieNumber: nieNumber ? nieNumber : "-",
         factoryAddr: factoryAddr,
         factoryInstanceName: factoryInstance,
@@ -304,6 +306,13 @@ function ManageNieFactory() {
           hasilUjiStabilitas: hasilUjiStabilitas ? hasilUjiStabilitas : "-",
           desainKemasan: desainKemasan ? desainKemasan : "-",
           dataPendukungKeamanan: dataPendukungKeamanan ? dataPendukungKeamanan : "-"          
+        },
+        dokumenRegis: {
+          formulaProdukMetrik : formulaProdukMetrik ? formulaProdukMetrik : '-',
+          skPersetujuanVariasi : skPersetujuanVariasi ? skPersetujuanVariasi : '-',
+          desainKemasanTerakhir : desainKemasanTerakhir ? desainKemasanTerakhir : '-',
+          suratPernyataanPeredaran : suratPernyataanPeredaran ? suratPernyataanPeredaran : '-',
+          desainKemasanBerwarna : desainKemasanBerwarna ? desainKemasanBerwarna : '-'
         },
         nieIpfs: nieIpfs
       };
@@ -497,13 +506,11 @@ function ManageNieFactory() {
                     </li>
                   </ul>
   
-                </div>
+            </div>
 
-                {/* <div className="container-stepper">
-                  <div id="stepperOrder"></div>
-                </div> */}
               </div>
-              <div className="row row--row">
+              <div className="row --col">
+                
                 <div className='col doku'>
                   <h5>Dokumen Pengajuan NIE</h5>
                   <div className="doku-row">
@@ -657,8 +664,6 @@ function ManageNieFactory() {
         
       } else if(detailObat.nieStatus === 'Tidak Disetujui NIE'){
 
-        rejectMsg = await contracts.nieManager.getRejectMsgNie(id);
-
         MySwal.fire({
           title: `Detail Obat ${detailObat.namaObat}`,
           html: (
@@ -681,7 +686,7 @@ function ManageNieFactory() {
                     <p>Alasan Penolakan</p> 
                   </li>
                   <li className="input">
-                    <p>{rejectMsg}</p> 
+                    <p>{rejectMsg[0]}</p> 
                   </li>
                 </ul>
 
@@ -1056,7 +1061,6 @@ function ManageNieFactory() {
                 </div>
               </div>
 
-            
             </div>
           ),
           width: '1120',
@@ -1086,8 +1090,6 @@ function ManageNieFactory() {
         })
 
       } else if(detailObat.nieStatus === 'NIE Kadaluarsa'){
-
-          rejectMsg = await contracts.nieManager.getRejectMsgNie(id);
           MySwal.fire({
             title: `Detail Obat ${detailObat.namaObat}`,
             html: (
@@ -1148,13 +1150,13 @@ function ManageNieFactory() {
                     </ul> 
                     : <div></div>
                   }
-                  {rejectMsg?
+                  {rejectMsg[0]?
                     <ul className='rejectMsg klaim'>
                       <li className="label">
                         <p>Alasan Penolakan</p>
                       </li>
                       <li className="input">
-                        <p>{rejectMsg}</p> 
+                        <p>{rejectMsg[0]}</p> 
                       </li>
                     </ul> 
                     : null
@@ -1343,7 +1345,60 @@ function ManageNieFactory() {
                   </div> */}
                 </div>
 
-                <div className="row row--row">
+                <div className="row row--">
+                  {
+                    DokumenRegisUlang[0] !== ''?
+                      <div className='col doku'>
+                        <h5>Dokumen Registrasi Ulang NIE</h5>
+                        <div className="doku-row">
+                          <div className="doku-1">
+                            <ul>
+                              <li className="label">
+                                <p>Dokumen Formula Produk dalam Metrik</p>
+                              </li>
+                              <li className="input">
+                                <p>{detailObat.dokumenRegis.formulaProdukMetrik}</p>
+                              </li>
+                            </ul>
+                            <ul>
+                              <li className="label">
+                                <p>SK Persetujuan Variasi</p>
+                              </li>
+                              <li className="input">
+                                <p>{detailObat.dokumenRegis.skPersetujuanVariasi}</p>
+                              </li>
+                            </ul>
+                            <ul>
+                              <li className="label">
+                                <p>Dokumen Desain Kemasan Terakhir</p>
+                              </li>
+                              <li className="input">
+                                <p>{detailObat.dokumenRegis.desainKemasanTerakhir}</p>
+                              </li>
+                            </ul>
+                            <ul>
+                              <li className="label">
+                                <p>Dokumen Desain Kemasan Berwarna</p>
+                              </li>
+                              <li className="input">
+                                <p>{detailObat.dokumenRegis.desainKemasanBerwarna}</p>
+                              </li>
+                            </ul>
+                            <ul>
+                              <li className="label">
+                                <p>Surat Pernyataan Peredaran obat</p>
+                              </li>
+                              <li className="input">
+                                <p>{detailObat.dokumenRegis.suratPernyataanPeredaran}</p>
+                              </li>
+                            </ul>
+                          </div>
+
+                        </div>
+                      </div>
+
+                    : null 
+                  }
                   <div className='col doku'>
                     <h5>Dokumen Pengajuan NIE</h5>
                     <div className="doku-row">
@@ -1549,6 +1604,7 @@ function ManageNieFactory() {
                       </div>
                     </div>
                   </div>
+                  
                 </div>
 
               
@@ -1577,8 +1633,6 @@ function ManageNieFactory() {
           })
 
       } else if(detailObat.nieStatus === 'Pengajuan Registrasi Ulang NIE Ditolak'){
-
-        rejectMsg = await contracts.nieManager.getRejectMsgNie(id);
 
         MySwal.fire({
           title: `Detail Obat ${detailObat.namaObat}`,
@@ -2002,7 +2056,6 @@ function ManageNieFactory() {
 
       } 
       else{
-          rejectMsg = await contracts.nieManager.getRejectMsgNie(id);
           MySwal.fire({
             title: `Detail Obat ${detailObat.namaObat}`,
             html: (

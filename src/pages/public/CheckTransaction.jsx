@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getDocs, doc, getDoc, collection } from "firebase/firestore";
+import { getDocs, doc, getDoc,  collection, query } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import "../../styles/CheckObat.scss";
 import Swal from "sweetalert2";
@@ -8,11 +8,20 @@ import withReactContent from "sweetalert2-react-content";
 const MySwal = withReactContent(Swal);
 
 function CheckTransaction() {
-  const [factoryName, setFactoryName] = useState("");
+  const [instanceName, setInstanceName] = useState("");
   const [documents, setDocuments] = useState([]);
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [documentDetails, setDocumentDetails] = useState(null);
   const [selectedBatch, setSelectedBatch] = useState(null);
+  const [instanceData, setInstanceData] = useState(null)
+  const [obatData, setObatData] = useState(null)
+  const [cpotbData, setCpotbData] = useState(null)
+  const [cdobData, setCdobData] = useState(null)
+  const [txCpotbData, setTxCpotbData] = useState(null)
+  const [txCdobData, setTxCdobData] = useState(null)
+  const [txObatData, setTxObatData] = useState(null)
+  const [batchData, setBatchData] = useState(null)
+  const [obatName, setObatName] = useState(null)
 
   useEffect(() => {
     document.title = "Riwayat Hash Transaksi";
@@ -43,138 +52,145 @@ function CheckTransaction() {
 
   const fetchDocuments = async () => {
     try {
-      if (!factoryName.trim()) {
+      if (!instanceName.trim()) {
         showAlert("Error", "Harap masukkan nama pabrik yang sesuai.", "error");
         return;
       }
 
-      const querySnapshot = await getDocs(collection(db, factoryName));
-      const fetchedDocuments = [];
-      querySnapshot.forEach((doc) => {
-        fetchedDocuments.push({ id: doc.id, ...doc.data() });
-      });
+      console.log(instanceName)
 
-      if (fetchedDocuments.length === 0) {
-        showAlert("Tidak ada data", `Tidak ada data yang ditemukan untuk "${factoryName}".`, "warning");
+      const querySnapshot = doc(db, "company_data", instanceName);
+      const instanceSnapshot = await getDoc(querySnapshot);
+      const selectedInstance = instanceSnapshot.data(); 
+
+      console.log(selectedInstance);
+
+      if(selectedInstance.role === 'Pabrik'){
+        const querySnapshotCpotb = doc(db, "cpotb_list", instanceName);
+        const cpotbSnapshot = await getDoc(querySnapshotCpotb);
+        const selectedCpotb = cpotbSnapshot.data();
+
+        const querySnapshotObat = doc(db, "obat_data", instanceName) ;
+        const obatSnapshot = await getDoc(querySnapshotObat);
+        const selectedObat = obatSnapshot.data()
+
+        const obatName = Object.keys(selectedObat)
+          .map((obatName) => {
+            return obatName
+            
+          });
+
+        console.log(obatName);
+
+        console.log(selectedCpotb)
+        console.log(selectedObat)
+
+        setInstanceData(selectedInstance)
+        setCpotbData(selectedCpotb)
+        setObatData(selectedObat)
+        setObatName(obatName)
+
+        fetchBatchData('DermaHerb Lotion')
+        fetchTxCpotbData("Cairan Obat Dalam")
+        fetchTxObatData('DermaHerb Lotion')
+      } else if(selectedInstance.role === 'PBF'){
+        
+        const querySnapshotCdob = doc(db, "cdob_list", instanceName);
+        const cdobSnapshot = await getDoc(querySnapshotCdob);
+        const selectedCdob = cdobSnapshot.data();
+        
+        console.log((selectedCdob));
+        setCdobData(selectedCdob)
+        fetchTxCdobData('Obat Lain')
       }
-
-      setDocuments(fetchedDocuments);
-      setSelectedDocument(null);
-      setDocumentDetails(null);
+                                                        
+      if (selectedInstance.length === 0) {
+        showAlert("Tidak ada data", `Tidak ada data yang ditemukan untuk "${instanceName}".`, "warning");
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
       showAlert("Error", "Gagal mengakses data transaksi.", "error");
     }
   };
 
-  const fetchDocumentDetails = async (docId) => {
+  const fetchBatchData = async (obatName) => {
     try {
-      const selectedDoc = documents.find((doc) => doc.id === docId);
-      if (selectedDoc) {
-        const { historyNie, batchData, jenisSediaan, tipeObat } = selectedDoc;
-  
-        const output = {
-          id: selectedDoc.id,
-          historyNie: {
-            'Obat Diproduksi': {
-              hash: historyNie.createObat,
-              timestamp: historyNie.createObatTimestamp,
-            },
-            'Pengajuan NIE': {
-              hash: historyNie.requestNie,
-              timestamp: historyNie.requestNieTimestamp,
-            },
-            'Penerbitan NIE': {
-              hash: historyNie.approvedNie,
-              timestamp: historyNie.approvedNieTimestamp,
-            },
-          },
-          batchNames: Object.keys(batchData || {}),
-          batchData,
-          jenisSediaan,
-          tipeObat,
-        };
-  
-        setDocumentDetails(output);
-        setSelectedBatch(null); 
-        setSelectedDocument(docId);
+      console.log(obatData);
+      const batchArray = Object.keys(obatData[obatName])
+        .filter((key) => key.startsWith("batch_")) 
+        .map((batchName) => {
+          return {
+            batchName: batchName,
+            batchData: obatName[batchName],
+          };
+        });
+
+        console.log(batchArray);
+        setBatchData(batchArray);
+        
+      if (batchArray.length === 0) {
+        showAlert("Tidak ada data", `Tidak ada data batch yang ditemukan untuk "${obatName}".`, "warning");
       }
     } catch (error) {
+      console.error("Error fetching data:", error);
       showAlert("Error", "Gagal mengakses data transaksi.", "error");
     }
   };
-  
-  const fetchBatchDetails = async (batchName) => {
+
+  const fetchTxObatData = async (obatName) => {
     try {
-      console.log(batchName);
-      setSelectedBatch(null)
-      const selectedBatchData = documentDetails.batchData[batchName];
-      const { pbfInstance, historyHash, quantity, retailerInstance } = selectedBatchData;
-  
-      console.log(quantity);
-      console.log(retailerInstance);
-      // Fetch CPOTB data
-      const cpotbDocRef = doc(db, factoryName, "cpotb-lists");
-      const cpotbDocSnap = await getDoc(cpotbDocRef);
-      let cpotbData = {};
-      if (cpotbDocSnap.exists()) {
-        const cpotbDocData = cpotbDocSnap.data();
-        cpotbData = cpotbDocData[documentDetails.jenisSediaan] || {};
-        console.log("CPOTB Data:", cpotbData);
-      } else {
-        console.warn("No CPOTB data found for:", documentDetails.jenisSediaan);
+      const querySnapshotTxObat = doc(db, "transaction_hash", `obat_${obatName}_${instanceName}`) ;
+      const txSnapshot = await getDoc(querySnapshotTxObat);
+      const selectedTx = txSnapshot.data()
+
+      console.log(selectedTx);
+      setTxObatData(selectedTx);
+        
+      if (selectedTx.length === 0) {
+        showAlert("Tidak ada data", `Tidak ada data transaksi yang ditemukan untuk "${obatName}".`, "warning");
       }
-  
-      // Fetch CDOB data if pbfInstance exists
-      let cdobData = null;
-      if (pbfInstance) {
-        const cdobDocRef = doc(db, pbfInstance, "cdob-lists");
-        const cdobDocSnap = await getDoc(cdobDocRef);
-        if (cdobDocSnap.exists()) {
-          const cdobDocData = cdobDocSnap.data();
-          cdobData = cdobDocData[documentDetails.tipeObat] || {};
-          console.log("CDOB Data:", cdobData);
-        } else {
-          console.warn("No CDOB data found for:", documentDetails.tipeObat);
-        }
-      } else {
-        console.warn("No pbfInstance available for batch:", batchName);
-        cdobData = {};
-      }
-  
-      setSelectedBatch({
-        ...selectedBatchData,
-        historyHash,
-        cpotbData: {
-          'Pengajuan CPOTB' : {
-            hash: cpotbData.requestCpotb,
-            timestamp: cpotbData.requestTimestamp
-          },
-          'Penerbitan CPOTB' : {
-            hash: cpotbData.approvedCpotb,
-            timestamp:  cpotbData.approvedTimestamp
-          }
-        },
-        cdobData: {
-          'Pengajuan CDOB' : {
-            hash: cdobData.requestCdob,
-            timestamp: cdobData.requestTimestamp
-          },
-          'Penerbitan CDOB' : {
-            hash: cdobData.approvedCdob,
-            timestamp:  cdobData.approvedTimestamp
-          }
-        },
-        pbfInstance: pbfInstance, 
-        retailerInstance: retailerInstance? retailerInstance : false,
-        quantity: quantity
-      });
     } catch (error) {
-      console.error("Gagal mengakses data transaksi.", error);
-      showAlert("Error", "", "error");
+      console.error("Error fetching data:", error);
+      showAlert("Error", "Gagal mengakses data transaksi.", "error");
     }
   };
-  
+
+  const fetchTxCpotbData = async (jenisSediaan) => {
+    try {
+      const querySnapshotTxObat = doc(db, "transaction_hash", `pengajuan_cpotb_${instanceName}`) ;
+      const txSnapshot = await getDoc(querySnapshotTxObat);
+      const selectedTx = txSnapshot.data()
+
+      console.log(selectedTx[jenisSediaan]);
+      setTxCpotbData(selectedTx[jenisSediaan]);
+        
+      if (selectedTx[jenisSediaan].length === 0) {
+        showAlert("Tidak ada data", `Tidak ada data transaksi yang ditemukan untuk CPOTB "${jenisSediaan}".`, "warning");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      showAlert("Error", "Gagal mengakses data transaksi.", "error");
+    }
+  };
+
+  const fetchTxCdobData = async (tipePermohonan) => {
+    try {
+      const querySnapshotTxObat = doc(db, "transaction_hash", `pengajuan_cdob_${instanceName}`) ;
+      const txSnapshot = await getDoc(querySnapshotTxObat);
+      const selectedTx = txSnapshot.data()
+
+      console.log(selectedTx[tipePermohonan]);
+      setTxCpotbData(selectedTx[tipePermohonan]);
+        
+      if (selectedTx[tipePermohonan].length === 0) {
+        showAlert("Tidak ada data", `Tidak ada data transaksi yang ditemukan untuk CDOB "${tipePermohonan}".`, "warning");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      showAlert("Error", "Gagal mengakses data transaksi.", "error");
+    }
+  };
+
   const renderTable = (data, title) => {
     const sortedData = Object.entries(data).sort(
       ([, a], [, b]) => Number(a.timestamp || 0) - Number(b.timestamp || 0)
@@ -331,8 +347,8 @@ function CheckTransaction() {
                 <input
                   type="text"
                   placeholder="Input Factory Name"
-                  value={factoryName}
-                  onChange={(e) => setFactoryName(e.target.value)}
+                  value={instanceName}
+                  onChange={(e) => setInstanceName(e.target.value)}
                   required
                 />
                 <button type="submit">Cari</button>

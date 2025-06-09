@@ -329,6 +329,7 @@ function CpotbRequest() {
       if (!companyData.exists()) {
         await setDoc(docRefUser, {
           userNib: userdata.nib,
+          role: 'Pabrik',
           userLocation: userdata.location,
           userAddr: userdata.address,
           factoryType: userdata.factoryType,
