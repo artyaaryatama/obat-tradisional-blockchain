@@ -22,7 +22,6 @@ contract CpotbCertificate is BaseCertificate {
     uint8 tipePermohonan;
     EnumsLibrary.StatusCertificate status;
     string certHash;
-    uint256 expiredTimestamp;
   }
 
   struct DokumenAdministrasi {
@@ -36,15 +35,6 @@ contract CpotbCertificate is BaseCertificate {
     string sistemMutu;
   }
 
-  struct DokumenReSertifikasi{
-    string suratPermohonan;
-    string buktiPembayaranNegaraBukanPajak;
-    string denahBangunan;
-    string sistemMutu;
-    string cpotbIpfs;
-    string dokumenCapa;
-  }
-
   struct ApprovedCert {
     string ipfsCert;
     uint8 tipePermohonan; 
@@ -55,7 +45,6 @@ contract CpotbCertificate is BaseCertificate {
   mapping (string => CpotbData) public cpotbDataById;
   mapping (string => DokumenAdministrasi) public dokuAdminById;
   mapping (string => DokumenTeknis) public dokuTeknisById;
-  mapping (string => DokumenReSertifikasi) public dokuReSertifikasiById;
 
   function requestCpotb(
     string memory certId,
@@ -99,8 +88,7 @@ contract CpotbCertificate is BaseCertificate {
       instanceName: factoryInstance,
       tipePermohonan: jenisSediaan,
       status: EnumsLibrary.StatusCertificate.Requested,
-      certHash: "",
-      expiredTimestamp: 0
+      certHash: ""
     }));
 
     dokuAdminById[certId] = dokuAdmin;
@@ -137,7 +125,6 @@ contract CpotbCertificate is BaseCertificate {
         allCpotbData[i].certNumber = certNumber;
         allCpotbData[i].status = EnumsLibrary.StatusCertificate.Approved; 
         allCpotbData[i].certHash = ipfsCert;
-        allCpotbData[i].expiredTimestamp = block.timestamp + extTimestamp;
       }  
     }
   } 
@@ -190,86 +177,6 @@ contract CpotbCertificate is BaseCertificate {
     } 
   }
 
-  function extendCpotb(
-    string memory certId,
-    uint256 expTimestamp,
-    DokumenReSertifikasi memory newDoku
-  ) public {
-
-    updateExtendRenewDetails(
-      certId,
-      expTimestamp
-    );  
-
-    uint length = allCpotbData.length;
-
-    dokuReSertifikasiById[certId] = newDoku; 
-
-    for (uint i = 0; i < length; i++) {
-      if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
-        allCpotbData[i].status = EnumsLibrary.StatusCertificate.ExtendRequest; 
-      }  
-    }
-  }
-
-  function approveExtendCpotb(
-    string memory certId, 
-    string memory ipfsCert
-  ) public {
-
-    updateBpomApproveExtendCertificateDetails(
-      certId,
-      ipfsCert
-    );
-
-    uint length = allCpotbData.length;
-
-    for (uint i = 0; i < length; i++) {
-      if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
-        allCpotbData[i].status = EnumsLibrary.StatusCertificate.ExtendApprove; 
-        allCpotbData[i].expiredTimestamp = block.timestamp + extTimestamp;
-      }  
-    }
-  }
-
-  function rejectExtendCpotb(
-    string memory certId, 
-    string memory rejectExtendMsg
-  ) public {
-
-    updateBpomRejectExtendCertificateDetails(
-      certId,
-      rejectExtendMsg
-    );
-
-    uint length = allCpotbData.length;
-
-    for (uint i = 0; i < length; i++) {
-      if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
-        allCpotbData[i].status = EnumsLibrary.StatusCertificate.ExtendReject; 
-      }  
-    }
-  }
-
-  function renewExtendCpotb(
-    string memory certId,
-    DokumenReSertifikasi memory newDoku
-  ) public {
-
-    updateRenewExtendCertificateDetails(
-      certId
-    );
-    
-    uint length = allCpotbData.length;
-
-    for (uint i = 0; i < length; i++) {
-      if (keccak256(abi.encodePacked(allCpotbData[i].certId)) == keccak256(abi.encodePacked(certId))) {
-        allCpotbData[i].status = EnumsLibrary.StatusCertificate.ExtendRenew; 
-        dokuReSertifikasiById[allCpotbData[i].certId] = newDoku; 
-      }   
-    }
-  }
-
   function getAllCpotbByInstance(string memory instanceName) public view returns (CertificateList[] memory) {
 
     uint8 count = 0;
@@ -317,22 +224,17 @@ contract CpotbCertificate is BaseCertificate {
   function getCpotbDetails(string memory certId) public view returns (
     CpotbData memory,
     DokumenAdministrasi memory, 
-    DokumenTeknis memory,
-    DokumenReSertifikasi memory
+    DokumenTeknis memory 
   ) {
     
   return (
     cpotbDataById[certId], 
     dokuAdminById[certId], 
-    dokuTeknisById[certId],
-    dokuReSertifikasiById[certId])
+    dokuTeknisById[certId])
     ;     
   } 
 
-  function getRejectsMsg(string memory certId) public view returns (
-    string memory,
-    string memory
-  ) {
+  function getRejectsMsg(string memory certId) public view returns (string memory) {
     return getRejectMsg(certId);  
   } 
 

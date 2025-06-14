@@ -10,7 +10,6 @@ contract NieManager {
   constructor(address roleManagerAddr) {
     roleManager = RoleManager(roleManagerAddr);
   }
-    uint constant extTimestamp = (2*60) + 10;
 
   struct NieDetail {
     string nieNumber; 
@@ -20,15 +19,9 @@ contract NieManager {
     uint256 timestampNieApprove;  
     uint256 timestampNieRejected;  
     uint256 timestampNieRenewRequest;  
-    uint256 timestampNieExpired;  
-    uint256 timestampNieExtendRequest;  
-    uint256 timestampNieExtendApprove;  
-    uint timestampNieExtendReject; 
-    uint timestampNieExtendRenew; 
     string factoryInstance;
     string bpomInstance;      
     address bpomAddr;
-    string nieIpfs;
   }
 
   struct DokumenObat {
@@ -50,20 +43,10 @@ contract NieManager {
     string dataPendukungKeamanan;
   } 
 
-  struct DokumenRegisUlang{
-    string formulaProdukMetrik;
-    string skPersetujuanVariasi;
-    string desainKemasanTerakhir;
-    string suratPernyataanPeredaran;
-    string desainKemasanBerwarna;
-  } 
-
   mapping (string => NieDetail) public nieDetailById;
   mapping (string => string) public rejectMsgById; 
-  mapping (string => string) public rejectMsgExtendById; 
   mapping (string => DokumenObat) public dokuObatById;
   mapping (string => DokumenPendukung) public dokuPendukungById;
-  mapping (string => DokumenRegisUlang) public dokuRegisUlangById;
 
   event NieRequested(
     string factoryInstance,
@@ -91,27 +74,6 @@ contract NieManager {
     uint timestamp
   );
 
-  event NieExtendRequest(
-    address factoryAddr,
-    uint timestamp
-  );
-
-  event NieApprovedExtendRequest(
-    address factoryAddr, 
-    uint timestamp
-  );
-
-  event NieRejectExtend(
-    address bpomAddr, 
-    string rejectMsg, 
-    uint tiemstamp
-  );
-
-  event NieRenewExtend(
-    address factoryAddr,
-    uint timestamp
-  );
-
   modifier onlyFactory() {
     require(roleManager.hasRole(msg.sender, EnumsLibrary.Roles.Factory), "Only Factory");
     _;
@@ -135,15 +97,9 @@ contract NieManager {
       timestampNieApprove: 0,
       timestampNieRejected: 0,
       timestampNieRenewRequest: 0,
-      timestampNieExpired: 0,
-      timestampNieExtendRequest: 0,
-      timestampNieExtendApprove: 0,
-      timestampNieExtendReject: 0,
-      timestampNieExtendRenew: 0,
-      factoryInstance: factoryInstance, 
+      factoryInstance: factoryInstance,
       bpomInstance: "",
-      bpomAddr: address(0),
-      nieIpfs: ""
+      bpomAddr: address(0)
     });
 
 
@@ -174,22 +130,19 @@ contract NieManager {
   function approveNie(
     string memory obatId,
     string memory nieNumber,
-    string memory bpomInstance,
-    string memory ipfsNie
+    string memory bpomInstance
   ) 
     public 
     onlyBPOM
   {
 
-    NieDetail storage nieData = nieDetailById[obatId]; 
+    NieDetail storage nieData = nieDetailById[obatId];
 
     nieData.nieNumber = nieNumber;
     nieData.nieStatus = EnumsLibrary.NieStatus.ApprovedNie; 
     nieData.timestampNieApprove = block.timestamp;
     nieData.bpomInstance = bpomInstance;
     nieData.bpomAddr = msg.sender;
-    nieData.timestampNieExpired= block.timestamp + extTimestamp; 
-    nieData.nieIpfs = ipfsNie;
     
     emit NieApproved(
       bpomInstance,
@@ -251,116 +204,29 @@ contract NieManager {
     );
   }
 
-  function extendRequestNie(
-    string memory obatId,
-    uint256 expiredTimestamp,
-    DokumenRegisUlang memory newDoku 
-  ) 
-    public 
-    onlyFactory 
-  {
-    require(block.timestamp > expiredTimestamp, "NIE masih berlaku");
-    NieDetail storage nieData = nieDetailById[obatId];
-
-    nieData.nieStatus = EnumsLibrary.NieStatus.ExtendRequestNie; 
-    nieData.timestampNieExtendRequest = block.timestamp; 
-
-    dokuRegisUlangById[obatId] = newDoku; 
-
-    emit NieExtendRequest(
-      msg.sender,  
-      block.timestamp
-    );
-  }
-
-  function rejectExtendRequestNie(
-    string memory obatId,
-    string memory rejectMsgExtend
-  ) 
-    public 
-    onlyBPOM 
-  {
-    NieDetail storage nieData = nieDetailById[obatId];
-    rejectMsgExtendById[obatId] = rejectMsgExtend;
- 
-    nieData.nieStatus = EnumsLibrary.NieStatus.ExtendRejectNIE;  
-    nieData.timestampNieExtendReject = block.timestamp; 
-
-    emit NieRejectExtend(
-      msg.sender,  
-      rejectMsgExtend,
-      block.timestamp
-    );
-  }
-
-  function approveExtendRequestNie(
-    string memory obatId,
-    string memory ipfsNie 
-  ) 
-    public 
-    onlyBPOM 
-  {
-    NieDetail storage nieData = nieDetailById[obatId];
-
-    nieData.nieStatus = EnumsLibrary.NieStatus.ExtendApproveNie; 
-    nieData.timestampNieExtendApprove = block.timestamp;  
-    nieData.timestampNieExpired = block.timestamp + extTimestamp;  
-    nieData.nieIpfs = ipfsNie;
-
-    emit NieApprovedExtendRequest(
-      msg.sender,   
-      block.timestamp
-    ); 
-  } 
-
-  function extendRenewRequestNie(
-    string memory obatId,
-    DokumenRegisUlang memory newDoku
-  ) 
-    public 
-    onlyFactory 
-  {
-    NieDetail storage nieData = nieDetailById[obatId];
- 
-    nieData.nieStatus = EnumsLibrary.NieStatus.ExtendRenewNie;  
-    nieData.timestampNieExtendReject = block.timestamp; 
-
-    dokuRegisUlangById[obatId] = newDoku;
-
-    emit NieRenewExtend(
-      msg.sender,  
-      block.timestamp
-    );
-  }
-
   function getNieDetail(string memory obatId) public view returns (
     NieDetail memory,
     DokumenObat memory,
-    DokumenPendukung memory,
-    DokumenRegisUlang memory
+    DokumenPendukung memory
   ){
     return (
       nieDetailById[obatId], 
       dokuObatById[obatId], 
-      dokuPendukungById[obatId],
-      dokuRegisUlangById[obatId]
+      dokuPendukungById[obatId]
     );
   }
 
   function getNieNumberAndStatus(string memory obatId) public view returns (
     string memory, 
-    uint8, 
-    uint256
+    uint8
   ){
     return (
       nieDetailById[obatId].nieNumber, 
-      uint8(nieDetailById[obatId].nieStatus), 
-      nieDetailById[obatId].timestampNieExpired 
-    );  
+      uint8(nieDetailById[obatId].nieStatus));
   }
 
-  function getRejectMsgNie(string memory obatId) public view returns (string memory, string memory) {
-    return (rejectMsgById[obatId], rejectMsgExtendById[obatId]);
+  function getRejectMsgNie(string memory obatId) public view returns (string memory) {
+    return rejectMsgById[obatId];
   }
 
 }

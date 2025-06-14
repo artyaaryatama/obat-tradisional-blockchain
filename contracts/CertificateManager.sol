@@ -24,7 +24,7 @@ contract CertificateManager is ReentrancyGuard {
   }
 
   using EnumsLibrary for EnumsLibrary.Roles;
- 
+
   struct CertificateRequest { 
     string certId;
     string senderName;
@@ -66,17 +66,6 @@ contract CertificateManager is ReentrancyGuard {
   event CertRenewRequest(
     string senderInstance, 
     address senderAddr, 
-    uint timestamp
-  );
-  
-  event CertExtend(
-    address senderAddr, 
-    uint timestamp
-  );
-
-  event CertExtendReject(
-    address bpomAddr,  
-    string rejectMsgExt,
     uint timestamp
   );
 
@@ -196,89 +185,10 @@ contract CertificateManager is ReentrancyGuard {
  
     emit CertRenewRequest(
       reqData.senderInstance, 
-      reqData.senderAddr,
+      reqData.senderAddr, 
       block.timestamp
     );
   }
-
-  function extendCpotb( 
-    string memory cpotbId,
-    uint256 expTimestamp, 
-    CpotbCertificate.DokumenReSertifikasi memory newDoku
-  ) 
-    public 
-    onlyFactory 
-    nonReentrant 
-  {  
-    cpotbCertificate.extendCpotb(
-      cpotbId,
-      expTimestamp,
-      newDoku
-    );  
- 
-    emit CertExtend(
-      msg.sender,
-      block.timestamp
-    );
-  } 
-
-  function approveExtendCpotb( 
-    string memory cpotbId,
-    string memory ipfsCert
-  ) 
-    public 
-    onlyBPOM 
-    nonReentrant 
-  {  
-    cpotbCertificate.approveExtendCpotb(
-      cpotbId,
-      ipfsCert
-    );  
- 
-    emit CertExtend(
-      msg.sender,
-      block.timestamp 
-    );
-  } 
-
-  function rejectExtendCpotb( 
-    string memory cpotbId,
-    string memory rejectExtendMsg
-  ) 
-    public 
-    onlyBPOM 
-    nonReentrant 
-  {  
-    cpotbCertificate.rejectExtendCpotb(
-      cpotbId,
-      rejectExtendMsg
-    );  
- 
-    emit CertExtendReject(
-      msg.sender,
-      rejectExtendMsg,
-      block.timestamp 
-    );
-  } 
-
-  function renewExtendCpotb( 
-    string memory cpotbId,
-    CpotbCertificate.DokumenReSertifikasi memory newDoku
-  ) 
-    public 
-    onlyFactory 
-    nonReentrant 
-  {  
-    cpotbCertificate.renewExtendCpotb(
-      cpotbId,
-      newDoku 
-    );  
- 
-    emit CertExtend( 
-      msg.sender, 
-      block.timestamp 
-    );
-  } 
  
   function getCpotbByInstance(string memory instanceName) public view returns (CpotbCertificate.CertificateList[] memory){ 
     return cpotbCertificate.getAllCpotbByInstance(instanceName); 
@@ -292,29 +202,23 @@ contract CertificateManager is ReentrancyGuard {
     CpotbCertificate.CertificateDetails memory,
     CpotbCertificate.CpotbData memory,
     CpotbCertificate.DokumenAdministrasi memory,
-    CpotbCertificate.DokumenTeknis memory,
-    CpotbCertificate.DokumenReSertifikasi memory 
-  ) { 
+    CpotbCertificate.DokumenTeknis memory
+  ) {
     (
       CpotbCertificate.CpotbData memory cpotb,
       CpotbCertificate.DokumenAdministrasi memory dokuAdmin,
-      CpotbCertificate.DokumenTeknis memory dokuTeknis,
-      CpotbCertificate.DokumenReSertifikasi memory dokuReSertifikasi
+      CpotbCertificate.DokumenTeknis memory dokuTeknis
     ) = cpotbCertificate.getCpotbDetails(certId);
  
     return (
       cpotbCertificate.getCertDetails(certId), 
       cpotb, 
       dokuAdmin, 
-      dokuTeknis,
-      dokuReSertifikasi
+      dokuTeknis
     );
   }
 
-  function getRejectMsgCpotb(string memory certId) public view returns (
-    string memory,
-    string memory
-  ) {
+  function getRejectMsgCpotb(string memory certId) public view returns (string memory) {
     return cpotbCertificate.getRejectMsg(certId);
   }
 
@@ -425,85 +329,6 @@ contract CertificateManager is ReentrancyGuard {
       block.timestamp
     );
   }
-
-  function extendCdob( 
-    string memory cdobId,
-    uint256 expTimestamp,
-    CdobCertificate.DokumenReSertifikasi memory newDokus 
-  ) 
-    public 
-    onlyPBF   
-    nonReentrant 
-  {  
-    cdobCertificate.extendCdob(
-      cdobId,
-      expTimestamp,
-      newDokus 
-    );  
- 
-    emit CertExtend(
-      msg.sender,
-      block.timestamp
-    );
-  } 
-
-  function approveExtendCdob( 
-    string memory cdobId,
-    string memory ipfsCert
-  ) 
-    public 
-    onlyBPOM 
-    nonReentrant 
-  {  
-    cdobCertificate.approveExtendCdob(
-      cdobId,
-      ipfsCert
-    );  
- 
-    emit CertExtend(
-      msg.sender,
-      block.timestamp
-    );
-  } 
-
-  function rejectExtendCdob( 
-    string memory cdobId,
-    string memory rejectExtendMsg
-  ) 
-    public 
-    onlyBPOM 
-    nonReentrant 
-  {  
-    cdobCertificate.rejectExtendCdob(
-      cdobId,
-      rejectExtendMsg
-    );  
- 
-    emit CertExtendReject(
-      msg.sender,
-      rejectExtendMsg,
-      block.timestamp 
-    );
-  } 
-
-  function renewExtendCdob( 
-    string memory cdobId,
-    CdobCertificate.DokumenReSertifikasi memory newDoku
-  ) 
-    public 
-    onlyPBF 
-    nonReentrant 
-  {  
-    cdobCertificate.renewExtendCdob(
-      cdobId,
-      newDoku 
-    );  
-
-    emit CertExtend(
-      msg.sender, 
-      block.timestamp 
-    );
-  } 
  
   function getCdobByInstance(string memory instanceName) public view returns (CdobCertificate.CertificateList[] memory){ 
     return cdobCertificate.getAllCdobByInstance(instanceName);  
@@ -517,30 +342,24 @@ contract CertificateManager is ReentrancyGuard {
     CdobCertificate.CertificateDetails memory,
     CdobCertificate.CdobData memory,
     CdobCertificate.DokumenAdministrasi memory,
-    CdobCertificate.DokumenTeknis memory,
-    CdobCertificate.DokumenReSertifikasi memory 
+    CdobCertificate.DokumenTeknis memory
   ) { 
 
     (
       CdobCertificate.CdobData memory cdob,
       CdobCertificate.DokumenAdministrasi memory dokuAdmin,
-      CdobCertificate.DokumenTeknis memory dokuTeknis,
-      CdobCertificate.DokumenReSertifikasi memory dokuReSertifikasi
+      CdobCertificate.DokumenTeknis memory dokuTeknis
     ) = cdobCertificate.getCdobDetails(certId);
 
     return (
       cdobCertificate.getCertDetails(certId), 
       cdob, 
       dokuAdmin, 
-      dokuTeknis,
-      dokuReSertifikasi
+      dokuTeknis
     );
   }
  
-  function getRejectMsgCdob(string memory certId) public view returns (
-    string memory,
-    string memory
-  ) {
+  function getRejectMsgCdob(string memory certId) public view returns (string memory) {
     return cdobCertificate.getRejectMsg(certId);
   }
  
