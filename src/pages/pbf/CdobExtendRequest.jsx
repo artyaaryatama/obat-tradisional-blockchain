@@ -39,6 +39,11 @@ function CdobExtendRequest() {
     0: "Obat Lain",
     1: "Cold Chain Product"
   };
+  
+  const tpMaps = {
+    0n: "Obat Lain",
+    1n: "Cold Chain Product (CCP)"
+  };
 
   const today = new Date();
   const options = {
@@ -494,7 +499,7 @@ function CdobExtendRequest() {
           </ul> 
           <ul>
             <li className="label"><label>Tipe Permohonan</label></li>
-            <li className="input"><p>{cdobDataExt.tipePermohonan}</p></li>
+            <li className="input"><p>{tpMaps[cdobDataExt.tipePermohonan]}</p></li>
           </ul> 
 
           <div className="doku">

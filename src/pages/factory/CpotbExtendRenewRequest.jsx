@@ -311,12 +311,8 @@ function CpotbExtendRenewRequest() {
 
       contracts.certificateManager.on('CertExtend', (factoryAddr, ts) => {
         handleEventCpotbRenewRequested(ts, tx.hash);
-        console.log(3);
-        console.log(tx.hash)
         writeCpotbFb(tx.hash, timestamp);
-        console.log(34);
         recordHashFb(tx.hash, timestamp);
-        console.log(343);
       });
     } catch (err) {
       MySwal.fire({ title: err.message || 'Error', icon: 'error' });
@@ -348,7 +344,7 @@ function CpotbExtendRenewRequest() {
   
       await setDoc(docRef, {
         [`${cpotbDataExt.jenisSediaan}`]: {
-          'renew_request': {
+          'extend_renew_request': {
             hash: txHash,
             timestamp: timestamp,
           }
@@ -437,7 +433,7 @@ function CpotbExtendRenewRequest() {
           </div>
 
           <button type="submit" disabled={loader}>
-            {loader ? <img src={imgLoader} alt="loading..." /> : "Kirim Pengajuan Ulang CPOTB"}
+            {loader ? <img src={imgLoader} alt="loading..." /> : "Kirim Pengajuan Ulang Perpanjangan CPOTB"}
           </button>
         </form>
 

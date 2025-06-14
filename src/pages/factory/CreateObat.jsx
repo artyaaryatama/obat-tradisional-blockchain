@@ -18,9 +18,7 @@ function CreateObat() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
-
   const [loader, setLoader] = useState(false)
-
   const [namaProduk, setNamaProduk] = useState("");
   const [merk, setMerk] = useState("")
   const [klaim, setKlaim] = useState([])
@@ -313,9 +311,9 @@ function CreateObat() {
       errAlert({reason: "Tidak dapat memproduksi obat tradisional"}, `${userdata.instanceName} tidak memiliki sertifikasi CPOTB "${kemasanPrim}"`);
 
     } 
-    // else if (kemasanPrimData.isValid === false) {
-    //   errAlert({reason: "Tidak dapat memproduksi obat tradisional"}, `Sertifikasi CPOTB "${kemasanPrim}" sudah tidak berlaku. Harap lakukan perpanjangan sertifikat terlebih dahulu untuk dapat memproduksi obat ini.`);
-    // } 
+    else if (kemasanPrimData.isValid === false) {
+      errAlert({reason: "Tidak dapat memproduksi obat tradisional"}, `Sertifikasi CPOTB "${kemasanPrim}" sudah tidak berlaku. Harap lakukan perpanjangan sertifikat terlebih dahulu untuk dapat memproduksi obat ini.`);
+    } 
     
     else {
       const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
@@ -750,9 +748,9 @@ function CreateObat() {
                         <button type="button" onClick={() => removeField(index)}><i className="fa-solid fa-trash"></i></button>
                       )}
                       <button type="button" onClick={addField}><i className="fa-solid fa-plus"></i></button>
-                      {/* <button type="button" className="add-prohibited" onClick={handleAddProhibitedIngredient}>
+                      <button type="button" className="add-prohibited" onClick={handleAddProhibitedIngredient}>
                         Add Prohibited Ingredient
-                      </button> */}
+                      </button>
                     </div>
                     
                   </div>

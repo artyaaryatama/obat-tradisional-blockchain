@@ -626,7 +626,7 @@ function CdobApprove() {
                         rel="noopener noreferrer"
                       >
                         {detailCdob.cdobNumber}
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                     </li>
                   </ul>
@@ -1364,7 +1364,7 @@ function CdobApprove() {
                         readOnly
                       >
                         {detailCdob.cdobNumber}
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                     </li>
                   </ul>
@@ -2177,7 +2177,7 @@ function CdobApprove() {
                           rel="noopener noreferrer"
                         >
                           {detailCdob.cdobNumber}
-                          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                          <i className="fa-solid fa-arrow-up-right-from-square"></i>
                         </a>
                       : <p>{detailCdob.cdobNumber}</p>
                       }

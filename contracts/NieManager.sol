@@ -11,7 +11,6 @@ contract NieManager {
     roleManager = RoleManager(roleManagerAddr);
   }
     uint constant extTimestamp = (2*60) + 10;
-  // uint constant extTimestamp = (5*60) + 10;
 
   struct NieDetail {
     string nieNumber; 

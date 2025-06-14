@@ -347,16 +347,6 @@ function App() {
             } 
           />
           
-
-          {/* <Route 
-            path="/cdob-approval" 
-            element={
-              <ProtectedRoute allowedRoles={['2']}>
-                <Navbar />
-                <CpotbApprove />
-              </ProtectedRoute>
-            } 
-          /> */}
           
         </Routes>
       </Router>

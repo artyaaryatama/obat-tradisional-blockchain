@@ -2121,16 +2121,7 @@ function CpotbApprove() {
                       <p>{detailCpotb.timestampApprove}</p> 
                     </li>
                   </ul>
-                  {/* <ul>
-                    <li className="label">
-                      <p>Tanggal Disertifikasi</p> 
-                    </li>
-                    <li className="input">
-                      <p>{detailCpotb.timestampApprove}</p> 
-                    </li>
-                  </ul> */}
-
-<ul>
+                  <ul>
                     <li className="label">
                       <p>Nama Instansi Pabrik</p>
                     </li>
@@ -2594,13 +2585,6 @@ function CpotbApprove() {
                         <li className="input">
                           <select id="rejectReason" required onChange={(e) => handleRejectReasonChange(e)}>
                             <option value="">Pilih alasan</option>
-                            {/* {
-                              eligbleFactory !== true ? 
-                              <option value={eligbleFactory}>
-                                {eligbleFactory} 
-                              </option>
-                                : null
-                            } */}
                             <option value="Surat Permohonan CPOTB tidak sesuai">Surat Permohonan CPOTB tidak sesuai</option>
                             <option value="Bukti Pembayaran Negara Bukan Pajak tidak sesuai">Bukti Pembayaran Negara Bukan Pajak tidak sesuai</option>
                             <option value="Surat Pernyataan Komitmen tidak sesuai">Surat Pernyataan Komitmen tidak sesuai</option>

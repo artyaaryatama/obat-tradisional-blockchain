@@ -241,7 +241,7 @@ function CreateOrderRetailer() {
       
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest,timestampNieExtendApprove, timestampNieExtendReject, timestampNieExtendRenew, factoryInstanceee, bpomInstance, bpomAddr, nieIpfs] = detailNieCt[0];
 
       const [pbfInstance, pbfAddr] = detailPastOrderCt[5]
 
@@ -389,7 +389,7 @@ function CreateOrderRetailer() {
                             rel="noopener noreferrer"
                           >
                             (Detail CPOTB
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>)
                           </a>
                         </span>
                       </p>
@@ -418,7 +418,7 @@ function CreateOrderRetailer() {
                             rel="noopener noreferrer"
                           >
                             (Detail CDOB
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>)
                           </a>
                         </span>
                       </p>

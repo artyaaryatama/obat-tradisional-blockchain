@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { doc, updateDoc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { create } from 'ipfs-http-client';
 import imgLoader from '../../assets/images/loader.svg';
@@ -384,7 +384,7 @@ function NieRequest() {
         cancelButtonText: "Batal",
         allowOutsideClick: false,
         customClass: {
-          htmlContainer: 'scrollable-modal'
+          htmlContainer: 'scrollable-modal-small'
         },
       }).then((result) => {
           if (result.isConfirmed) {

@@ -25,7 +25,6 @@ function CpotbRenewRequest() {
     ipfsDenahBangunan: null,
     ipfsSistemMutu: null
   });
-  // buat tampung ipfs baru
   const [updateFileIpfs, setUpdateFileIpfs] = useState([])
   const [loader, setLoader] = useState(false);
   const [rejectMsg, setRejectMsg] = useState("");

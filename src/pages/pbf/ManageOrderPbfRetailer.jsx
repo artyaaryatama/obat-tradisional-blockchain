@@ -274,7 +274,7 @@ function ManageOrderPbfRetailer() {
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest,timestampNieExtendApprove, timestampNieExtendReject, timestampNieExtendRenew, factoryInstancee, bpomInstance, bpomAddr, nieIpfs] = detailNieCt[0];
 
       const [orderIdProduk, obatIdProduk, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder, prevOrderId] = detailOrderCt;
 
@@ -381,7 +381,7 @@ function ManageOrderPbfRetailer() {
                                   rel="noopener noreferrer"
                                 >
                                   (Detail CPOTB
-                                  <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                                  <i className="fa-solid fa-arrow-up-right-from-square"></i>)
                                 </a>
                               </span>
                             </p>
@@ -650,7 +650,7 @@ function ManageOrderPbfRetailer() {
                                   rel="noopener noreferrer"
                                 >
                                   (Detail CPOTB
-                                  <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                                  <i className="fa-solid fa-arrow-up-right-from-square"></i>)
                                 </a>
                               </span>
                             </p>
@@ -1057,11 +1057,6 @@ function ManageOrderPbfRetailer() {
           <h1>Data Order Obat Tradisional PBF</h1>
           <p>Di kelola oleh {userdata.instanceName}</p>
         </div>
-        {/* <div className="tab-menu">
-          <ul>
-            <li><button className='active'  onClick={() => navigate('/manage-orders-pbf')}>Order Obat</button></li>
-          </ul>
-        </div> */}
         <div className="container-data ">
         <div className="data-list">
           <div className="fade-container">

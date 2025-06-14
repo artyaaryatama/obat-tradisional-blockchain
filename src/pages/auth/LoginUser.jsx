@@ -14,7 +14,6 @@ const MySwal = withReactContent(Swal);
 
 function LoginPage() {
   const [name, setName] = useState("");
-  // const [userAddr, setUserAddr] = useState("");
   const [signer, setSigner] = useState("");
 
   const navigate = useNavigate();
@@ -184,11 +183,6 @@ function LoginPage() {
     }
   }
 
-  const formattedAddress = (addr) => {
-    if (!addr) return "";
-    return `${addr.slice(0, 16)}...${addr.slice(-14)}`;
-  };
-
   return (
     <>
     <div id="LoginPage" className="App">
@@ -211,7 +205,7 @@ function LoginPage() {
                   e.preventDefault(); 
                   goToPage('obat')}}
               >
-              <i class="fa-solid fa-magnifying-glass"></i>
+              <i className="fa-solid fa-magnifying-glass"></i>
                 Cek Obat
               </button>
             </li>
@@ -221,7 +215,7 @@ function LoginPage() {
                   e.preventDefault(); 
                   goToPage('sertifikat')}}
               >
-              <i class="fa-solid fa-magnifying-glass"></i>
+              <i className="fa-solid fa-magnifying-glass"></i>
                 Cek Sertifikasi
               </button>
             </li>
@@ -231,7 +225,7 @@ function LoginPage() {
                   e.preventDefault(); 
                   goToPage('transaksi')}}
               >
-              <i class="fa-solid fa-magnifying-glass"></i>
+              <i className="fa-solid fa-magnifying-glass"></i>
                 Riwayat Transaksi
               </button>
             </li>
@@ -249,14 +243,6 @@ function LoginPage() {
               onChange={(e) => setName(e.target.value)} 
               required 
             />
-            
-            {/* <input 
-              type="text" 
-              placeholder="Account E-Wallet Address" 
-              value={userAddr} 
-              onChange={(e) => setUserAddr(e.target.value)} 
-              required 
-            /> */}
             
             <button type="submit">
               {
@@ -289,7 +275,7 @@ function LoginPage() {
               </li>
 
               <li>
-                <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled Retailer</button>
+                <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled Apotek</button>
               </li>
             </ul>
           </div>

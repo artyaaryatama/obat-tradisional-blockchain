@@ -119,7 +119,7 @@ function NieExtendRenewRequest() {
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
     
     MySwal.fire({
-      title: "Sukses mengajukan ulang NIE",
+      title: "Sukses mengajukan ulang registrasi ulang NIE",
       html: (
         <div className='form-swal event'>
           <ul>
@@ -218,10 +218,10 @@ function NieExtendRenewRequest() {
         });
       }
       
-      contracts.nieManager.once("NieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
+      contracts.nieManager.once("NieRenewExtend", ( _factoryAddr, _timestampRenewRequestNie) => {
         createObatFb(userdata.instanceName, obatData.namaObat, extendRenewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
         recordHashFb(obatData.namaObat, extendRenewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
-        handleEventNieRenewRequest( _factoryInstance, _factoryAddr,_timestampRenewRequestNie, extendRenewRequestNieCt.hash)
+        handleEventNieRenewRequest( userdata.instanceName, _factoryAddr,_timestampRenewRequestNie, extendRenewRequestNieCt.hash)
       });
       
     } catch (error) {
@@ -236,10 +236,10 @@ function NieExtendRenewRequest() {
       await setDoc(docRef, {
         [`${namaProduk}`]: {
           historyNie: {
-            renewRequestHash: obatHash,
-            renewRequestTimestamp: timestamp,
+            extendedRenewRequestHash: obatHash,
+            extendedRenewRequestTimestamp: timestamp,
           },
-          status: 3
+          status: 7
         }
       }, { merge: true }); 
     } catch (err) {
@@ -254,7 +254,7 @@ function NieExtendRenewRequest() {
   
       await setDoc(docRef, {
         [`produksi`]: {
-          'renew_request_nie': {
+          'extend_renew_request': {
             hash: txHash,
             timestamp: timestamp,
           }
@@ -287,17 +287,107 @@ function NieExtendRenewRequest() {
       ['Desain Kemasan Berwarna', finalDocs.ipfsDesainKemasanBerwarna],
     ].map(([label, hash]) => `
       <ul>
-        <li class="label label-2"><p>${label}</p></li>
-        <li class="input input-2">
+        <li className="label label-2"><p>${label}</p></li>
+        <li className="input input-2">
           <a href="http://localhost:8080/ipfs/${hash}" target="_blank" rel="noopener noreferrer">
-            Lihat ${label} <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            Lihat ${label} <i className="fa-solid fa-arrow-up-right-from-square"></i></a>
         </li>
       </ul>
     `).join('');
 
+    Object.entries(uploaded).map(([docName, hash]) => (
+      console.log(docName, hash)
+    ))
+
     const { isConfirmed } = await MySwal.fire({
+      title: `Konfirmasi Perpanjangan CDOB`,
+      html: (
+          <div className='form-swal'>
+            <div className="row row--obat table-like">
+              <div className="col doku">
+                
+                <ul>
+                  <li className="label label-2"><p>Nama Obat</p></li>
+                  <li className="input input-2"><p>{obatData.namaObat}</p></li>
+                </ul>
+                <ul>
+                  <li className="label label-2"><p>Nomor NIE</p></li>
+                  <li className="input input-2">
+                    <a
+                      href={`http://localhost:3000/public/certificate/${obatData.nieNumber}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {obatData.nieNumber}
+                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                  </li>
+                  </ul>
+                <ul>
+                  <li className="label label-2">
+                    <p>Formula produk Metrik</p>
+                  </li>
+                  <li className="input input-2">
+                    <a href="http://localhost:8080/ipfs/finalDocs.ipfsFormulaProdukMetrik" target="_blank" rel="noopener noreferrer">
+                      Lihat Formula produk Metrik <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                  </li>
+                </ul>
+                <ul>
+                  <li className="label label-2">
+                    <p>SK Persetujuan</p>
+                  </li>
+                  <li className="input input-2">
+                    <a href="http://localhost:8080/ipfs/finalDocs.ipfsSkPersetujuanVariasi" target="_blank" rel="noopener noreferrer">
+                      Lihat SK Persetujuan <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                  </li>
+                </ul>
+                <ul>
+                  <li className="label label-2">
+                    <p>Desain Kemasan Terakhir</p>
+                  </li>
+                  <li className="input input-2">
+                    <a href="http://localhost:8080/ipfs/finalDocs.ipfsDesainKemasanTerakhir" target="_blank" rel="noopener noreferrer">
+                      Lihat Desain Kemasan Terakhir <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                  </li>
+                </ul>
+                <ul>
+                  <li className="label label-2">
+                    <p>Surat Pernyataan Peredaran</p>
+                  </li>
+                  <li className="input input-2">
+                    <a href="http://localhost:8080/ipfs/finalDocs.ipfsSuratPernyataanPeredaran" target="_blank" rel="noopener noreferrer">
+                      Lihat Surat Pernyataan Peredaran <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                  </li>
+                </ul>
+                <ul>
+                  <li className="label label-2">
+                    <p>Desain Kemasan Berwarna</p>
+                  </li>
+                  <li className="input input-2">
+                    <a href="http://localhost:8080/ipfs/finalDocs.ipfsDesainKemasanBerwarna" target="_blank" rel="noopener noreferrer">
+                      Lihat Desain Kemasan Berwarna <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        ),
+      width: '900',
+      showCancelButton: true,
+      confirmButtonText: 'Konfirmasi',
+      cancelButtonText: "Batal",
+      allowOutsideClick: false,
+      })
+    
+    
+    MySwal.fire({
       title: 'Konfirmasi Perpanjangan CPOTB',
-      html: `<div class="form-swal"><div class="row row--obat table-like"><div class="col doku">${htmlList}</div></div></div>`,
+      html: `<div className="form-swal"><div className="row row--obat table-like"><div className="col doku">${htmlList}</div></div></div>`,
       width: '900', showCancelButton: true, confirmButtonText: 'Konfirmasi', cancelButtonText: 'Batal', allowOutsideClick: false
     });
 

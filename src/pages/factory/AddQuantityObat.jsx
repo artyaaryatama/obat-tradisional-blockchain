@@ -126,24 +126,6 @@ function AddQuantityObat() {
             }
           })
 
-          // const reconstructedData = listObatNameCt.map((item) => {
-          //   console.log(item);
-
-          //   if (item[2] !== '') {
-          //     console.log(item[1]);
-          //     return {
-          //       obatId: item[0],
-          //       namaProduk: item[1]
-          //     }
-          //   } else {
-          //     return false
-          //   }
-          // })
-
-          // if(!reconstructedData){
-          //   errAlert({reason: `Pabrik ${userdata.instanceName} tidak memiliki obat dengan NIE yang terdaftar.`})
-          // }
-
           setDataObatAvail(reconstructedData)
 
           const timestamp = Date.now(); 
@@ -313,11 +295,9 @@ function AddQuantityObat() {
 
     const detailObatCt = await contracts.obatTradisional.detailObat(id);
     const detailNieCt = await contracts.nieManager.getNieDetail(id)
-    // const rejectMsg = await contracts.NieManager.getRejectMsgNie(id);
-
     const [merk, namaObat, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-    const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest, timestampNieExtendApprove, factoryInstancee, bpomInstance, bpomAddr] = detailNieCt[0];
+    const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest,timestampNieExtendApprove, timestampNieExtendReject, timestampNieExtendRenew, factoryInstancee, bpomInstance, bpomAddr, nieIpfs] = detailNieCt[0];
     console.log(cpotbHash);
     
     const detailObat = {
@@ -356,8 +336,8 @@ function AddQuantityObat() {
       String.fromCharCode(65 + Math.floor(Math.random() * 26))
     ).join(''); 
 
-    console.log(2);
-    console.log(2);
+    console.log(dataObat.factoryAddr);
+    console.log(dataObat.bpomAddr);
 
     const userFactoryCt = await contracts.roleManager.getUserData(dataObat.factoryAddr);
     const userBpomCt = await contracts.roleManager.getUserData(dataObat.bpomAddr);

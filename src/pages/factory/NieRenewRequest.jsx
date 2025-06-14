@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { create } from 'ipfs-http-client';
 import imgLoader from '../../assets/images/loader.svg';
@@ -10,7 +10,6 @@ import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
-import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
@@ -49,11 +48,6 @@ function NieRenewRequest() {
     minute: '2-digit',
     timeZoneName: 'short'
   }
-
-  const tipeObatMap = {
-    0n: "Obat Lain",
-    1n: "Cold Chain Product"
-  };
 
   const labelMapping = {
     MasterFormula: "Dokumen Master Formula",
@@ -392,20 +386,36 @@ function NieRenewRequest() {
         html: (
           <div className='form-swal'>
             <div className="row row--obat table-like">
-              <div class="col">
-                <div class="doku">
+              <div className="col">
+                <div className="doku">
+                  <ul>
+            <li className="label">
+              <label htmlFor="instanceName">Nama Obat</label>
+            </li>
+            <li className="input">
+              <p>{obatData.namaObat}</p>
+            </li>
+          </ul>
+          <ul>
+            <li className="label">
+              <label htmlFor="instanceName">Alasan Penolakan</label>
+            </li>
+            <li className="input">
+              <p>{rejectMsg}</p>
+            </li>
+          </ul>
                   {Object.entries(uploadedHashes).map(([key, hash]) => (
                     <ul key={key}>
-                      <li class="label label-2">
+                      <li className="label label-2">
                         <p>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</p>
                       </li>
-                      <li class="input input-2">
+                      <li className="input input-2">
                       <a
                         href={`http://localhost:8080/ipfs/${hash}`}  
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        {hash} <i className="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                       </li>
                     </ul>

@@ -264,7 +264,7 @@ function ManageOrderFactoryPbf() {
 
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest,timestampNieExtendApprove, timestampNieExtendReject, timestampNieExtendRenew, factoryInstancee, bpomInstance, bpomAddr, nieIpfs] = detailNieCt[0];
 
       const [orderIdd, obatId, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder] = detailOrderCt
 
@@ -380,7 +380,7 @@ function ManageOrderFactoryPbf() {
                                   rel="noopener noreferrer"
                                 >
                                   (Detail CDOB
-                                  <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                                  <i className="fa-solid fa-arrow-up-right-from-square"></i>)
                                 </a>
                               </span>
                             </p>

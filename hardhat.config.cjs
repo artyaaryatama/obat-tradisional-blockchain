@@ -26,9 +26,9 @@ module.exports = {
     },
     sepolia: {
       url: `https://sepolia.infura.io/v3/${process.env.VITE_INFURA_API_KEY}`, 
-      // accounts: [
-      //   `0x${process.env.VITE_MY_PRIVATE_KEY}`
-      // ],
+      accounts: [
+        `0x${process.env.VITE_MY_PRIVATE_KEY}`
+      ],
     }
   },
   etherscan: {

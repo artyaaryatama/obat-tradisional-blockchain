@@ -140,7 +140,7 @@ function NieExtendRequest() {
     const formattedTimestamp = new Date(Number(timestamp) * 1000).toLocaleDateString('id-ID', options)
     
     MySwal.fire({
-      title: "Sukses mengajukan ulang NIE",
+      title: "Sukses mengajukan registrasi ulang NIE",
       html: (
         <div className='form-swal event'>
           <ul>
@@ -282,11 +282,11 @@ function NieExtendRequest() {
       
       console.log(renewRequestNieCt);
 
-      // contracts.nieManager.once("NieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
-      //   createObatFb(userdata.instanceName, obatData.namaObat, renewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
-      //   recordHashFb(obatData.namaObat, renewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
-      //   handleEventNieRenewRequest( _factoryInstance, _factoryAddr,_timestampRenewRequestNie, renewRequestNieCt.hash)
-      // });
+      contracts.nieManager.once("NieExtendRequest", ( _factoryAddr, _timestampRenewRequestNie) => {
+        createObatFb(userdata.instanceName, obatData.namaObat, renewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
+        recordHashFb(obatData.namaObat, renewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
+        handleEventNieRenewRequest( userdata.instanceName, _factoryAddr,_timestampRenewRequestNie, renewRequestNieCt.hash)
+      });
       
     } catch (error) {
       errAlert(error, "Can't Request NIE.")
@@ -300,10 +300,10 @@ function NieExtendRequest() {
       await setDoc(docRef, {
         [`${namaProduk}`]: {
           historyNie: {
-            renewRequestHash: obatHash,
-            renewRequestTimestamp: timestamp,
+            extendedRequestHash: obatHash,
+            extendedRequestTimestamp: timestamp,
           },
-          status: 3
+          status: 4
         }
       }, { merge: true }); 
     } catch (err) {
@@ -318,7 +318,7 @@ function NieExtendRequest() {
   
       await setDoc(docRef, {
         [`produksi`]: {
-          'renew_request_nie': {
+          'extend_request': {
             hash: txHash,
             timestamp: timestamp,
           }
@@ -493,20 +493,20 @@ function NieExtendRequest() {
         html: (
           <div className='form-swal'>
             <div className="row row--obat table-like">
-              <div class="col">
-                <div class="doku">
+              <div className="col">
+                <div className="doku">
                   {Object.entries(uploadedHashes).map(([key, hash]) => (
                     <ul key={key}>
-                      <li class="label label-2">
+                      <li className="label label-2">
                         <p>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</p>
                       </li>
-                      <li class="input input-2">
+                      <li className="input input-2">
                       <a
                         href={`http://localhost:8080/ipfs/${hash}`}  
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        {hash} <i className="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                       </li>
                     </ul>
@@ -585,14 +585,22 @@ function NieExtendRequest() {
               <p>{obatData.namaObat}</p>
             </li>
           </ul>
+          <ul>
+            <li className="label">
+              <label htmlFor="instanceName">Nomor NIE</label>
+            </li>
+            <li className="input">
+              <p>{obatData.nieNumber}</p>
+            </li>
+          </ul>
 
           <div className="doku">
             <h5>Dokumen Registrasi Ulang NIE</h5>
             <ul>
-              <li class="label">
+              <li className="label">
                 <label htmlFor="formulaProdukMetrik">Formula produk dalam satuan metrik</label>
               </li>
-              <li class="input">
+              <li className="input">
                 <input
                   type="file"
                   accept="application/pdf"
@@ -604,10 +612,10 @@ function NieExtendRequest() {
             </ul>
 
             <ul>
-              <li class="label">
+              <li className="label">
                 <label htmlFor="skPersetujuanVariasi">SK persetujuan serta semua jenis variasi yang pernah disetujui</label>
               </li>
-              <li class="input">
+              <li className="input">
                 <input
                   type="file"
                   accept="application/pdf"
@@ -619,10 +627,10 @@ function NieExtendRequest() {
             </ul>
 
             <ul>
-              <li class="label">
+              <li className="label">
                 <label htmlFor="desainKemasanTerakhirDisetujui">Desain kemasan terakhir yang disetujui</label>
               </li>
-              <li class="input">
+              <li className="input">
                 <input
                   type="file"
                   accept="application/pdf"
@@ -634,10 +642,10 @@ function NieExtendRequest() {
             </ul>
 
             <ul>
-              <li class="label">
+              <li className="label">
                 <label htmlFor="suratPernyataanPeredaranNoBets">Surat pernyataan bahwa produk masih diedarkan dengan disertai no bets terakhir</label>
               </li>
-              <li class="input">
+              <li className="input">
                 <input
                   type="file"
                   accept="application/pdf"
@@ -649,10 +657,10 @@ function NieExtendRequest() {
             </ul>
 
             <ul>
-              <li class="label">
+              <li className="label">
                 <label htmlFor="desainKemasanBerwarnaTerbaru">Desain kemasan berwarna yang terbaru</label>
               </li>
-              <li class="input">
+              <li className="input">
                 <input
                   type="file"
                   accept="application/pdf"

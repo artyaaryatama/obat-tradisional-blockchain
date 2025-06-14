@@ -267,18 +267,18 @@ function CdobExtendRenewRequest() {
         html: (
           <div className='form-swal'>
             <div className="row row--obat table-like">
-              <div class="col">
-                <div class="doku">
+              <div className="col"> 
+                <div className="doku">
                   <ul>
                     <li className="label"><label>Alasan Penolakan Perpanjangan CDOB</label></li>
                     <li className="input reject"><p>{cdobDataExt.rejectMsg}</p></li>
                   </ul>
                   {Object.entries(uploadedHashes).map(([key, hash]) => (
                     <ul key={key}>
-                      <li class="label label-2">
+                      <li className="label label-2">
                         <p>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</p>
                       </li>
-                      <li class="input input-2">
+                      <li className="input input-2">
                       <a
                         href={`http://localhost:8080/ipfs/${hash}`}  
                         target="_blank"
@@ -528,7 +528,7 @@ function CdobExtendRenewRequest() {
             loader? (
               <img src={imgLoader} alt="" />
             ) : (
-              "Kirim Pengajuan CDOB"
+              "Kirim Pengajuan Perpanjangan Ulang CDOB"
             )
           }
             </button>

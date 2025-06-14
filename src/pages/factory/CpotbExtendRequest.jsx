@@ -636,7 +636,7 @@ function CpotbExtendRequest() {
         </div>
 
         <button type="submit" disabled={loader}>
-          {loader ? <img src={imgLoader} alt="loading..." /> : "Kirim Pengajuan Ulang CPOTB"}
+          {loader ? <img src={imgLoader} alt="loading..." /> : "Kirim Pengajuan Perpanjangan CPOTB"}
         </button>
 
         <button type='button' onClick={handleAutoFillAndRenew} className='auto-filled' disabled={loader}>

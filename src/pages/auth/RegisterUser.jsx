@@ -19,7 +19,6 @@ function RegisterPage() {
 
   const [name, setName] = useState("");
   const [instanceName, setInstanceName] = useState("");
-  // const [userAddr, setUserAddr] = useState("");
   const [nib, setNib] = useState("");
   const [npwp, setNpwp] = useState("");
   const [role, setRole] = useState("");
@@ -188,7 +187,7 @@ function RegisterPage() {
     } else if (role===1){
       r= "PBF"
     } else if (role===3){
-      r= "Pengecer"
+      r= " Apotek"
     }
 
     if (factoryType === "UMOT") {
@@ -499,14 +498,6 @@ function RegisterPage() {
                 onChange={(e) => setInstanceName(e.target.value)} 
                 required 
               />
-              
-              {/* <input 
-                type="text" 
-                placeholder="Account E-Wallet Address" 
-                value={userAddr} 
-                onChange={(e) => setUserAddr(e.target.value)} 
-                required
-              /> */}
 
               <textarea 
                 type="text" 
@@ -525,7 +516,7 @@ function RegisterPage() {
                 <option value="0">Pabrik</option>
                 <option value="1">PBF</option>
                 <option value="2">BPOM</option>
-                <option value="3">Pengecer</option>
+                <option value="3"> Apotek</option>
               </select>
 
               {!isBpom ? 
@@ -596,7 +587,7 @@ function RegisterPage() {
                 </li>
 
                 <li>
-                  <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled Retailer</button>
+                  <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled Apotek</button>
                 </li>
               </ul>
             </div>

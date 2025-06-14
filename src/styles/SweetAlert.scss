@@ -325,6 +325,24 @@ button.addQuantity{
     justify-content: space-between;
     width: 100%;
     gap: 10px;
+    
+    &.nie{
+      flex-direction: column;
+      
+      
+      .col.doku{
+        padding: 0;
+        width: 100%;
+        .doku-row{
+          display: flex;
+          gap: 10px;
+          
+          .doku-1{
+            width: 46%;
+          }
+        }
+      }
+    }
 
     &.column{
       flex-direction: column;
@@ -513,6 +531,19 @@ button.addQuantity{
         width: 18%;
       }
 
+      &.docs{
+        > *:only-child {
+            flex-direction: row; // Pastikan tetap row jika hanya satu child
+            background-color: #a0987a;
+          }
+        
+          > *:nth-last-child(2):first-child {
+            flex-direction: column; 
+            background-color: #3fc3ee;
+            // gap: 20px; 
+          }
+
+      }
     
     }
 

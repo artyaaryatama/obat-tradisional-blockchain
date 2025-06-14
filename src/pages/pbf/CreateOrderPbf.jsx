@@ -257,7 +257,7 @@ function CreateOrderPbf() {
 
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest,timestampNieExtendApprove, timestampNieExtendReject, timestampNieExtendRenew, factoryInstanceee, bpomInstance, bpomAddr, nieIpfs] = detailNieCt[0];
 
       const detailObat = {
         obatId: id,
@@ -410,7 +410,7 @@ function CreateOrderPbf() {
                               rel="noopener noreferrer"
                             >
                               (Detail CPOTB
-                              <i class="fa-solid fa-arrow-up-right-from-square"></i>)
+                              <i className="fa-solid fa-arrow-up-right-from-square"></i>)
                             </a>
                           </span>
                         </p>
@@ -538,28 +538,28 @@ function CreateOrderPbf() {
     const pbfCdob = await checkAvailCdob(userdata.instanceName, tipeObat)
     console.log('', orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdob)
 
+    try {
+      const createOrderCt = await contracts.orderManagement.createOrder('', orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdob.cdobIpfs);
+      
+      if(createOrderCt){
+        
+        MySwal.update({
+          title: "Memproses transaksi...",
+          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
+        });
+      }
+
+      contracts.orderManagement.once("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+        updateBatchHistoryHash(factoryInstance, namaProduk, createOrderCt.hash, batchName, Number(_timestampOrder))
+        handleEventCreateOrder(userdata.instanceName, orderId, id, _batchName, _namaProduk, _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, createOrderCt.hash);
+      });
+      
+    } catch (error) {
+      errAlert(error, "Gagal mengajukan order")
+    }
     if(!pbfCdob.isValid){
       errAlert({reason: "Tidak dapat melakukan order"}, `Sertifikasi CDOB "${tipeObatMap[tipeObat]}" sudah tidak berlaku. Harap lakukan perpanjangan sertifikat terlebih dahulu untuk dapat mengorder obat ini.`);
     } else if(pbfCdob.cdobIpfs) {
-      try {
-        const createOrderCt = await contracts.orderManagement.createOrder('', orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdob.cdobIpfs);
-        
-        if(createOrderCt){
-          
-          MySwal.update({
-            title: "Memproses transaksi...",
-            text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
-          });
-        }
-  
-        contracts.orderManagement.once("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
-          updateBatchHistoryHash(factoryInstance, namaProduk, createOrderCt.hash, batchName, Number(_orderQuantity), Number(_timestampOrder))
-          handleEventCreateOrder(userdata.instanceName, orderId, id, _batchName, _namaProduk, _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, createOrderCt.hash);
-        });
-        
-      } catch (error) {
-        errAlert(error, "Gagal mengajukan order")
-      }
     }
     else {
       errAlert({reason: `Gagal mengajukan order obat tradisonal`}, `${userdata.instanceName} Tidak memiliki CDOB untuk ${namaProduk}`)
@@ -583,6 +583,7 @@ function CreateOrderPbf() {
   }
 
   const updateBatchHistoryHash = async (factoryInstance, namaProduk, obatHash, batchName, timestamp) => {
+    console.log(timestamp)
     try {
       const collectionName = `obat_${namaProduk}_${factoryInstance}`
       const docRef = doc(db, 'obat_data', factoryInstance)

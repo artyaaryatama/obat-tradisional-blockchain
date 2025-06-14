@@ -45,7 +45,7 @@ function CheckCertificateIpfs() {
       }
 
       const certData = JSON.parse(data);
-      console.log(certData);
+      console.log(ipfsCid);
 
       setCertName(certData.certName);
       setTipePermohonan(certData.tipePermohonan);
@@ -133,14 +133,6 @@ function CheckCertificateIpfs() {
         <span>{senderInstance}</span>
         <span className='addr'>({senderAddr})</span>
       </li>
-      {/* <li className="info-item">
-        <span className="label">{certName === "CPOTB" ? "NIB Pabrik" : "NIB PBF"}</span>
-        <span>{nib}</span>
-      </li>
-      <li className="info-item">
-        <span className="label">{certName === "CPOTB" ? "NPWP Pabrik" : "NPWP PBF"}</span>
-        <span>{npwp}</span>
-      </li> */}
       {certName === "CPOTB" ? renderCpotbDetails() : renderCdobDetails()}
       <li className="info-item">
         <span className="label">Nama Instansi BPOM</span>
