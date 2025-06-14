@@ -36,7 +36,7 @@ import LoginPage from './pages/auth/LoginUser';
 import RegisterPage from './pages/auth/RegisterUser';
 import CheckObatIpfs from './pages/public/CheckObat';
 import ChechCerticateIpfs from './pages/public/CheckCertificate';
-import CheckTransaction from './pages/public/CheckTransaction';
+import CheckTransactions from './pages/public/CheckTransactions';
 import UnauthorizedPage from './pages/Error/Unauthorized'; 
 import FetchBlockchainData from './pages/public/FetchBlockchainData';
 import CheckObatPieces from './pages/public/CheckObatPieces';
@@ -53,7 +53,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/public/obat/:hash" element={<CheckObatIpfs />} />
           <Route path="/public/certificate/:hash" element={<ChechCerticateIpfs />} />
-          <Route path="/riwayat-Transaksi" element={<CheckTransaction />} />
+          <Route path="/riwayat-Transaksi" element={<CheckTransactions />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
           <Route path="/fetchBlockchain" element={<FetchBlockchainData />} />
           <Route path="/cek-obat" element={<CheckObatPieces />} />
