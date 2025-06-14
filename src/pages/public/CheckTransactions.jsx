@@ -32,27 +32,18 @@ function CheckTransactions() {
     document.title = "Riwayat Hash Transaksi";
   }, []);
 
-    const options = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZoneName: 'short'
-  }
-
-const formatTimestamp = (timestamp) => {
-const ts = timestamp < 1e12 ? timestamp * 1000 : timestamp;
-  const date = new Date(ts);
-  return date.toLocaleString("id-ID", {
-    timeZone: "Asia/Makassar",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+  const formatTimestamp = (timestamp) => {
+    const ts = timestamp < 1e12 ? timestamp * 1000 : timestamp;
+    const date = new Date(ts);
+    return date.toLocaleString("id-ID", {
+      timeZone: "Asia/Makassar",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
   };
 
   const showAlert = (title, text, icon) => {
@@ -64,8 +55,33 @@ const ts = timestamp < 1e12 ? timestamp * 1000 : timestamp;
     });
   };
 
+  const isTestData = (input) => {
+    return input.includes("[TEST]");
+  };
+
   const fetchDocuments = async (instanceName) => {
+
+    if(isTestData(instanceName)){
+      const Toast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 6000,
+      width:600,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+      }
+      });
+      Toast.fire({
+        icon: "warning",
+        title: "⚠️ Entri dengan label [TEST] adalah data uji coba. Karena sering digunakan berulang dalam pengujian, timestamp yang tercantum bisa tidak berurutan secara kronologis."
+      });
+    }
+
     setAllObatNames([])
+
     try {
       const querySnapshot = doc(db, "company_data", instanceName);
       const instanceSnapshot = await getDoc(querySnapshot);
@@ -115,6 +131,10 @@ const ts = timestamp < 1e12 ? timestamp * 1000 : timestamp;
           timestamp: obatData.historyNie.requestNieTimestamp,
         },
         'Penerbitan NIE': {
+          hash: obatData.historyNie.approvedNie,
+          timestamp: obatData.historyNie.approvedNieTimestamp,
+        },
+        'Penolakan NIE': {
           hash: obatData.historyNie.approvedNie,
           timestamp: obatData.historyNie.approvedNieTimestamp,
         },
@@ -191,6 +211,7 @@ const ts = timestamp < 1e12 ? timestamp * 1000 : timestamp;
     setPbfInstance(batchNames.pbf);
     setRetailerInstance(batchNames.retailer);
     setQuantity(batchNames.quantity);
+    
     await fetchCertficates(selectedObatData.jenisSediaan, selectedObatData.tipeObat, batchNames.pbf);
 
   };
@@ -359,9 +380,25 @@ const ts = timestamp < 1e12 ? timestamp * 1000 : timestamp;
       );
     }
 
+    
+
     return (
       <div>
-        <h4>{title}</h4>
+        {
+          title === "Data CPOTB" ? 
+          <div className="batch-summary">
+            <p>
+              <b>Jenis Sediaan:</b> {selectedJenisSediaan}
+            </p>
+          </div> 
+          :
+          <div className="batch-summary">
+            <p>
+              <b>Tipe Permohonan:</b> {selectedTipeObat}
+            </p>
+          </div>
+
+        }
         <table>
           <thead>
             <tr>
