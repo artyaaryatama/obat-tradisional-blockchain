@@ -1,5 +1,4 @@
-@import './main.scss';
-
+@use './main.scss' as *;
 .container{
   display: flex;
   flex-direction: column;

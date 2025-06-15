@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { doc, updateDoc  } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
 import "../../styles/MainLayout.scss"
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -22,7 +20,6 @@ function ManageCpotb() {
   const [loading, setLoading] = useState(true);
   const [fadeClass, setFadeClass] = useState('fade-in');
   const [fadeOutLoader, setFadeOutLoader] = useState(false);
-
 
   const jenisSediaanMap = {
     0n: "Cairan Obat Dalam",

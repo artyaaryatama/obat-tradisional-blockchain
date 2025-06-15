@@ -1,5 +1,6 @@
-@import './main.scss';
-@import 'mixin';
+@use './main.scss' as *;
+@use 'mixin' as *;
+@use 'sass:color';
 
 #RegisterPage.App{
   display: flex;
@@ -11,7 +12,7 @@
 
   form{
     button{
-      background-color: darken($color: $black, $amount: 14%);
+      background-color: color.adjust($color: $black, $lightness:-14%);
       img{
         width: 14px;
       }
@@ -228,7 +229,7 @@
         }
 
         button{
-          background-color: darken($color: $purple, $amount: 14%);
+          background-color: color.adjust($color: $purple, $lightness:-14%);
           img{
             width: 14px;
           }
@@ -236,5 +237,11 @@
       }
     }
   }
+}
+
+.my-swal-popup {
+  border-radius: 10px;
+  font-family: "Instrument Sans", sans-serif;
+  padding: 14px 0;
 }
 

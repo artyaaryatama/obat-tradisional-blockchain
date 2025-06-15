@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 @mixin btnUniversal($fontColor, $bgColor, $rad:null){
   background-color: $bgColor;
   color: $fontColor;
@@ -7,7 +9,7 @@
   border-radius: if($rad, $rad, 4px);
 
   &:hover {
-    background-color: darken($bgColor, 14%);
+    background-color: color.adjust($bgColor, $lightness:-14%);
     cursor: pointer;
   }
 }
@@ -21,7 +23,7 @@
   border-radius: 7px;
 
   &:hover {
-    background-color: darken($bgColor, 14%);
+    background-color: color.adjust($bgColor, $lightness:-14%);
     cursor: pointer;
   }
 }
@@ -35,23 +37,23 @@
   border-radius: $rad;
 
   &:hover {
-    background-color: darken($bgColor, 14%);
+    background-color: color.adjust($bgColor, $lightness:-14%);
     cursor: pointer;
   }
 }
 
 @mixin inputForm($col: null, $bgCol: null) {
-  background-color: if($bgCol, $bgCol, $white);
-  border: solid 1px $grey;
+  background-color: if($bgCol, $bgCol, #fff);
+  border: solid 1px #A6A6A6;
   padding: 8px 10px;
   font-size: 14px;
   border-radius: 4px;
-  color: if($col, $col, $black);
+  color: if($col, $col, #1B1C1E);
   width: -webkit-fill-available;
   
   &::placeholder{
     font-family: "Instrument Sans", sans-serif;
-    color: if($col, $col, $black);
+    color: if($col, $col, #1B1C1E);
     font-style: italic;
   }
 
@@ -61,20 +63,20 @@
   }
 
   &:read-only{
-    background-color: $grey-light;
-    color: darken($grey, 20%);
+    background-color: #f2f3f59e;
+    color:color.adjust(if($bgCol, $bgCol, #fff), $lightness:-20%);
   }
 }
 
 @mixin selectForm($bgCol: null) {
   font-family: "Instrument Sans", sans-serif;
-  background-color: if($bgCol, $bgCol, $white);
+  background-color: if($bgCol, $bgCol, #fff);
   border: none;
   margin: 10px 0;
   padding: 8px 6px;
   font-size: 14px;
   border-radius: 4px;
-  color: $black;
+  color: #1B1C1E;
 
   &:focus{
     outline: none !important;
@@ -84,7 +86,7 @@
 
 @mixin textArea($bgCol: null) {
   font-family: "Instrument Sans", sans-serif;
-  background-color: if($bgCol, $bgCol, $white);
+  background-color: if($bgCol, $bgCol, #fff);
   padding: 8px 10px;
   font-size: 14px;
   border-radius: 4px;

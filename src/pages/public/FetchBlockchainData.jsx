@@ -52,12 +52,10 @@ function FetchBlockchainData() {
     };
 
     const getEpochData = () => {
-        // Simulated: Epochs in Ethereum PoS are derived from block height
         setEpochData(`Epoch estimate: ${Math.floor(Number(epochNumber) / 32)}`);
     };
 
     const getSlotData = () => {
-        // Simulated: Slots in Ethereum PoS are derived from block number
         setSlotData(`Slot estimate: ${Number(slotNumber) % 32}`);
     };
 
@@ -65,7 +63,6 @@ function FetchBlockchainData() {
         <div className="fetch-blockchain">
             <h2>Fetch Sepolia Blockchain Data</h2>
             
-            {/* Block Data */}
             <div>
                 <input 
                     type="text" 
@@ -83,7 +80,6 @@ function FetchBlockchainData() {
                 )}
             </div>
             
-            {/* Transaction Data */}
             <div>
                 <input 
                     type="text" 
@@ -101,7 +97,6 @@ function FetchBlockchainData() {
                 )}
             </div>
 
-            {/* Epoch Data */}
             <div>
                 <input 
                     type="text" 
@@ -113,7 +108,6 @@ function FetchBlockchainData() {
                 {epochData && <p>{epochData}</p>}
             </div>
 
-            {/* Slot Data */}
             <div>
                 <input 
                     type="text" 

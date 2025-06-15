@@ -1,5 +1,5 @@
-@import './main.scss';
-@import 'mixin';
+@use './main.scss' as *;
+@use 'mixin' as *;
 
 #publicObat{
   padding: 20px;
@@ -80,7 +80,6 @@
     .logo-obat{
       margin-right: 20px;
       img{
-        // width: 64px;
         width: 92px;
       }
     }
@@ -155,6 +154,7 @@
    
              li{
                margin-bottom: 16px;
+               display: flex;
 
                .empty{
                 display: none;
@@ -212,12 +212,12 @@
        }
 
        pre {
-        white-space: pre-wrap; /* Allows the text to wrap to the next line */
-        word-wrap: break-word; /* Breaks long words */
-        width: 100%; /* Ensures the <pre> element spans the full width of its parent */
-        box-sizing: border-box; /* Includes padding and border in the width calculation */
-        overflow-wrap: break-word; /* Prevents text from overflowing */
-        overflow: auto; /* Adds a scrollbar if content still overflows */
+        white-space: pre-wrap; 
+        word-wrap: break-word;
+        width: 100%; 
+        box-sizing: border-box; 
+        overflow-wrap: break-word;
+        overflow: auto;
       }
 
 
@@ -297,36 +297,24 @@
   }
 
   table {
-    width: 100%; /* Optional: to set the width of the table */
-    border-collapse: collapse; /* Optional: to remove gaps between table borders */
+    width: 100%; 
+    border-collapse: collapse;
   }
   
   th, td {
-    text-align: center; /* Centers the text horizontally */
-    vertical-align: middle; /* Centers the text vertically */
-    padding: 10px; /* Optional: adds padding inside the cells for better spacing */
+    text-align: center;
+    vertical-align: middle; 
+    padding: 10px;
   }
   
   tr {
-    text-align: center; /* Aligns all rows in the table */
+    text-align: center; 
   }
   td button {
-    margin: 5px; /* Adds space around each button */
+    margin: 5px;
   }
   
   
-}
-
-.document-selection{
-  // background-color: beige;
-  // select{
-  //   background-color: aqua;
-  //   margin: 0;
-  // }
-
-  // h3{
-  //   margin: 10px 0;
-  // }
 }
 
 .batch-summary{

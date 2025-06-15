@@ -76,8 +76,6 @@ function CheckCertificateIpfs() {
       const alamat = company?.userLocation || "-";
       const nib = company?.userNib || "-";
 
-      console.log(docData)
-
       Object.entries(docData)
       .filter(([_, d]) => [1,5].includes(d.status) && d.cdobNumber)
       .forEach(([jenisSediaan, d], id) => {
@@ -202,14 +200,6 @@ function CheckCertificateIpfs() {
         <span>{senderInstance}</span>
         <span className='addr'>({senderAddr})</span>
       </li>
-      {/* <li className="info-item">
-        <span className="label">{certName === "CPOTB" ? "NIB Pabrik" : "NIB PBF"}</span>
-        <span>{nib}</span>
-      </li>
-      <li className="info-item">
-        <span className="label">{certName === "CPOTB" ? "NPWP Pabrik" : "NPWP PBF"}</span>
-        <span>{npwp}</span>
-      </li> */}
       {certName === "CPOTB" ? renderCpotbDetails() : renderCdobDetails()}
       <li className="info-item">
         <span className="label">Nama Instansi BPOM</span>

@@ -201,7 +201,6 @@ function CheckObatPieces() {
       setFactoryNib(detailObat.nibFactory)
       setBPOMNib(detailObat.nibBpom)
       setFactoryAddressInstance(detailObat.factoryAddressInstance);
-      // (Your existing code to process obatData)
   
     } catch (error) {
       alert('Error')
@@ -222,43 +221,21 @@ function CheckObatPieces() {
       const alamat = company?.userLocation || "-";
       const nib = company?.userNib || "-";
 
-      Object.entries(docData)
-      //   .filter(([key, obatData]) =>
-      //   key.startsWith('batch_') &&
-      //   [1, 5].includes(obatData.status)
-      // )
-      // .forEach(([namaProduk, obatData]) => {
-      //   const isNew = obatData.status === 1;
+      console.log(docData)
 
-      //   rowsData.push({
-      //     id:                 rowsData.length + 1,
-      //     status:             obatData.status,
-      //     jenisIzin:   isNew ? "NIE Baru" : "Perpanjangan",
-      //     approvedTimestamp:  obatData.historyNie?.approvedTimestamp ?? null,
-      //     nieNumber:          obatData.historyNie?.nieNumber ?? "-",
-      //     namaProduk,  // ES6 shorthand
-      //     companyName, // pastikan ini sudah di-define di scope luar
-      //     approvedHash:       obatData.historyNie?.approvedHash ?? "-",
-      //     ipfsCid:            obatData.historyNie?.ipfsCid ?? "-",
-      //     bpomInstance:       obatData.historyNie?.bpomInstance ?? "-",
-      //     companyAddress:     alamat, // pastikan `alamat` sudah ada di scope
-      //     companyNib:         nib     // pastikan `nib` sudah ada di scope
-      //   });
-      // });
-      .filter(([_, obatData]) => [1,5].includes(obatData.status))
-      
-      .forEach(([namaProduk, obatData]) => {
-        const isNew = obatData.status === 1;
+      Object.entries(docData).forEach(([namaProduk, obatData]) => {
+        if (obatData?.status !== 1) return; 
+        console.log(namaProduk)
+        console.log(obatData)
+
         rowsData.push({
           id: rowsData.length + 1,
-          // nomor: rowsData.length + 1,
-          jenisIzin:   isNew ? "NIE Baru" : "Perpanjangan",
           fixedNumber: rowsData.length + 1,
           approvedTimestamp: obatData.historyNie.approvedTimestamp || null,
+          approvedHash: obatData.historyNie.approvedHash || "-",
           nieNumber: obatData.historyNie.nieNumber || "-",
           namaProduk:namaProduk,
           companyName: companyName,
-          approvedHash: obatData.historyNie.approvedHash || "-",
           ipfsCid: obatData.historyNie.ipfsCid || "-",
           bpomInstance: obatData.historyNie.bpomInstance || "-",
           companyAddress: alamat,
@@ -284,14 +261,6 @@ function CheckObatPieces() {
             <div className="content">
               <div className="list-detail">
                 <ul className="info-list">
-                  <li className="info-item">
-                    <span className="label">Nama Batch</span>
-                    <span>{batchName}</span>
-                  </li>
-                  <li className="info-item">
-                    <span className="label">ID Kemasan</span>
-                    <span>{obatIdPackage}</span>
-                  </li>
                   <li className="info-item">
                     <span className="label">Nama Obat</span>
                     <span>{namaObat}</span>
@@ -358,20 +327,10 @@ function CheckObatPieces() {
                         rel="noopener noreferrer"
                       >
                         Detail CPOTB
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
                       </a>
                     </span>
                   </li>
-
-                  {/* <li className="info-item">
-                    <span className="label">NIB Pabrik</span>
-                    <span className='address'>{factoryNib}</span>
-                  </li>
-
-                  <li className="info-item">
-                    <span className="label">NPWP Pabrik</span>
-                    <span className='address'>{factoryNPWP}</span>
-                  </li> */}
 
                   <li className="info-item">
                     <span className="label">Tipe Industri Farmasi</span>
@@ -415,14 +374,6 @@ function CheckObatPieces() {
                     <span className="label">Lokasi BPOM</span>
                     <span>{bpomAddressInstance}</span>
                   </li>
-                  {/* <li className="info-item">
-                    <span className="label">NIB BPOM</span>
-                    <span>{bpomNib}</span>
-                  </li>
-                  <li className="info-item">
-                    <span className="label">NPWP BPOM</span>
-                    <span>{bpomNPWP}</span>
-                  </li> */}
                 </ul>
               </div>
             </div>
@@ -449,7 +400,7 @@ function CheckObatPieces() {
                             rel="noopener noreferrer"
                           >
                             Detail CDOB
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i>
                           </a>
                         </span>
                       </li>
@@ -457,14 +408,6 @@ function CheckObatPieces() {
                         <span className="label">Lokasi PBF</span>
                         <span>{pbfInstanceAddress}</span>
                       </li>
-                      {/* <li className="info-item">
-                        <span className="label">NIB PBF</span>
-                        <span>{pbfNib}</span>
-                      </li>
-                      <li className="info-item">
-                        <span className="label">NPWP PBF</span>
-                        <span>{pbfNPWP}</span>
-                      </li> */}
                       <li className="info-item">
                         <span className="label">Tangal order diajukan</span>
                         <span>{detailOrderPbf.timestampOrder}</span>
@@ -506,14 +449,6 @@ function CheckObatPieces() {
                         <span className="label">Lokasi Retailer </span>
                         <span>{retailerInstanceAddress}</span>
                       </li>
-                      {/* <li className="info-item">
-                        <span className="label">NIB Retailer</span>
-                        <span>{retailerNib}</span>
-                      </li>
-                      <li className="info-item">
-                        <span className="label">NPWP Retailer</span>
-                        <span>{retailerNPWP}</span>
-                      </li> */}
                       <li className="info-item">
                         <span className="label">Tangal order diajukan</span>
                         <span>{detailOrderRetailer.timestampOrder}</span>

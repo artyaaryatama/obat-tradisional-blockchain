@@ -26,7 +26,6 @@ function CdobApprove() {
   const [fadeClass, setFadeClass] = useState('fade-in');
   const [fadeOutLoader, setFadeOutLoader] = useState(false);
 
-
   const tipePermohonanMap = {
     0: "Obat Lain",
     1: "Cold Chain Product (CCP)"

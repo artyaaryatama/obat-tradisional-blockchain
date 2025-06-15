@@ -141,7 +141,7 @@ register pabrik_3 https://sepolia.etherscan.io/tx/0x08e269cb02ced1b0b1d98b9a8c5b
 - complete order retail  https://sepolia.etherscan.io/tx/0x748bbb9cfb157f30eb539cd5581a9d6ea0dc5e541f01274003cef6cd46d5fff7
 
 3. BN-3828-ZUXP [Sirup Jahe Merah Plus]
-- produksi  https://sepolia.etherscan.io/tx/0x82d01bd903220f5a66f7729d85c9317a7339bd790da01576f266bc31b1610d8f
+- produksi  https://sepolia.etherscan.io/tx/0xb5b982dca596f57dacea2bf5a4a3f90315d3e3e5d48cc6197d762cb65546e61e
 - order pbf  https://sepolia.etherscan.io/tx/0xebc00b7f48899649c214befc543b6301bee10429d6c0b906e1fab73d45e37df2
 - send order pbf https://sepolia.etherscan.io/tx/0xaaaf90a3ab1ed4f83779d8e699db335d75c8481d18edc99d27b98a7a97c62a04
 - complete order pbf  https://sepolia.etherscan.io/tx/0x8d86ef92ca4937c3f062d179c2186e2b2f2ee045f1a1ba5299ab0de2f806e440
@@ -180,7 +180,7 @@ register pabrik_3 https://sepolia.etherscan.io/tx/0x08e269cb02ced1b0b1d98b9a8c5b
 - produksi  https://sepolia.etherscan.io/tx/0xc66e87ebb15744902e54d7b5d5a6f08e6b4f8a2dea64f2138fb707bb39959466
 - order pbf  https://sepolia.etherscan.io/tx/0x4689e5dcd693686e6d6ec658b184a6ae278142237dc6b97fbf31128a51c80516
 - send order pbf  https://sepolia.etherscan.io/tx/0x3f2bed4690563535b767d733642c531f39bf8178974bdd36add51ebd72dd1d4c
-- complete order pbf  https://sepolia.etherscan.io/tx/0x694f1cf31444b5a913c5e9b494998c4e80c23914b1a2e1dc6bfa46f44df12bcd
+- complete order pbf  https://sepolia.etherscan.io/tx/0x7ab3406c02499ed121e656e3502bb18c13fffe3d8f1032f57af46e4a34c326bc
 - order retail  https://sepolia.etherscan.io/tx/0xcf0b02158eda016396c2c75ecf19b08986ee36fb4cb899bcf2b80b287cba5484
 - send order retail  https://sepolia.etherscan.io/tx/0x94e3715b127fa8c42b4a9660cabdc189d030fc4c1cf2e3048398245790571b59
 - complete order retail  https://sepolia.etherscan.io/tx/0x3ffd5f7e7e1b210465e31aab302040d940cd2a6a62a3be40f99fa1eb6cdbf7da
@@ -199,7 +199,7 @@ register pabrik_3 https://sepolia.etherscan.io/tx/0x08e269cb02ced1b0b1d98b9a8c5b
 - order pbf  https://sepolia.etherscan.io/tx/0x694f1cf31444b5a913c5e9b494998c4e80c23914b1a2e1dc6bfa46f44df12bcd
 - send order pbf  https://sepolia.etherscan.io/tx/0x38a4a5e4dadb42c91cedf57eb5c5983ed532377438f84dcf871c56b5181858d8
 - complete order pbf  https://sepolia.etherscan.io/tx/0x06bbc933ae868736cd0dd3e4a2d8e5cb5f8ee7fc57fec067c1102dfc5a689bdf
-- order retail  https://sepolia.etherscan.io/tx/0x11998eb808f87c1ab5a19cc30a43024829ebe8f4b3c48d0a84e5686403144e0b
+- order retail  https://sepolia.etherscan.io/tx/0xc07f370ac0bf9771745c1549a1cf9de7e4fd6f2cada67e75a84ef5ad78e4e652
 - send order retail  https://sepolia.etherscan.io/tx/0x9576d6c9042840b2fd82ac3b54dbe440acc7d56444fc9317d48a5891da144ea9
 - complete order retail  https://sepolia.etherscan.io/tx/0x3c019207bffc1e57eb8eaa76301b4604e716faa84e51b272b49c3fe465ab90e9
 

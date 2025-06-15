@@ -11,6 +11,9 @@ function CheckCertificateIpfs() {
   const [certNumber, setCertNumber] = useState("");
   const [timestampReq, setTimestampReq] = useState("");
   const [timestampApp, setTimestampApp] = useState("");
+  const [timestampExpired, setTimestampExpired] = useState("");
+  const [timestampExtendRequest, setTimestampExtendRequest] = useState("");
+  const [timestampExtendApprove, setTimestampExtendApprove] = useState("");
   const [senderInstance, setSenderInstance] = useState("");
   const [senderAddr, setSenderAddr] = useState("");
   const [bpomInstance, setBpomInstance] = useState("");
@@ -42,7 +45,7 @@ function CheckCertificateIpfs() {
       }
 
       const certData = JSON.parse(data);
-      console.log(certData);
+      console.log(ipfsCid);
 
       setCertName(certData.certName);
       setTipePermohonan(certData.tipePermohonan);
@@ -58,6 +61,9 @@ function CheckCertificateIpfs() {
       setFactoryType(certData.factoryType);
       setNpwp(certData.senderNPWP);
       setNib(certData.senderNIB);
+      setTimestampExpired(certData.timestampExpired)
+      setTimestampExtendRequest(certData.timestampExtendRequest)
+      setTimestampExtendApprove(certData.timestampExtendApprove)
     };
 
     getDetailData();
@@ -105,18 +111,28 @@ function CheckCertificateIpfs() {
         <span>{timestampApp}</span>
       </li>
       <li className="info-item">
+        <span className="label">CPOTB Berlaku sampai</span>
+        <span>{timestampExpired}</span>
+      </li>
+      {timestampExtendRequest !== '' ? 
+        <li className="info-item">
+          <span className="label">Tanggal Perpanjangan CPOTB Diajukan</span>
+          <span>{timestampExtendRequest}</span>
+        </li>
+        : null 
+      }
+      {timestampExtendApprove !== '' ? 
+        <li className="info-item">
+          <span className="label">Tanggal Perpanjangan CPOTB Disetujui</span>
+          <span>{timestampExtendApprove}</span>
+        </li>
+        : null
+      }
+      <li className="info-item">
         <span className="label">{certName === "CPOTB" ? "Nama Instansi Pabrik" : "Nama Instansi PBF"}</span>
         <span>{senderInstance}</span>
         <span className='addr'>({senderAddr})</span>
       </li>
-      {/* <li className="info-item">
-        <span className="label">{certName === "CPOTB" ? "NIB Pabrik" : "NIB PBF"}</span>
-        <span>{nib}</span>
-      </li>
-      <li className="info-item">
-        <span className="label">{certName === "CPOTB" ? "NPWP Pabrik" : "NPWP PBF"}</span>
-        <span>{npwp}</span>
-      </li> */}
       {certName === "CPOTB" ? renderCpotbDetails() : renderCdobDetails()}
       <li className="info-item">
         <span className="label">Nama Instansi BPOM</span>

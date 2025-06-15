@@ -434,7 +434,7 @@ function NieRequest() {
       "Data Pendukung Keamanan": dataPendukungKeamanan
     };
     
-    const uploadedHashes = {};
+    let uploadedHashes = {};
 
     const fileEntries = Object.entries(files).filter(([_, file]) => file);
 
@@ -449,7 +449,7 @@ function NieRequest() {
           uploadedHashes[docName] = result.path;
         } catch (error) {
           setLoader(false)
-          return uploadedHashes = false;
+          uploadedHashes = false;
         }
     });
 
