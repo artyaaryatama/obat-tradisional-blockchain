@@ -52,6 +52,7 @@ export default function DataGridDemo({ rowsData }) {
         });
       },
     },
+    { field: 'jenisIzin', headerName: 'Jenis Izin', width: 180 },
     {
       field: 'companyName',
       headerName: 'Perusahaan',
