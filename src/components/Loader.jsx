@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const Loader = () => {
   return (
-    <StyledWrapper>
+    <StyledWrapper className="custom-loader">
       <div className="loader">
         <div className="truckWrapper">
           <div className="truckBody">
