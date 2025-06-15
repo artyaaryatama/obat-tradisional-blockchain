@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { doc, setDoc } from "firebase/firestore";
+import { doc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { create } from 'ipfs-http-client';
 import imgLoader from '../../assets/images/loader.svg';
@@ -91,7 +91,7 @@ function NieRequest() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.once("accountsChanged", () => {
+      window.ethereum.on("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -226,7 +226,7 @@ function NieRequest() {
         });
       }
       
-      contracts.nieManager.once("NieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
+      contracts.nieManager.on("NieRequested", ( _factoryInstance, _factoryAddr, _timestampRequestNie) => {
         updateObatFb(userdata.instanceName, obatData.namaObat, requestNieCt.hash, Number(_timestampRequestNie))
         recordHashFb(obatData.namaObat, requestNieCt.hash, Number(_timestampRequestNie))
         handleEventNieRequsted(obatData.namaObat, _factoryAddr, _factoryInstance,_timestampRequestNie, requestNieCt.hash)
@@ -243,15 +243,11 @@ function NieRequest() {
 
       console.log(instanceName, namaProduk, obatHash, timestamp );
 
-      await setDoc(docRef, {
-        [`${namaProduk}`]: {
-          historyNie: {
-            requestHash: obatHash,
-            requestTimestamp: timestamp,
-          },
-          status: 0
-        }
-      }, { merge: true }); 
+      await updateDoc(docRef, {
+        [`${namaProduk}.historyNie.requestHash`]: obatHash,
+        [`${namaProduk}.historyNie.requestTimestamp`]: timestamp,
+        [`${namaProduk}.status`]: 0
+      })
   
     } catch (err) {
       console.error("Error writing cpotb data:", err);
@@ -364,7 +360,7 @@ function NieRequest() {
                                 <li class="input input-2">
                                 ${hash !== "Gagal Upload" 
                                   ? `<a href="http://localhost:8080/ipfs/${hash}" target="_blank">
-                                   ${hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                   Lihat dokumen ↗ (${hash})
                                   </a>` 
 
 
@@ -384,7 +380,7 @@ function NieRequest() {
         cancelButtonText: "Batal",
         allowOutsideClick: false,
         customClass: {
-          htmlContainer: 'scrollable-modal-small'
+          htmlContainer: 'scrollable-modal'
         },
       }).then((result) => {
           if (result.isConfirmed) {
@@ -453,7 +449,7 @@ function NieRequest() {
           uploadedHashes[docName] = result.path;
         } catch (error) {
           setLoader(false)
-          return uploadedHashes = false;
+          uploadedHashes = false;
         }
     });
 

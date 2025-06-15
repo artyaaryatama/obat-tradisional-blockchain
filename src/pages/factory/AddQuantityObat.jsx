@@ -95,7 +95,7 @@ function AddQuantityObat() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.once("accountsChanged", () => {
+      window.ethereum.on("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -125,6 +125,24 @@ function AddQuantityObat() {
               namaProduk: item[1]
             }
           })
+
+          // const reconstructedData = listObatNameCt.map((item) => {
+          //   console.log(item);
+
+          //   if (item[2] !== '') {
+          //     console.log(item[1]);
+          //     return {
+          //       obatId: item[0],
+          //       namaProduk: item[1]
+          //     }
+          //   } else {
+          //     return false
+          //   }
+          // })
+
+          // if(!reconstructedData){
+          //   errAlert({reason: `Pabrik ${userdata.instanceName} tidak memiliki obat dengan NIE yang terdaftar.`})
+          // }
 
           setDataObatAvail(reconstructedData)
 
@@ -295,9 +313,11 @@ function AddQuantityObat() {
 
     const detailObatCt = await contracts.obatTradisional.detailObat(id);
     const detailNieCt = await contracts.nieManager.getNieDetail(id)
+    // const rejectMsg = await contracts.NieManager.getRejectMsgNie(id);
+
     const [merk, namaObat, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-    const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest,timestampNieExtendApprove, timestampNieExtendReject, timestampNieExtendRenew, factoryInstancee, bpomInstance, bpomAddr, nieIpfs] = detailNieCt[0];
+    const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstancee, bpomInstance, bpomAddr] = detailNieCt[0];
     console.log(cpotbHash);
     
     const detailObat = {
@@ -307,14 +327,11 @@ function AddQuantityObat() {
       klaim: klaim,
       kemasan: kemasan,
       komposisi: komposisi,
-      timestampProduction: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
-      timestampNieRequest: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
-      timestampNieApprove:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
-      timestampNieReject:  timestampNieRejected ? new Date(Number(timestampNieRejected) * 1000).toLocaleDateString('id-ID', options): "-",
-      timestampNieRenewRequest:  timestampNieRenewRequest ? new Date(Number(timestampNieRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
-      timestampNieExpired: parseInt(timestampNieExpired) !== 0 ? new Date(Number(timestampNieExpired) * 1000).toLocaleDateString('id-ID', options): "-",
-      timestampNieExtendRequest: parseInt(timestampNieExtendRequest) !== 0 ? new Date(Number(timestampNieExtendRequest) * 1000).toLocaleDateString('id-ID', options): "-",
-      timestampNieExtendApprove: parseInt(timestampNieExtendApprove) !== 0 ? new Date(Number(timestampNieExtendApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+      produtionTimestamp: timestampProduction ? new Date(Number(timestampProduction) * 1000).toLocaleDateString('id-ID', options) : '-', 
+      nieRequestDate: timestampNieRequest ? new Date(Number(timestampNieRequest) * 1000).toLocaleDateString('id-ID', options) : '-', 
+      nieApprovalDate:  timestampNieApprove ? new Date(Number(timestampNieApprove) * 1000).toLocaleDateString('id-ID', options): "-",
+      nieRejectDate:  timestampNieRejected ? new Date(Number(timestampNieRejected) * 1000).toLocaleDateString('id-ID', options): "-",
+      nieRenewRequestDate:  timestampNieRenewRequest ? new Date(Number(timestampNieRenewRequest) * 1000).toLocaleDateString('id-ID', options): "-",
       nieNumber: nieNumber ? nieNumber : "-",
       factoryAddr: factoryAddr,
       factoryInstanceName: factoryInstance,
@@ -336,13 +353,9 @@ function AddQuantityObat() {
       String.fromCharCode(65 + Math.floor(Math.random() * 26))
     ).join(''); 
 
-    console.log(dataObat.factoryAddr);
-    console.log(dataObat.bpomAddr);
-
     const userFactoryCt = await contracts.roleManager.getUserData(dataObat.factoryAddr);
     const userBpomCt = await contracts.roleManager.getUserData(dataObat.bpomAddr);
 
-    console.log(userBpomCt);
     console.log(userFactoryCt);
 
     for (let i = 0; i < quantity; i++) {
@@ -363,11 +376,8 @@ function AddQuantityObat() {
           tipeObat: dataObat.tipeObat,
           nieNumber: dataObat.nieNumber,
           obatStatus: "NIE Approved",
-          nieRequestDate: dataObat.timestampNieRequest,
-          nieApprovalDate: dataObat.timestampNieApprove,
-          nieExpiredDate: dataObat.timestampNieExpired,
-          nieExtendRequest: dataObat.timestampNieExtendRequest,
-          nieExtendApprove: dataObat.timestampNieExtendApprove,
+          nieRequestDate: dataObat.nieRequestDate,
+          nieApprovalDate: dataObat.nieApprovalDate,
           bpomAddr: dataObat.bpomAddr,
           bpomInstanceName: dataObat.bpomInstanceName,
           nibFactory: userFactoryCt[6],
@@ -456,15 +466,10 @@ function AddQuantityObat() {
         },
       }).then((result) => {
         if(result.isConfirmed){
-          MySwal.fire({
+          MySwal.update({
             title: "Mempersiapkan transaksi...",
-            text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳",
-            icon: 'info',
-            showCancelButton: false,
-            showConfirmButton: false,
-            allowOutsideClick: false,
-          })
-           
+            text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
+          });
           addQuantity(dataObat, batchNameObat, quantityObat, newIpfsHashes)
         }
       })
@@ -499,7 +504,7 @@ function AddQuantityObat() {
         });
       }
       
-      contracts.obatTradisional.once('AddObatBatchProduction',  (_batchName, _obatQuantity, _namaProduk, _factoryInstance) => {
+      contracts.obatTradisional.on('AddObatBatchProduction',  (_batchName, _obatQuantity, _namaProduk, _factoryInstance) => {
         createBatchFb(userdata.instanceName, dataObat.namaProduk, addBatchCt.hash, batchNameObat, quantity)
         recordHashFb( dataObat.namaProduk, addBatchCt.hash)
         handleEventAddBatchProduction(_batchName, _obatQuantity, _namaProduk, _factoryInstance, addBatchCt.hash)

@@ -112,7 +112,7 @@ function ManageOrderPbfRetailer() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.once("accountsChanged", () => {
+      window.ethereum.on("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -274,7 +274,7 @@ function ManageOrderPbfRetailer() {
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest,timestampNieExtendApprove, timestampNieExtendReject, timestampNieExtendRenew, factoryInstancee, bpomInstance, bpomAddr, nieIpfs] = detailNieCt[0];
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
 
       const [orderIdProduk, obatIdProduk, namaProdukk, batchName, orderQuantity, buyerUser, sellerUser, statusOrder, prevOrderId] = detailOrderCt;
 
@@ -381,7 +381,7 @@ function ManageOrderPbfRetailer() {
                                   rel="noopener noreferrer"
                                 >
                                   (Detail CPOTB
-                                  <i className="fa-solid fa-arrow-up-right-from-square"></i>)
+                                  <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                                 </a>
                               </span>
                             </p>
@@ -650,7 +650,7 @@ function ManageOrderPbfRetailer() {
                                   rel="noopener noreferrer"
                                 >
                                   (Detail CPOTB
-                                  <i className="fa-solid fa-arrow-up-right-from-square"></i>)
+                                  <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                                 </a>
                               </span>
                             </p>
@@ -818,7 +818,7 @@ function ManageOrderPbfRetailer() {
         });
       }
       
-      contracts.orderManagementRetail.once("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+      contracts.orderManagementRetail.on("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
         updateBatchHistoryHash(instanceName, namaProduk, acceptOrderCt.hash, batchName, Number(_timestampOrder))
         handleEventOrderUpdate(_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, acceptOrderCt.hash)
       });
@@ -1057,14 +1057,16 @@ function ManageOrderPbfRetailer() {
           <h1>Data Order Obat Tradisional PBF</h1>
           <p>Di kelola oleh {userdata.instanceName}</p>
         </div>
+        {/* <div className="tab-menu">
+          <ul>
+            <li><button className='active'  onClick={() => navigate('/manage-orders-pbf')}>Order Obat</button></li>
+          </ul>
+        </div> */}
         <div className="container-data ">
         <div className="data-list">
           <div className="fade-container">
             <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
-              <div className="image">
-                  <Loader />
-
-                </div>
+              <Loader />
             </div>
 
             <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>

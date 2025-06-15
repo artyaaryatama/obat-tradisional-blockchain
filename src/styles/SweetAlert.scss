@@ -1,129 +1,8 @@
-@use './main.scss' as *;
-@use 'mixin' as *;
-
-
-div:where(.swal2-container) div:where(.swal2-actions){
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: space-between;
-  padding: 0 20px;
-}
-
-div:where(.swal2-container) div:where(.swal2-popup) {
-  border-radius: 10px;
-  font-family: "Instrument Sans", sans-serif;
-  padding: 14px 0;
-}
-
-div:where(.swal2-icon){
-  margin: 20px auto;
-}
-
-div:where(.swal2-container) input:where(.swal2-input), div:where(.swal2-container) input:where(.swal2-file), div:where(.swal2-container) textarea:where(.swal2-textarea), div:where(.swal2-container) select:where(.swal2-select), div:where(.swal2-container) div:where(.swal2-radio), div:where(.swal2-container) label:where(.swal2-checkbox) {
-  margin: 12px 2em;
-}
-
-div:where(.swal2-container) .swal2-input {
-  @include inputForm($grey, $white);
-  border: solid 1px $grey;
-}
-
-div:where(.swal2-icon).swal2-success {
-  border-color: #a5dc86;
-  color: #a5dc86;
-}
-
-div:where(.swal2-icon).swal2-info {
-  border-color: rgb(156.7033492823, 224.2822966507, 246.2966507177);
-  color: #3fc3ee;
-}
-
-div:where(.swal2-container) h2:where(.swal2-title) {
-  padding: 20px 16px 4px;
-  font-family: "Instrument Sans", sans-serif;
-  font-size: 24px;
-  color: $black;
-}
-
-div:where(.swal2-container) .swal2-html-container {
-  font-family: "Instrument Sans", sans-serif;
-  margin: 0;
-  padding: 10px 20px;
-  color: $grey;
-}
-
-.scrollable-modal {
-  height: 480px !important;
-}
-
-.scrollable-modal-small {
-  height: 280px !important;
-}
-
-div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm) {
-  font-family: "Instrument Sans", sans-serif !important;
-  @include btnAlert($white, $purple, 4px);
-}
-
-div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel) {
-  font-family: "Instrument Sans", sans-serif;
-  @include btnAlert($white, $red, 4px);
-}
-
-div:where(.swal2-container) div:where(.swal2-actions) {
-  margin: 10px 0 0;
-}
-
-h5{
-  font-family: "Instrument Sans", sans-serif;
-  font-size: 24px;
-  margin: 0;
-}
-
-p{
-  font-family: "Instrument Sans", sans-serif;
-  margin: 0;
-  font-size: 16px;
-  color: $grey;
-}
-
-ul.noList{
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  
-  li{
-    margin-bottom: 4px;
-  }
-}
-
-ul.numbered {
-  list-style-type: decimal; 
-  list-style-position: outside; 
-  padding: 0;
-  margin: 0;
-  padding-left: 12px; 
-  color: $black;
-  text-align: start;
-
-  li {
-    
-    p {
-      display: inline; 
-      margin-left: 0; 
-    }
-  }
-}
-
-button.addQuantity{
-  @include btnIcon($white, $blue);
-
-  i{
-    margin-right: 8px;
-  }
-}
+@import './main.scss';
+@import 'mixin';
 
 .form-swal{
+
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -180,8 +59,12 @@ button.addQuantity{
     width: 100%;
 
     ul {
+      // justify-content: flex-end;
 
       li{
+        // &.label{
+        //   width: auto;
+        // }
 
         &.input{
           background-color: $blue;
@@ -220,62 +103,9 @@ button.addQuantity{
       .row--obat ul li.input, .row--obat ul li.label-sm{
         width: 100%;
       }
-    }
-
-
-  }
-
-  &.detail-modal{
-    .row6{
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      gap: 10px;
-
-      .row4{
-        display: flex;
-        flex-direction: column;
-        height: fit-content;
-        width: 40%;
-        justify-content: flex-end;
-        // flex-grow: 1;
-        .col.doku{
-          width: 100%;
-          background-color: $grey-light;
-          padding: 10px;
-          border-radius: 4px;
-          height: -webkit-fill-available;
-          h5{
-            font-size: 18px;
-            color: $black;
-            text-align: justify;
-            margin-bottom: 10px;
-          }
-  
-          ul{
-            flex-direction: column;
-  
-            li.label{
-              width: 100%;
-            }
-          }
-        }
+      .row--obat ul.status li.input{
+        // width: auto;
       }
-
-      .col{
-        width: 60%;
-        // flex-grow: 2;
-
-
-        ul{
-          align-items: flex-start;
-
-
-          li.label{
-            width: 30%;
-          }
-        }
-    }
     }
   }
 
@@ -302,6 +132,7 @@ button.addQuantity{
         }
 
         ul{
+          // border-bottom: solid 1px #ddd;
           flex-direction: column;
 
           li.label{
@@ -315,99 +146,6 @@ button.addQuantity{
 
         li.label{
           width: 26%;
-        }
-      }
-    }
-
-  }
-  .row5.pengajuan{
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    gap: 10px;
-    
-    &.nie{
-      flex-direction: column;
-      
-      
-      .col.doku{
-        padding: 0;
-        width: 100%;
-        .doku-row{
-          display: flex;
-          gap: 10px;
-          
-          .doku-1{
-            width: 46%;
-          }
-        }
-      }
-    }
-
-    &.column{
-      flex-direction: column;
-      width: 68%;
-
-      .col.doku{
-        width: initial;
-        background-color: $grey-light;
-        padding: 10px;
-        border-radius: 4px;
-
-        ul{
-          padding-left: 4px;
-        }
-
-        h5{
-          font-size: 18px;
-          color: $black;
-          text-align: justify;
-          margin-bottom: 10px;
-        }
-        
-        .doku-row{
-          display: flex;
-          flex-direction: row;
-          gap: 10px;
-          
-        }
-      }
-    }
-
-    .col{
-      width: 100%;
-    }
-
-    .col.doku{
-      width: 50%;
-      background-color: transparent;
-      padding: 0 10px;
-
-      h5{
-        font-size: 18px;
-        color: $black;
-        text-align: justify;
-        margin-bottom: 10px;
-      }
-
-      hr{
-        height: 1px;
-        background: $grey;
-        border: none;
-      }
-
-      ul {
-        display: flex;
-        flex-direction: column;
-        padding-left: 4px;
-
-        li{
-          width: 100%;
-
-          p{
-            padding-left: 3px;
-          }
-
         }
       }
     }
@@ -491,6 +229,7 @@ button.addQuantity{
         }
       }
       ul{
+        // border-bottom: solid 1px #ddd;
         li.label{
           width: 36%;
         }
@@ -501,53 +240,22 @@ button.addQuantity{
       flex-direction: row-reverse;
     }
 
-    &--col{
-      flex-direction: column;
-      gap: 10px;
-  
-      .col{
-        flex: 1;
-
-        &.doku .doku-1 ul li.label {
-            width: 28%;
-            background-color: #737373;
-        }
-      }
-  
-      .container-stepper{
-        width: 18%;
-      }
-
-    }
     &--row {
       flex-direction: row;
       gap: 10px;
-  
+
       .col{
         flex: 1;
       }
-  
+
       .container-stepper{
         width: 18%;
       }
-
-      &.docs{
-        > *:only-child {
-            flex-direction: row; // Pastikan tetap row jika hanya satu child
-            background-color: #a0987a;
-          }
-        
-          > *:nth-last-child(2):first-child {
-            flex-direction: column; 
-            background-color: #3fc3ee;
-            // gap: 20px; 
-          }
-
-      }
-    
     }
 
     .col{
+      // commented style for col
+      // width: 49%;
       width: 100%;
 
       &.doku{
@@ -566,11 +274,16 @@ button.addQuantity{
           flex-direction: row;
           gap: 10px;
           
+          // h5{
+          //   font-size: 16px;
+          //   display: block;
+          // }
         }
 
         .doku-1{
           flex: 1;
           ul {
+            // border-bottom: solid 1px #ddd;
       
             li.label {
             width: 48%;
@@ -580,6 +293,8 @@ button.addQuantity{
       }
 
       ul{
+        // align-items: flex-start;
+        // display: inline-table;
         padding-bottom: 4px;
         flex-direction: row;
 
@@ -587,10 +302,42 @@ button.addQuantity{
           align-items: flex-start;
         }
 
+        // background color status modal
         &.status{
           .input{
             p{
+              // background-color: $grey-light;
+              // padding: 4px 8px;
               color: $black;
+              // font-size: 12px;
+              // font-weight: 600;
+              // padding: 8px 12px;
+              // border-radius: 6px;
+
+              // &.Dalam, &.Diajukan, &.Empty{
+              //   background-color: $grey;
+              //   color: $white;
+              // }
+              
+              // &.Dikirim{
+              //   background-color: $yellow;
+              //   color: $black;
+              // }
+  
+              // &.Disetujui, &.Selesai{
+              //   background-color: $green;
+              //   color: $white;
+              // }
+              
+              // &.Penolakan,  &.Tidak.Disetujui{
+              //   background-color: $red;
+              //   color: $white;
+              // }
+              
+              // &.Available, &.Requested.NIE, &.Pengajuan{
+              //   background-color: $blue;
+              //   color: $white;
+              // }
             }
           }
         }
@@ -610,6 +357,22 @@ button.addQuantity{
 
         }
 
+        // &.status{
+        //   height: 44px;
+        //   align-items: center;
+
+        //   li.input p{
+        //     padding: 10px 12px;
+        //     border-radius: 6px;
+        //     font-weight: bold;
+            
+        //     &.Pending{
+        //       background-color: $yellow;
+        //       color: $black;
+        //     }
+        //   }
+        // }
+
         &.numbered1{
           flex-direction: column;
           align-items: flex-start;
@@ -624,7 +387,12 @@ button.addQuantity{
         }
 
         &.numbered{
+          // flex-direction: column;
           display: inline-table!important;
+          // width: auto;
+          // padding: 6px 10px;
+          // list-style: none;
+          // padding-left: -12px;
           
           li.klaim{
             padding: 6px 4px;
@@ -670,6 +438,7 @@ button.addQuantity{
 
         ul{
           display: flex;
+          // flex-direction: column;
 
           &.rejectMsg{
             .input{
@@ -678,6 +447,7 @@ button.addQuantity{
               background-color:rgba(182, 25, 25, 0.1411764706);
               padding: 8px;
               border-radius: 8px;
+              // margin-left: 14px;
               margin-left: -20px;
 
               p{
@@ -687,6 +457,7 @@ button.addQuantity{
           }
 
           li.label{
+            // width: 100%;
             width: 52%;
           }
     
@@ -701,6 +472,7 @@ button.addQuantity{
 
           &.status{
             li.input{
+              // width: auto;
               padding-top: 2px;
             }
           }
@@ -711,6 +483,7 @@ button.addQuantity{
         width: 60%;
         ul{
           display: flex;
+          // flex-direction: column;
 
           &.klaim{
             align-items: flex-start;
@@ -799,6 +572,7 @@ button.addQuantity{
       &.label{
         font-weight: 600;
         text-align: left;
+        // width: 32%;
         margin-right: 6px;
         width: 26%;
         
@@ -819,6 +593,7 @@ button.addQuantity{
       &.input{
         text-align: left;
         font-size: 12px;
+        // padding-top: 4px;
 
         a{
           color: $black;
@@ -847,6 +622,7 @@ button.addQuantity{
 
         input{
           @include inputForm($black);
+          // width: 100%;
           padding: 6px 10px;
           font-size: 13px;   
           
@@ -898,5 +674,126 @@ button.addQuantity{
     ul li.input{
       width: 68%;
     }
+  }
+}
+
+div:where(.swal2-container) div:where(.swal2-actions){
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+// main modal style
+div:where(.swal2-container) div:where(.swal2-popup) {
+  border-radius: 10px;
+  font-family: "Instrument Sans", sans-serif;
+  padding: 14px 0;
+}
+
+div:where(.swal2-icon){
+  margin: 20px auto;
+}
+div:where(.swal2-container) input:where(.swal2-input), div:where(.swal2-container) input:where(.swal2-file), div:where(.swal2-container) textarea:where(.swal2-textarea), div:where(.swal2-container) select:where(.swal2-select), div:where(.swal2-container) div:where(.swal2-radio), div:where(.swal2-container) label:where(.swal2-checkbox) {
+  margin: 12px 2em;
+}
+
+div:where(.swal2-container) .swal2-input {
+  @include inputForm($grey, $white);
+  border: solid 1px $grey;
+}
+
+div:where(.swal2-icon).swal2-success {
+  border-color: #a5dc86;
+  color: #a5dc86;
+}
+
+div:where(.swal2-icon).swal2-info {
+  border-color: rgb(156.7033492823, 224.2822966507, 246.2966507177);
+  color: #3fc3ee;
+}
+
+div:where(.swal2-container) h2:where(.swal2-title) {
+  padding: 20px 16px 4px;
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 24px;
+  color: $black;
+}
+
+div:where(.swal2-container) .swal2-html-container {
+  font-family: "Instrument Sans", sans-serif;
+  margin: 0;
+  padding: 10px 20px;
+  color: $grey;
+}
+
+.scrollable-modal {
+  height: 480px !important;
+}
+
+.scrollable-modal-small {
+  height: 280px !important;
+}
+
+
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm) {
+  font-family: "Instrument Sans", sans-serif;
+  @include btnAlert($white, $purple, 4px);
+}
+
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel) {
+  font-family: "Instrument Sans", sans-serif;
+  @include btnAlert($white, $red, 4px);
+}
+
+div:where(.swal2-container) div:where(.swal2-actions) {
+  margin: 10px 0 0;
+}
+
+h5{
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 24px;
+  margin: 0;
+}
+
+p{
+  font-family: "Instrument Sans", sans-serif;
+  margin: 0;
+  font-size: 16px;
+  color: $grey;
+}
+
+ul.noList{
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  
+  li{
+    margin-bottom: 4px;
+  }
+}
+
+ul.numbered {
+  list-style-type: decimal; 
+  list-style-position: outside; 
+  padding: 0;
+  margin: 0;
+  padding-left: 12px; 
+  color: $black;
+  text-align: start;
+
+  li {
+    
+    p {
+      display: inline; 
+      margin-left: 0; 
+    }
+  }
+}
+
+button.addQuantity{
+  @include btnIcon($white, $blue);
+
+  i{
+    margin-right: 8px;
   }
 }

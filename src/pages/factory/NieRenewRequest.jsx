@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract } from "ethers";
 import contractData from '../../auto-artifacts/deployments.json';
 import { useNavigate } from 'react-router-dom';
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { create } from 'ipfs-http-client';
 import imgLoader from '../../assets/images/loader.svg';
@@ -10,6 +10,7 @@ import "../../styles/MainLayout.scss";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import './../../styles/SweetAlert.scss';
+import JenisSediaanTooltip from '../../components/TooltipJenisSediaan';
 
 const MySwal = withReactContent(Swal);
 const client = create({ url: 'http://127.0.0.1:5001/api/v0' });
@@ -48,6 +49,11 @@ function NieRenewRequest() {
     minute: '2-digit',
     timeZoneName: 'short'
   }
+
+  const tipeObatMap = {
+    0n: "Obat Lain",
+    1n: "Cold Chain Product"
+  };
 
   const labelMapping = {
     MasterFormula: "Dokumen Master Formula",
@@ -105,7 +111,7 @@ function NieRenewRequest() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.once("accountsChanged", () => {
+      window.ethereum.on("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -290,7 +296,7 @@ function NieRenewRequest() {
         });
       }
       
-      contracts.nieManager.once("NieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
+      contracts.nieManager.on("NieRenewRequest", ( _factoryInstance, _factoryAddr, _timestampRenewRequestNie) => {
         createObatFb(userdata.instanceName, obatData.namaObat, renewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
         recordHashFb(obatData.namaObat, renewRequestNieCt.hash, Number(_timestampRenewRequestNie) )
         handleEventNieRenewRequest( _factoryInstance, _factoryAddr,_timestampRenewRequestNie, renewRequestNieCt.hash)
@@ -305,15 +311,12 @@ function NieRenewRequest() {
     try {
       const docRef = doc(db, 'obat_data', instanceName)
 
-      await setDoc(docRef, {
-        [`${namaProduk}`]: {
-          historyNie: {
-            renewRequestHash: obatHash,
-            renewRequestTimestamp: timestamp,
-          },
-          status: 3
-        }
+      await updateDoc(docRef, {
+        [`${namaProduk}.historyNie.renewRequestHash`]: obatHash,
+        [`${namaProduk}.historyNie.renewRequestTimestamp`]: timestamp,
+        [`${namaProduk}.status`]: 0
       }, { merge: true }); 
+  
     } catch (err) {
       errAlert(err);
     }
@@ -386,36 +389,20 @@ function NieRenewRequest() {
         html: (
           <div className='form-swal'>
             <div className="row row--obat table-like">
-              <div className="col">
-                <div className="doku">
-                  <ul>
-            <li className="label">
-              <label htmlFor="instanceName">Nama Obat</label>
-            </li>
-            <li className="input">
-              <p>{obatData.namaObat}</p>
-            </li>
-          </ul>
-          <ul>
-            <li className="label">
-              <label htmlFor="instanceName">Alasan Penolakan</label>
-            </li>
-            <li className="input">
-              <p>{rejectMsg}</p>
-            </li>
-          </ul>
+              <div class="col">
+                <div class="doku">
                   {Object.entries(uploadedHashes).map(([key, hash]) => (
                     <ul key={key}>
-                      <li className="label label-2">
+                      <li class="label label-2">
                         <p>{key.replace('ipfs', '').replace(/([A-Z])/g, ' $1')}</p>
                       </li>
-                      <li className="input input-2">
+                      <li class="input input-2">
                       <a
                         href={`http://localhost:8080/ipfs/${hash}`}  
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {hash} <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                        Lihat dokumen ↗ (${hash})
                       </a>
                       </li>
                     </ul>

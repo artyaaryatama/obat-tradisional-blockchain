@@ -19,7 +19,6 @@ function CreateOrderPbf() {
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata'));
   const [dataObat, setDataObat] = useState([]);
-  const [dataCdob, setDataCdob] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fadeClass, setFadeClass] = useState('fade-in');
   const [fadeOutLoader, setFadeOutLoader] = useState(false);
@@ -88,7 +87,7 @@ function CreateOrderPbf() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.once("accountsChanged", () => {
+      window.ethereum.on("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -106,7 +105,7 @@ function CreateOrderPbf() {
       if (contracts) {
         try {
           const allProduceObatCt = await contracts.obatTradisional.getAllBatchProductionReadyStock();
-          const listAllCt = await contracts.certificateManager.getCdobByInstance(userdata.instanceName);
+          console.log(allProduceObatCt);
 
           const reconstructedData = allProduceObatCt.map(item => ({
             obatId: item[0],
@@ -115,20 +114,6 @@ function CreateOrderPbf() {
             obatQuantity: parseInt(item[3]),
             factoryInstanceName: item[5]
           }));
-
-          const cdobD = listAllCt
-            .filter(item => item[6] !== 0n)   
-            .map(item => {
-              return {
-                cdobId: item[0],
-                cdobNumber : item[1],
-                cdobIpfs : item[5],
-                tipePermohonan: item[3],
-                isValid: Math.floor(Date.now() / 1000) > Number(item[6]) ? false : true
-              };
-            })
-          
-          setDataCdob(cdobD);
 
           setDataObat(reconstructedData)
           console.log(reconstructedData);
@@ -257,7 +242,7 @@ function CreateOrderPbf() {
 
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest,timestampNieExtendApprove, timestampNieExtendReject, timestampNieExtendRenew, factoryInstanceee, bpomInstance, bpomAddr, nieIpfs] = detailNieCt[0];
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
 
       const detailObat = {
         obatId: id,
@@ -410,7 +395,7 @@ function CreateOrderPbf() {
                               rel="noopener noreferrer"
                             >
                               (Detail CPOTB
-                              <i className="fa-solid fa-arrow-up-right-from-square"></i>)
+                              <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                             </a>
                           </span>
                         </p>
@@ -535,33 +520,31 @@ function CreateOrderPbf() {
 
     const orderId = `order-pbf-${day}${month}${year}-${randomNumber}` 
   
-    const pbfCdob = await checkAvailCdob(userdata.instanceName, tipeObat)
-    console.log('', orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdob)
+    const pbfCdobHash = await checkAvailCdob(userdata.instanceName, tipeObat)
+    console.log(pbfCdobHash);
+    console.log('', orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdobHash)
 
-    try {
-      const createOrderCt = await contracts.orderManagement.createOrder('', orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdob.cdobIpfs);
-      
-      if(createOrderCt){
+    if(pbfCdobHash) {
+      try {
+        const createOrderCt = await contracts.orderManagement.createOrder('', orderId, id, batchName, namaProduk, userdata.instanceName, factoryInstance, orderQuantity, pbfCdobHash);
         
-        MySwal.update({
-          title: "Memproses transaksi...",
-          text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
+        if(createOrderCt){
+          
+          MySwal.update({
+            title: "Memproses transaksi...",
+            text: "Proses transaksi sedang berlangsung, harap tunggu. ⏳"
+          });
+        }
+  
+        contracts.orderManagement.on("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
+          updateBatchHistoryHash(factoryInstance, namaProduk, createOrderCt.hash, batchName, Number(_orderQuantity), Number(_timestampOrder))
+          handleEventCreateOrder(userdata.instanceName, orderId, id, _batchName, _namaProduk, _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, createOrderCt.hash);
         });
+        
+      } catch (error) {
+        errAlert(error, "Gagal mengajukan order")
       }
-
-      contracts.orderManagement.once("OrderUpdate", (_batchName, _namaProduk,  _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder) => {
-        updateBatchHistoryHash(factoryInstance, namaProduk, createOrderCt.hash, batchName, Number(_timestampOrder))
-        handleEventCreateOrder(userdata.instanceName, orderId, id, _batchName, _namaProduk, _buyerInstance, _sellerInstance, _orderQuantity, _timestampOrder, createOrderCt.hash);
-      });
-      
-    } catch (error) {
-      errAlert(error, "Gagal mengajukan order")
-    }
-    if(!pbfCdob.isValid){
-      errAlert({reason: "Tidak dapat melakukan order"}, `Sertifikasi CDOB "${tipeObatMap[tipeObat]}" sudah tidak berlaku. Harap lakukan perpanjangan sertifikat terlebih dahulu untuk dapat mengorder obat ini.`);
-    } else if(pbfCdob.cdobIpfs) {
-    }
-    else {
+    } else {
       errAlert({reason: `Gagal mengajukan order obat tradisonal`}, `${userdata.instanceName} Tidak memiliki CDOB untuk ${namaProduk}`)
       
     }
@@ -571,10 +554,14 @@ function CreateOrderPbf() {
     console.log(pbfInstance, tipePermohonan);
 
     try {
-      console.log(dataCdob);
-      const isMatch = dataCdob.find(item => item.tipePermohonan === tipePermohonan || false);
+      const listAllCt = await contracts.certificateManager.getCdobByInstance(pbfInstance);
+      const isMatch = listAllCt.find(item => item[3] === tipePermohonan || false);
       console.log(isMatch);
-      return isMatch
+      if(isMatch[5] !== ""){
+        return isMatch[5]
+      } else{
+        return false
+      }
       
     } catch (error) {
       errAlert(error, "Gagal mengakses data CDOB")
@@ -583,7 +570,6 @@ function CreateOrderPbf() {
   }
 
   const updateBatchHistoryHash = async (factoryInstance, namaProduk, obatHash, batchName, timestamp) => {
-    console.log(timestamp)
     try {
       const collectionName = `obat_${namaProduk}_${factoryInstance}`
       const docRef = doc(db, 'obat_data', factoryInstance)
@@ -632,10 +618,7 @@ function CreateOrderPbf() {
 
           <div className="fade-container">
             <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
-              <div className="image">
-                  <Loader />
-
-                </div>
+              <Loader />
             </div>
 
             <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>

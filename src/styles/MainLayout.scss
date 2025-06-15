@@ -1,8 +1,9 @@
-@use './main.scss' as *;
-@use 'mixin' as *;
-@use 'sass:color';
+@import './main.scss';
+@import 'mixin';
 
 .Layout-Menu{
+  // background-color: aqua;
+
   .title-menu{
     display: flex;
     flex-direction: column;
@@ -103,6 +104,17 @@
 
       .fade-container{
         position: relative;
+
+        .custom-loader{
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+
+          p{
+            margin-top: 16px;
+          }
+        }
 
         .fade-layer{
           transition: opacity 0.4s ease;
@@ -226,22 +238,17 @@
               border-radius: 30px;
             }
 
-            &.Dalam, &.Diajukan, &.Kosong, &.Sertifikat.Kadaluarsa, &.NIE.Kadaluarsa{
+            &.Dalam, &.Diajukan, &.Kosong{
               background-color: $grey;
               color: $white;
             }
 
-            &.Disetujui, &.Selesai, &.Perpanjangan, &.Penyetujuan.Registrasi.Ulang.NIE{
-              background-color: $green;
-              color: $white;
-            }
-
-            &.Tersedia, &.Pengajuan.Perpanjangan{
+            &.Tersedia{
               background-color: $blue;
               color: $white;
             }
             
-            &.Dikirim, &.Dalam.Proses.Pengajuan, &.Pengajuan.NIE{
+            &.Dikirim, &.Dalam.Proses.Pengajuan, &.Pengajuan.NIE, &.Pengajuan{
               background-color: $yellow;
               color: $black;
             }
@@ -250,8 +257,12 @@
               background-color: #e39c33;
               color: $black;
             }
+            &.Disetujui, &.Selesai{
+              background-color: $green;
+              color: $white;
+            }
             
-            &.Penolakan,  &.Tidak.Disetujui, &.Pengajuan.Perpanjangan.Ditolak, &.Pengajuan.Perpanjangan.CDOB.Ditolak, &.Pengajuan.Registrasi.Ulang.NIE.Ditolak{
+            &.Penolakan,  &.Tidak.Disetujui{
               background-color: $red;
               color: $white;
             }
@@ -270,6 +281,7 @@
   .container-form{
     border-radius: 8px;
     margin: 40px 0;
+    // padding: 0 218px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -306,6 +318,7 @@
         margin-bottom: 20px;
         
         li.label{
+          // padding-top: 6px;
           width: 30%;
           text-align: left;
           font-weight: 600;
@@ -355,7 +368,7 @@
               @include inputForm($black);
               &:hover{
                 cursor: pointer;
-                background-color: color.adjust(#f2f3f59e, $lightness:-14%);
+                background-color: darken(#f2f3f59e, 14%);
               }
             }
             
@@ -388,6 +401,7 @@
               }
             }
   
+            // background-color: rgb(108, 214, 214);
             .input-multiple{
               width: 100%;
   
@@ -456,6 +470,10 @@
         li{
           flex-direction: column;
           &.input{
+            // background-color: wheat;
+            // display: flex;
+            // width: 100%;
+
             a{
               font-size: 12px;
               font-style: italic;

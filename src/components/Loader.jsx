@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const Loader = () => {
   return (
-    <StyledWrapper>
+    <StyledWrapper className='custom-loader'>
       <div className="loader">
         <div className="truckWrapper">
           <div className="truckBody">
@@ -66,14 +66,12 @@ const StyledWrapper = styled.div`
     justify-content: flex-end;
     overflow-x: hidden;
   }
-  /* truck upper body */
   .truckBody {
     width: 130px;
     height: fit-content;
     margin-bottom: 6px;
     animation: motion 1s linear infinite;
   }
-  /* truck suspension animation*/
   @keyframes motion {
     0% {
       transform: translateY(0px);
@@ -85,7 +83,6 @@ const StyledWrapper = styled.div`
       transform: translateY(0px);
     }
   }
-  /* truck's tires */
   .truckTires {
     width: 130px;
     height: fit-content;

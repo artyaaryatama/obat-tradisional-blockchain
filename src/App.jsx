@@ -6,15 +6,10 @@ import ManageCpotb from './pages/factory/ManageCpotb';
 import ManageCdob from './pages/pbf/ManageCdob';
 import CpotbRequest from './pages/factory/CpotbRequest';
 import CpotbRenewRequest from './pages/factory/CpotbRenewRequest';
-import CpotbExtendRequest from './pages/factory/CpotbExtendRequest';
-import CpotbExtendRenewRequest from './pages/factory/CpotbExtendRenewRequest';
-import NieExtendRequest from './pages/factory/NieExtendRequest';
-import NieExtendRenewRequest from './pages/factory/NieExtendRenewRequest';
 import CdobRequest from './pages/pbf/CdobRequest';
 import NieRequest from './pages/factory/NieRequest';
 import NieRenewRequest from './pages/factory/NieRenewRequest';
 import CdobRenewRequest from './pages/pbf/CdobRenewRequest';
-import CdobExtendRequest from './pages/pbf/CdobExtendRequest';
 import CpotbApprove from './pages/bpom/CpotbApprove';
 import CdobApprove from './pages/bpom/CdobApprove';
 import NieApprove from './pages/bpom/NieApprove';
@@ -25,7 +20,6 @@ import AddQuantityObat from './pages/factory/AddQuantityObat';
 import ManageOrderFactoryPbf from './pages/factory/ManageOrderFactoryPbf';
 import ManageOrderPbf from './pages/pbf/ManageOrderPbf';
 import CreateOrderPbf from './pages/pbf/CreateOrderPbf';
-import CdobExtendRenewRequest from './pages/pbf/CdobExtendRenewRequest';
 import StockObatPbf from './pages/pbf/StockObatPbf';
 import ManageOrderPbfRetailer from './pages/pbf/ManageOrderPbfRetailer';
 import CreateOrderRetailer from './pages/retailer/CreateOrderRetailer';
@@ -36,7 +30,7 @@ import LoginPage from './pages/auth/LoginUser';
 import RegisterPage from './pages/auth/RegisterUser';
 import CheckObatIpfs from './pages/public/CheckObat';
 import ChechCerticateIpfs from './pages/public/CheckCertificate';
-import CheckTransactions from './pages/public/CheckTransactions';
+import CheckTransaction from './pages/public/CheckTransactions';
 import UnauthorizedPage from './pages/Error/Unauthorized'; 
 import FetchBlockchainData from './pages/public/FetchBlockchainData';
 import CheckObatPieces from './pages/public/CheckObatPieces';
@@ -53,7 +47,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/public/obat/:hash" element={<CheckObatIpfs />} />
           <Route path="/public/certificate/:hash" element={<ChechCerticateIpfs />} />
-          <Route path="/riwayat-Transaksi" element={<CheckTransactions />} />
+          <Route path="/riwayat-Transaksi" element={<CheckTransaction />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
           <Route path="/fetchBlockchain" element={<FetchBlockchainData />} />
           <Route path="/cek-obat" element={<CheckObatPieces />} />
@@ -85,45 +79,6 @@ function App() {
               <ProtectedRoute allowedRoles={['0']}>
                 <Navbar />
                 <CpotbRenewRequest />
-              </ProtectedRoute>
-            } 
-          />
-
-          <Route 
-            path="/extend-request-cpotb" 
-            element={
-              <ProtectedRoute allowedRoles={['0']}>
-                <Navbar />
-                <CpotbExtendRequest />
-              </ProtectedRoute>
-            } 
-          />
-
-          <Route 
-            path="/extend-renew-request-cpotb" 
-            element={
-              <ProtectedRoute allowedRoles={['0']}>
-                <Navbar />
-                <CpotbExtendRenewRequest />
-              </ProtectedRoute>
-            } 
-          />
-
-          <Route 
-            path="/extend-request-nie" 
-            element={
-              <ProtectedRoute allowedRoles={['0']}>
-                <Navbar />
-                <NieExtendRequest />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/extend-renew-request-nie" 
-            element={
-              <ProtectedRoute allowedRoles={['0']}>
-                <Navbar />
-                <NieExtendRenewRequest />
               </ProtectedRoute>
             } 
           />
@@ -214,24 +169,6 @@ function App() {
               <ProtectedRoute allowedRoles={['1']}>
                 <Navbar />
                 <CdobRequest />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/extend-request-cdob" 
-            element={
-              <ProtectedRoute allowedRoles={['1']}>
-                <Navbar />
-                <CdobExtendRequest />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/extend-renew-request-cdob" 
-            element={
-              <ProtectedRoute allowedRoles={['1']}>
-                <Navbar />
-                <CdobExtendRenewRequest />
               </ProtectedRoute>
             } 
           />
@@ -347,7 +284,7 @@ function App() {
             } 
           />
           
-          
+
         </Routes>
       </Router>
     </React.StrictMode>

@@ -5,15 +5,16 @@ import contractData from '../../auto-artifacts/deployments.json';
 import imgLogin from '../../assets/images/login.png';
 import imgLoader from '../../assets/images/loader.svg';
 
+import './../../styles/Auth.scss';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import './../../styles/Auth.scss';
-import "./../../styles/SweetAlert.scss";
+import './../../styles/SweetAlert.scss';
 
 const MySwal = withReactContent(Swal);
 
 function LoginPage() {
   const [name, setName] = useState("");
+  // const [userAddr, setUserAddr] = useState("");
   const [signer, setSigner] = useState("");
 
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ function LoginPage() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.once("accountsChanged", () => {
+      window.ethereum.on("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -118,9 +119,6 @@ function LoginPage() {
           showCancelButton: false,
           showConfirmButton: false,
           allowOutsideClick: false,
-          customClass: {
-            popup: 'my-swal-popup'
-          }
         })
         .then(() => {
           if (userdata.role === "1") {
@@ -150,24 +148,28 @@ function LoginPage() {
   const autoFilled = async(event, role) => {
     event.preventDefault();
     if(role===0){
-      setName('Nadia Zahra');
       // setName('James Doe')
-      // setName('Rina Sari');
+      setName('Rina Sari');
+      // setUserAddr("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+      // setUserAddr("0x6142E74121ADE0de3BEC1641e0318dBcCFcDe06A")
 
     } else if(role===1){ 
-      setName('Andi Wicaksono');
       // setName('Charles Doe') 
-      // setName('Fajar Nugroho');
+      setName('Fajar Nugroho');
+      // setUserAddr("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
+      // setUserAddr("0x97CB6400E271e65150B2330ad27f213a4C9c31af")
 
     } else if(role===2){ 
-      setName('Ratna Dewi');
       // setName('Sophie Doe') 
-      // setName('Sri Lestari');
+      setName('Sri Lestari');
+      // setUserAddr('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')
+      // setUserAddr('0xcbcD762c3C27212937314C1D46072a214346F2F3')
 
     } else if(role===3){
-      setName('Gilang Saputra');
       // setName('Marlene Doe') 
-      // setName('Budi Hartono');
+      setName('Budi Hartono');
+      // setUserAddr('0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65')
+      // setUserAddr('0xA3cE1983150Fade27518DF467a99a74FB4082dDa')
       
     }
     
@@ -182,6 +184,11 @@ function LoginPage() {
       navigate('/riwayat-transaksi')
     }
   }
+
+  const formattedAddress = (addr) => {
+    if (!addr) return "";
+    return `${addr.slice(0, 16)}...${addr.slice(-14)}`;
+  };
 
   return (
     <>
@@ -205,7 +212,7 @@ function LoginPage() {
                   e.preventDefault(); 
                   goToPage('obat')}}
               >
-              <i className="fa-solid fa-magnifying-glass"></i>
+              <i class="fa-solid fa-magnifying-glass"></i>
                 Cek Obat
               </button>
             </li>
@@ -215,7 +222,7 @@ function LoginPage() {
                   e.preventDefault(); 
                   goToPage('sertifikat')}}
               >
-              <i className="fa-solid fa-magnifying-glass"></i>
+              <i class="fa-solid fa-magnifying-glass"></i>
                 Cek Sertifikasi
               </button>
             </li>
@@ -225,7 +232,7 @@ function LoginPage() {
                   e.preventDefault(); 
                   goToPage('transaksi')}}
               >
-              <i className="fa-solid fa-magnifying-glass"></i>
+              <i class="fa-solid fa-magnifying-glass"></i>
                 Riwayat Transaksi
               </button>
             </li>
@@ -243,6 +250,14 @@ function LoginPage() {
               onChange={(e) => setName(e.target.value)} 
               required 
             />
+            
+            {/* <input 
+              type="text" 
+              placeholder="Account E-Wallet Address" 
+              value={userAddr} 
+              onChange={(e) => setUserAddr(e.target.value)} 
+              required 
+            /> */}
             
             <button type="submit">
               {
@@ -275,7 +290,7 @@ function LoginPage() {
               </li>
 
               <li>
-                <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled Apotek</button>
+                <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled Retailer</button>
               </li>
             </ul>
           </div>

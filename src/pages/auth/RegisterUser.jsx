@@ -19,6 +19,7 @@ function RegisterPage() {
 
   const [name, setName] = useState("");
   const [instanceName, setInstanceName] = useState("");
+  // const [userAddr, setUserAddr] = useState("");
   const [nib, setNib] = useState("");
   const [npwp, setNpwp] = useState("");
   const [role, setRole] = useState("");
@@ -55,7 +56,7 @@ function RegisterPage() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.once("accountsChanged", () => {
+      window.ethereum.on("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -187,7 +188,7 @@ function RegisterPage() {
     } else if (role===1){
       r= "PBF"
     } else if (role===3){
-      r= " Apotek"
+      r= "Pengecer"
     }
 
     if (factoryType === "UMOT") {
@@ -317,11 +318,6 @@ function RegisterPage() {
     })
 
     try {
-
-      contract.once("UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
-        handleEventUserRegister(_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp, registCt.hash);
-      });
-
       const nameUpperCase = name.toUpperCase()
       let registCt;
       if(factoryType){
@@ -339,6 +335,10 @@ function RegisterPage() {
         });
         
       }
+
+      contract.on("UserRegistered", (_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp) => {
+        handleEventUserRegister(_userAddr, _name, _instanceName, _role, _locationInstance, _nib, _npwp, registCt.hash);
+      });
       
     } catch (err) {
       setLoader(false)
@@ -396,71 +396,41 @@ function RegisterPage() {
   function autoFilled(event, role) {
     event.preventDefault();
     console.log(role);
-
+  
     if (role === 0) {
-      setInstanceName('[TEST] PT. Alam Hijau Farma');
+      setInstanceName('PT. Sehat Sentosa');
       setRole(0);
-      setName('Nadia Zahra');
-      setNib('1414141414');
-      setNpwp('14.141.414.1-414.141');
-      setLocationInstance('Jl. Merdeka No.11, Bogor');
+      setName('Rina Sari');
+      setNib('6666666666');
+      setNpwp('66.666.666.6-666.666');
+      setLocationInstance('Jl. Sehat No.10, Jakarta Selatan');
       setIsBpom(false);
     } else if (role === 1) {
-      setInstanceName('[TEST] PT. Natural Farma Sejahtera');
+      setInstanceName('PT. Cahaya Farma Raya');
       setRole(1); 
-      setName('Andi Wicaksono');
-      setNib('1313131313');
-      setNpwp('13.131.313.1-313.131');
-      setLocationInstance('Jl. Sukamulya No.15, Surabaya');
+      setName('Fajar Nugroho');
+      setNib('1212121212');
+      setNpwp('12.121.212.1-212.121');
+      setLocationInstance('Jl. Areum-areum No.20, Jakarta Barat');
       setIsBpom(false);
+      // setUserAddr('');
     } else if (role === 2) {
-      setInstanceName('[TEST] BPOM Singaraja');
+      setInstanceName('BPOM Malino');
       setRole(2);
-      setName('Ratna Dewi');
-      setLocationInstance('Jl. Pengawasan BPOM, Singaraja, Bali');
+      setName('Sri Lestari');
+      setLocationInstance('Jl. Pengawasan BPOM, Malino, Sulawesi Selatan');
       setIsBpom(true);
+      // setUserAddr('');
     } else if (role === 3) {
-      setInstanceName('[TEST] Apotek Sehat Utama');
+      setInstanceName('Apotek Nusantara');
       setRole(3);
-      setName('Gilang Saputra');
-      setNib('1919191919');
-      setNpwp('19.191.919.1-919.191');
-      setLocationInstance('Jl. Kartini No.9, Medan');
+      setName('Budi Hartono');
+      setNib('8888888888');
+      setNpwp('88.888.888.8-888.888');
+      setLocationInstance('Jl. Apotek Sejahtera No.5, Jakarta Timur');
       setIsBpom(false);
+      // setUserAddr('');
     }
-
-    // the user info for master branch 
-    // if (role === 0) {
-    //   setInstanceName('PT. Sehat Sentosa');
-    //   setRole(0);
-    //   setName('Rina Sari');
-    //   setNib('6666666666');
-    //   setNpwp('66.666.666.6-666.666');
-    //   setLocationInstance('Jl. Sehat No.10, Jakarta Selatan');
-    //   setIsBpom(false);
-    // } else if (role === 1) {
-    //   setInstanceName('PT. Cahaya Farma Raya');
-    //   setRole(1); 
-    //   setName('Fajar Nugroho');
-    //   setNib('1212121212');
-    //   setNpwp('12.121.212.1-212.121');
-    //   setLocationInstance('Jl. Areum-areum No.20, Jakarta Barat');
-    //   setIsBpom(false);
-    // } else if (role === 2) {
-    //   setInstanceName('BPOM Malino');
-    //   setRole(2);
-    //   setName('Sri Lestari');
-    //   setLocationInstance('Jl. Pengawasan BPOM, Malino, Sulawesi Selatan');
-    //   setIsBpom(true);
-    // } else if (role === 3) {
-    //   setInstanceName('Apotek Nusantara');
-    //   setRole(3);
-    //   setName('Budi Hartono');
-    //   setNib('8888888888');
-    //   setNpwp('88.888.888.8-888.888');
-    //   setLocationInstance('Jl. Apotek Sejahtera No.5, Jakarta Timur');
-    //   setIsBpom(false);
-    // }
   }
   
   
@@ -498,6 +468,14 @@ function RegisterPage() {
                 onChange={(e) => setInstanceName(e.target.value)} 
                 required 
               />
+              
+              {/* <input 
+                type="text" 
+                placeholder="Account E-Wallet Address" 
+                value={userAddr} 
+                onChange={(e) => setUserAddr(e.target.value)} 
+                required
+              /> */}
 
               <textarea 
                 type="text" 
@@ -516,7 +494,7 @@ function RegisterPage() {
                 <option value="0">Pabrik</option>
                 <option value="1">PBF</option>
                 <option value="2">BPOM</option>
-                <option value="3"> Apotek</option>
+                <option value="3">Pengecer</option>
               </select>
 
               {!isBpom ? 
@@ -587,7 +565,7 @@ function RegisterPage() {
                 </li>
 
                 <li>
-                  <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled Apotek</button>
+                  <button className="test" onClick={(event) => autoFilled(event, 3)}>Auto Filled Retailer</button>
                 </li>
               </ul>
             </div>

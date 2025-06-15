@@ -1,5 +1,5 @@
-@use './main.scss' as *;
-@use 'mixin' as *;
+@import './main.scss';
+@import 'mixin';
 
 .customLabelStepper{
   font-size: 14px;
@@ -12,6 +12,7 @@
   
   span.Mui-disabled, span.css-12eb3rq-MuiStepLabel-label{
     font-family: "Instrument Sans", sans-serif;
+    // color: $grey;
     font-weight: bold;
   }
 

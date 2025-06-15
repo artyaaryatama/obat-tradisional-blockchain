@@ -107,7 +107,7 @@ function CpotbRequest() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.once("accountsChanged", () => {
+      window.ethereum.on("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -299,7 +299,7 @@ function CpotbRequest() {
         });
       }
       
-      contract.once("CertRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
+      contract.on("CertRequested", (_name, _userAddr, _jenisSediaan, _timestampRequest) => {
         handleEventCpotbRequested(_name, _userAddr, _jenisSediaan, _timestampRequest, requestCpotbCt.hash);
         writeCpotbFb( userdata.instanceName, jenisSediaanMap[jenisSediaan], requestCpotbCt.hash, Number(_timestampRequest));
         recordHashFb(jenisSediaanMap[jenisSediaan], requestCpotbCt.hash, Number(_timestampRequest))
@@ -329,7 +329,6 @@ function CpotbRequest() {
       if (!companyData.exists()) {
         await setDoc(docRefUser, {
           userNib: userdata.nib,
-          role: 'Pabrik',
           userLocation: userdata.location,
           userAddr: userdata.address,
           factoryType: userdata.factoryType,
@@ -497,7 +496,7 @@ function CpotbRequest() {
                                 ${hash !== "Gagal Upload" 
                                   ? 
                                   `<a href="http://localhost:8080/ipfs/${hash}" target="_blank">
-                                   ${hash} <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                   Lihat dokumen ↗ (${hash})
                                   </a>` 
 
 

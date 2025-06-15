@@ -77,7 +77,7 @@ function StockObatFactory() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.once("accountsChanged", () => {
+      window.ethereum.on("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -141,7 +141,7 @@ function StockObatFactory() {
       const detailNieCt = await contracts.nieManager.getNieDetail(id)
       const [merk, namaProduk, klaim, komposisi, kemasan, factoryInstance, factoryAddr, tipeObat, cpotbHash, cdobHash, jenisObat] = detailObatCt;
 
-      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, timestampNieExpired, timestampNieExtendRequest,timestampNieExtendApprove, timestampNieExtendReject, timestampNieExtendRenew, factoryInstanceee, bpomInstance, bpomAddr, nieIpfs] = detailNieCt[0];
+      const [nieNumber, nieStatus, timestampProduction, timestampNieRequest, timestampNieApprove, timestampNieRejected, timestampNieRenewRequest, factoryInstanceee, bpomInstance, bpomAddr] = detailNieCt[0];
 
       const [dataObat, obatIpfs] = detailBatchCt
 
@@ -211,7 +211,7 @@ function StockObatFactory() {
                                 rel="noopener noreferrer"
                               >
                                 (Detail CPOTB
-                                <i className="fa-solid fa-arrow-up-right-from-square"></i>)
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>)
                               </a>
                             </span>
                           </p>
@@ -366,10 +366,7 @@ function StockObatFactory() {
           <div className="data-list">
             <div className="fade-container">
               <div className={`fade-layer loader-layer ${fadeOutLoader ? 'fade-out' : 'fade-in'}`}>
-                <div className="image">
-                  <Loader />
-
-                </div>
+                <Loader />
               </div>
 
               <div className={`fade-layer content-layer ${!loading ? 'fade-in' : 'fade-out'}`}>

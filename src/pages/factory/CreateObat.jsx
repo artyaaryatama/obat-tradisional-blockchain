@@ -18,7 +18,9 @@ function CreateObat() {
   const [contracts, setContracts] = useState(null);
   const navigate = useNavigate();
   const userdata = JSON.parse(sessionStorage.getItem('userdata')) || {};
+
   const [loader, setLoader] = useState(false)
+
   const [namaProduk, setNamaProduk] = useState("");
   const [merk, setMerk] = useState("")
   const [klaim, setKlaim] = useState([])
@@ -119,7 +121,7 @@ function CreateObat() {
     connectWallet();
 
     if (window.ethereum) {
-      window.ethereum.once("accountsChanged", () => {
+      window.ethereum.on("accountsChanged", () => {
         connectWallet();
         window.location.reload(); 
       });
@@ -144,8 +146,7 @@ function CreateObat() {
             return {
               cpotbId: item[0],
               cpotbHash: item[5],
-              jenisSediaan: jenisSediaanMap[item[3]],
-              isValid: Math.floor(Date.now() / 1000) > Number(item[6]) ? false : true
+              jenisSediaan: jenisSediaanMap[item[3]]
             };
           });
 
@@ -310,12 +311,7 @@ function CreateObat() {
     } else if (!kemasanPrimData || !kemasanPrimData.cpotbHash) {
       errAlert({reason: "Tidak dapat memproduksi obat tradisional"}, `${userdata.instanceName} tidak memiliki sertifikasi CPOTB "${kemasanPrim}"`);
 
-    } 
-    else if (kemasanPrimData.isValid === false) {
-      errAlert({reason: "Tidak dapat memproduksi obat tradisional"}, `Sertifikasi CPOTB "${kemasanPrim}" sudah tidak berlaku. Harap lakukan perpanjangan sertifikat terlebih dahulu untuk dapat memproduksi obat ini.`);
-    } 
-    
-    else {
+    } else {
       const kemasanSet = `${kemasanSeku}, ${ketKemasanSeku} @${kemasanPrim} (${ketKemasanPrim} ${satuanKemasanPrim})`
       
       const randomFourDigit = Math.floor(1000 + Math.random() * 9000); 
@@ -342,9 +338,9 @@ function CreateObat() {
           });
         }
   
-        contracts.obatTradisional.once("ObatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, _timestamp) => {
-          createObatFb(userdata.instanceName, namaProduk, createObatCt.hash, kemasanPrim, tipeObat, Number(_timestamp))
-          recordHashFb(namaProduk, createObatCt.hash, Number(_timestamp))
+        contracts.obatTradisional.on("ObatCreated", (_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr) => {
+          createObatFb(userdata.instanceName, namaProduk, createObatCt.hash, kemasanPrim, tipeObat)
+          recordHashFb(namaProduk, createObatCt.hash)
           handleEventObatCreated(_namaProduk, _tipeObat, _factoryInstanceName, _factoryAddr, createObatCt.hash);
         });
   
@@ -355,7 +351,7 @@ function CreateObat() {
     }
   };
 
-  const createObatFb = async (instanceName, namaProduk, obatHash, kemasanPrim, tipeObat, timestamp) => {
+  const createObatFb = async (instanceName, namaProduk, obatHash, kemasanPrim, tipeObat) => {
 
     const tpMap = {
       "ObatLain": 'Obat Lain',
@@ -369,13 +365,12 @@ function CreateObat() {
 
       await setDoc(docRef, {
         [`${namaProduk}`]: {
-          jenisSediaan: `${kemasanPrim}`,
-          tipeObat: `${tipeP}`,
-          historyNie: {
-            createObatHash: obatHash,
-            createObatTimestamp: timestamp,
-          },
-      }
+        jenisSediaan: `${kemasanPrim}`,
+        tipeObat: `${tipeP}`,
+        historyNie: {
+          createObatHash: obatHash,
+          createObatTimestamp: Date.now(),
+        },}
       }, { merge: true }); 
   
     } catch (err) {
@@ -383,7 +378,7 @@ function CreateObat() {
     }
   };
 
-  const recordHashFb = async(namaProduk, txHash, timestamp) => {
+  const recordHashFb = async(namaProduk, txHash) => {
     try {
       const collectionName = `obat_${namaProduk}_${userdata.instanceName}`
       const docRef = doc(db, 'transaction_hash', collectionName);
@@ -392,7 +387,7 @@ function CreateObat() {
         [`produksi`]: {
           'create_obat': {
             hash: txHash,
-            timestamp: timestamp,
+            timestamp: Date.now(),
           }
         },
       }, { merge: true }); 
@@ -408,24 +403,29 @@ function CreateObat() {
 
   const handleAutoFill4 = () => {
     const autoFillValues = {
-    namaProduk: "Teh Herbal Daun Ungu",
-    merk: "NaturaTea",
-    klaim: [
-      "Membantu menurunkan tekanan darah",
-      "Menjaga kesehatan ginjal",
-      "Mengandung antioksidan alami"
-    ],
-    ketKemasanPrim: "40",
-    satuanKemasanPrim: "gram",
-    kemasanSeku: "Box",
-    ketKemasanSeku: "1",
-    komposisi: [
-      "Graptophyllum pictum",
-      "Orthosiphon stamineus",
-      "Imperata cylindrica",
-      "Hibiscus sabdariffa",
-      "Cinnamomum cassia"
-    ]
+      namaProduk: "Tapel Rempah Sehat",
+      merk: "HerbiCare",
+      klaim: [
+        "Membantu mengencangkan perut setelah melahirkan",
+        "Mengurangi rasa pegal dan nyeri otot",
+        "Menyegarkan tubuh dengan aroma rempah alami"
+      ],
+      ketKemasanPrim: "1",
+      satuanKemasanPrim: "lembar",
+      kemasanSeku: "Pack",
+      ketKemasanSeku: "5",
+      komposisi: [
+        "Kaempferia galanga",
+        "Zingiber officinale",
+        "Curcuma longa",
+        "Cinnamomum burmannii",
+        "Piper nigrum",
+        "Capsicum frutescens",
+        "Foeniculum vulgare",
+        "Cocos nucifera",
+        "Cymbopogon citratus",
+        "Pogostemon cablin"
+      ]
     };
   
     setNamaProduk(autoFillValues.namaProduk);
@@ -440,24 +440,29 @@ function CreateObat() {
   
   const handleAutoFill5 = () => {
     const autoFillValues = {
-    namaProduk: "Jamu Kunyit Asam",
-    merk: "TradisiNusantara",
-    klaim: [
-      "Membantu menyegarkan tubuh",
-      "Mengurangi nyeri haid",
-      "Menjaga kesehatan kulit"
-    ],
-    ketKemasanPrim: "250",
-    satuanKemasanPrim: "ml",
-    kemasanSeku: "Botol",
-    ketKemasanSeku: "1",
-    komposisi: [
-      "Curcuma longa",
-      "Tamarindus indica",
-      "Zingiber officinale",
-      "Cane sugar",
-      "Sodium benzoate"
-    ]
+      namaProduk: "NeuroTab Herbal",
+      merk: "BrainWell",
+      klaim: [
+        "Meningkatkan fokus dan daya ingat",
+        "Membantu mengurangi kelelahan mental",
+        "Mendukung fungsi otak secara alami"
+      ],
+      ketKemasanPrim: "30",
+      satuanKemasanPrim: "tablet",
+      kemasanSeku: "Blister",
+      ketKemasanSeku: "1",
+      komposisi: [
+        "Bacopa monnieri",
+        "Centella asiatica",
+        "Panax ginseng",
+        "Withania somnifera",
+        "Ginkgo biloba",
+        "Mucuna pruriens",
+        "Curcuma longa",
+        "Piper nigrum",
+        "Zingiber officinale",
+        "Eleutherococcus senticosus"
+      ]
     };
 
     setNamaProduk(autoFillValues.namaProduk);
@@ -472,23 +477,28 @@ function CreateObat() {
   
   const handleAutoFill6 = () => {
     const autoFillValues = {
-      namaProduk: "Minyak Balur Anak Sehat",
-      merk: "BalurKids",
+      namaProduk: "CoolRub Herbal Solution",
+      merk: "SariAlami",
       klaim: [
-        "Meredakan masuk angin pada anak",
-        "Membantu menghangatkan tubuh",
-        "Aman untuk kulit sensitif"
+        "Memberikan sensasi dingin untuk mengurangi nyeri otot",
+        "Membantu meredakan pegal dan capek",
+        "Cocok untuk pijat atau digunakan setelah aktivitas fisik"
       ],
-      ketKemasanPrim: "30",
+      ketKemasanPrim: "120",
       satuanKemasanPrim: "ml",
-      kemasanSeku: "Botol roll-on",
+      kemasanSeku: "Botol Roll-On",
       ketKemasanSeku: "1",
       komposisi: [
-        "Cocos nucifera oil",
-        "Zingiber officinale extract",
-        "Eucalyptus oil",
-        "Cinnamomum cassia oil",
-        "Lavandula angustifolia oil"
+        "Mentha arvensis",
+        "Gaultheria procumbens",
+        "Eucalyptus globulus",
+        "Zingiber officinale",
+        "Cymbopogon citratus",
+        "Capsicum frutescens",
+        "Pogostemon cablin",
+        "Cinnamomum burmannii",
+        "Lavandula angustifolia",
+        "Aqua"
       ]
     };
   
@@ -748,9 +758,9 @@ function CreateObat() {
                         <button type="button" onClick={() => removeField(index)}><i className="fa-solid fa-trash"></i></button>
                       )}
                       <button type="button" onClick={addField}><i className="fa-solid fa-plus"></i></button>
-                      <button type="button" className="add-prohibited" onClick={handleAddProhibitedIngredient}>
+                      {/* <button type="button" className="add-prohibited" onClick={handleAddProhibitedIngredient}>
                         Add Prohibited Ingredient
-                      </button>
+                      </button> */}
                     </div>
                     
                   </div>
@@ -760,6 +770,11 @@ function CreateObat() {
                 }
                 
               </div>
+
+                {/* {komposisi.map((comp, index) => (
+                    <div key={index}>
+                    </div>
+                ))} */}
             </li>
           </ul>
 
