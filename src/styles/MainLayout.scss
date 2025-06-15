@@ -104,6 +104,17 @@
       .fade-container{
         position: relative;
 
+        .custom-loader{
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+
+          p{
+            margin-top: 16px;
+          }
+        }
+
         .fade-layer{
           transition: opacity 0.4s ease;
           opacity: 1;
